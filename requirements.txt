@@ -1,0 +1,84 @@
+# Core Framework
+streamlit
+fastapi
+uvicorn[standard]
+
+# AI and ML
+openai
+anthropic
+langchain
+langchain-community
+langchain-groq
+langchain-huggingface
+sentence-transformers
+
+# Document Processing
+docling
+pypdf2
+python-docx
+python-multipart
+
+# Vector Database
+chromadb
+
+# Database and Storage
+supabase
+redis
+
+# Data Processing
+pandas
+numpy
+plotly
+seaborn
+matplotlib
+
+# Web and API
+requests
+httpx
+aiofiles
+
+# Authentication and Security
+pyjwt
+passlib[bcrypt]
+python-jose[cryptography]
+
+# Configuration and Validation
+pydantic
+pydantic-settings
+python-dotenv
+
+# Email and Notifications
+email-validator
+
+# Utilities
+python-dateutil
+pytz
+pathlib
+json5
+
+# Development and Testing
+pytest
+pytest-asyncio
+black
+flake8
+
+# Logging and Monitoring
+structlog
+
+# File Processing
+openpyxl
+xlsxwriter
+
+# Background Tasks
+celery
+
+# Export and Reporting
+reportlab
+weasyprint
+jinja2
+
+# Rate Limiting
+slowapi
+
+# CORS and Security
+python-multipart
