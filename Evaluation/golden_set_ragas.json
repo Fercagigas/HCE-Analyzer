@@ -1,0 +1,485 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "fecha_generacion": "2026-03-12T11:30:00Z",
+    "total_preguntas": 40,
+    "distribucion": {
+      "patient_summary": 8,
+      "vital_signs": 8,
+      "diagnoses": 8,
+      "medications": 8,
+      "triage": 4,
+      "cross_table": 4
+    },
+    "umbrales_ragas": {
+      "faithfulness": 0.85,
+      "answer_relevancy": 0.8,
+      "context_precision": 0.75,
+      "context_recall": 0.7
+    },
+    "tablas_referenciadas": [
+      "edstays",
+      "triage",
+      "vitalsign",
+      "diagnosis",
+      "medrecon",
+      "pyxis"
+    ]
+  },
+  "questions": [
+    {
+      "id": "DB-PS-001",
+      "question": "¿Cuál es el género y la raza del paciente 10014729?",
+      "ground_truth": "El paciente 10014729 es de género femenino (F) y raza WHITE - OTHER EUROPEAN.",
+      "ground_truth_sql": "SELECT subject_id, gender, race FROM mimic_ed.edstays WHERE subject_id = 10014729 LIMIT 1",
+      "contexts": [
+        "edstays: subject_id=10014729, gender=F, race=WHITE - OTHER EUROPEAN"
+      ],
+      "category": "patient_summary"
+    },
+    {
+      "id": "DB-PS-002",
+      "question": "¿Cuál fue la disposición final del paciente 10014729 en su visita a urgencias?",
+      "ground_truth": "La disposición final del paciente 10014729 fue ADMITTED (ingresado al hospital) en su estancia stay_id=37887480.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, disposition FROM mimic_ed.edstays WHERE subject_id = 10014729",
+      "contexts": [
+        "edstays: subject_id=10014729, stay_id=37887480, disposition=ADMITTED"
+      ],
+      "category": "patient_summary"
+    },
+    {
+      "id": "DB-PS-003",
+      "question": "¿Cuánto tiempo estuvo el paciente 10014729 en urgencias?",
+      "ground_truth": "El paciente 10014729 estuvo en urgencias desde el 2125-03-19 12:36:00 hasta el 2125-03-19 16:59:47, aproximadamente 4 horas y 24 minutos.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, intime, outtime FROM mimic_ed.edstays WHERE subject_id = 10014729",
+      "contexts": [
+        "edstays: subject_id=10014729, stay_id=37887480, intime=2125-03-19 12:36:00, outtime=2125-03-19 16:59:47"
+      ],
+      "category": "patient_summary"
+    },
+    {
+      "id": "DB-PS-004",
+      "question": "¿Cuántas visitas a urgencias tiene registradas el paciente 10018328?",
+      "ground_truth": "El paciente 10018328 tiene 2 visitas registradas en urgencias: stay_id 34176810 (2154-02-05, disposición ADMITTED) y stay_id 32103106 (2154-08-03, disposición HOME).",
+      "ground_truth_sql": "SELECT subject_id, stay_id, intime, outtime, disposition FROM mimic_ed.edstays WHERE subject_id = 10018328 ORDER BY intime",
+      "contexts": [
+        "edstays: subject_id=10018328, stay_id=34176810, intime=2154-02-05 17:09:00, disposition=ADMITTED",
+        "edstays: subject_id=10018328, stay_id=32103106, intime=2154-08-03 15:31:00, disposition=HOME"
+      ],
+      "category": "patient_summary"
+    },
+    {
+      "id": "DB-PS-005",
+      "question": "¿Cuál es el género y la disposición del paciente 10026255 en sus visitas a urgencias?",
+      "ground_truth": "El paciente 10026255 es de género masculino (M). Tuvo 2 visitas: stay_id 37844627 (2200-09-17, disposición ADMITTED) y stay_id 34236274 (2201-07-07, disposición ADMITTED).",
+      "ground_truth_sql": "SELECT subject_id, stay_id, gender, disposition, intime FROM mimic_ed.edstays WHERE subject_id = 10026255 ORDER BY intime",
+      "contexts": [
+        "edstays: subject_id=10026255, stay_id=37844627, gender=M, disposition=ADMITTED, intime=2200-09-17",
+        "edstays: subject_id=10026255, stay_id=34236274, gender=M, disposition=ADMITTED, intime=2201-07-07"
+      ],
+      "category": "patient_summary"
+    },
+    {
+      "id": "DB-PS-006",
+      "question": "¿Cuántas visitas a urgencias tiene el paciente 10014354?",
+      "ground_truth": "El paciente 10014354 tiene 23 visitas registradas en urgencias, siendo el paciente con más visitas en el dataset.",
+      "ground_truth_sql": "SELECT subject_id, COUNT(stay_id) as total_visitas FROM mimic_ed.edstays WHERE subject_id = 10014354 GROUP BY subject_id",
+      "contexts": [
+        "edstays: subject_id=10014354, total_visitas=23"
+      ],
+      "category": "patient_summary"
+    },
+    {
+      "id": "DB-PS-007",
+      "question": "¿Cuál es la raza y el medio de transporte de llegada del paciente 10014729?",
+      "ground_truth": "El paciente 10014729 es de raza WHITE - OTHER EUROPEAN y llegó a urgencias caminando (WALK IN).",
+      "ground_truth_sql": "SELECT subject_id, race, arrival_transport FROM mimic_ed.edstays WHERE subject_id = 10014729",
+      "contexts": [
+        "edstays: subject_id=10014729, race=WHITE - OTHER EUROPEAN, arrival_transport=WALK IN"
+      ],
+      "category": "patient_summary"
+    },
+    {
+      "id": "DB-PS-008",
+      "question": "¿Cuántos pacientes únicos hay en el dataset MIMIC-IV-ED y cuántas estancias totales?",
+      "ground_truth": "El dataset MIMIC-IV-ED contiene 64 pacientes únicos con un total de 222 estancias en urgencias.",
+      "ground_truth_sql": "SELECT COUNT(DISTINCT subject_id) as total_pacientes, COUNT(stay_id) as total_estancias FROM mimic_ed.edstays",
+      "contexts": [
+        "edstays: total_pacientes=64, total_estancias=222"
+      ],
+      "category": "patient_summary"
+    },
+    {
+      "id": "DB-VS-001",
+      "question": "¿Cuál fue la frecuencia cardíaca máxima registrada para el paciente 10014729 durante su estancia?",
+      "ground_truth": "La frecuencia cardíaca máxima del paciente 10014729 (stay_id=37887480) fue de 128 lpm, registrada el 2125-03-19 13:07:00.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, MAX(heartrate) as max_heartrate FROM mimic_ed.vitalsign WHERE subject_id = 10014729 GROUP BY subject_id, stay_id",
+      "contexts": [
+        "vitalsign: subject_id=10014729, stay_id=37887480, max_heartrate=128.0"
+      ],
+      "category": "vital_signs"
+    },
+    {
+      "id": "DB-VS-002",
+      "question": "¿Cuáles son los signos vitales registrados en la estancia 37887480?",
+      "ground_truth": "En la estancia 37887480 (paciente 10014729) se registraron 6 mediciones de signos vitales. La frecuencia cardíaca varió entre 106 y 128 lpm. La presión sistólica varió entre 93 y 132 mmHg. La saturación de oxígeno fue de 97-100%. El ritmo cardíaco fue Sinus Tachycardia en la mayoría de registros.",
+      "ground_truth_sql": "SELECT charttime, temperature, heartrate, resprate, o2sat, sbp, dbp, rhythm, pain FROM mimic_ed.vitalsign WHERE stay_id = 37887480 ORDER BY charttime",
+      "contexts": [
+        "vitalsign: stay_id=37887480, charttime=2125-03-19 13:07:00, heartrate=128.0, sbp=132.0, dbp=96.0, o2sat=100.0, rhythm=Sinus Tachycardia",
+        "vitalsign: stay_id=37887480, charttime=2125-03-19 13:22:00, heartrate=124.0, sbp=93.0, dbp=65.0, o2sat=100.0",
+        "vitalsign: stay_id=37887480, charttime=2125-03-19 18:28:00, temperature=98.9, heartrate=106.0, sbp=115.0, dbp=70.0, o2sat=100.0, rhythm=Sinus Tachycardia, pain=5"
+      ],
+      "category": "vital_signs"
+    },
+    {
+      "id": "DB-VS-003",
+      "question": "¿Cuál fue la presión arterial sistólica máxima del paciente 10022281 durante su estancia?",
+      "ground_truth": "La presión arterial sistólica máxima del paciente 10022281 (stay_id=39346340) fue de 177 mmHg, registrada el 2125-06-16 20:31:00.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, MAX(sbp) as max_sbp FROM mimic_ed.vitalsign WHERE subject_id = 10022281 GROUP BY subject_id, stay_id",
+      "contexts": [
+        "vitalsign: subject_id=10022281, stay_id=39346340, max_sbp=177.0"
+      ],
+      "category": "vital_signs"
+    },
+    {
+      "id": "DB-VS-004",
+      "question": "¿Cuántas mediciones de signos vitales tiene el paciente 10026255 en su estancia 34236274?",
+      "ground_truth": "El paciente 10026255 en la estancia 34236274 tiene 8 mediciones de signos vitales registradas. Se observó fibrilación auricular (Atrial Fibrillation) en varios registros.",
+      "ground_truth_sql": "SELECT COUNT(*) as total_mediciones FROM mimic_ed.vitalsign WHERE stay_id = 34236274",
+      "contexts": [
+        "vitalsign: stay_id=34236274, total_mediciones=8",
+        "vitalsign: stay_id=34236274, charttime=2201-07-07 16:14:00, heartrate=142.0, sbp=132.0, o2sat=92.0, rhythm=Atrial Fibrillation",
+        "vitalsign: stay_id=34236274, charttime=2201-07-07 18:55:00, heartrate=98.0, sbp=124.0, o2sat=98.0, rhythm=Sinus Rhythm"
+      ],
+      "category": "vital_signs"
+    },
+    {
+      "id": "DB-VS-005",
+      "question": "¿Cuál fue la temperatura corporal del paciente 10014729 durante su estancia en urgencias?",
+      "ground_truth": "El paciente 10014729 tuvo 2 registros de temperatura: 98.9°F (2125-03-19 18:28:00) y 99.8°F (2125-03-19 16:23:00). En el triaje inicial se registró 99.1°F.",
+      "ground_truth_sql": "SELECT charttime, temperature FROM mimic_ed.vitalsign WHERE subject_id = 10014729 AND temperature IS NOT NULL ORDER BY charttime",
+      "contexts": [
+        "vitalsign: subject_id=10014729, charttime=2125-03-19 16:23:00, temperature=99.8",
+        "vitalsign: subject_id=10014729, charttime=2125-03-19 18:28:00, temperature=98.9"
+      ],
+      "category": "vital_signs"
+    },
+    {
+      "id": "DB-VS-006",
+      "question": "¿Cuál fue la saturación de oxígeno mínima del paciente 10015272 durante su estancia?",
+      "ground_truth": "La saturación de oxígeno mínima del paciente 10015272 (stay_id=33473053) fue de 96%, registrada el 2137-06-12 16:55:00.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, MIN(o2sat) as min_o2sat FROM mimic_ed.vitalsign WHERE subject_id = 10015272 GROUP BY subject_id, stay_id",
+      "contexts": [
+        "vitalsign: subject_id=10015272, stay_id=33473053, min_o2sat=96.0"
+      ],
+      "category": "vital_signs"
+    },
+    {
+      "id": "DB-VS-007",
+      "question": "¿Cuál fue la evolución de la presión arterial sistólica del paciente 10020187 en su estancia 30689793?",
+      "ground_truth": "El paciente 10020187 en la estancia 30689793 presentó presiones sistólicas muy elevadas al inicio (197 mmHg a las 23:50, 195 mmHg a las 23:52) que fueron disminuyendo progresivamente hasta 96-116 mmHg al final de la estancia.",
+      "ground_truth_sql": "SELECT charttime, sbp, dbp FROM mimic_ed.vitalsign WHERE stay_id = 30689793 ORDER BY charttime",
+      "contexts": [
+        "vitalsign: stay_id=30689793, charttime=2169-01-14 23:28:00, sbp=168.0, dbp=82.0",
+        "vitalsign: stay_id=30689793, charttime=2169-01-14 23:50:00, sbp=197.0, dbp=107.0",
+        "vitalsign: stay_id=30689793, charttime=2169-01-15 04:01:00, sbp=116.0, dbp=67.0"
+      ],
+      "category": "vital_signs"
+    },
+    {
+      "id": "DB-VS-008",
+      "question": "¿Cuál fue la frecuencia cardíaca promedio del paciente 10018328 en su estancia 34176810?",
+      "ground_truth": "El paciente 10018328 en la estancia 34176810 tuvo una frecuencia cardíaca promedio de aproximadamente 66.2 lpm, con valores entre 62 y 74 lpm.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, AVG(heartrate) as avg_heartrate, MIN(heartrate) as min_hr, MAX(heartrate) as max_hr FROM mimic_ed.vitalsign WHERE stay_id = 34176810 GROUP BY subject_id, stay_id",
+      "contexts": [
+        "vitalsign: stay_id=34176810, avg_heartrate=66.2, min_heartrate=62.0, max_heartrate=74.0"
+      ],
+      "category": "vital_signs"
+    },
+    {
+      "id": "DB-DX-001",
+      "question": "¿Cuál es el diagnóstico principal del paciente 10014729?",
+      "ground_truth": "El diagnóstico principal (seq_num=1) del paciente 10014729 es SEPTICEMIA NOS con código ICD-9: 0389.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, seq_num, icd_code, icd_version, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10014729 ORDER BY seq_num",
+      "contexts": [
+        "diagnosis: subject_id=10014729, stay_id=37887480, seq_num=1, icd_code=0389, icd_version=9, icd_title=SEPTICEMIA NOS",
+        "diagnosis: subject_id=10014729, stay_id=37887480, seq_num=2, icd_code=99592, icd_version=9, icd_title=SEVERE SEPSIS",
+        "diagnosis: subject_id=10014729, stay_id=37887480, seq_num=4, icd_code=78552, icd_version=9, icd_title=SEPTIC SHOCK"
+      ],
+      "category": "diagnoses"
+    },
+    {
+      "id": "DB-DX-002",
+      "question": "¿Cuántos diagnósticos tiene el paciente 10014729 en su estancia en urgencias?",
+      "ground_truth": "El paciente 10014729 tiene 4 diagnósticos en su estancia (stay_id=37887480): SEPTICEMIA NOS (0389), SEVERE SEPSIS (99592), ADV EFF MEDICINAL NOS (E9479), y SEPTIC SHOCK (78552).",
+      "ground_truth_sql": "SELECT subject_id, stay_id, COUNT(*) as total_diagnosticos FROM mimic_ed.diagnosis WHERE subject_id = 10014729 GROUP BY subject_id, stay_id",
+      "contexts": [
+        "diagnosis: subject_id=10014729, stay_id=37887480, total_diagnosticos=4",
+        "diagnosis: icd_code=0389, icd_title=SEPTICEMIA NOS",
+        "diagnosis: icd_code=99592, icd_title=SEVERE SEPSIS",
+        "diagnosis: icd_code=78552, icd_title=SEPTIC SHOCK"
+      ],
+      "category": "diagnoses"
+    },
+    {
+      "id": "DB-DX-003",
+      "question": "¿Cuál es el diagnóstico principal del paciente 10018328 en su primera visita a urgencias?",
+      "ground_truth": "El diagnóstico principal del paciente 10018328 en su primera visita (stay_id=34176810) es Syncope and collapse con código ICD-10: R55.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, seq_num, icd_code, icd_version, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10018328 AND stay_id = 34176810 ORDER BY seq_num",
+      "contexts": [
+        "diagnosis: subject_id=10018328, stay_id=34176810, seq_num=1, icd_code=R55, icd_version=10, icd_title=Syncope and collapse"
+      ],
+      "category": "diagnoses"
+    },
+    {
+      "id": "DB-DX-004",
+      "question": "¿Qué pacientes tienen diagnóstico de sepsis en el dataset MIMIC-IV-ED?",
+      "ground_truth": "Los pacientes con diagnóstico de sepsis son: 10014729 (SEVERE SEPSIS, código 99592), 10020944 (SEPSIS, código 99591), 10039708 (Sepsis unspecified organism, código A419), y 10019003 (Sepsis unspecified organism, código A419).",
+      "ground_truth_sql": "SELECT subject_id, stay_id, icd_code, icd_title FROM mimic_ed.diagnosis WHERE icd_title ILIKE '%sepsis%' OR icd_title ILIKE '%SEPSIS%' ORDER BY subject_id",
+      "contexts": [
+        "diagnosis: subject_id=10014729, stay_id=37887480, icd_code=99592, icd_title=SEVERE SEPSIS",
+        "diagnosis: subject_id=10020944, stay_id=39738665, icd_code=99591, icd_title=SEPSIS",
+        "diagnosis: subject_id=10039708, stay_id=34918384, icd_code=A419, icd_title=Sepsis, unspecified organism",
+        "diagnosis: subject_id=10019003, stay_id=31254712, icd_code=A419, icd_title=Sepsis, unspecified organism"
+      ],
+      "category": "diagnoses"
+    },
+    {
+      "id": "DB-DX-005",
+      "question": "¿Cuál es el diagnóstico del paciente 10015272 en urgencias?",
+      "ground_truth": "El diagnóstico del paciente 10015272 (stay_id=33473053) es Other pulmonary embolism without acute cor pulmonale con código ICD-10: I2699.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, icd_code, icd_version, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10015272",
+      "contexts": [
+        "diagnosis: subject_id=10015272, stay_id=33473053, icd_code=I2699, icd_version=10, icd_title=Other pulmonary embolism without acute cor pulmonale"
+      ],
+      "category": "diagnoses"
+    },
+    {
+      "id": "DB-DX-006",
+      "question": "¿Cuál es el diagnóstico más frecuente en el dataset MIMIC-IV-ED?",
+      "ground_truth": "El diagnóstico más frecuente en el dataset es HYPERTENSION NOS con 21 registros, seguido de Long term (current) use of insulin con 19 registros.",
+      "ground_truth_sql": "SELECT icd_title, COUNT(*) as frecuencia FROM mimic_ed.diagnosis GROUP BY icd_title ORDER BY frecuencia DESC LIMIT 5",
+      "contexts": [
+        "diagnosis: icd_title=HYPERTENSION NOS, frecuencia=21",
+        "diagnosis: icd_title=Long term (current) use of insulin, frecuencia=19",
+        "diagnosis: icd_title=Essential (primary) hypertension, frecuencia=13"
+      ],
+      "category": "diagnoses"
+    },
+    {
+      "id": "DB-DX-007",
+      "question": "¿Cuáles son los diagnósticos del paciente 10026255 en su estancia 37844627?",
+      "ground_truth": "El paciente 10026255 en la estancia 37844627 tiene 3 diagnósticos: TRAUM PNEUMOTHORAX-CLOSE (código 8600), FRACTURE THREE RIBS-CLOS (código 80703), y UNSPECIFIED FALL (código E8889).",
+      "ground_truth_sql": "SELECT subject_id, stay_id, seq_num, icd_code, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10026255 AND stay_id = 37844627 ORDER BY seq_num",
+      "contexts": [
+        "diagnosis: subject_id=10026255, stay_id=37844627, seq_num=1, icd_code=8600, icd_title=TRAUM PNEUMOTHORAX-CLOSE",
+        "diagnosis: subject_id=10026255, stay_id=37844627, seq_num=2, icd_code=80703, icd_title=FRACTURE THREE RIBS-CLOS",
+        "diagnosis: subject_id=10026255, stay_id=37844627, seq_num=3, icd_code=E8889, icd_title=UNSPECIFIED FALL"
+      ],
+      "category": "diagnoses"
+    },
+    {
+      "id": "DB-DX-008",
+      "question": "¿Cuál es el diagnóstico del paciente 10014354 en su estancia 33222885?",
+      "ground_truth": "El diagnóstico del paciente 10014354 en la estancia 33222885 es Urinary tract infection, site not specified con código ICD-10: N390.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, seq_num, icd_code, icd_version, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10014354 AND stay_id = 33222885",
+      "contexts": [
+        "diagnosis: subject_id=10014354, stay_id=33222885, seq_num=1, icd_code=N390, icd_version=10, icd_title=Urinary tract infection, site not specified"
+      ],
+      "category": "diagnoses"
+    },
+    {
+      "id": "DB-MED-001",
+      "question": "¿Qué medicamentos se administraron al paciente 10014729 en urgencias?",
+      "ground_truth": "Al paciente 10014729 se le administraron los siguientes medicamentos en urgencias (pyxis): CefePIME, Lorazepam, Vancomycin, Ondansetron, y HYDROmorphone (Dilaudid).",
+      "ground_truth_sql": "SELECT DISTINCT name FROM mimic_ed.pyxis WHERE subject_id = 10014729 ORDER BY name",
+      "contexts": [
+        "pyxis: subject_id=10014729, stay_id=37887480, name=CefePIME",
+        "pyxis: subject_id=10014729, stay_id=37887480, name=Lorazepam",
+        "pyxis: subject_id=10014729, stay_id=37887480, name=Vancomycin",
+        "pyxis: subject_id=10014729, stay_id=37887480, name=Ondansetron",
+        "pyxis: subject_id=10014729, stay_id=37887480, name=HYDROmorphone (Dilaudid)"
+      ],
+      "category": "medications"
+    },
+    {
+      "id": "DB-MED-002",
+      "question": "¿Cuáles son los medicamentos habituales del paciente 10014729 según la reconciliación de medicamentos?",
+      "ground_truth": "Los medicamentos habituales del paciente 10014729 según medrecon son: norethindrone-e.estradiol-iron [Junel FE 1.5/30 (28)] (anticonceptivo oral), docusate sodium [Colace] (laxante), hydromorphone [Dilaudid] (analgésico opioide), e ibuprofen (AINE).",
+      "ground_truth_sql": "SELECT DISTINCT name, etcdescription FROM mimic_ed.medrecon WHERE subject_id = 10014729 ORDER BY name",
+      "contexts": [
+        "medrecon: subject_id=10014729, name=norethindrone-e.estradiol-iron [Junel FE 1.5/30 (28)], etcdescription=Contraceptive Oral - Monophasic",
+        "medrecon: subject_id=10014729, name=docusate sodium [Colace], etcdescription=Laxative - Surfactant",
+        "medrecon: subject_id=10014729, name=hydromorphone [Dilaudid], etcdescription=Analgesic Opioid Agonists",
+        "medrecon: subject_id=10014729, name=ibuprofen, etcdescription=NSAID Analgesics (COX Non-Specific) - Propionic Acid Derivatives"
+      ],
+      "category": "medications"
+    },
+    {
+      "id": "DB-MED-003",
+      "question": "¿Qué medicamentos se administraron al paciente 10018328 en urgencias?",
+      "ground_truth": "Al paciente 10018328 se le administró Potassium Chloride 10mEq TAB en su estancia 32103106 (2154-08-03), con 4 administraciones registradas.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, charttime, name FROM mimic_ed.pyxis WHERE subject_id = 10018328 ORDER BY charttime",
+      "contexts": [
+        "pyxis: subject_id=10018328, stay_id=32103106, charttime=2154-08-03 20:00:00, name=Potassium Chloride 10mEq TAB",
+        "pyxis: subject_id=10018328, stay_id=32103106, charttime=2154-08-03 21:05:00, name=Potassium Chloride 10mEq TAB"
+      ],
+      "category": "medications"
+    },
+    {
+      "id": "DB-MED-004",
+      "question": "¿Cuáles son los medicamentos habituales del paciente 10026255?",
+      "ground_truth": "Los medicamentos habituales del paciente 10026255 incluyen: aspirin (analgésico salicilato), lamotrigine (anticonvulsivante), carbamazepine (anticonvulsivante), atorvastatin (antihiperlipemiante), y amlodipine (bloqueador de canales de calcio).",
+      "ground_truth_sql": "SELECT DISTINCT name, etcdescription FROM mimic_ed.medrecon WHERE subject_id = 10026255 ORDER BY name",
+      "contexts": [
+        "medrecon: subject_id=10026255, name=aspirin, etcdescription=Salicylate Analgesics",
+        "medrecon: subject_id=10026255, name=lamotrigine, etcdescription=Anticonvulsant - Phenyltriazine Derivatives",
+        "medrecon: subject_id=10026255, name=carbamazepine, etcdescription=Anticonvulsant - Iminostilbene Derivatives",
+        "medrecon: subject_id=10026255, name=atorvastatin, etcdescription=Antihyperlipidemic - HMG CoA Reductase Inhibitors (statins)",
+        "medrecon: subject_id=10026255, name=amlodipine, etcdescription=Calcium Channel Blockers - Dihydropyridines"
+      ],
+      "category": "medications"
+    },
+    {
+      "id": "DB-MED-005",
+      "question": "¿Cuál es el medicamento más frecuentemente administrado en urgencias en el dataset MIMIC-IV-ED?",
+      "ground_truth": "El medicamento más frecuentemente administrado en urgencias es Vancomycin con 48 administraciones, seguido de Ondansetron 4mg/2mL 2mL VIAL con 34 administraciones.",
+      "ground_truth_sql": "SELECT name, COUNT(*) as frecuencia FROM mimic_ed.pyxis GROUP BY name ORDER BY frecuencia DESC LIMIT 5",
+      "contexts": [
+        "pyxis: name=Vancomycin, frecuencia=48",
+        "pyxis: name=Ondansetron 4mg/2mL 2mL VIAL, frecuencia=34",
+        "pyxis: name=Morphine Sulfat 4mg/1mL 1mL VIAL, frecuencia=31"
+      ],
+      "category": "medications"
+    },
+    {
+      "id": "DB-MED-006",
+      "question": "¿Qué medicamentos habituales toma el paciente 10020740?",
+      "ground_truth": "Los medicamentos habituales del paciente 10020740 incluyen: metformin (antidiabético biguanida), docusate sodium [Colace] (laxante), omeprazole (inhibidor de bomba de protones), y lorazepam (ansiolítico benzodiazepina).",
+      "ground_truth_sql": "SELECT DISTINCT name, etcdescription FROM mimic_ed.medrecon WHERE subject_id = 10020740 ORDER BY name",
+      "contexts": [
+        "medrecon: subject_id=10020740, name=metformin, etcdescription=Insulin Response Enhancers - Biguanides",
+        "medrecon: subject_id=10020740, name=omeprazole, etcdescription=Gastric Acid Secretion Reducing Agents - Proton Pump Inhibitors (PPIs)",
+        "medrecon: subject_id=10020740, name=lorazepam, etcdescription=Antianxiety Agent - Benzodiazepines"
+      ],
+      "category": "medications"
+    },
+    {
+      "id": "DB-MED-007",
+      "question": "¿Qué medicamentos se administraron al paciente 10014354 en su estancia 33222885?",
+      "ground_truth": "Al paciente 10014354 en la estancia 33222885 se le administraron: CefTRIAXone (2 administraciones), HYDROmorphone (Dilaudid) (4 administraciones), y Sodium Chloride 0.9% (Mini Bag Plus) (1 administración).",
+      "ground_truth_sql": "SELECT charttime, name FROM mimic_ed.pyxis WHERE stay_id = 33222885 ORDER BY charttime",
+      "contexts": [
+        "pyxis: stay_id=33222885, charttime=2150-04-30 19:43:00, name=CefTRIAXone",
+        "pyxis: stay_id=33222885, charttime=2150-04-30 17:40:00, name=HYDROmorphone (Dilaudid)",
+        "pyxis: stay_id=33222885, charttime=2150-04-30 19:43:00, name=Sodium Chloride 0.9%  (Mini Bag Plus)"
+      ],
+      "category": "medications"
+    },
+    {
+      "id": "DB-MED-008",
+      "question": "¿Cuáles son los medicamentos habituales del paciente 10039708?",
+      "ground_truth": "Los medicamentos habituales del paciente 10039708 incluyen: lisinopril (IECA), torsemide (diurético de asa), hydrochlorothiazide (diurético tiazídico).",
+      "ground_truth_sql": "SELECT DISTINCT name, etcdescription FROM mimic_ed.medrecon WHERE subject_id = 10039708 ORDER BY name",
+      "contexts": [
+        "medrecon: subject_id=10039708, name=lisinopril, etcdescription=ACE Inhibitors",
+        "medrecon: subject_id=10039708, name=torsemide, etcdescription=Diuretic - Loop",
+        "medrecon: subject_id=10039708, name=hydrochlorothiazide, etcdescription=Diuretic - Thiazides and Related"
+      ],
+      "category": "medications"
+    },
+    {
+      "id": "DB-TR-001",
+      "question": "¿Cuáles fueron los signos vitales de triaje del paciente 10014729?",
+      "ground_truth": "Los signos vitales de triaje del paciente 10014729 (stay_id=37887480) fueron: temperatura 99.1°F, frecuencia cardíaca 90 lpm, frecuencia respiratoria 26 rpm, presión arterial 86/61 mmHg, nivel de dolor 10/10, acuidad 1 (más urgente), motivo de consulta: FEVER.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, temperature, heartrate, resprate, o2sat, sbp, dbp, pain, acuity, chiefcomplaint FROM mimic_ed.triage WHERE subject_id = 10014729",
+      "contexts": [
+        "triage: subject_id=10014729, stay_id=37887480, temperature=99.1, heartrate=90.0, resprate=26.0, sbp=86.0, dbp=61.0, pain=10, acuity=1.0, chiefcomplaint=FEVER"
+      ],
+      "category": "triage"
+    },
+    {
+      "id": "DB-TR-002",
+      "question": "¿Cuántos pacientes llegaron a urgencias con nivel de acuidad 1 (más urgente)?",
+      "ground_truth": "En el dataset MIMIC-IV-ED hay 18 estancias con nivel de acuidad 1 (más urgente), que corresponden a los casos más críticos como paros cardíacos, hipotensión severa, y traumas graves.",
+      "ground_truth_sql": "SELECT COUNT(*) as total_acuidad1 FROM mimic_ed.triage WHERE acuity = 1",
+      "contexts": [
+        "triage: total_acuidad1=18, acuity=1.0"
+      ],
+      "category": "triage"
+    },
+    {
+      "id": "DB-TR-003",
+      "question": "¿Cuál fue el motivo de consulta del paciente 10026255 en su primera visita a urgencias?",
+      "ground_truth": "El motivo de consulta del paciente 10026255 en su primera visita (stay_id=37844627) fue R RIB PAIN (dolor en costillas derechas), con acuidad 2 y temperatura de 99.4°F.",
+      "ground_truth_sql": "SELECT subject_id, stay_id, temperature, heartrate, sbp, dbp, o2sat, acuity, chiefcomplaint FROM mimic_ed.triage WHERE subject_id = 10026255 ORDER BY stay_id",
+      "contexts": [
+        "triage: subject_id=10026255, stay_id=37844627, temperature=99.4, heartrate=90.0, sbp=153.0, dbp=73.0, o2sat=86.0, acuity=2.0, chiefcomplaint=R RIB PAIN",
+        "triage: subject_id=10026255, stay_id=34236274, temperature=99.9, heartrate=95.0, sbp=150.0, dbp=101.0, o2sat=98.0, acuity=3.0, chiefcomplaint=R Leg pain, Weakness"
+      ],
+      "category": "triage"
+    },
+    {
+      "id": "DB-TR-004",
+      "question": "¿Cuál es la distribución de niveles de acuidad en el dataset MIMIC-IV-ED?",
+      "ground_truth": "La distribución de acuidad en el dataset es: acuidad 1 (más urgente): 18 pacientes, acuidad 2: 97 pacientes, acuidad 3: 90 pacientes, acuidad 4 (menos urgente): 2 pacientes. Hay 15 registros sin acuidad registrada.",
+      "ground_truth_sql": "SELECT acuity, COUNT(*) as total FROM mimic_ed.triage GROUP BY acuity ORDER BY acuity",
+      "contexts": [
+        "triage: acuity=1.0, total=18",
+        "triage: acuity=2.0, total=97",
+        "triage: acuity=3.0, total=90",
+        "triage: acuity=4.0, total=2"
+      ],
+      "category": "triage"
+    },
+    {
+      "id": "DB-CT-001",
+      "question": "¿Cuáles son los diagnósticos y los medicamentos administrados al paciente 10014729 en urgencias?",
+      "ground_truth": "El paciente 10014729 tuvo 4 diagnósticos: SEPTICEMIA NOS, SEVERE SEPSIS, ADV EFF MEDICINAL NOS, y SEPTIC SHOCK. Se le administraron 5 medicamentos: CefePIME, Lorazepam, Vancomycin, Ondansetron, y HYDROmorphone (Dilaudid). El paciente fue ingresado (ADMITTED).",
+      "ground_truth_sql": "SELECT e.subject_id, e.stay_id, e.disposition, d.icd_code, d.icd_title, p.name as medicamento FROM mimic_ed.edstays e LEFT JOIN mimic_ed.diagnosis d ON e.stay_id = d.stay_id LEFT JOIN mimic_ed.pyxis p ON e.stay_id = p.stay_id WHERE e.subject_id = 10014729",
+      "contexts": [
+        "edstays: subject_id=10014729, stay_id=37887480, disposition=ADMITTED",
+        "diagnosis: stay_id=37887480, icd_code=0389, icd_title=SEPTICEMIA NOS",
+        "diagnosis: stay_id=37887480, icd_code=99592, icd_title=SEVERE SEPSIS",
+        "pyxis: stay_id=37887480, name=Vancomycin",
+        "pyxis: stay_id=37887480, name=CefePIME"
+      ],
+      "category": "cross_table"
+    },
+    {
+      "id": "DB-CT-002",
+      "question": "¿Cuántos pacientes con diagnóstico de hipertensión fueron ingresados (ADMITTED) en urgencias?",
+      "ground_truth": "En el dataset MIMIC-IV-ED, hay múltiples pacientes con diagnóstico de hipertensión que fueron ingresados. Los diagnósticos de hipertensión incluyen HYPERTENSION NOS (ICD-9: 4019) y Essential (primary) hypertension (ICD-10: I10). Al menos 10 estancias combinan diagnóstico de hipertensión con disposición ADMITTED.",
+      "ground_truth_sql": "SELECT COUNT(DISTINCT e.stay_id) as total FROM mimic_ed.edstays e JOIN mimic_ed.diagnosis d ON e.stay_id = d.stay_id WHERE (d.icd_title ILIKE '%hypertension%' OR d.icd_title ILIKE '%HYPERTENSION%') AND e.disposition = 'ADMITTED'",
+      "contexts": [
+        "edstays+diagnosis: pacientes con hipertension y ADMITTED >= 10",
+        "diagnosis: icd_title=HYPERTENSION NOS, frecuencia=21",
+        "diagnosis: icd_title=Essential (primary) hypertension, frecuencia=13"
+      ],
+      "category": "cross_table"
+    },
+    {
+      "id": "DB-CT-003",
+      "question": "¿Cuáles son los signos vitales de triaje y el diagnóstico del paciente 10015272?",
+      "ground_truth": "El paciente 10015272 llegó a urgencias con signos vitales de triaje: temperatura 97.5°F, frecuencia cardíaca 118 lpm, presión arterial 100/56 mmHg, saturación de oxígeno 96%, acuidad 2, motivo de consulta PE (embolia pulmonar). El diagnóstico confirmado fue Other pulmonary embolism without acute cor pulmonale (ICD-10: I2699).",
+      "ground_truth_sql": "SELECT t.subject_id, t.stay_id, t.temperature, t.heartrate, t.sbp, t.dbp, t.o2sat, t.acuity, t.chiefcomplaint, d.icd_code, d.icd_title FROM mimic_ed.triage t JOIN mimic_ed.diagnosis d ON t.stay_id = d.stay_id WHERE t.subject_id = 10015272",
+      "contexts": [
+        "triage: subject_id=10015272, stay_id=33473053, temperature=97.5, heartrate=118.0, sbp=100.0, dbp=56.0, o2sat=96.0, acuity=2.0, chiefcomplaint=PE",
+        "diagnosis: subject_id=10015272, stay_id=33473053, icd_code=I2699, icd_title=Other pulmonary embolism without acute cor pulmonale"
+      ],
+      "category": "cross_table"
+    },
+    {
+      "id": "DB-CT-004",
+      "question": "¿Cuál es la disposición final y los diagnósticos del paciente 10026255 en su estancia 34236274?",
+      "ground_truth": "El paciente 10026255 en la estancia 34236274 fue ingresado (ADMITTED). Su diagnóstico principal fue ATRIAL FIBRILLATION (código ICD-9: 42731). Los signos vitales mostraron fibrilación auricular con frecuencia cardíaca de hasta 150 lpm y saturación de oxígeno de 92%.",
+      "ground_truth_sql": "SELECT e.subject_id, e.stay_id, e.disposition, d.icd_code, d.icd_title, v.heartrate, v.o2sat, v.rhythm FROM mimic_ed.edstays e JOIN mimic_ed.diagnosis d ON e.stay_id = d.stay_id LEFT JOIN mimic_ed.vitalsign v ON e.stay_id = v.stay_id WHERE e.stay_id = 34236274 ORDER BY v.charttime LIMIT 5",
+      "contexts": [
+        "edstays: subject_id=10026255, stay_id=34236274, disposition=ADMITTED",
+        "diagnosis: stay_id=34236274, icd_code=42731, icd_title=ATRIAL FIBRILLATION",
+        "vitalsign: stay_id=34236274, heartrate=150.0, o2sat=93.0, rhythm=Atrial Fibrillation"
+      ],
+      "category": "cross_table"
+    }
+  ]
+}

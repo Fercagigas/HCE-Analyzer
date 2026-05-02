@@ -1,0 +1,85 @@
+================================================================================
+  EVALUATION FRAMEWORK - RAGAS EVALUATION RESULTS
+  20260428 10:34:03
+================================================================================
+
+ENVIRONMENT
+  Python:               3.11.14
+  RAGAS:                0.4.3
+  LangChain:            1.2.7
+  LangChain-Anthropic:  1.3.1
+  Anthropic SDK:        0.77.0
+  Sentence-Transformers:5.2.2
+  Model:                claude-haiku-4-5-20251001
+  Golden Set:           golden_set_ragas.json (MD5: 3945f2f542d781fb47c179481a4b0a44)
+  Start Time:           20260428 10:34:03
+
+--------------------------------------------------------------------------------
+RESULTS
+--------------------------------------------------------------------------------
+
+  ID         | Status   | Question (truncated)
+  -----------+----------+-----------------------------------------
+  DB-PS-001  | OK       | ¿Cuál es el género y la raza del paciente 10014729?
+  DB-PS-002  | OK       | ¿Cuál fue la disposición final del paciente 10014729 en su v
+  DB-PS-003  | OK       | ¿Cuánto tiempo estuvo el paciente 10014729 en urgencias?
+  DB-PS-004  | OK       | ¿Cuántas visitas a urgencias tiene registradas el paciente 1
+  DB-PS-005  | OK       | ¿Cuál es el género y la disposición del paciente 10026255 en
+  DB-PS-006  | OK       | ¿Cuántas visitas a urgencias tiene el paciente 10014354?
+  DB-PS-007  | OK       | ¿Cuál es la raza y el medio de transporte de llegada del pac
+  DB-PS-008  | OK       | ¿Cuántos pacientes únicos hay en el dataset MIMIC-IV-ED y cu
+  DB-VS-001  | OK       | ¿Cuál fue la frecuencia cardíaca máxima registrada para el p
+  DB-VS-002  | OK       | ¿Cuáles son los signos vitales registrados en la estancia 37
+  DB-VS-003  | OK       | ¿Cuál fue la presión arterial sistólica máxima del paciente 
+  DB-VS-004  | OK       | ¿Cuántas mediciones de signos vitales tiene el paciente 1002
+  DB-VS-005  | OK       | ¿Cuál fue la temperatura corporal del paciente 10014729 dura
+  DB-VS-006  | OK       | ¿Cuál fue la saturación de oxígeno mínima del paciente 10015
+  DB-VS-007  | OK       | ¿Cuál fue la evolución de la presión arterial sistólica del 
+  DB-VS-008  | OK       | ¿Cuál fue la frecuencia cardíaca promedio del paciente 10018
+  DB-DX-001  | OK       | ¿Cuál es el diagnóstico principal del paciente 10014729?
+  DB-DX-002  | OK       | ¿Cuántos diagnósticos tiene el paciente 10014729 en su estan
+  DB-DX-003  | OK       | ¿Cuál es el diagnóstico principal del paciente 10018328 en s
+  DB-DX-004  | OK       | ¿Qué pacientes tienen diagnóstico de sepsis en el dataset MI
+  DB-DX-005  | OK       | ¿Cuál es el diagnóstico del paciente 10015272 en urgencias?
+  DB-DX-006  | OK       | ¿Cuál es el diagnóstico más frecuente en el dataset MIMIC-IV
+  DB-DX-007  | OK       | ¿Cuáles son los diagnósticos del paciente 10026255 en su est
+  DB-DX-008  | OK       | ¿Cuál es el diagnóstico del paciente 10014354 en su estancia
+  DB-MED-001 | OK       | ¿Qué medicamentos se administraron al paciente 10014729 en u
+  DB-MED-002 | OK       | ¿Cuáles son los medicamentos habituales del paciente 1001472
+  DB-MED-003 | OK       | ¿Qué medicamentos se administraron al paciente 10018328 en u
+  DB-MED-004 | OK       | ¿Cuáles son los medicamentos habituales del paciente 1002625
+  DB-MED-005 | OK       | ¿Cuál es el medicamento más frecuentemente administrado en u
+  DB-MED-006 | OK       | ¿Qué medicamentos habituales toma el paciente 10020740?
+  DB-MED-007 | OK       | ¿Qué medicamentos se administraron al paciente 10014354 en s
+  DB-MED-008 | OK       | ¿Cuáles son los medicamentos habituales del paciente 1003970
+  DB-TR-001  | OK       | ¿Cuáles fueron los signos vitales de triaje del paciente 100
+  DB-TR-002  | OK       | ¿Cuántos pacientes llegaron a urgencias con nivel de acuidad
+  DB-TR-003  | OK       | ¿Cuál fue el motivo de consulta del paciente 10026255 en su 
+  DB-TR-004  | OK       | ¿Cuál es la distribución de niveles de acuidad en el dataset
+  DB-CT-001  | OK       | ¿Cuáles son los diagnósticos y los medicamentos administrado
+  DB-CT-002  | OK       | ¿Cuántos pacientes con diagnóstico de hipertensión fueron in
+  DB-CT-003  | OK       | ¿Cuáles son los signos vitales de triaje y el diagnóstico de
+  DB-CT-004  | OK       | ¿Cuál es la disposición final y los diagnósticos del pacient
+
+--------------------------------------------------------------------------------
+SUMMARY
+--------------------------------------------------------------------------------
+
+  Metric               |   Score | Threshold | Status
+  ---------------------+---------+-----------+-------
+  Faithfulness         |  0.7357 |    0.8500 | FAIL
+  Answer Relevancy     |  0.5944 |    0.8000 | FAIL
+  Context Precision    |  0.6021 |    0.7500 | FAIL
+  Context Recall       |  0.8458 |    0.7000 | PASS
+
+  Overall: FAIL (1/4 metrics above threshold)
+
+--------------------------------------------------------------------------------
+CONCLUSIONS
+--------------------------------------------------------------------------------
+
+  Overall result: FAIL (1/4 metrics above threshold). Processed 40 questions with 0 errors. Faithfulness=0.7357 (threshold 0.85), Answer Relevancy=0.4944 (threshold 0.8), Context Precision=0.6021 (threshold 0.75), Context Recall=0.8458 (threshold 0.7).
+
+================================================================================
+  Execution time: 752.3s | Items: 40 | Errors: 0
+================================================================================

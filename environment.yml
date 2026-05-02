@@ -1,0 +1,90 @@
+name: HCE
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+    # Core Framework
+    - streamlit
+    - fastapi
+    - uvicorn[standard]
+    
+    # AI and ML
+    - openai
+    - anthropic>=0.39.0
+    - langchain>=0.3.0
+    - langchain-community>=0.3.0
+    - langchain-anthropic>=0.3.0
+    - langchain-huggingface>=0.1.0
+    - sentence-transformers>=3.0.0
+    - tiktoken>=0.7.0
+    - crewai>=0.80.0
+    - crewai-tools>=0.12.0
+    
+    # Document Processing
+    - docling
+    - pypdf2
+    - python-docx
+    - python-multipart
+    
+    # Database and Storage
+    - supabase
+    - redis
+    
+    # Data Processing
+    - pandas
+    - numpy
+    - plotly
+    - seaborn
+    - matplotlib
+    
+    # Web and API
+    - requests
+    - httpx
+    - aiofiles
+    
+    # Authentication and Security
+    - pyjwt
+    - passlib[bcrypt]
+    - python-jose[cryptography]
+    - extra-streamlit-components
+    
+    # Configuration and Validation
+    - pydantic
+    - pydantic-settings
+    - python-dotenv
+    
+    # Email and Notifications
+    - email-validator
+    
+    # Utilities
+    - python-dateutil
+    - pytz
+    - json5
+    
+    # Development and Testing
+    - pytest
+    - pytest-asyncio
+    - black
+    - flake8
+    
+    # Logging and Monitoring
+    - structlog
+    - psutil
+    
+    # File Processing
+    - openpyxl
+    - xlsxwriter
+    
+    # Background Tasks
+    - celery
+    
+    # Export and Reporting
+    - reportlab
+    - weasyprint
+    - jinja2
+    
+    # Rate Limiting
+    - slowapi

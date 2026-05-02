@@ -4,7 +4,7 @@ Application constants
 """
 
 # Application Information
-APP_NAME = "HCE Analyzer Pro"
+APP_NAME = "ChatHCE"
 APP_TAGLINE = "Análisis Clínico Inteligente con IA"
 APP_DESCRIPTION = "Sistema avanzado de análisis de historias clínicas médicas con inteligencia artificial"
 APP_ICON = "🏥"

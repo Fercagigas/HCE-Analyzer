@@ -5,21 +5,25 @@ uvicorn[standard]
 
 # AI and ML
 openai
-anthropic
-langchain
-langchain-community
-langchain-groq
-langchain-huggingface
-sentence-transformers
+# Claude API (for Medical Agent)
+anthropic>=0.39.0
+langchain>=0.3.0
+langchain-community>=0.3.0
+# Claude LangChain Integration
+langchain-anthropic>=0.3.0
+langchain-huggingface>=0.1.0
+sentence-transformers>=3.0.0
+# Token counting for prompt optimization
+tiktoken>=0.7.0
+# Agent frameworks
+crewai>=0.80.0
+crewai-tools>=0.12.0
 
 # Document Processing
 docling
 pypdf2
 python-docx
 python-multipart
-
-# Vector Database
-chromadb
 
 # Database and Storage
 supabase
@@ -41,6 +45,7 @@ aiofiles
 pyjwt
 passlib[bcrypt]
 python-jose[cryptography]
+extra-streamlit-components
 
 # Configuration and Validation
 pydantic
@@ -64,6 +69,7 @@ flake8
 
 # Logging and Monitoring
 structlog
+psutil
 
 # File Processing
 openpyxl

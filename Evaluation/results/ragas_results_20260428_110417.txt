@@ -1,0 +1,75 @@
+================================================================================
+  EVALUATION FRAMEWORK - RAGAS EVALUATION RESULTS
+  20260428 11:04:17
+================================================================================
+
+ENVIRONMENT
+  Python:               3.11.14
+  RAGAS:                0.4.3
+  LangChain:            1.2.7
+  LangChain-Anthropic:  1.3.1
+  Anthropic SDK:        0.77.0
+  Sentence-Transformers:5.2.2
+  Model:                claude-haiku-4-5-20251001
+  Golden Set:           golden_set_ragas_rag.json (MD5: 05b1036d860e8a6b1cba1d90dbed8fac)
+  Start Time:           20260428 11:04:17
+
+--------------------------------------------------------------------------------
+RESULTS
+--------------------------------------------------------------------------------
+
+  ID         | Status   | Question (truncated)
+  -----------+----------+-----------------------------------------
+  GS-RAG-01  | OK       | ¿Cuántas camas tiene en total la UGC de Medicina Intensiva d
+  GS-RAG-02  | OK       | ¿Cuántos años dura la formación en la especialidad de Medici
+  GS-RAG-03  | OK       | ¿Cuál es la duración máxima permitida para las rotaciones ex
+  GS-RAG-04  | OK       | ¿Cuánto tiempo debe dedicar el residente a la unidad de Medi
+  GS-RAG-05  | OK       | ¿Qué habilidades técnicas debe dominar un intensivista y cuá
+  GS-RAG-06  | OK       | ¿Qué conocimientos sobre PIC y HIC debe adquirir el resident
+  GS-RAG-07  | OK       | What are the training objectives for managing crush injury a
+  GS-RAG-08  | OK       | Un residente R-4 de Medicina Intensiva solo ha presentado un
+  GS-RAG-09  | OK       | Si un residente quiere realizar una rotación externa de 5 me
+  GS-RAG-10  | OK       | ¿Cuál es la dosis recomendada de noradrenalina para el manej
+  GS-RAG-11  | OK       | ¿Qué porcentaje de pacientes presentó algún incidente en el 
+  GS-RAG-12  | OK       | ¿Cuál es la ratio médico-paciente recomendada en una UCI de 
+  GS-RAG-13  | OK       | ¿Cómo se calcula la tasa de infección nosocomial en la UCI s
+  GS-RAG-14  | OK       | ¿Cuáles son los datos sobre eventos adversos relacionados co
+  GS-RAG-15  | OK       | ¿Cuáles son las ratios de enfermería recomendadas según el n
+  GS-RAG-16  | OK       | ¿Qué porcentaje de los efectos adversos en la UCI fueron pre
+  GS-RAG-17  | OK       | What is the recommended nurse-to-patient staffing ratio in a
+  GS-RAG-18  | OK       | Un hospital tiene una UCI con 12 camas de nivel III. Durante
+  GS-RAG-19  | OK       | Un paciente requiere ventilación mecánica invasiva y hemofil
+  GS-RAG-20  | OK       | ¿Cuál es el protocolo de tratamiento con antibióticos para l
+  GS-RAG-21  | OK       | ¿Cuál es la tasa normal de excreción de ácido a través de lo
+  GS-RAG-22  | OK       | ¿Cuáles son los criterios cuantitativos de hemocultivo para 
+  GS-RAG-23  | OK       | ¿Cuántas partículas infecciosas de VHB puede contener 1 ml d
+  GS-RAG-24  | OK       | ¿Cuáles son los tres tipos de hipotensión según los parámetr
+  GS-RAG-25  | OK       | ¿Qué papel tiene la hemoglobina en el transporte de CO2 y có
+  GS-RAG-26  | OK       | ¿Qué diferencia hay entre los sueros salinos y las solucione
+  GS-RAG-27  | OK       | ¿Cuál es la distancia desde el sitio de punción de la vena i
+  GS-RAG-28  | OK       | A critically ill patient has an arterial blood gas showing S
+  GS-RAG-29  | OK       | Un paciente de la UCI lleva 12 días sin aporte de tiamina, r
+  GS-RAG-30  | OK       | ¿Cuáles son las indicaciones y contraindicaciones de la trom
+
+--------------------------------------------------------------------------------
+SUMMARY
+--------------------------------------------------------------------------------
+
+  Metric               |   Score | Threshold | Status
+  ---------------------+---------+-----------+-------
+  Faithfulness         |  0.5708 |    0.8500 | FAIL
+  Answer Relevancy     |  0.4348 |    0.8000 | FAIL
+  Context Precision    |  0.4501 |    0.7500 | FAIL
+  Context Recall       |  0.4694 |    0.7000 | FAIL
+
+  Overall: FAIL (0/4 metrics above threshold)
+
+--------------------------------------------------------------------------------
+CONCLUSIONS
+--------------------------------------------------------------------------------
+
+  Overall result: FAIL (0/4 metrics above threshold). Processed 30 questions with 0 errors. Faithfulness=0.5708 (threshold 0.85), Answer Relevancy=0.2348 (threshold 0.8), Context Precision=0.0501 (threshold 0.75), Context Recall=0.1694 (threshold 0.7).
+
+================================================================================
+  Execution time: 1812.1s | Items: 30 | Errors: 0
+================================================================================

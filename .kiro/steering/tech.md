@@ -9,18 +9,23 @@
 
 ### AI & Machine Learning
 - **LangChain**: Framework for developing applications with language models
-- **Groq API**: Primary LLM provider with multiple model fallbacks:
-  - Primary: `llama-3.3-70b-versatile`
-  - Secondary: `llama-3.1-70b-versatile` 
-  - Tertiary: `llama-3.1-8b-instant`
-  - Fallback: `llama3-70b-8192`
+- **Claude API (Anthropic)**: Primary LLM provider with multiple model fallbacks:
+  - Primary: `claude-haiku-4-5-20251001`
+  - Secondary: `claude-sonnet-4-5-20250929` 
+  - Tertiary: `claude-opus-4-20250514`
 - **HuggingFace Transformers**: For embeddings (`sentence-transformers/all-MiniLM-L6-v2`)
-- **ChromaDB**: Vector database for RAG functionality
 
 ### Database & Storage
 - **Supabase**: Primary database and authentication service (PostgreSQL-based)
-- **ChromaDB**: Vector store for document embeddings and similarity search
+- **Supabase pgvector**: Vector store for document embeddings and similarity search (RAG)
 - **Local File Storage**: For uploaded documents and temporary files
+
+**NOTA:** El sistema accede a Supabase mediante:
+- `Database Tool` (`services/unified_chat/tools/database_tool.py`) - Herramienta del agente
+- `DatabaseService` (`services/medical_agent/services/database_service.py`) - Servicio de datos
+- Cliente Python de Supabase (`supabase-py`)
+
+El MCP de Supabase en `~/.kiro/settings/mcp.json` es **solo para desarrollo** (consultas del agente Kiro durante implementación), NO se usa en producción.
 
 ### Document Processing
 - **Docling**: Advanced PDF processing and text extraction
@@ -100,8 +105,8 @@ python -c "from config.settings import settings; print('Config loaded successful
 ## Configuration
 
 ### Environment Variables
-- Required: `GROQ_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY`
-- Optional: `DEBUG`, `LOG_LEVEL`, `CHROMA_PERSIST_DIRECTORY`
+- Required: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY`
+- Optional: `DEBUG`, `LOG_LEVEL`
 - See `.env.example` for complete list
 
 ### Key Configuration Files

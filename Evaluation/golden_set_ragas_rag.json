@@ -1,0 +1,1122 @@
+{
+  "metadata": {
+    "descripcion": "Golden set RAG para evaluación RAGAS del sistema ChatHCE",
+    "version": "1.0",
+    "fecha_generacion": "2026-03-12T08:30:34Z",
+    "fuentes": [
+      {
+        "pdf": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+        "titulo": "Manual del Residente de Medicina Intensiva - Hospital Universitario Virgen del Rocío",
+        "tipo": "guia_clinica",
+        "n_preguntas": 10
+      },
+      {
+        "pdf": "UCI.pdf",
+        "titulo": "Estándares y Recomendaciones para Unidades de Cuidados Intensivos - Ministerio de Sanidad",
+        "tipo": "protocolo",
+        "n_preguntas": 10
+      },
+      {
+        "pdf": "El Libro de la UCI Paul Marino 3a ed.pdf",
+        "titulo": "El Libro de la UCI - Paul L. Marino, 3ª Edición",
+        "tipo": "manual",
+        "n_preguntas": 10
+      }
+    ],
+    "total_preguntas": 30,
+    "distribucion_por_tipo": {
+      "directa": 9,
+      "multi_fragmento": 6,
+      "sinonimo": 6,
+      "razonamiento_aplicado": 6,
+      "fuera_de_dominio": 3
+    },
+    "preguntas_en_ingles": 3,
+    "metodologia_ground_truth": "LLM-as-Extractor con temperatura=0 y prompt restrictivo. La respuesta de referencia se genera usando EXCLUSIVAMENTE el contenido de los fragmentos identificados como relevantes. No se usa conocimiento externo.",
+    "umbrales_evaluacion_ragas": {
+      "faithfulness": 0.85,
+      "answer_relevancy": 0.8,
+      "context_precision": 0.75,
+      "context_recall": 0.7
+    },
+    "nota_limitaciones": "Ground truth generado por LLM sin validación de expertos clínicos. Introduce sesgo potencial al ser el mismo tipo de modelo que el sistema evaluado. Las preguntas de tipo fuera_de_dominio y razonamiento_aplicado son las más susceptibles a este sesgo."
+  },
+  "fragmentos": [
+    {
+      "fragment_id": "PDF1-F01",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "pagina": 5,
+      "seccion": "Estructura física del servicio",
+      "contenido": "Actualmente es una UGC que actúa como un dispositivo hospitalario asistencial central, en dependencia jerárquica directa de la dirección médica. Estas áreas en la actualidad son: UCI Hospital General: 40 camas; UCI Hospital de Traumatología: 22 camas; Unidad de Cuidados Intermedios (HG): 10 camas; Unidad de Quemados (HRT), compartida con Servicio de Cirugía Plástica: 12 camas; Total de camas: 84. La Unidad de Cuidados Intermedios se destina a pacientes que precisando tratamiento intensivo continuado no requieren ventilación mecánica invasiva, ni otras técnicas de soporte mecánico invasivo de funciones vitales.",
+      "tipo": "estadistica",
+      "terminos_clave": [
+        "UGC",
+        "camas UCI",
+        "cuidados intermedios",
+        "estructura hospitalaria"
+      ]
+    },
+    {
+      "fragment_id": "PDF1-F02",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "pagina": 13,
+      "seccion": "Denominación oficial y origen de la especialidad",
+      "contenido": "Medicina Intensiva. Duración: 5 años. Licenciatura previa: Medicina. La idea de concentrar a los enfermos críticos en un área común aparece hace algo más de 30 años, como consecuencia de los avances de la Medicina. La idea se experimentó con éxito con motivo de los numerosos casos de insuficiencia respiratoria observados en las epidemias de poliomielitis que azotaron extensas zonas de Europa y Norteamérica en los años 50-60 y en los heridos evacuados del campo de batalla en las guerras de Vietnam y Corea.",
+      "tipo": "definicion",
+      "terminos_clave": [
+        "Medicina Intensiva",
+        "especialidad",
+        "formación",
+        "historia UCI"
+      ]
+    },
+    {
+      "fragment_id": "PDF1-F03",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "pagina": 31,
+      "seccion": "Rotaciones de formación específica",
+      "contenido": "Durante los tres años de formación específica, el 70% del tiempo se dedicará como mínimo a la unidad de Medicina Intensiva. Al margen de éstas, deberán existir como mínimo los siguientes períodos de rotación: CARDIOLOGÍA: 4 meses. NEUMOLOGÍA: 2 meses. NEUROLOGÍA: 2 meses. ANESTESIOLOGÍA-UNIDAD DE DOLOR: 4 meses. Alguno de estos períodos podrán ser reducidos o suprimidos si se considera que durante los dos años de formación troncal básica se alcanzaron los objetivos propuestos.",
+      "tipo": "protocolo",
+      "terminos_clave": [
+        "rotaciones",
+        "formación específica",
+        "cardiología",
+        "neumología",
+        "anestesiología"
+      ]
+    },
+    {
+      "fragment_id": "PDF1-F04",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "pagina": 21,
+      "seccion": "Sistema nervioso - Objetivos formativos",
+      "contenido": "Conocer el diagnóstico y tratamiento de las patologías críticas del sistema nervioso y neuromuscular tales como el coma, en sus diferentes etiologías, las crisis convulsivas, las enfermedades vasculocerebrales, los síndromes de intoxicación y de privación, así como los criterios diagnósticos de muerte cerebral. Conocimientos genéricos: Fisiología y fisiopatología del flujo cerebral y de la presión intracraneal, y tratamiento de la hipertensión intracraneal. Indicaciones, usos y complicaciones de las técnicas de monitorización de la presión intracraneal. Diagnóstico y manejo del paciente en coma y de sus diferentes etiologías. Diagnóstico y tratamiento de las crisis convulsivas. Diagnóstico y tratamiento de la hemorragia subaracnoidea.",
+      "tipo": "criterio",
+      "terminos_clave": [
+        "sistema nervioso",
+        "coma",
+        "muerte cerebral",
+        "presión intracraneal",
+        "hemorragia subaracnoidea"
+      ]
+    },
+    {
+      "fragment_id": "PDF1-F05",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "pagina": 26,
+      "seccion": "Traumatología - Objetivos formativos",
+      "contenido": "Obtener la capacidad de atender adecuadamente la fase aguda del traumatizado grave, optimizar, en su caso, su traslado y sentar las indicaciones de su tratamiento, incluyendo las quemaduras y las lesiones por electricidad. Conocimientos genéricos: Manejo de las pérdidas masivas de sangre. El médico residente deberá tener los conocimientos exigidos para un instructor del programa de Resucitación Avanzada del Traumatizado. Transporte de enfermos traumatizados graves. Actitudes diagnósticas y terapéuticas ante los traumatismos específicos: torácico, abdominal, craneoencefálico, espinal, etc., potencialmente letales o gravemente incapacitantes. Fisiopatología, manifestaciones clínicas, prevención y tratamiento del síndrome de aplastamiento y de los síndromes compartamentales.",
+      "tipo": "protocolo",
+      "terminos_clave": [
+        "traumatizado grave",
+        "quemaduras",
+        "resucitación",
+        "síndrome de aplastamiento",
+        "transporte"
+      ]
+    },
+    {
+      "fragment_id": "PDF1-F06",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "pagina": 46,
+      "seccion": "Objetivos de investigación",
+      "contenido": "Uno de los valores de la UGC es el de 'Generar y difundir Conocimientos'. Los especialistas en formación deberán integrarse en las líneas de Investigación. Los residentes, en su segundo año de formación, serán asignados por el Tutor a uno de los Grupos de Investigación del Servicio. Como objetivos mínimos: Presentación de Comunicaciones: R-3: Una comunicación como primer firmante en el Congreso de la SAMIUC. R-4: Una comunicación como primer firmante en el Congreso de la SEMICYUC. R-5: Una comunicación como primer firmante en el Congreso de la ESICM. Originales: Un original como primer firmante en Medicina Intensiva. Un Caso Clínico como primer firmante en revista incluida en Journal of Citation Record.",
+      "tipo": "criterio",
+      "terminos_clave": [
+        "investigación",
+        "comunicaciones",
+        "congresos",
+        "SAMIUC",
+        "SEMICYUC",
+        "ESICM"
+      ]
+    },
+    {
+      "fragment_id": "PDF1-F07",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "pagina": 36,
+      "seccion": "Competencias específicas por rotación",
+      "contenido": "Cardiología. Al final de su rotación, el residente será capaz de realizar la exploración del paciente cardiológico, el diagnóstico y manejo de los principales síndromes de cardiología (insuficiencia cardiaca, cardiopatías isquémica, valvular y miocardiopatías, arritmias más frecuentes), interpretación del electrocardiograma, y realizar un examen ecocardiográfico básico. Neumología. Al final de su rotación, el residente será capaz de realizar el diagnóstico y manejo de los principales síndromes de neumología (insuficiencia respiratoria aguda y crónica, infecciones respiratorias, patología pleural, enfermedad tromboembólica), y será capaz de realizar una fibrobroncoscopia.",
+      "tipo": "criterio",
+      "terminos_clave": [
+        "competencias",
+        "cardiología",
+        "neumología",
+        "ecocardiografía",
+        "fibrobroncoscopia"
+      ]
+    },
+    {
+      "fragment_id": "PDF1-F08",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "pagina": 16,
+      "seccion": "Habilidades del intensivista",
+      "contenido": "El intensivista necesita poseer ciertas nociones de Bioingeniería, ya que ha de manejar dispositivos mecánicos y electrónicos que forman una unidad con el paciente. Ello exige conocer los fundamentos físicos de los respiradores mecánicos, aproximarse a la tecnología de los transductores y otros elementos de monitorización electrónica, estar familiarizado con la tecnología de los microprocesadores, conocer el manejo de los gases industriales. El trabajo de intensivista requiere el dominio de determinadas técnicas: inserción de vías aéreas artificiales y manejo de respiradores, vías venosas centrales y cateterismo cardíaco, procedimientos de depuración extrarrenal, técnicas de resucitación cardio-pulmonar y soporte circulatorio, drenaje de cavidades.",
+      "tipo": "definicion",
+      "terminos_clave": [
+        "bioingeniería",
+        "habilidades prácticas",
+        "respiradores",
+        "vías venosas centrales",
+        "RCP"
+      ]
+    },
+    {
+      "fragment_id": "PDF1-F09",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "pagina": 6,
+      "seccion": "Organización jerárquica y funcional",
+      "contenido": "La UGC de MI está dirigida por el director de la referida unidad con la colaboración de los distintos responsables de áreas funcionales. Las distintas áreas temáticas de las unidades de medicina intensiva (postquirúrgicos, sépticos, traumatológicos, coronarios, intermedios, etc.) tienen como responsable inmediato, en línea vertical, a un Jefe de Sección de Medicina Intensiva. Con responsabilidad transversal existen: tutores de residentes, responsables de calidad, coordinador de trasplantes, responsable de fomento de la investigación, encargado del desarrollo de la informatización e información, evaluación de la tecnología, desarrollo de nuevas actividades 'outdoor'.",
+      "tipo": "protocolo",
+      "terminos_clave": [
+        "organización",
+        "UGC",
+        "jefe de sección",
+        "coordinador de trasplantes",
+        "áreas funcionales"
+      ]
+    },
+    {
+      "fragment_id": "PDF1-F10",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "pagina": 41,
+      "seccion": "Rotaciones externas",
+      "contenido": "La autorización de rotaciones externas requerirá el cumplimiento de los siguientes requisitos: Ser propuestas por el tutor a la comisión de docencia con especificación de los objetivos que se pretenden, que deben referirse a la ampliación de conocimientos, o al aprendizaje de técnicas no practicadas en el centro. Que se realicen preferentemente en centros acreditados para la docencia o en centros nacionales o extranjeros de reconocido prestigio. No superar los cuatro meses continuados dentro de cada periodo de evaluación anual, ni superar los doce meses en el conjunto del periodo formativo de la especialidad.",
+      "tipo": "protocolo",
+      "terminos_clave": [
+        "rotaciones externas",
+        "comisión de docencia",
+        "centros acreditados",
+        "requisitos"
+      ]
+    },
+    {
+      "fragment_id": "PDF2-F01",
+      "pdf_origen": "UCI.pdf",
+      "pagina": 9,
+      "seccion": "Definición de UCI",
+      "contenido": "La Unidad de Cuidados Intensivos (UCI) se define como una organización de profesionales sanitarios que ofrece asistencia multidisciplinar en un espacio específico del hospital, que cumple unos requisitos funcionales, estructurales y organizativos, de forma que garantiza las condiciones de seguridad, calidad y eficiencia adecuadas para atender pacientes que, siendo susceptibles de recuperación, requieren soporte respiratorio o que precisan soporte respiratorio básico junto con soporte de, al menos, dos órganos o sistemas; así como todos los pacientes complejos que requieran soporte por fallo multiorgánico.",
+      "tipo": "definicion",
+      "terminos_clave": [
+        "UCI",
+        "definición",
+        "fallo multiorgánico",
+        "soporte respiratorio"
+      ]
+    },
+    {
+      "fragment_id": "PDF2-F02",
+      "pdf_origen": "UCI.pdf",
+      "pagina": 29,
+      "seccion": "Seguridad del paciente - Estudio SEMICYUC",
+      "contenido": "Este estudio realizado en 79 UCI incluyó 1017 pacientes, de los que un 58,1% presentó algún incidente. Se notificaron 1424 incidentes en 591 pacientes, de los cuales 943 fueron incidentes sin daño y 481 eventos adversos. Se produjeron 1,22 incidentes por cada paciente ingresado. La tasa de aparición de incidentes fue de 5,89 incidentes por cada 100 pacientes y hora. El 74% de los incidentes comunicados estuvieron en relación con la medicación, aparatos, cuidados, accesos vasculares y sondas, vía aérea y ventilación mecánica. El 90% de todos los incidentes y el 60% de los EA fueron clasificados como evitables o posiblemente evitables.",
+      "tipo": "estadistica",
+      "terminos_clave": [
+        "seguridad del paciente",
+        "incidentes",
+        "eventos adversos",
+        "SEMICYUC"
+      ]
+    },
+    {
+      "fragment_id": "PDF2-F03",
+      "pdf_origen": "UCI.pdf",
+      "pagina": 42,
+      "seccion": "Niveles de asistencia médica intensiva",
+      "contenido": "Nivel I: Si existe UCI, equipamiento y dotación esencial (y deseable). Relación paciente/enfermera: mayor o igual 3:1. Si no existe UCI, soporte vital inmediato. Presencia intensivistas en urgencias recomendada. Transporte asistido primario y secundario. Nivel II: Equipamiento y dotación esencial y deseable. Relación paciente/enfermera entre 2/1 y 1.5/1. Servicio/sección de medicina intensiva. Nivel III: Equipamiento y dotación esencial, deseable (y opcional). Relación paciente/enfermera: igual o menor 1.5/1. Servicio de medicina intensiva.",
+      "tipo": "criterio",
+      "terminos_clave": [
+        "niveles asistenciales",
+        "ratio enfermera-paciente",
+        "equipamiento UCI"
+      ]
+    },
+    {
+      "fragment_id": "PDF2-F04",
+      "pdf_origen": "UCI.pdf",
+      "pagina": 89,
+      "seccion": "Recursos humanos - Personal médico",
+      "contenido": "En la UCI de nivel asistencial III se estima en 1 médico intensivista (equivalentes a tiempo completo) por cada 4-5 pacientes de 08:00 a 18:00 horas y 1 profesional por cada 12 pacientes de 18:00 a 08:00 horas (incluidos sábados y festivos). En UCI de nivel asistencial II las necesidades de médicos intensivistas se estiman en 1 profesional por cada 6-10 pacientes de 08:00 a 18:00 horas (incluidos sábados y festivos) y 1 profesional de 18:00 a 08:00 horas. En UCI de nivel asistencial I se puede estimar unas necesidades de médicos intensivistas de 1 profesional por cada 8-12 pacientes.",
+      "tipo": "criterio",
+      "terminos_clave": [
+        "ratio médico-paciente",
+        "intensivista",
+        "nivel asistencial",
+        "recursos humanos"
+      ]
+    },
+    {
+      "fragment_id": "PDF2-F05",
+      "pdf_origen": "UCI.pdf",
+      "pagina": 33,
+      "seccion": "Seguridad en el uso de medicamentos",
+      "contenido": "El medicamento constituye la intervención sanitaria más frecuente y una de las principales causas de EA, tanto en el ámbito hospitalario como en el ambulatorio. En nuestro país, los estudios ENEAS y APEAS revelaron que el medicamento era la causa del 37,4% de los EA detectados en pacientes hospitalizados y del 47,8% en pacientes ambulatorios. En el estudio de la SEMICYUC, el 24,5% de los incidentes se relacionaron con la medicación, siendo los relacionados con la prescripción y administración los más frecuentes.",
+      "tipo": "estadistica",
+      "terminos_clave": [
+        "seguridad medicamentos",
+        "eventos adversos",
+        "ENEAS",
+        "APEAS",
+        "prescripción"
+      ]
+    },
+    {
+      "fragment_id": "PDF2-F06",
+      "pdf_origen": "UCI.pdf",
+      "pagina": 43,
+      "seccion": "Aspectos organizativos - Recomendaciones IHI",
+      "contenido": "Presencia de intensivista las 24 horas. Duración de los turnos de los intensivistas (favoreciendo la organización de turnos de 12 horas frente a los de 8 horas). Duración de los turnos de los médicos residentes (menos errores cuando estaban menos de 80 horas a la semana de guardia; drenaje más rápido de la UCI). Cobertura cruzada de los médicos residentes durante la noche (reducción de EA). Utilizar una hoja de objetivos diarios para cada paciente. Servicio ampliado de cuidados críticos. Creación de un equipo de ventilación. Disponibilidad de unidades de cuidados intermedios (reducción de la necesidad de admisión en la UCI, menor duración de la estancia). Participación del farmacéutico en los pases de visita multidisciplinarios.",
+      "tipo": "protocolo",
+      "terminos_clave": [
+        "turnos",
+        "objetivos diarios",
+        "cuidados intermedios",
+        "farmacéutico",
+        "IHI"
+      ]
+    },
+    {
+      "fragment_id": "PDF2-F07",
+      "pdf_origen": "UCI.pdf",
+      "pagina": 45,
+      "seccion": "Pase de visita multidisciplinario",
+      "contenido": "Se recomienda realizar un pase de visita multidisciplinario que permite a todos los miembros del equipo que atiende al paciente en la UCI trabajar juntos y ofrecer experiencia y conocimientos en la atención al paciente. La implantación del pase de visita multidisciplinario se ha vinculado con una mayor satisfacción con la atención percibida y mejor comunicación y colaboración entre los participantes. Pueden integrar el equipo, además de los médicos y enfermeras responsables de la atención al paciente en la UCI, farmacéuticos, dietistas, especialistas consultores, trabajadores sociales, rehabilitadores/fisioterapeutas.",
+      "tipo": "protocolo",
+      "terminos_clave": [
+        "pase de visita",
+        "multidisciplinario",
+        "equipo",
+        "satisfacción"
+      ]
+    },
+    {
+      "fragment_id": "PDF2-F08",
+      "pdf_origen": "UCI.pdf",
+      "pagina": 98,
+      "seccion": "Niveles de cuidados - Clasificación",
+      "contenido": "Nivel 0: Requiere hospitalización. Las necesidades pueden ser atendidas en sala de hospitalización polivalente de agudos. Controles con periodicidad superior a cada 4 horas. Nivel 1: Paciente que requiere la atención de personal especializado con controles con periodicidad igual o inferior a cada 4 horas. Fisioterapia o aspiración aérea requeridas cada 6 horas o menos. Nivel 2: Paciente que requiere observación y monitorización más frecuente, incluido soporte de un sistema orgánico. Nivel 3: Paciente que requiere soporte respiratorio avanzado o soporte respiratorio básico junto con soporte de al menos dos sistemas orgánicos, incluyendo pacientes con fallo multiorgánico.",
+      "tipo": "criterio",
+      "terminos_clave": [
+        "niveles de cuidados",
+        "nivel 0",
+        "nivel 1",
+        "nivel 2",
+        "nivel 3",
+        "fallo multiorgánico"
+      ]
+    },
+    {
+      "fragment_id": "PDF2-F09",
+      "pdf_origen": "UCI.pdf",
+      "pagina": 94,
+      "seccion": "Indicadores de calidad - Infección nosocomial",
+      "contenido": "Tasa de infección nosocomial: [a/b] × 1.000. a: Número de altas de UCI con diagnóstico de infección nosocomial, en un año. b: Total de altas en ese año. El numerador incluye las altas hospitalarias en las que figure, en cualquier posición de diagnóstico secundario, los códigos 999.3, 996.6x, 998.5x, ó 519.01. Especial relevancia tienen las siguientes tasas: tasa de infección urológica relacionada con sondas urinarias; tasa de infección sanguínea asociada al uso de catéter venoso central; tasa de neumonía asociada al uso de respiradores.",
+      "tipo": "estadistica",
+      "terminos_clave": [
+        "infección nosocomial",
+        "indicadores de calidad",
+        "catéter venoso central",
+        "neumonía asociada a ventilador"
+      ]
+    },
+    {
+      "fragment_id": "PDF2-F10",
+      "pdf_origen": "UCI.pdf",
+      "pagina": 90,
+      "seccion": "Personal de enfermería - Ratios y sistemas de medición",
+      "contenido": "La guía del INSALUD recomienda 1 enfermera por cada 1 paciente en UCI de nivel asistencial III; 1:1,6 en UCI nivel II y de 1:3 en UCI nivel I. El método más adecuado es ajustar la plantilla de enfermería a las necesidades de los pacientes, medida por su gravedad y dependencia. Para ello se suelen utilizar los métodos de medida de las intervenciones terapéuticas. Utilizando la metodología TISS, los pacientes de la clase IV requerirán una relación 1:1. El TISS 28 (Simplified Therapeutic Intervention Scoring System) redujo el sistema TISS de 76 ítems a 28, con buena correlación entre ambos índices.",
+      "tipo": "criterio",
+      "terminos_clave": [
+        "ratio enfermera-paciente",
+        "TISS",
+        "TISS-28",
+        "gravedad",
+        "intervenciones terapéuticas"
+      ]
+    },
+    {
+      "fragment_id": "PDF3-F01",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "pagina": 26,
+      "seccion": "Transporte de CO2 - Efecto Haldane",
+      "contenido": "La hemoglobina tiene una mayor capacidad de amortiguación cuando se encuentra en su forma insaturada, y la sangre totalmente insaturada puede fijar una cantidad adicional de 60 ml/l de CO2. El aumento del contenido de CO2 debido a la desaturación de la oxihemoglobina se conoce como efecto Haldane. El contenido de CO2 en sangre venosa es 40 ml/l mayor que el de la sangre arterial. Alrededor del 60% de este contenido de CO2 adicional en la sangre venosa se debe a un aumento de la PCO2, mientras que el 40% se debe a la insaturación de la hemoglobina. Así, el efecto Haldane es responsable de casi la mitad del aumento del contenido de CO2 en la sangre venosa.",
+      "tipo": "definicion",
+      "terminos_clave": [
+        "efecto Haldane",
+        "CO2",
+        "hemoglobina",
+        "sangre venosa",
+        "amortiguación"
+      ]
+    },
+    {
+      "fragment_id": "PDF3-F02",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "pagina": 27,
+      "seccion": "VCO2 como excreción de ácido",
+      "contenido": "La VCO2 normal en los adultos es de 160-220 ml/min, o de 90-130 ml/min/m2 cuando se ajusta según el tamaño corporal. Normalmente, la VCO2 es de alrededor del 80% de la VO2, por lo que la proporción VCO2/VO2 suele ser de 0,8. Esta proporción se denomina cociente respiratorio (RQ). El CO2 es esencialmente un ácido. La tasa normal de excreción de ácido a través de los pulmones es de 9 mEq/min, o 12.960 mEq en 24 h. Como los riñones excretan sólo 40 a 80 mEq de ácido cada 24 h, el principal órgano de excreción de ácido en el organismo son los pulmones, y no los riñones.",
+      "tipo": "definicion",
+      "terminos_clave": [
+        "VCO2",
+        "cociente respiratorio",
+        "excreción de ácido",
+        "pulmones",
+        "riñones"
+      ]
+    },
+    {
+      "fragment_id": "PDF3-F03",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "pagina": 57,
+      "seccion": "Tromboembolismo venoso - Tromboprofilaxis",
+      "contenido": "La amenaza de la trombosis venosa y la embolia pulmonar aguda (tromboembolismo venoso) es una preocupación diaria en la UCI. Se cree que esta progresión desde una trombosis silente en las piernas hasta una embolia pulmonar aguda es responsable del 10% de los fallecimientos en el hospital, y dado que es posible evitar la formación de estos trombos, pueden evitarse también los fallecimientos por embolia pulmonar. De hecho, la embolia pulmonar es una de las causas más importantes de muerte evitable en los pacientes hospitalizados. Factores de riesgo relacionados con la UCI: ventilación mecánica prolongada, parálisis neuromuscular, catéteres venosos centrales, sepsis grave, coagulopatía de consumo, trombocitopenia inducida por la heparina.",
+      "tipo": "criterio",
+      "terminos_clave": [
+        "tromboembolismo venoso",
+        "embolia pulmonar",
+        "tromboprofilaxis",
+        "factores de riesgo",
+        "UCI"
+      ]
+    },
+    {
+      "fragment_id": "PDF3-F04",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "pagina": 96,
+      "seccion": "Infecciones asociadas a catéteres vasculares",
+      "contenido": "Colonización del catéter: se caracteriza por el crecimiento significativo de un microorganismo sobre el catéter y ausencia de crecimiento en los hemocultivos. Infección del punto de salida: se produce cuando existe drenaje desde el punto de inserción del catéter y éste desarrolla un microorganismo en el cultivo. Septicemia relacionada con el catéter: se produce cuando un hemocultivo obtenido de un punto distinto al catéter desarrolla un microorganismo y este mismo microorganismo se aísla en cantidad significativa a partir del catéter o de la sangre extraída a través de éste. Criterios: deben aislarse las mismas especies de microorganismos, en la sangre del catéter crecen ≥ 100 UFC/ml, y el recuento de colonias de la sangre del catéter es ≥ 5 veces mayor que el recuento de la sangre periférica.",
+      "tipo": "criterio",
+      "terminos_clave": [
+        "septicemia por catéter",
+        "colonización",
+        "hemocultivos",
+        "UFC",
+        "infección nosocomial"
+      ]
+    },
+    {
+      "fragment_id": "PDF3-F05",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "pagina": 151,
+      "seccion": "Tipos de líquidos de reposición",
+      "contenido": "Tipo 1: Líquidos que contienen hematíes (sangre, concentrados de hematíes). Aumentan la capacidad de transporte de oxígeno. Su capacidad para fluir y aumentar el gasto cardíaco está limitada por los efectos de viscosidad de las células. Tipo 2: Líquidos que contienen grandes moléculas con salida restringida del espacio vascular, denominados coloides (plasma, albúmina, dextranos, almidón). Aumentan preferentemente el volumen intravascular y son los líquidos más eficaces para aumentar el gasto cardíaco. Tipo 3: Líquidos que contienen electrólitos y otras pequeñas moléculas que se mueven libremente en el espacio extracelular, denominados cristaloides (solución salina, soluciones de Ringer, Normosol). Se distribuyen equitativamente en el espacio extracelular y preferentemente aumentan el volumen del líquido intersticial.",
+      "tipo": "tabla",
+      "terminos_clave": [
+        "líquidos de reposición",
+        "coloides",
+        "cristaloides",
+        "gasto cardíaco",
+        "reanimación con fluidos"
+      ]
+    },
+    {
+      "fragment_id": "PDF3-F06",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "pagina": 136,
+      "seccion": "Corrección de alteraciones del transporte de oxígeno",
+      "contenido": "Si el gasto cardíaco es bajo (índice cardíaco < 2,4 l/min/m2), el siguiente paso será medir la presión de llenado ventricular (la presión venosa central [PVC] o la presión de enclavamiento capilar pulmonar [PECP]). Si la PVC es menor de 4 mm Hg o la presión de enclavamiento es inferior a 6 mm Hg, estará indicada la restauración volumétrica hasta que la PVC se eleve a unos 10 mm Hg o la presión de enclavamiento aumente a unos 15 mm Hg. Si las presiones de llenado ventricular son normales o están elevadas, debe normalizarse el gasto cardíaco usando dobutamina. Corrección de la anemia: si la hemoglobina está por debajo de 7 g/dl, habrá que considerar una transfusión sanguínea. Corrección de la hipoxemia: si la SaO2 es menor del 90%, deberá aumentarse la concentración de oxígeno inhalado.",
+      "tipo": "algoritmo",
+      "terminos_clave": [
+        "gasto cardíaco",
+        "PVC",
+        "PECP",
+        "dobutamina",
+        "transfusión",
+        "hipoxemia"
+      ]
+    },
+    {
+      "fragment_id": "PDF3-F07",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "pagina": 41,
+      "seccion": "Patógenos transmitidos por la sangre - VHB",
+      "contenido": "La transmisión del virus de la hepatitis B (VHB) por la sangre es mucho más fácil que la del VIH. En 1 ml de sangre de un paciente con hepatitis aguda inducida por el VHB puede haber hasta un millón de partículas infecciosas, mientras que un volumen similar de sangre de un paciente con infección activa por el VIH contendrá sólo 5 o menos partículas infecciosas. Se recomienda la vacunación frente a la hepatitis B a todo aquel que haya estado en contacto con sangre, líquidos orgánicos e instrumentos cortantes, lo que supone prácticamente todo el personal de una UCI. La única contraindicación para la vacuna es el antecedente de anafilaxia por levadura de panificación. La vacunación consta de tres dosis.",
+      "tipo": "protocolo",
+      "terminos_clave": [
+        "hepatitis B",
+        "VHB",
+        "vacunación",
+        "transmisión sanguínea",
+        "VIH"
+      ]
+    },
+    {
+      "fragment_id": "PDF3-F08",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "pagina": 121,
+      "seccion": "Subgrupos hemodinámicos - Hipotensión",
+      "contenido": "La presión arterial media es una función del gasto cardíaco y de la resistencia vascular sistémica: PAM = IC × IRVS. El gasto cardíaco, a su vez, depende del retorno venoso. Si se usa la presión venosa central como un índice del retorno venoso, hay tres variables para describir cualquier paciente con hipotensión: la presión venosa central, el gasto cardíaco y el índice de resistencia vascular sistémica. Este subgrupo de tres variables se usa para describir las tres formas clásicas de hipotensión: hipovolémica (PVC baja, GC bajo, IRVS elevada), cardiogénica (PVC elevada, GC bajo, IRVS elevada) y vasogénica/distributiva (PVC baja-normal, GC elevado, IRVS baja).",
+      "tipo": "algoritmo",
+      "terminos_clave": [
+        "hipotensión",
+        "PAM",
+        "gasto cardíaco",
+        "resistencia vascular sistémica",
+        "shock"
+      ]
+    },
+    {
+      "fragment_id": "PDF3-F09",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "pagina": 501,
+      "seccion": "Tiamina en pacientes críticos",
+      "contenido": "La tiamina (vitamina B1) es un componente del pirofosfato de tiamina, un cofactor esencial en el metabolismo de los hidratos de carbono. Es probable que el déficit de tiamina sea habitual en pacientes de la UCI por los siguientes motivos: el contenido corporal normal de tiamina es sólo de unos 30 mg, de modo que la falta de aporte causaría una depleción de las reservas endógenas a los 10 días suponiendo una necesidad diaria de 3 mg. El uso de tiamina aumenta en situaciones de hipercatabolismo. La furosemida aumenta la excreción urinaria de tiamina. Para la conversión de tiamina en pirofosfato de tiamina se necesita magnesio, por lo que la depleción de magnesio causa una forma funcional de déficit de tiamina.",
+      "tipo": "dosis",
+      "terminos_clave": [
+        "tiamina",
+        "vitamina B1",
+        "déficit",
+        "furosemida",
+        "magnesio",
+        "hipercatabolismo"
+      ]
+    },
+    {
+      "fragment_id": "PDF3-F10",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "pagina": 82,
+      "seccion": "Acceso venoso central - Vena subclavia",
+      "contenido": "La vena subclavia es una continuación de la vena axilar al pasar ésta sobre la primera costilla. La mayor parte de su trayectoria discurre por el lado externo de la clavícula, y en algunos puntos está solamente 5 mm por encima de la pleura pulmonar apical. La cara inferior de la vena se asienta sobre el músculo escaleno anterior, con la arteria subclavia situada profunda con respecto al músculo. Como la arteria está más profunda que la vena, se evitará el riesgo de punción de la primera si se evita la penetración profunda con la aguja de prueba. La distancia promedio desde los puntos de canulación en la vena subclavia hasta la aurícula derecha es de 14,5 cm para el lado derecho y de 18,5 cm para el lado izquierdo. Los catéteres no deben tener una longitud superior a 15 cm para evitar colocarlos en el lado derecho del corazón.",
+      "tipo": "protocolo",
+      "terminos_clave": [
+        "vena subclavia",
+        "acceso venoso central",
+        "canulación",
+        "pleura",
+        "aurícula derecha"
+      ]
+    }
+  ],
+  "golden_set": [
+    {
+      "id": "GS-RAG-01",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "tipo": "directa",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuántas camas tiene en total la UGC de Medicina Intensiva del Hospital Virgen del Rocío?",
+      "fragment_ids_usados": [
+        "PDF1-F01"
+      ],
+      "contextos": [
+        "Actualmente es una UGC que actúa como un dispositivo hospitalario asistencial central, en dependencia jerárquica directa de la dirección médica. Estas áreas en la actualidad son: UCI Hospital General: 40 camas; UCI Hospital de Traumatología: 22 camas; Unidad de Cuidados Intermedios (HG): 10 camas; Unidad de Quemados (HRT), compartida con Servicio de Cirugía Plástica: 12 camas; Total de camas: 84. La Unidad de Cuidados Intermedios se destina a pacientes que precisando tratamiento intensivo continuado no requieren ventilación mecánica invasiva, ni otras técnicas de soporte mecánico invasivo de funciones vitales."
+      ],
+      "respuesta_referencia": "Según el documento, la UGC de Medicina Intensiva del Hospital Virgen del Rocío cuenta con un total de 84 camas, distribuidas en: UCI Hospital General (40 camas), UCI Hospital de Traumatología (22 camas), Unidad de Cuidados Intermedios (10 camas) y Unidad de Quemados (12 camas, compartida con Cirugía Plástica).",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Respuesta extraída directamente del fragmento PDF1-F01, página 5. Valores numéricos exactos del documento."
+    },
+    {
+      "id": "GS-RAG-02",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "tipo": "directa",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuántos años dura la formación en la especialidad de Medicina Intensiva?",
+      "fragment_ids_usados": [
+        "PDF1-F02"
+      ],
+      "contextos": [
+        "Medicina Intensiva. Duración: 5 años. Licenciatura previa: Medicina. La idea de concentrar a los enfermos críticos en un área común aparece hace algo más de 30 años, como consecuencia de los avances de la Medicina. La idea se experimentó con éxito con motivo de los numerosos casos de insuficiencia respiratoria observados en las epidemias de poliomielitis que azotaron extensas zonas de Europa y Norteamérica en los años 50-60 y en los heridos evacuados del campo de batalla en las guerras de Vietnam y Corea."
+      ],
+      "respuesta_referencia": "Según el documento, la formación en la especialidad de Medicina Intensiva tiene una duración de 5 años, y requiere la licenciatura previa en Medicina.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Respuesta extraída directamente del fragmento PDF1-F02, página 13."
+    },
+    {
+      "id": "GS-RAG-03",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "tipo": "directa",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuál es la duración máxima permitida para las rotaciones externas dentro de cada periodo de evaluación anual?",
+      "fragment_ids_usados": [
+        "PDF1-F10"
+      ],
+      "contextos": [
+        "La autorización de rotaciones externas requerirá el cumplimiento de los siguientes requisitos: Ser propuestas por el tutor a la comisión de docencia con especificación de los objetivos que se pretenden, que deben referirse a la ampliación de conocimientos, o al aprendizaje de técnicas no practicadas en el centro. Que se realicen preferentemente en centros acreditados para la docencia o en centros nacionales o extranjeros de reconocido prestigio. No superar los cuatro meses continuados dentro de cada periodo de evaluación anual, ni superar los doce meses en el conjunto del periodo formativo de la especialidad."
+      ],
+      "respuesta_referencia": "Según el documento, las rotaciones externas no deben superar los cuatro meses continuados dentro de cada periodo de evaluación anual, ni los doce meses en el conjunto del periodo formativo de la especialidad.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Respuesta extraída directamente del fragmento PDF1-F10, página 41."
+    },
+    {
+      "id": "GS-RAG-04",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "tipo": "multi_fragmento",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuánto tiempo debe dedicar el residente a la unidad de Medicina Intensiva durante la formación específica y qué rotaciones obligatorias debe completar, incluyendo las competencias esperadas en cardiología?",
+      "fragment_ids_usados": [
+        "PDF1-F03",
+        "PDF1-F07"
+      ],
+      "contextos": [
+        "Durante los tres años de formación específica, el 70% del tiempo se dedicará como mínimo a la unidad de Medicina Intensiva. Al margen de éstas, deberán existir como mínimo los siguientes períodos de rotación: CARDIOLOGÍA: 4 meses. NEUMOLOGÍA: 2 meses. NEUROLOGÍA: 2 meses. ANESTESIOLOGÍA-UNIDAD DE DOLOR: 4 meses. Alguno de estos períodos podrán ser reducidos o suprimidos si se considera que durante los dos años de formación troncal básica se alcanzaron los objetivos propuestos.",
+        "Cardiología. Al final de su rotación, el residente será capaz de realizar la exploración del paciente cardiológico, el diagnóstico y manejo de los principales síndromes de cardiología (insuficiencia cardiaca, cardiopatías isquémica, valvular y miocardiopatías, arritmias más frecuentes), interpretación del electrocardiograma, y realizar un examen ecocardiográfico básico. Neumología. Al final de su rotación, el residente será capaz de realizar el diagnóstico y manejo de los principales síndromes de neumología (insuficiencia respiratoria aguda y crónica, infecciones respiratorias, patología pleural, enfermedad tromboembólica), y será capaz de realizar una fibrobroncoscopia."
+      ],
+      "respuesta_referencia": "Según el documento, durante los tres años de formación específica el residente debe dedicar como mínimo el 70% del tiempo a la unidad de Medicina Intensiva. Las rotaciones obligatorias incluyen: Cardiología (4 meses), Neumología (2 meses), Neurología (2 meses) y Anestesiología-Unidad de Dolor (4 meses). El texto indica que al finalizar la rotación de cardiología, el residente será capaz de diagnosticar y manejar insuficiencia cardíaca, cardiopatías isquémica y valvular, miocardiopatías y arritmias, interpretar el electrocardiograma y realizar un examen ecocardiográfico básico.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": true,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Combina información de PDF1-F03 (rotaciones) y PDF1-F07 (competencias en cardiología)."
+    },
+    {
+      "id": "GS-RAG-05",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "tipo": "multi_fragmento",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Qué habilidades técnicas debe dominar un intensivista y cuáles son los requisitos mínimos de investigación que debe cumplir durante su formación?",
+      "fragment_ids_usados": [
+        "PDF1-F08",
+        "PDF1-F06"
+      ],
+      "contextos": [
+        "El intensivista necesita poseer ciertas nociones de Bioingeniería, ya que ha de manejar dispositivos mecánicos y electrónicos que forman una unidad con el paciente. Ello exige conocer los fundamentos físicos de los respiradores mecánicos, aproximarse a la tecnología de los transductores y otros elementos de monitorización electrónica, estar familiarizado con la tecnología de los microprocesadores, conocer el manejo de los gases industriales. El trabajo de intensivista requiere el dominio de determinadas técnicas: inserción de vías aéreas artificiales y manejo de respiradores, vías venosas centrales y cateterismo cardíaco, procedimientos de depuración extrarrenal, técnicas de resucitación cardio-pulmonar y soporte circulatorio, drenaje de cavidades.",
+        "Uno de los valores de la UGC es el de 'Generar y difundir Conocimientos'. Los especialistas en formación deberán integrarse en las líneas de Investigación. Los residentes, en su segundo año de formación, serán asignados por el Tutor a uno de los Grupos de Investigación del Servicio. Como objetivos mínimos: Presentación de Comunicaciones: R-3: Una comunicación como primer firmante en el Congreso de la SAMIUC. R-4: Una comunicación como primer firmante en el Congreso de la SEMICYUC. R-5: Una comunicación como primer firmante en el Congreso de la ESICM. Originales: Un original como primer firmante en Medicina Intensiva. Un Caso Clínico como primer firmante en revista incluida en Journal of Citation Record."
+      ],
+      "respuesta_referencia": "Según el documento, el intensivista debe dominar técnicas como la inserción de vías aéreas artificiales, manejo de respiradores, vías venosas centrales, cateterismo cardíaco, depuración extrarrenal, técnicas de RCP, soporte circulatorio y drenaje de cavidades, además de poseer nociones de bioingeniería. En cuanto a investigación, el texto indica que los residentes deben presentar comunicaciones como primer firmante en los congresos de la SAMIUC (R-3), SEMICYUC (R-4) y ESICM (R-5), además de publicar un original y un caso clínico en revistas indexadas.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": true,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Combina información de PDF1-F08 (habilidades técnicas) y PDF1-F06 (requisitos de investigación)."
+    },
+    {
+      "id": "GS-RAG-06",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "tipo": "sinonimo",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Qué conocimientos sobre PIC y HIC debe adquirir el residente de cuidados críticos?",
+      "fragment_ids_usados": [
+        "PDF1-F04"
+      ],
+      "contextos": [
+        "Conocer el diagnóstico y tratamiento de las patologías críticas del sistema nervioso y neuromuscular tales como el coma, en sus diferentes etiologías, las crisis convulsivas, las enfermedades vasculocerebrales, los síndromes de intoxicación y de privación, así como los criterios diagnósticos de muerte cerebral. Conocimientos genéricos: Fisiología y fisiopatología del flujo cerebral y de la presión intracraneal, y tratamiento de la hipertensión intracraneal. Indicaciones, usos y complicaciones de las técnicas de monitorización de la presión intracraneal. Diagnóstico y manejo del paciente en coma y de sus diferentes etiologías. Diagnóstico y tratamiento de las crisis convulsivas. Diagnóstico y tratamiento de la hemorragia subaracnoidea."
+      ],
+      "respuesta_referencia": "Según el documento, el residente debe adquirir conocimientos sobre la fisiología y fisiopatología del flujo cerebral y de la presión intracraneal (PIC), así como el tratamiento de la hipertensión intracraneal (HIC). El texto indica que también debe conocer las indicaciones, usos y complicaciones de las técnicas de monitorización de la presión intracraneal.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": true,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Usa abreviaturas PIC (presión intracraneal) y HIC (hipertensión intracraneal) en lugar de los términos completos del documento."
+    },
+    {
+      "id": "GS-RAG-07",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "tipo": "sinonimo",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "en",
+      "pregunta": "What are the training objectives for managing crush injury and compartment syndrome in the ICU residency program?",
+      "fragment_ids_usados": [
+        "PDF1-F05"
+      ],
+      "contextos": [
+        "Obtener la capacidad de atender adecuadamente la fase aguda del traumatizado grave, optimizar, en su caso, su traslado y sentar las indicaciones de su tratamiento, incluyendo las quemaduras y las lesiones por electricidad. Conocimientos genéricos: Manejo de las pérdidas masivas de sangre. El médico residente deberá tener los conocimientos exigidos para un instructor del programa de Resucitación Avanzada del Traumatizado. Transporte de enfermos traumatizados graves. Actitudes diagnósticas y terapéuticas ante los traumatismos específicos: torácico, abdominal, craneoencefálico, espinal, etc., potencialmente letales o gravemente incapacitantes. Fisiopatología, manifestaciones clínicas, prevención y tratamiento del síndrome de aplastamiento y de los síndromes compartamentales."
+      ],
+      "respuesta_referencia": "According to the document, the training objectives include knowledge of the pathophysiology, clinical manifestations, prevention and treatment of crush syndrome (síndrome de aplastamiento) and compartment syndromes (síndromes compartamentales). The text also indicates that residents must be capable of managing massive blood loss and acute care of severely injured patients, including burns and electrical injuries.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": true,
+      "is_reasoning": false,
+      "is_bilingual": true,
+      "notas": "Pregunta en inglés usando 'crush injury' y 'compartment syndrome' como sinónimos de 'síndrome de aplastamiento' y 'síndromes compartamentales'. Testea capacidad bilingüe."
+    },
+    {
+      "id": "GS-RAG-08",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "tipo": "razonamiento_aplicado",
+      "dificultad": "avanzada",
+      "idioma_pregunta": "es",
+      "pregunta": "Un residente R-4 de Medicina Intensiva solo ha presentado una comunicación en el congreso de la SAMIUC pero no ha publicado ningún original. ¿Está cumpliendo los objetivos mínimos de investigación?",
+      "fragment_ids_usados": [
+        "PDF1-F06"
+      ],
+      "contextos": [
+        "Uno de los valores de la UGC es el de 'Generar y difundir Conocimientos'. Los especialistas en formación deberán integrarse en las líneas de Investigación. Los residentes, en su segundo año de formación, serán asignados por el Tutor a uno de los Grupos de Investigación del Servicio. Como objetivos mínimos: Presentación de Comunicaciones: R-3: Una comunicación como primer firmante en el Congreso de la SAMIUC. R-4: Una comunicación como primer firmante en el Congreso de la SEMICYUC. R-5: Una comunicación como primer firmante en el Congreso de la ESICM. Originales: Un original como primer firmante en Medicina Intensiva. Un Caso Clínico como primer firmante en revista incluida en Journal of Citation Record."
+      ],
+      "respuesta_referencia": "Según el documento, un residente R-4 no estaría cumpliendo los objetivos mínimos de investigación, ya que el texto indica que para R-4 se requiere una comunicación como primer firmante en el Congreso de la SEMICYUC (no solo de la SAMIUC, que corresponde a R-3). Además, aunque los originales son un objetivo para el periodo completo de formación, el residente debería estar avanzando en la publicación de un original en Medicina Intensiva y un caso clínico en revista indexada.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": true,
+      "is_bilingual": false,
+      "notas": "Requiere aplicar los criterios del documento al caso concreto de un residente R-4."
+    },
+    {
+      "id": "GS-RAG-09",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "tipo": "razonamiento_aplicado",
+      "dificultad": "avanzada",
+      "idioma_pregunta": "es",
+      "pregunta": "Si un residente quiere realizar una rotación externa de 5 meses continuados en una UCI de neurocríticos en el extranjero, ¿sería autorizada según los requisitos establecidos?",
+      "fragment_ids_usados": [
+        "PDF1-F10"
+      ],
+      "contextos": [
+        "La autorización de rotaciones externas requerirá el cumplimiento de los siguientes requisitos: Ser propuestas por el tutor a la comisión de docencia con especificación de los objetivos que se pretenden, que deben referirse a la ampliación de conocimientos, o al aprendizaje de técnicas no practicadas en el centro. Que se realicen preferentemente en centros acreditados para la docencia o en centros nacionales o extranjeros de reconocido prestigio. No superar los cuatro meses continuados dentro de cada periodo de evaluación anual, ni superar los doce meses en el conjunto del periodo formativo de la especialidad."
+      ],
+      "respuesta_referencia": "Según el documento, esta rotación no sería autorizada porque supera el límite máximo de cuatro meses continuados dentro de cada periodo de evaluación anual. El texto establece claramente que las rotaciones externas no deben superar los cuatro meses continuados, aunque el centro extranjero sea de reconocido prestigio.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": true,
+      "is_bilingual": false,
+      "notas": "Requiere aplicar la regla de los 4 meses máximos continuados al caso propuesto de 5 meses."
+    },
+    {
+      "id": "GS-RAG-10",
+      "pdf_origen": "GUÍA-FORMATIVA-MEDICINA-INTENSIVA-1.pdf",
+      "tipo": "fuera_de_dominio",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuál es la dosis recomendada de noradrenalina para el manejo del shock séptico en adultos?",
+      "fragment_ids_usados": [],
+      "contextos": [],
+      "respuesta_referencia": "Esta información no está disponible en el documento proporcionado. El documento es una guía formativa para residentes de Medicina Intensiva del Hospital Virgen del Rocío que describe la estructura del servicio, rotaciones, competencias y objetivos de investigación, pero no incluye protocolos terapéuticos específicos ni dosificación de fármacos.",
+      "is_out_of_domain": true,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Pregunta fuera del dominio. La guía formativa no contiene protocolos de dosificación farmacológica."
+    },
+    {
+      "id": "GS-RAG-11",
+      "pdf_origen": "UCI.pdf",
+      "tipo": "directa",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Qué porcentaje de pacientes presentó algún incidente en el estudio de seguridad de la SEMICYUC?",
+      "fragment_ids_usados": [
+        "PDF2-F02"
+      ],
+      "contextos": [
+        "Este estudio realizado en 79 UCI incluyó 1017 pacientes, de los que un 58,1% presentó algún incidente. Se notificaron 1424 incidentes en 591 pacientes, de los cuales 943 fueron incidentes sin daño y 481 eventos adversos. Se produjeron 1,22 incidentes por cada paciente ingresado. La tasa de aparición de incidentes fue de 5,89 incidentes por cada 100 pacientes y hora. El 74% de los incidentes comunicados estuvieron en relación con la medicación, aparatos, cuidados, accesos vasculares y sondas, vía aérea y ventilación mecánica. El 90% de todos los incidentes y el 60% de los EA fueron clasificados como evitables o posiblemente evitables."
+      ],
+      "respuesta_referencia": "Según el documento, el 58,1% de los pacientes presentó algún incidente en el estudio de seguridad de la SEMICYUC, realizado en 79 UCI con 1017 pacientes. Se produjeron 1,22 incidentes por cada paciente ingresado.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Respuesta extraída directamente del fragmento PDF2-F02, página 29. Valor numérico exacto: 58,1%."
+    },
+    {
+      "id": "GS-RAG-12",
+      "pdf_origen": "UCI.pdf",
+      "tipo": "directa",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuál es la ratio médico-paciente recomendada en una UCI de nivel asistencial III durante el turno diurno?",
+      "fragment_ids_usados": [
+        "PDF2-F04"
+      ],
+      "contextos": [
+        "En la UCI de nivel asistencial III se estima en 1 médico intensivista (equivalentes a tiempo completo) por cada 4-5 pacientes de 08:00 a 18:00 horas y 1 profesional por cada 12 pacientes de 18:00 a 08:00 horas (incluidos sábados y festivos). En UCI de nivel asistencial II las necesidades de médicos intensivistas se estiman en 1 profesional por cada 6-10 pacientes de 08:00 a 18:00 horas (incluidos sábados y festivos) y 1 profesional de 18:00 a 08:00 horas. En UCI de nivel asistencial I se puede estimar unas necesidades de médicos intensivistas de 1 profesional por cada 8-12 pacientes."
+      ],
+      "respuesta_referencia": "Según el documento, en una UCI de nivel asistencial III se estima 1 médico intensivista por cada 4-5 pacientes durante el turno diurno (de 08:00 a 18:00 horas), y 1 profesional por cada 12 pacientes durante el turno nocturno (de 18:00 a 08:00 horas, incluidos sábados y festivos).",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Respuesta extraída directamente del fragmento PDF2-F04, página 89."
+    },
+    {
+      "id": "GS-RAG-13",
+      "pdf_origen": "UCI.pdf",
+      "tipo": "directa",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cómo se calcula la tasa de infección nosocomial en la UCI según los indicadores de calidad propuestos?",
+      "fragment_ids_usados": [
+        "PDF2-F09"
+      ],
+      "contextos": [
+        "Tasa de infección nosocomial: [a/b] × 1.000. a: Número de altas de UCI con diagnóstico de infección nosocomial, en un año. b: Total de altas en ese año. El numerador incluye las altas hospitalarias en las que figure, en cualquier posición de diagnóstico secundario, los códigos 999.3, 996.6x, 998.5x, ó 519.01. Especial relevancia tienen las siguientes tasas: tasa de infección urológica relacionada con sondas urinarias; tasa de infección sanguínea asociada al uso de catéter venoso central; tasa de neumonía asociada al uso de respiradores."
+      ],
+      "respuesta_referencia": "Según el documento, la tasa de infección nosocomial se calcula como [a/b] × 1.000, donde 'a' es el número de altas de UCI con diagnóstico de infección nosocomial en un año y 'b' es el total de altas en ese año. El numerador incluye altas con los códigos diagnósticos 999.3, 996.6x, 998.5x o 519.01.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Respuesta extraída directamente del fragmento PDF2-F09, página 94."
+    },
+    {
+      "id": "GS-RAG-14",
+      "pdf_origen": "UCI.pdf",
+      "tipo": "multi_fragmento",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuáles son los datos sobre eventos adversos relacionados con medicamentos en la UCI y qué medidas organizativas se recomiendan para mejorar la seguridad farmacológica?",
+      "fragment_ids_usados": [
+        "PDF2-F05",
+        "PDF2-F06"
+      ],
+      "contextos": [
+        "El medicamento constituye la intervención sanitaria más frecuente y una de las principales causas de EA, tanto en el ámbito hospitalario como en el ambulatorio. En nuestro país, los estudios ENEAS y APEAS revelaron que el medicamento era la causa del 37,4% de los EA detectados en pacientes hospitalizados y del 47,8% en pacientes ambulatorios. En el estudio de la SEMICYUC, el 24,5% de los incidentes se relacionaron con la medicación, siendo los relacionados con la prescripción y administración los más frecuentes.",
+        "Presencia de intensivista las 24 horas. Duración de los turnos de los intensivistas (favoreciendo la organización de turnos de 12 horas frente a los de 8 horas). Duración de los turnos de los médicos residentes (menos errores cuando estaban menos de 80 horas a la semana de guardia; drenaje más rápido de la UCI). Cobertura cruzada de los médicos residentes durante la noche (reducción de EA). Utilizar una hoja de objetivos diarios para cada paciente. Servicio ampliado de cuidados críticos. Creación de un equipo de ventilación. Disponibilidad de unidades de cuidados intermedios (reducción de la necesidad de admisión en la UCI, menor duración de la estancia). Participación del farmacéutico en los pases de visita multidisciplinarios."
+      ],
+      "respuesta_referencia": "Según el documento, el 24,5% de los incidentes en UCI se relacionaron con la medicación (estudio SEMICYUC), y los estudios ENEAS y APEAS revelaron que los medicamentos causaron el 37,4% de los EA hospitalarios y el 47,8% de los ambulatorios. El texto indica como medidas organizativas para mejorar la seguridad: participación del farmacéutico en los pases de visita multidisciplinarios, limitación de los turnos de residentes a menos de 80 horas semanales, cobertura cruzada nocturna y utilización de hojas de objetivos diarios.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": true,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Combina datos de PDF2-F05 (estadísticas de EA por medicamentos) y PDF2-F06 (medidas organizativas)."
+    },
+    {
+      "id": "GS-RAG-15",
+      "pdf_origen": "UCI.pdf",
+      "tipo": "multi_fragmento",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuáles son las ratios de enfermería recomendadas según el nivel asistencial de la UCI y cómo se relacionan con los niveles de cuidados del paciente?",
+      "fragment_ids_usados": [
+        "PDF2-F10",
+        "PDF2-F08"
+      ],
+      "contextos": [
+        "La guía del INSALUD recomienda 1 enfermera por cada 1 paciente en UCI de nivel asistencial III; 1:1,6 en UCI nivel II y de 1:3 en UCI nivel I. El método más adecuado es ajustar la plantilla de enfermería a las necesidades de los pacientes, medida por su gravedad y dependencia. Para ello se suelen utilizar los métodos de medida de las intervenciones terapéuticas. Utilizando la metodología TISS, los pacientes de la clase IV requerirán una relación 1:1. El TISS 28 (Simplified Therapeutic Intervention Scoring System) redujo el sistema TISS de 76 ítems a 28, con buena correlación entre ambos índices.",
+        "Nivel 0: Requiere hospitalización. Las necesidades pueden ser atendidas en sala de hospitalización polivalente de agudos. Controles con periodicidad superior a cada 4 horas. Nivel 1: Paciente que requiere la atención de personal especializado con controles con periodicidad igual o inferior a cada 4 horas. Fisioterapia o aspiración aérea requeridas cada 6 horas o menos. Nivel 2: Paciente que requiere observación y monitorización más frecuente, incluido soporte de un sistema orgánico. Nivel 3: Paciente que requiere soporte respiratorio avanzado o soporte respiratorio básico junto con soporte de al menos dos sistemas orgánicos, incluyendo pacientes con fallo multiorgánico."
+      ],
+      "respuesta_referencia": "Según el documento, la guía del INSALUD recomienda una ratio enfermera:paciente de 1:1 en UCI nivel III, 1:1,6 en nivel II y 1:3 en nivel I, ajustando la plantilla mediante la metodología TISS-28. El texto indica que los niveles de cuidados van desde nivel 0 (hospitalización general con controles cada >4 horas) hasta nivel 3 (soporte respiratorio avanzado o soporte de al menos dos sistemas orgánicos), correspondiendo los pacientes de nivel 3 a la UCI de nivel asistencial III con ratio 1:1.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": true,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Combina información de PDF2-F10 (ratios enfermería) y PDF2-F08 (niveles de cuidados)."
+    },
+    {
+      "id": "GS-RAG-16",
+      "pdf_origen": "UCI.pdf",
+      "tipo": "sinonimo",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Qué porcentaje de los efectos adversos en la UCI fueron prevenibles según el estudio de la SEMICYUC?",
+      "fragment_ids_usados": [
+        "PDF2-F02"
+      ],
+      "contextos": [
+        "Este estudio realizado en 79 UCI incluyó 1017 pacientes, de los que un 58,1% presentó algún incidente. Se notificaron 1424 incidentes en 591 pacientes, de los cuales 943 fueron incidentes sin daño y 481 eventos adversos. Se produjeron 1,22 incidentes por cada paciente ingresado. La tasa de aparición de incidentes fue de 5,89 incidentes por cada 100 pacientes y hora. El 74% de los incidentes comunicados estuvieron en relación con la medicación, aparatos, cuidados, accesos vasculares y sondas, vía aérea y ventilación mecánica. El 90% de todos los incidentes y el 60% de los EA fueron clasificados como evitables o posiblemente evitables."
+      ],
+      "respuesta_referencia": "Según el documento, el 60% de los eventos adversos (EA) fueron clasificados como evitables o posiblemente evitables. El texto también indica que el 90% de todos los incidentes (incluyendo los incidentes sin daño) fueron clasificados como evitables o posiblemente evitables.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": true,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Usa 'prevenibles' como sinónimo de 'evitables' y 'efectos adversos' como sinónimo de 'eventos adversos (EA)'."
+    },
+    {
+      "id": "GS-RAG-17",
+      "pdf_origen": "UCI.pdf",
+      "tipo": "sinonimo",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "en",
+      "pregunta": "What is the recommended nurse-to-patient staffing ratio in a Level III critical care unit?",
+      "fragment_ids_usados": [
+        "PDF2-F10"
+      ],
+      "contextos": [
+        "La guía del INSALUD recomienda 1 enfermera por cada 1 paciente en UCI de nivel asistencial III; 1:1,6 en UCI nivel II y de 1:3 en UCI nivel I. El método más adecuado es ajustar la plantilla de enfermería a las necesidades de los pacientes, medida por su gravedad y dependencia. Para ello se suelen utilizar los métodos de medida de las intervenciones terapéuticas. Utilizando la metodología TISS, los pacientes de la clase IV requerirán una relación 1:1. El TISS 28 (Simplified Therapeutic Intervention Scoring System) redujo el sistema TISS de 76 ítems a 28, con buena correlación entre ambos índices."
+      ],
+      "respuesta_referencia": "According to the document, the INSALUD guideline recommends a nurse-to-patient ratio of 1:1 in Level III ICU (UCI de nivel asistencial III). The text also indicates that using the TISS methodology, Class IV patients require a 1:1 ratio, and the TISS-28 simplified scoring system can be used to adjust staffing to patient needs based on severity and dependency.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": true,
+      "is_reasoning": false,
+      "is_bilingual": true,
+      "notas": "Pregunta en inglés usando 'nurse-to-patient staffing ratio' y 'Level III critical care unit' como equivalentes de los términos en español del documento."
+    },
+    {
+      "id": "GS-RAG-18",
+      "pdf_origen": "UCI.pdf",
+      "tipo": "razonamiento_aplicado",
+      "dificultad": "avanzada",
+      "idioma_pregunta": "es",
+      "pregunta": "Un hospital tiene una UCI con 12 camas de nivel III. Durante el turno de noche hay un único intensivista de guardia. ¿Cumple con las recomendaciones de personal médico del documento?",
+      "fragment_ids_usados": [
+        "PDF2-F04"
+      ],
+      "contextos": [
+        "En la UCI de nivel asistencial III se estima en 1 médico intensivista (equivalentes a tiempo completo) por cada 4-5 pacientes de 08:00 a 18:00 horas y 1 profesional por cada 12 pacientes de 18:00 a 08:00 horas (incluidos sábados y festivos). En UCI de nivel asistencial II las necesidades de médicos intensivistas se estiman en 1 profesional por cada 6-10 pacientes de 08:00 a 18:00 horas (incluidos sábados y festivos) y 1 profesional de 18:00 a 08:00 horas. En UCI de nivel asistencial I se puede estimar unas necesidades de médicos intensivistas de 1 profesional por cada 8-12 pacientes."
+      ],
+      "respuesta_referencia": "Según el documento, para una UCI de nivel III con 12 camas, un único intensivista durante el turno nocturno (18:00-08:00) cumpliría con la recomendación de 1 profesional por cada 12 pacientes en ese turno. Sin embargo, durante el turno diurno (08:00-18:00) se necesitarían entre 2 y 3 intensivistas (1 por cada 4-5 pacientes para 12 camas).",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": true,
+      "is_bilingual": false,
+      "notas": "Requiere aplicar las ratios del documento a un caso concreto de 12 camas nivel III."
+    },
+    {
+      "id": "GS-RAG-19",
+      "pdf_origen": "UCI.pdf",
+      "tipo": "razonamiento_aplicado",
+      "dificultad": "avanzada",
+      "idioma_pregunta": "es",
+      "pregunta": "Un paciente requiere ventilación mecánica invasiva y hemofiltración continua tras una cirugía cardíaca complicada. ¿A qué nivel de cuidados correspondería según la clasificación del documento?",
+      "fragment_ids_usados": [
+        "PDF2-F08"
+      ],
+      "contextos": [
+        "Nivel 0: Requiere hospitalización. Las necesidades pueden ser atendidas en sala de hospitalización polivalente de agudos. Controles con periodicidad superior a cada 4 horas. Nivel 1: Paciente que requiere la atención de personal especializado con controles con periodicidad igual o inferior a cada 4 horas. Fisioterapia o aspiración aérea requeridas cada 6 horas o menos. Nivel 2: Paciente que requiere observación y monitorización más frecuente, incluido soporte de un sistema orgánico. Nivel 3: Paciente que requiere soporte respiratorio avanzado o soporte respiratorio básico junto con soporte de al menos dos sistemas orgánicos, incluyendo pacientes con fallo multiorgánico."
+      ],
+      "respuesta_referencia": "Según el documento, este paciente correspondería a un nivel 3 de cuidados, ya que requiere soporte respiratorio avanzado (ventilación mecánica invasiva) junto con soporte de otro sistema orgánico (hemofiltración continua para soporte renal). El texto indica que el nivel 3 incluye pacientes que requieren soporte respiratorio avanzado o soporte respiratorio básico junto con soporte de al menos dos sistemas orgánicos.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": true,
+      "is_bilingual": false,
+      "notas": "Requiere aplicar los criterios de clasificación por niveles al caso clínico descrito."
+    },
+    {
+      "id": "GS-RAG-20",
+      "pdf_origen": "UCI.pdf",
+      "tipo": "fuera_de_dominio",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuál es el protocolo de tratamiento con antibióticos para la neumonía asociada a ventilador mecánico?",
+      "fragment_ids_usados": [],
+      "contextos": [],
+      "respuesta_referencia": "Esta información no está disponible en el documento proporcionado. El documento de estándares y recomendaciones del Ministerio de Sanidad aborda aspectos organizativos, de seguridad, dotación de personal y calidad asistencial de las UCI, pero no incluye protocolos clínicos específicos de tratamiento antibiótico para la neumonía asociada a ventilador.",
+      "is_out_of_domain": true,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Pregunta fuera del dominio. El documento es de estándares organizativos, no de protocolos terapéuticos."
+    },
+    {
+      "id": "GS-RAG-21",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "tipo": "directa",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuál es la tasa normal de excreción de ácido a través de los pulmones en 24 horas?",
+      "fragment_ids_usados": [
+        "PDF3-F02"
+      ],
+      "contextos": [
+        "La VCO2 normal en los adultos es de 160-220 ml/min, o de 90-130 ml/min/m2 cuando se ajusta según el tamaño corporal. Normalmente, la VCO2 es de alrededor del 80% de la VO2, por lo que la proporción VCO2/VO2 suele ser de 0,8. Esta proporción se denomina cociente respiratorio (RQ). El CO2 es esencialmente un ácido. La tasa normal de excreción de ácido a través de los pulmones es de 9 mEq/min, o 12.960 mEq en 24 h. Como los riñones excretan sólo 40 a 80 mEq de ácido cada 24 h, el principal órgano de excreción de ácido en el organismo son los pulmones, y no los riñones."
+      ],
+      "respuesta_referencia": "Según el documento, la tasa normal de excreción de ácido a través de los pulmones es de 12.960 mEq en 24 horas (9 mEq/min). El texto indica que los riñones excretan sólo 40 a 80 mEq de ácido cada 24 h, por lo que el principal órgano de excreción de ácido son los pulmones.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Respuesta extraída directamente del fragmento PDF3-F02, página 27. Valor numérico exacto: 12.960 mEq/24h."
+    },
+    {
+      "id": "GS-RAG-22",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "tipo": "directa",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuáles son los criterios cuantitativos de hemocultivo para diagnosticar una septicemia relacionada con catéter?",
+      "fragment_ids_usados": [
+        "PDF3-F04"
+      ],
+      "contextos": [
+        "Colonización del catéter: se caracteriza por el crecimiento significativo de un microorganismo sobre el catéter y ausencia de crecimiento en los hemocultivos. Infección del punto de salida: se produce cuando existe drenaje desde el punto de inserción del catéter y éste desarrolla un microorganismo en el cultivo. Septicemia relacionada con el catéter: se produce cuando un hemocultivo obtenido de un punto distinto al catéter desarrolla un microorganismo y este mismo microorganismo se aísla en cantidad significativa a partir del catéter o de la sangre extraída a través de éste. Criterios: deben aislarse las mismas especies de microorganismos, en la sangre del catéter crecen ≥ 100 UFC/ml, y el recuento de colonias de la sangre del catéter es ≥ 5 veces mayor que el recuento de la sangre periférica."
+      ],
+      "respuesta_referencia": "Según el documento, los criterios cuantitativos para diagnosticar septicemia relacionada con catéter son: deben aislarse las mismas especies de microorganismos en ambas muestras, en la sangre del catéter deben crecer ≥ 100 UFC/ml, y el recuento de colonias de la sangre del catéter debe ser ≥ 5 veces mayor que el de la sangre periférica.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Respuesta extraída directamente del fragmento PDF3-F04, página 96-97."
+    },
+    {
+      "id": "GS-RAG-23",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "tipo": "directa",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuántas partículas infecciosas de VHB puede contener 1 ml de sangre de un paciente con hepatitis aguda?",
+      "fragment_ids_usados": [
+        "PDF3-F07"
+      ],
+      "contextos": [
+        "La transmisión del virus de la hepatitis B (VHB) por la sangre es mucho más fácil que la del VIH. En 1 ml de sangre de un paciente con hepatitis aguda inducida por el VHB puede haber hasta un millón de partículas infecciosas, mientras que un volumen similar de sangre de un paciente con infección activa por el VIH contendrá sólo 5 o menos partículas infecciosas. Se recomienda la vacunación frente a la hepatitis B a todo aquel que haya estado en contacto con sangre, líquidos orgánicos e instrumentos cortantes, lo que supone prácticamente todo el personal de una UCI. La única contraindicación para la vacuna es el antecedente de anafilaxia por levadura de panificación. La vacunación consta de tres dosis."
+      ],
+      "respuesta_referencia": "Según el documento, en 1 ml de sangre de un paciente con hepatitis aguda inducida por el VHB puede haber hasta un millón de partículas infecciosas, en contraste con sólo 5 o menos partículas infecciosas de VIH en un volumen similar.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Respuesta extraída directamente del fragmento PDF3-F07, página 41."
+    },
+    {
+      "id": "GS-RAG-24",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "tipo": "multi_fragmento",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuáles son los tres tipos de hipotensión según los parámetros hemodinámicos y cómo se corrige un bajo gasto cardíaco con presiones de llenado bajas?",
+      "fragment_ids_usados": [
+        "PDF3-F08",
+        "PDF3-F06"
+      ],
+      "contextos": [
+        "La presión arterial media es una función del gasto cardíaco y de la resistencia vascular sistémica: PAM = IC × IRVS. El gasto cardíaco, a su vez, depende del retorno venoso. Si se usa la presión venosa central como un índice del retorno venoso, hay tres variables para describir cualquier paciente con hipotensión: la presión venosa central, el gasto cardíaco y el índice de resistencia vascular sistémica. Este subgrupo de tres variables se usa para describir las tres formas clásicas de hipotensión: hipovolémica (PVC baja, GC bajo, IRVS elevada), cardiogénica (PVC elevada, GC bajo, IRVS elevada) y vasogénica/distributiva (PVC baja-normal, GC elevado, IRVS baja).",
+        "Si el gasto cardíaco es bajo (índice cardíaco < 2,4 l/min/m2), el siguiente paso será medir la presión de llenado ventricular (la presión venosa central [PVC] o la presión de enclavamiento capilar pulmonar [PECP]). Si la PVC es menor de 4 mm Hg o la presión de enclavamiento es inferior a 6 mm Hg, estará indicada la restauración volumétrica hasta que la PVC se eleve a unos 10 mm Hg o la presión de enclavamiento aumente a unos 15 mm Hg. Si las presiones de llenado ventricular son normales o están elevadas, debe normalizarse el gasto cardíaco usando dobutamina. Corrección de la anemia: si la hemoglobina está por debajo de 7 g/dl, habrá que considerar una transfusión sanguínea. Corrección de la hipoxemia: si la SaO2 es menor del 90%, deberá aumentarse la concentración de oxígeno inhalado."
+      ],
+      "respuesta_referencia": "Según el documento, las tres formas clásicas de hipotensión son: hipovolémica (PVC baja, GC bajo, IRVS elevada), cardiogénica (PVC elevada, GC bajo, IRVS elevada) y vasogénica/distributiva (PVC baja-normal, GC elevado, IRVS baja). El texto indica que cuando hay bajo gasto cardíaco (IC < 2,4 l/min/m2) con presiones de llenado bajas (PVC < 4 mm Hg o PECP < 6 mm Hg), se debe realizar restauración volumétrica hasta elevar la PVC a 10 mm Hg o la PECP a 15 mm Hg.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": true,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Combina información de PDF3-F08 (tipos de hipotensión) y PDF3-F06 (corrección del bajo gasto)."
+    },
+    {
+      "id": "GS-RAG-25",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "tipo": "multi_fragmento",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Qué papel tiene la hemoglobina en el transporte de CO2 y cómo se compara la excreción de ácido pulmonar con la renal?",
+      "fragment_ids_usados": [
+        "PDF3-F01",
+        "PDF3-F02"
+      ],
+      "contextos": [
+        "La hemoglobina tiene una mayor capacidad de amortiguación cuando se encuentra en su forma insaturada, y la sangre totalmente insaturada puede fijar una cantidad adicional de 60 ml/l de CO2. El aumento del contenido de CO2 debido a la desaturación de la oxihemoglobina se conoce como efecto Haldane. El contenido de CO2 en sangre venosa es 40 ml/l mayor que el de la sangre arterial. Alrededor del 60% de este contenido de CO2 adicional en la sangre venosa se debe a un aumento de la PCO2, mientras que el 40% se debe a la insaturación de la hemoglobina. Así, el efecto Haldane es responsable de casi la mitad del aumento del contenido de CO2 en la sangre venosa.",
+        "La VCO2 normal en los adultos es de 160-220 ml/min, o de 90-130 ml/min/m2 cuando se ajusta según el tamaño corporal. Normalmente, la VCO2 es de alrededor del 80% de la VO2, por lo que la proporción VCO2/VO2 suele ser de 0,8. Esta proporción se denomina cociente respiratorio (RQ). El CO2 es esencialmente un ácido. La tasa normal de excreción de ácido a través de los pulmones es de 9 mEq/min, o 12.960 mEq en 24 h. Como los riñones excretan sólo 40 a 80 mEq de ácido cada 24 h, el principal órgano de excreción de ácido en el organismo son los pulmones, y no los riñones."
+      ],
+      "respuesta_referencia": "Según el documento, la hemoglobina insaturada tiene mayor capacidad de amortiguación y puede fijar 60 ml/l adicionales de CO2 (efecto Haldane), siendo responsable de casi la mitad del aumento del contenido de CO2 en sangre venosa. El texto indica que los pulmones excretan 12.960 mEq de ácido en 24 h frente a sólo 40-80 mEq de los riñones, haciendo de los pulmones el principal órgano de excreción de ácido.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": true,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Combina información de PDF3-F01 (efecto Haldane) y PDF3-F02 (excreción ácida pulmonar vs renal)."
+    },
+    {
+      "id": "GS-RAG-26",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "tipo": "sinonimo",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Qué diferencia hay entre los sueros salinos y las soluciones con macromoléculas para la reanimación con fluidos en el paciente crítico?",
+      "fragment_ids_usados": [
+        "PDF3-F05"
+      ],
+      "contextos": [
+        "Tipo 1: Líquidos que contienen hematíes (sangre, concentrados de hematíes). Aumentan la capacidad de transporte de oxígeno. Su capacidad para fluir y aumentar el gasto cardíaco está limitada por los efectos de viscosidad de las células. Tipo 2: Líquidos que contienen grandes moléculas con salida restringida del espacio vascular, denominados coloides (plasma, albúmina, dextranos, almidón). Aumentan preferentemente el volumen intravascular y son los líquidos más eficaces para aumentar el gasto cardíaco. Tipo 3: Líquidos que contienen electrólitos y otras pequeñas moléculas que se mueven libremente en el espacio extracelular, denominados cristaloides (solución salina, soluciones de Ringer, Normosol). Se distribuyen equitativamente en el espacio extracelular y preferentemente aumentan el volumen del líquido intersticial."
+      ],
+      "respuesta_referencia": "Según el documento, los cristaloides (sueros salinos, Ringer, Normosol) contienen electrólitos y pequeñas moléculas que se distribuyen en el espacio extracelular, aumentando preferentemente el volumen intersticial. En cambio, los coloides (soluciones con macromoléculas como albúmina, dextranos, almidón) tienen salida restringida del espacio vascular, aumentando preferentemente el volumen intravascular y siendo los más eficaces para aumentar el gasto cardíaco.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": true,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Usa 'sueros salinos' como sinónimo de 'cristaloides' y 'soluciones con macromoléculas' como sinónimo de 'coloides'."
+    },
+    {
+      "id": "GS-RAG-27",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "tipo": "sinonimo",
+      "dificultad": "intermedia",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuál es la distancia desde el sitio de punción de la vena infraclavicular hasta la aurícula derecha al canalizar por el lado derecho?",
+      "fragment_ids_usados": [
+        "PDF3-F10"
+      ],
+      "contextos": [
+        "La vena subclavia es una continuación de la vena axilar al pasar ésta sobre la primera costilla. La mayor parte de su trayectoria discurre por el lado externo de la clavícula, y en algunos puntos está solamente 5 mm por encima de la pleura pulmonar apical. La cara inferior de la vena se asienta sobre el músculo escaleno anterior, con la arteria subclavia situada profunda con respecto al músculo. Como la arteria está más profunda que la vena, se evitará el riesgo de punción de la primera si se evita la penetración profunda con la aguja de prueba. La distancia promedio desde los puntos de canulación en la vena subclavia hasta la aurícula derecha es de 14,5 cm para el lado derecho y de 18,5 cm para el lado izquierdo. Los catéteres no deben tener una longitud superior a 15 cm para evitar colocarlos en el lado derecho del corazón."
+      ],
+      "respuesta_referencia": "Según el documento, la distancia promedio desde los puntos de canulación en la vena subclavia (vena infraclavicular) hasta la aurícula derecha es de 14,5 cm para el lado derecho y de 18,5 cm para el lado izquierdo. El texto indica que los catéteres no deben superar los 15 cm de longitud para evitar colocarlos en el lado derecho del corazón.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": true,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Usa 'vena infraclavicular' como sinónimo de 'vena subclavia' y 'sitio de punción' como sinónimo de 'puntos de canulación'."
+    },
+    {
+      "id": "GS-RAG-28",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "tipo": "razonamiento_aplicado",
+      "dificultad": "avanzada",
+      "idioma_pregunta": "en",
+      "pregunta": "A critically ill patient has an arterial blood gas showing SaO2 of 85% and a hemoglobin of 6.2 g/dl with a cardiac index of 2.0 L/min/m². According to the protocol for correcting oxygen transport, what interventions should be prioritized?",
+      "fragment_ids_usados": [
+        "PDF3-F06"
+      ],
+      "contextos": [
+        "Si el gasto cardíaco es bajo (índice cardíaco < 2,4 l/min/m2), el siguiente paso será medir la presión de llenado ventricular (la presión venosa central [PVC] o la presión de enclavamiento capilar pulmonar [PECP]). Si la PVC es menor de 4 mm Hg o la presión de enclavamiento es inferior a 6 mm Hg, estará indicada la restauración volumétrica hasta que la PVC se eleve a unos 10 mm Hg o la presión de enclavamiento aumente a unos 15 mm Hg. Si las presiones de llenado ventricular son normales o están elevadas, debe normalizarse el gasto cardíaco usando dobutamina. Corrección de la anemia: si la hemoglobina está por debajo de 7 g/dl, habrá que considerar una transfusión sanguínea. Corrección de la hipoxemia: si la SaO2 es menor del 90%, deberá aumentarse la concentración de oxígeno inhalado."
+      ],
+      "respuesta_referencia": "According to the document, this patient requires three interventions: First, since the cardiac index is low (2.0 < 2.4 L/min/m²), ventricular filling pressures should be measured to guide volume restoration or dobutamine use. Second, since hemoglobin is below 7 g/dl (6.2 g/dl), a blood transfusion should be considered. Third, since SaO2 is below 90% (85%), the inspired oxygen concentration should be increased.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": true,
+      "is_bilingual": true,
+      "notas": "Pregunta en inglés. Requiere aplicar los tres umbrales del protocolo (IC < 2.4, Hb < 7, SaO2 < 90%) al caso descrito."
+    },
+    {
+      "id": "GS-RAG-29",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "tipo": "razonamiento_aplicado",
+      "dificultad": "avanzada",
+      "idioma_pregunta": "es",
+      "pregunta": "Un paciente de la UCI lleva 12 días sin aporte de tiamina, recibe furosemida diaria y tiene hipomagnesemia documentada. ¿Cómo debo valorar el riesgo de déficit de tiamina según el texto?",
+      "fragment_ids_usados": [
+        "PDF3-F09"
+      ],
+      "contextos": [
+        "La tiamina (vitamina B1) es un componente del pirofosfato de tiamina, un cofactor esencial en el metabolismo de los hidratos de carbono. Es probable que el déficit de tiamina sea habitual en pacientes de la UCI por los siguientes motivos: el contenido corporal normal de tiamina es sólo de unos 30 mg, de modo que la falta de aporte causaría una depleción de las reservas endógenas a los 10 días suponiendo una necesidad diaria de 3 mg. El uso de tiamina aumenta en situaciones de hipercatabolismo. La furosemida aumenta la excreción urinaria de tiamina. Para la conversión de tiamina en pirofosfato de tiamina se necesita magnesio, por lo que la depleción de magnesio causa una forma funcional de déficit de tiamina."
+      ],
+      "respuesta_referencia": "Según el documento, este paciente presenta un riesgo muy alto de déficit de tiamina por tres motivos convergentes: lleva 12 días sin aporte (el texto indica que las reservas se agotan a los 10 días con una necesidad diaria de 3 mg y un contenido corporal de sólo 30 mg), recibe furosemida que aumenta la excreción urinaria de tiamina, y tiene hipomagnesemia que causa una forma funcional de déficit al impedir la conversión de tiamina en pirofosfato de tiamina.",
+      "is_out_of_domain": false,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": true,
+      "is_bilingual": false,
+      "notas": "Requiere aplicar los tres factores de riesgo de déficit de tiamina al caso clínico descrito."
+    },
+    {
+      "id": "GS-RAG-30",
+      "pdf_origen": "El Libro de la UCI Paul Marino 3a ed.pdf",
+      "tipo": "fuera_de_dominio",
+      "dificultad": "basica",
+      "idioma_pregunta": "es",
+      "pregunta": "¿Cuáles son las indicaciones y contraindicaciones de la trombolisis sistémica en el ictus isquémico agudo?",
+      "fragment_ids_usados": [],
+      "contextos": [],
+      "respuesta_referencia": "Esta información no está disponible en el documento proporcionado. El Libro de la UCI de Paul Marino aborda temas como hemodinámica, transporte de oxígeno y CO2, tromboembolismo venoso, acceso vascular, infecciones asociadas a catéteres y reposición de volumen, pero no incluye protocolos específicos para el manejo del ictus isquémico agudo ni criterios de trombolisis sistémica.",
+      "is_out_of_domain": true,
+      "is_multi_fragment": false,
+      "is_synonym_test": false,
+      "is_reasoning": false,
+      "is_bilingual": false,
+      "notas": "Pregunta fuera del dominio de los capítulos extraídos del libro de Marino."
+    }
+  ]
+}

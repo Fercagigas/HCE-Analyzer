@@ -1,0 +1,98 @@
+# Implementation Plan
+
+- [x] 1. Create ParentChildChunker component
+  - [x] 1.1 Implement ParentChildChunker class with chunk_document method
+    - Create class in `services/rag/parent_child_chunker.py`
+    - Implement parent chunk creation (1500-2000 chars)
+    - Implement child chunk creation (300-500 chars) with parent_id linking
+    - _Requirements: 1.1, 1.3_
+  - [ ]* 1.2 Write property test for chunk integrity
+    - **Property 1: Parent-Child Chunk Integrity**
+    - **Validates: Requirements 1.1, 1.2, 1.3**
+  - [x] 1.3 Implement get_parent_for_child method
+    - Retrieve parent chunk given child_id
+    - _Requirements: 1.2_
+  - [x] 1.4 Implement pretty_print_hierarchy and parse_hierarchy methods
+    - Serialization of chunk hierarchy for debugging
+    - Parsing back to validate structure
+    - _Requirements: 1.4, 1.5_
+  - [ ]* 1.5 Write property test for hierarchy round-trip
+    - **Property 2: Chunk Hierarchy Round-Trip**
+    - **Validates: Requirements 1.4, 1.5**
+
+- [x] 2. Create HybridSearcher component
+  - [x] 2.1 Implement BM25 index management
+    - Create class in `services/rag/hybrid_searcher.py`
+    - Use rank_bm25 library for BM25 indexing
+    - Implement add_documents and _bm25_search methods
+    - _Requirements: 2.1, 4.2, 4.3_
+  - [x] 2.2 Implement vector search wrapper
+    - Wrap ChromaDB similarity_search
+    - Return results in consistent format
+    - _Requirements: 2.1_
+  - [x] 2.3 Implement RRF fusion
+    - Implement _rrf_fusion method with k=60 default
+    - Combine BM25 and vector results
+    - _Requirements: 2.2_
+  - [x] 2.4 Implement main search method with fallback
+    - Combine BM25 + vector + RRF
+    - Fall back to vector-only if BM25 empty
+    - _Requirements: 2.1, 2.4_
+  - [ ]* 2.5 Write property test for hybrid search fusion
+    - **Property 3: Hybrid Search Fusion Validity**
+    - **Validates: Requirements 2.1, 2.2**
+
+- [x] 3. Create Reranker component
+  - [x] 3.1 Implement Reranker class
+    - Create class in `services/rag/reranker.py`
+    - Use cross-encoder/ms-marco-MiniLM-L-6-v2 model
+    - Implement rerank method
+    - _Requirements: 3.1, 3.2_
+  - [x] 3.2 Implement error handling for unavailable model
+    - Return original results if model fails
+    - Log warning
+    - _Requirements: 3.3_
+  - [ ]* 3.3 Write property test for reranking validity
+    - **Property 4: Reranking Order Validity**
+    - **Validates: Requirements 3.1, 3.2, 3.4**
+
+- [x] 4. Checkpoint - Make sure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 5. Create ImprovedRAGService
+  - [x] 5.1 Implement ImprovedRAGService class
+    - Create class in `services/rag/improved_rag_service.py`
+    - Initialize ParentChildChunker, HybridSearcher, Reranker
+    - Initialize ChromaDB and embeddings
+    - _Requirements: 4.1_
+  - [x] 5.2 Implement add_documents method
+    - Process documents with ParentChildChunker
+    - Index in both BM25 and ChromaDB
+    - Store parent chunks for retrieval
+    - _Requirements: 4.2_
+  - [x] 5.3 Implement search method
+    - Hybrid search on child chunks
+    - Rerank results
+    - Retrieve parent chunks for context
+    - _Requirements: 1.2, 2.1, 3.1_
+  - [x] 5.4 Implement rebuild_indexes method
+    - Clear BM25 and ChromaDB
+    - Reindex all documents
+    - _Requirements: 4.4_
+  - [ ]* 5.5 Write property test for dual index consistency
+    - **Property 5: Dual Index Consistency**
+    - **Validates: Requirements 4.2, 4.4**
+
+- [x] 6. Update RAG Tool integration
+  - [x] 6.1 Update rag_tool.py to use ImprovedRAGService
+    - Replace RAGService with ImprovedRAGService
+    - Update execute method to use new search
+    - _Requirements: 1.2, 2.1, 3.1_
+  - [x] 6.2 Update rag_service.py for backward compatibility
+    - Keep existing interface
+    - Delegate to ImprovedRAGService internally
+    - _Requirements: 4.1_
+
+- [x] 7. Final Checkpoint - Make sure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+

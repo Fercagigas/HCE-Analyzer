@@ -11,9 +11,12 @@ def show_login_page():
     st.markdown(f"""
         <div style='text-align: center; padding: 3rem 0;'>
             <h1>{APP_ICON} {APP_NAME}</h1>
-            <h3>Sistema de Análisis Clínico Inteligente</h3>
+            <h3>Sistema de Análisis Clínico Inteligente con Chat Unificado</h3>
             <p style='color: #666; font-size: 1.1em;'>
-                Inicia sesión para acceder a las funcionalidades avanzadas de análisis médico
+                Acceso inteligente a datos MIMIC-IV-ED y documentos clínicos en una sola interfaz
+            </p>
+            <p style='color: #667eea; font-size: 0.95em; margin-top: 1rem;'>
+                🎯 Chat Unificado • 🗄️ Base de Datos • 📚 RAG • 📊 Visualizaciones
             </p>
         </div>
     """, unsafe_allow_html=True)
@@ -43,6 +46,8 @@ def show_login_form():
             placeholder="Tu contraseña"
         )
         
+        remember_me = st.checkbox("Mantener sesión iniciada")
+
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             login_button = st.form_submit_button(
@@ -57,13 +62,31 @@ def show_login_form():
                 return
             
             with st.spinner("🔄 Verificando credenciales..."):
-                success, message = SessionManager.login(email, password)
+                success, message = SessionManager.login(email, password, remember_me)
                 
                 if success:
                     st.success("✅ ¡Bienvenido! Redirigiendo...")
                     st.rerun()
                 else:
                     st.error(f"❌ {message}")
+    
+    # Enlace para recuperar contraseña (fuera del form)
+    st.markdown("---")
+    with st.expander("🔑 ¿Olvidaste tu contraseña?"):
+        reset_email = st.text_input(
+            "Ingresa tu correo electrónico",
+            placeholder="tu.email@hospital.com",
+            key="reset_email"
+        )
+        if st.button("📧 Enviar enlace de recuperación", use_container_width=True):
+            if reset_email and '@' in reset_email:
+                success, msg = st.session_state.auth_service.reset_password(reset_email)
+                if success:
+                    st.success(f"✅ {msg}")
+                else:
+                    st.error(f"❌ {msg}")
+            else:
+                st.error("❌ Ingresa un correo válido")
 
 def show_register_form():
     """Formulario de registro"""

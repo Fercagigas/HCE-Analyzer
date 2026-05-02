@@ -1,0 +1,60 @@
+================================================================================
+  EVALUATION FRAMEWORK - EVALUATION ORCHESTRATOR RESULTS
+  20260428 11:12:09
+================================================================================
+
+ENVIRONMENT
+  Python:               3.11.14
+  RAGAS:                0.4.3
+  LangChain:            1.2.7
+  LangChain-Anthropic:  1.3.1
+  Anthropic SDK:        0.77.0
+  Sentence-Transformers:5.2.2
+  Model:                claude-haiku-4-5-20251001
+  Golden Set:           golden_set_ragas.json (MD5: 3945f2f542d781fb47c179481a4b0a44)
+  Start Time:           20260428 11:12:09
+
+--------------------------------------------------------------------------------
+PRE-FLIGHT CHECKS
+--------------------------------------------------------------------------------
+
+  [OK] Golden set files exist
+  [OK] ANTHROPIC_API_KEY set
+  [OK] Supabase connection available
+  [OK] Results directory ready
+
+--------------------------------------------------------------------------------
+MODULE RESULTS
+--------------------------------------------------------------------------------
+
+  Module                         | Status   |   Duration | Start               | End                
+  -------------------------------+----------+------------+---------------------+--------------------
+  RAGAS Evaluation (DB)          | PASSED   |     789.7s | 20260428 10:20:53   | 20260428 10:34:03  
+  RAGAS Evaluation (RAG)         | PASSED   |    1814.3s | 20260428 10:34:03   | 20260428 11:04:17  
+  Latency Benchmarks             | PASSED   |     104.2s | 20260428 11:04:17   | 20260428 11:06:01  
+  Security Tests                 | PASSED   |      37.6s | 20260428 11:06:01   | 20260428 11:06:39  
+  Functional Test Cases          | PASSED   |     330.1s | 20260428 11:06:39   | 20260428 11:12:09  
+
+--------------------------------------------------------------------------------
+SUMMARY
+--------------------------------------------------------------------------------
+
+  Metric                 |   Score | Threshold | Status
+  -----------------------+---------+-----------+-------
+  RAGAS Evaluation (DB)  |  1.0000 |    1.0000 | PASS
+  RAGAS Evaluation (RAG) |  1.0000 |    1.0000 | PASS
+  Latency Benchmarks     |  1.0000 |    1.0000 | PASS
+  Security Tests         |  1.0000 |    1.0000 | PASS
+  Functional Test Cases  |  1.0000 |    1.0000 | PASS
+
+  Overall: PASS (5/5 metrics above threshold)
+
+--------------------------------------------------------------------------------
+CONCLUSIONS
+--------------------------------------------------------------------------------
+
+  Overall result: PASS (5/5 modules completed successfully). Modules passed: RAGAS Evaluation (DB), RAGAS Evaluation (RAG), Latency Benchmarks, Security Tests, Functional Test Cases.
+
+================================================================================
+  Execution time: 3075.8s | Items: 5 | Errors: 0
+================================================================================

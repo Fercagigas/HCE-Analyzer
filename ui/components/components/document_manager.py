@@ -11,8 +11,7 @@ from pathlib import Path
 import json
 
 from src.processors.document_processor import DocumentProcessor
-from services.rag_service import RAGService
-from data.storage.vector_store_manager import VectorStoreManager
+from services.rag.improved_rag_service import ImprovedRAGService, get_rag_service
 from services.auth.session_manager import SessionManager
 from utils.helpers.utils import FileUtils, ValidationUtils
 from config.config import MEDICAL_SPECIALTIES, DOCUMENT_TYPES, RAG_CONFIG
@@ -22,8 +21,7 @@ class DocumentManager:
     
     def __init__(self):
         self.document_processor = DocumentProcessor()
-        self.rag_service = RAGService()
-        self.vector_store_manager = VectorStoreManager()
+        self.rag_service = get_rag_service()  # singleton — avoids CUDA re-load
         self.max_file_size_mb = RAG_CONFIG["max_file_size_mb"]
         self.supported_formats = RAG_CONFIG["supported_formats"]
     
@@ -89,35 +87,18 @@ class DocumentManager:
                     st.write(f"📄 {file.name} ({file_size_mb:.2f} MB)")
             
             # Metadatos
-            col1, col2 = st.columns(2)
+            # Especialidad fija: Urgencias
+            specialty = "urgencias"
+            st.info("🏥 **Especialidad:** Urgencias y Emergencias (MIMIC-IV-ED)")
+            st.caption("🔜 Próximamente: Más especialidades disponibles")
             
-            with col1:
-                specialty = st.selectbox(
-                    "🏥 Especialidad Médica",
-                    [""] + list(MEDICAL_SPECIALTIES.keys()),
-                    format_func=lambda x: "Seleccionar..." if x == "" else MEDICAL_SPECIALTIES[x]["name"],
-                    help="Especialidad médica principal del documento"
-                )
-                
-                document_type = st.selectbox(
-                    "📋 Tipo de Documento",
-                    [""] + list(DOCUMENT_TYPES.keys()),
-                    format_func=lambda x: "Seleccionar..." if x == "" else DOCUMENT_TYPES[x]["name"],
-                    help="Tipo de documento clínico"
-                )
-            
-            with col2:
-                institution = st.text_input(
-                    "🏥 Institución",
-                    placeholder="Hospital Nacional, Sociedad Médica, etc.",
-                    help="Institución que emite el documento"
-                )
-                
-                version = st.text_input(
-                    "📅 Versión/Año",
-                    placeholder="2024, v2.1, etc.",
-                    help="Versión o año del documento"
-                )
+            # Tipo de documento
+            document_type = st.selectbox(
+                "📋 Tipo de Documento",
+                [""] + list(DOCUMENT_TYPES.keys()),
+                format_func=lambda x: "Seleccionar..." if x == "" else DOCUMENT_TYPES[x]["name"],
+                help="Tipo de documento clínico"
+            )
             
             # Descripción opcional
             description = st.text_area(
@@ -162,8 +143,6 @@ class DocumentManager:
             if process_button:
                 if not uploaded_files:
                     st.error("❌ Selecciona al menos un archivo")
-                elif not specialty:
-                    st.error("❌ Selecciona una especialidad médica")
                 elif not document_type:
                     st.error("❌ Selecciona un tipo de documento")
                 else:
@@ -172,8 +151,6 @@ class DocumentManager:
                         {
                             'specialty': specialty,
                             'document_type': document_type,
-                            'institution': institution,
-                            'version': version,
                             'description': description,
                             'chunk_size': chunk_size,
                             'chunk_overlap': chunk_overlap,
@@ -232,13 +209,17 @@ class DocumentManager:
                     chunks = self.document_processor.process_document(tmp_file_path, file_metadata)
                     
                     if chunks:
-                        # Añadir al vector store
-                        result = self.vector_store_manager.add_documents(chunks)
+                        # Añadir al vector store via ImprovedRAGService
+                        full_text = "\n\n".join([chunk.page_content for chunk in chunks])
+                        result = self.rag_service.add_text(
+                            text=full_text,
+                            metadata=file_metadata
+                        )
                         
-                        if result['success']:
+                        if result.get('success', False):
                             processed_files.append({
                                 'file': uploaded_file.name,
-                                'chunks': len(chunks)
+                                'chunks': result.get('child_chunks', len(chunks))
                             })
                         else:
                             failed_files.append({
@@ -302,7 +283,7 @@ class DocumentManager:
         
         try:
             # Obtener información de la colección
-            collection_info = self.vector_store_manager.get_collection_info()
+            collection_info = self.rag_service.get_collection_stats()
             
             if 'error' in collection_info:
                 st.error(f"❌ Error obteniendo información: {collection_info['error']}")
@@ -374,10 +355,9 @@ class DocumentManager:
                 filters['document_type'] = type_filter
             
             # Realizar búsqueda
-            results = self.vector_store_manager.search_similar(
+            results = self.rag_service.search_clinical_guidelines(
                 query=search_term,
-                n_results=20,
-                where=filters if filters else None
+                top_k=20
             )
             
             if not results:
@@ -429,14 +409,13 @@ class DocumentManager:
                 # Obtener información del documento
                 try:
                     # Buscar información específica del documento
-                    doc_results = self.vector_store_manager.search_similar(
-                        query="",
-                        n_results=1,
-                        where={'filename': source}
+                    doc_results = self.rag_service.search_clinical_guidelines(
+                        query=source,
+                        top_k=1
                     )
                     
                     if doc_results:
-                        metadata = doc_results[0]['metadata']
+                        metadata = doc_results[0].get('metadata', {})
                         
                         col1, col2 = st.columns(2)
                         
@@ -490,11 +469,11 @@ class DocumentManager:
     def _delete_document(self, filename: str):
         """Elimina un documento de la base de conocimiento"""
         try:
-            result = self.vector_store_manager.delete_documents(
-                where={'filename': filename}
+            result = self.rag_service.delete_documents(
+                filter_dict={'filename': filename}
             )
             
-            if result['success']:
+            if result.get('success'):
                 st.success(f"✅ Documento '{filename}' eliminado correctamente")
             else:
                 st.error(f"❌ Error eliminando documento: {result.get('error', 'Error desconocido')}")
@@ -507,7 +486,7 @@ class DocumentManager:
         st.markdown("### 📊 Estadísticas de la Base de Conocimiento")
         
         try:
-            collection_info = self.vector_store_manager.get_collection_info()
+            collection_info = self.rag_service.get_collection_stats()
             
             if 'error' in collection_info:
                 st.error(f"❌ Error obteniendo estadísticas: {collection_info['error']}")
@@ -652,7 +631,7 @@ class DocumentManager:
                 export_path = f"./data/exports/collection_export_{timestamp}.json"
                 
                 with st.spinner("Exportando colección..."):
-                    result = self.vector_store_manager.export_collection(export_path)
+                    result = self.rag_service.export_collection(export_path)
                     if result['success']:
                         st.success(f"✅ Colección exportada: {export_path}")
                     else:
@@ -672,7 +651,7 @@ class DocumentManager:
             with col1:
                 if st.button("✅ Confirmar Limpieza", type="primary"):
                     with st.spinner("Limpiando colección..."):
-                        result = self.vector_store_manager.reset_collection()
+                        result = self.rag_service.reset_collection()
                         if result['success']:
                             st.success("✅ Colección limpiada correctamente")
                         else:

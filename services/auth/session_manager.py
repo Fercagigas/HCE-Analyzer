@@ -1,25 +1,31 @@
-
-"""
-Gestor de sesiones y autenticación para HCE Analyzer
-"""
 import streamlit as st
 from typing import Dict, Any, Tuple, Optional, List
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from services.auth.auth_service import AuthService
+import extra_streamlit_components as stx
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class SessionManager:
-    """Gestor centralizado de sesiones y autenticación"""
+    """Gestor centralizado de sesiones y autenticación con cookies"""
     
+    COOKIE_NAME = "hce_remember_me"
+    COOKIE_EXPIRY_HOURS = 1
+
+    @staticmethod
+    def get_cookie_manager():
+        return st.session_state.cookie_manager
+
     @staticmethod
     def init_session():
-        """Inicializa el estado de sesión"""
+        """Inicializa el estado de sesión y el gestor de cookies"""
         try:
-            # Inicializar variables de sesión si no existen
+            if 'cookie_manager' not in st.session_state:
+                st.session_state.cookie_manager = stx.CookieManager(key='cookie_manager_hce')
+
             if 'authenticated' not in st.session_state:
                 st.session_state.authenticated = False
             
@@ -35,7 +41,6 @@ class SessionManager:
             if 'current_mode' not in st.session_state:
                 st.session_state.current_mode = 'welcome'
             
-            # Verificar sesión existente
             SessionManager._check_existing_session()
             
         except Exception as e:
@@ -44,38 +49,57 @@ class SessionManager:
     
     @staticmethod
     def _check_existing_session():
-        """Verifica si existe una sesión válida"""
+        """Verifica si existe una sesión válida en el estado o en las cookies"""
         try:
-            # Verificar si hay datos de usuario en session_state
-            if st.session_state.get('user') and st.session_state.get('authenticated'):
-                # Verificar que la sesión sigue siendo válida
-                if SessionManager._validate_session():
-                    logger.info(f"Sesión válida para usuario: {st.session_state.user.get('email')}")
-                else:
-                    SessionManager._clear_session()
+            if SessionManager.is_authenticated():
+                # Don't refresh cookie on every check to avoid duplicate key errors
+                return
+
+            cookie_manager = SessionManager.get_cookie_manager()
+            remember_me_cookie = cookie_manager.get(SessionManager.COOKIE_NAME)
+            if remember_me_cookie:
+                st.session_state.authenticated = True
+                st.session_state.user = remember_me_cookie
+                st.session_state.current_mode = 'welcome'
+                logger.info(f"Sesión restaurada desde cookie para: {remember_me_cookie.get('email')}")
+                
+                # Cargar preferencias del usuario al restaurar sesión
+                user_id = remember_me_cookie.get('id')
+                if user_id:
+                    SessionManager._load_user_preferences(user_id)
             
         except Exception as e:
-            logger.error(f"Error verificando sesión existente: {e}")
-            SessionManager._clear_session()
-    
+            # Log at debug level to avoid cluttering logs with cookie errors
+            logger.debug(f"Error verificando sesión existente: {e}")
+            # Don't clear session on cookie errors, just continue without cookies
+
     @staticmethod
-    def _validate_session() -> bool:
-        """Valida que la sesión actual sigue siendo válida"""
+    def _refresh_cookie():
+        """Refresca la cookie de sesión para extender su duración"""
         try:
-            # Aquí se podría verificar con Supabase si la sesión sigue activa
-            # Por ahora, asumimos que es válida si existe
-            return st.session_state.get('user') is not None
+            if SessionManager.is_authenticated():
+                cookie_manager = SessionManager.get_cookie_manager()
+                cookie_manager.set(
+                    SessionManager.COOKIE_NAME,
+                    st.session_state.user,
+                    expires_at=datetime.now() + timedelta(hours=SessionManager.COOKIE_EXPIRY_HOURS)
+                )
         except Exception as e:
-            logger.error(f"Error validando sesión: {e}")
-            return False
-    
+            # Silently fail on cookie refresh errors to avoid breaking the app
+            logger.debug(f"Error refrescando cookie: {e}")
+
     @staticmethod
     def _clear_session():
-        """Limpia el estado de sesión"""
+        """Limpia el estado de sesión y la cookie"""
         st.session_state.authenticated = False
         st.session_state.user = None
         st.session_state.current_session = None
         st.session_state.current_mode = 'welcome'
+        try:
+            cookie_manager = SessionManager.get_cookie_manager()
+            cookie_manager.delete(SessionManager.COOKIE_NAME)
+        except Exception as e:
+            logger.debug(f"Error eliminando cookie: {e}")
         logger.info("Sesión limpiada")
     
     @staticmethod
@@ -84,21 +108,25 @@ class SessionManager:
         return st.session_state.get('authenticated', False) and st.session_state.get('user') is not None
     
     @staticmethod
-    def login(email: str, password: str) -> Tuple[bool, str]:
-        """Inicia sesión de usuario"""
+    def login(email: str, password: str, remember_me: bool = False) -> Tuple[bool, str]:
+        """Inicia sesión de usuario y opcionalmente guarda una cookie"""
         try:
             if not email or not password:
                 return False, "Email y contraseña son requeridos"
             
-            # Intentar autenticación
             success, result = st.session_state.auth_service.login(email, password)
             
             if success:
-                # Configurar estado de sesión
                 st.session_state.authenticated = True
                 st.session_state.user = result
                 st.session_state.current_mode = 'welcome'
                 
+                # Cargar preferencias del usuario desde Supabase
+                SessionManager._load_user_preferences(result.get('id'))
+                
+                if remember_me:
+                    SessionManager._refresh_cookie()
+
                 logger.info(f"Login exitoso para: {email}")
                 return True, "Login exitoso"
             else:
@@ -109,6 +137,20 @@ class SessionManager:
             logger.error(f"Error en login: {e}")
             return False, "Error interno en autenticación"
     
+    @staticmethod
+    def logout():
+        """Cierra sesión del usuario y limpia la cookie"""
+        try:
+            user_email = st.session_state.get('user', {}).get('email', 'Usuario desconocido')
+            st.session_state.auth_service.logout()
+            SessionManager._clear_session()
+            logger.info(f"Logout exitoso para: {user_email}")
+            
+        except Exception as e:
+            logger.error(f"Error en logout: {e}")
+            SessionManager._clear_session()
+
+    # ... (el resto de los métodos de la clase se mantienen igual)
     @staticmethod
     def register(email: str, password: str, name: str, specialty: str = None, medical_license: str = None) -> Tuple[bool, str]:
         """Registra un nuevo usuario"""
@@ -135,26 +177,7 @@ class SessionManager:
         except Exception as e:
             logger.error(f"Error en registro: {e}")
             return False, "Error interno en registro"
-    
-    @staticmethod
-    def logout():
-        """Cierra sesión del usuario"""
-        try:
-            user_email = st.session_state.get('user', {}).get('email', 'Usuario desconocido')
             
-            # Cerrar sesión en el servicio de auth
-            st.session_state.auth_service.logout()
-            
-            # Limpiar estado de sesión
-            SessionManager._clear_session()
-            
-            logger.info(f"Logout exitoso para: {user_email}")
-            
-        except Exception as e:
-            logger.error(f"Error en logout: {e}")
-            # Limpiar sesión de todas formas
-            SessionManager._clear_session()
-    
     @staticmethod
     def get_current_user() -> Optional[Dict[str, Any]]:
         """Obtiene información del usuario actual"""
@@ -212,13 +235,21 @@ class SessionManager:
             return False, []
     
     @staticmethod
-    def save_message(session_id: str, content: str, role: str) -> bool:
-        """Guarda un mensaje en la sesión actual"""
+    def save_message(session_id: str, content: str, role: str, metadata: Optional[Dict[str, Any]] = None) -> bool:
+        """
+        Guarda un mensaje en la sesión actual
+        
+        Args:
+            session_id: ID de la sesión
+            content: Contenido del mensaje (texto)
+            role: 'user' o 'assistant'
+            metadata: Opcional - Dict con tools_used, sources, execution_time_ms, has_visualization
+        """
         try:
             if not SessionManager.is_authenticated():
                 return False
             
-            success = st.session_state.auth_service.save_message(session_id, content, role)
+            success = st.session_state.auth_service.save_message(session_id, content, role, metadata)
             
             if success:
                 logger.info(f"Mensaje guardado en sesión: {session_id}")
@@ -317,5 +348,53 @@ class SessionManager:
             
         except Exception as e:
             logger.error(f"Error verificando límites de sesión: {e}")
-            return {'valid': False, 'reason': 'Error interno'}
+            return {'valid': False, 'reason': 'Error interno'}    @staticmethod
+    def _load_user_preferences(user_id: str) -> None:
+        """
+        Carga las preferencias del usuario desde Supabase y las guarda en session_state.
 
+        Args:
+            user_id: ID del usuario
+        """
+        try:
+            from services.supabase_services import UserPreferencesService
+            prefs_service = UserPreferencesService()
+            success, preferences = prefs_service.get_preferences(user_id)
+
+            if success:
+                st.session_state.unified_config = preferences
+                st.session_state.user_preferences_service = prefs_service
+                logger.info(f"Preferencias cargadas para usuario: {user_id}")
+            else:
+                logger.warning("No se pudieron cargar preferencias, usando defaults")
+        except Exception as e:
+            logger.warning(f"Error cargando preferencias: {e}")
+
+    @staticmethod
+    def save_user_preferences(preferences: Dict[str, Any]) -> Tuple[bool, str]:
+        """
+        Guarda las preferencias del usuario en Supabase.
+
+        Args:
+            preferences: Dict con las preferencias a guardar
+
+        Returns:
+            Tuple (success, mensaje)
+        """
+        try:
+            if not SessionManager.is_authenticated():
+                return False, "No autenticado"
+
+            user_id = st.session_state.user.get('id')
+            if not user_id:
+                return False, "ID de usuario no disponible"
+
+            prefs_service = st.session_state.get('user_preferences_service')
+            if not prefs_service:
+                from services.supabase_services import UserPreferencesService
+                prefs_service = UserPreferencesService()
+
+            return prefs_service.save_preferences(user_id, preferences)
+        except Exception as e:
+            logger.error(f"Error guardando preferencias: {e}")
+            return False, str(e)

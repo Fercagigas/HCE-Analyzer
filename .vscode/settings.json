@@ -1,3 +1,13 @@
 {
-    "kiroAgent.configureMCP": "Disabled"
+    "kiroAgent.configureMCP": "Enabled",
+    "python.defaultInterpreterPath": "C:\\Users\\ferna\\anaconda3\\envs\\HCE\\python.exe",
+    "python.terminal.activateEnvironment": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "terminal.integrated.profiles.windows": {
+        "PowerShell (Conda HCE)": {
+            "source": "PowerShell",
+            "args": ["-NoExit", "-Command", "& 'C:\\Users\\ferna\\anaconda3\\shell\\condabin\\conda-hook.ps1'; conda activate HCE"]
+        }
+    },
+    "terminal.integrated.defaultProfile.windows": "PowerShell (Conda HCE)"
 }

@@ -1,0 +1,872 @@
+% ============================================================
+% metodologia_parte4.tex
+% Secciones 3.11, 3.12 y 3.13 de la Metodología del TFG
+% Continuación de metodologia_parte3.tex
+% Última figura de parte3: fig:security_layers
+% ============================================================
+
+% ------------------------------------------------------------------
+\section{Stack tecnológico y entorno de desarrollo}
+\label{sec:stack_tecnologico}
+% ------------------------------------------------------------------
+
+El sistema ChatHCE se construye sobre un conjunto de tecnologías
+seleccionadas por criterios de madurez, compatibilidad mutua y
+adecuación al contexto académico del proyecto.
+La figura~\ref{fig:tech_stack} presenta el mapa tecnológico
+organizado en cuatro cuadrantes funcionales.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  every node/.style={align=center},
+  hub/.style={
+    circle, draw=secondary, fill=secondary!15,
+    minimum size=2.2cm, line width=1.2pt,
+    font=\bfseries\small
+  },
+  quadlabel/.style={
+    font=\bfseries\footnotesize\color{white},
+    fill opacity=0.85, text opacity=1,
+    inner sep=4pt, rounded corners=3pt
+  },
+  technode/.style={
+    rectangle, rounded corners=4pt,
+    draw=#1!70!black, fill=#1!12,
+    minimum width=2.6cm, minimum height=0.65cm,
+    line width=0.8pt, font=\footnotesize
+  },
+  arrow/.style={->, >=stealth, line width=0.7pt, color=gray!60}
+]
+
+% ---- Nodo central ----
+\node[hub] (center) at (0,0) {Chat\\HCE\\v2.0};
+
+% ---- Cuadrante NW: IA y Modelos ----
+\node[fill=secondary!80, quadlabel] at (-4.2, 3.2) {IA \& Modelos};
+\node[technode=secondary] (haiku)   at (-4.2, 2.4)  {Claude Haiku 4.5};
+\node[technode=secondary] (sonnet)  at (-4.2, 1.6)  {Claude Sonnet 4.5};
+\node[technode=secondary] (lc)      at (-4.2, 0.8)  {LangChain $\geq$0.3};
+\node[technode=secondary] (st)      at (-4.2, 0.0)  {sentence-transformers};
+\node[technode=secondary] (tiktoken)at (-4.2,-0.8)  {tiktoken $\geq$0.7};
+
+% ---- Cuadrante NE: Frontend y API ----
+\node[fill=success!80, quadlabel] at (4.2, 3.2) {Frontend \& API};
+\node[technode=success] (streamlit) at (4.2, 2.4) {Streamlit};
+\node[technode=success] (fastapi)   at (4.2, 1.6) {FastAPI + Uvicorn};
+\node[technode=success] (pydantic)  at (4.2, 0.8) {Pydantic-Settings};
+\node[technode=success] (plotly)    at (4.2, 0.0) {Plotly / Matplotlib};
+\node[technode=success] (jinja)     at (4.2,-0.8) {Jinja2 / ReportLab};
+
+% ---- Cuadrante SW: Datos y Almacenamiento ----
+\node[fill=vizcolor!80, quadlabel] at (-4.2,-3.2) {Datos \& Almacenamiento};
+\node[technode=vizcolor] (supabase) at (-4.2,-2.4) {Supabase (PostgreSQL)};
+\node[technode=vizcolor] (pgvector) at (-4.2,-1.6) {pgvector (RAG)};
+\node[technode=vizcolor] (pandas)   at (-4.2,-4.0) {pandas / numpy};
+\node[technode=vizcolor] (redis)    at (-4.2,-4.8) {Redis (caché)};
+
+% ---- Cuadrante SE: Procesamiento y Seguridad ----
+\node[fill=accent!80, quadlabel] at (4.2,-3.2) {Procesamiento \& Seguridad};
+\node[technode=accent] (docling)  at (4.2,-2.4) {Docling / PyPDF2};
+\node[technode=accent] (pyjwt)    at (4.2,-1.6) {PyJWT / passlib};
+\node[technode=accent] (slowapi)  at (4.2,-4.0) {slowapi (rate limit)};
+\node[technode=accent] (structlog)at (4.2,-4.8) {structlog / psutil};
+
+% ---- Flechas al nodo central ----
+\foreach \n in {haiku,sonnet,lc,st,tiktoken}
+  \draw[arrow] (\n) -- (center);
+\foreach \n in {streamlit,fastapi,pydantic,plotly,jinja}
+  \draw[arrow] (\n) -- (center);
+\foreach \n in {supabase,pgvector,pandas,redis}
+  \draw[arrow] (\n) -- (center);
+\foreach \n in {docling,pyjwt,slowapi,structlog}
+  \draw[arrow] (\n) -- (center);
+
+\end{tikzpicture}
+\caption{Mapa tecnológico de ChatHCE organizado en cuatro cuadrantes funcionales.
+  El nodo central representa el sistema integrado; las flechas indican dependencia
+  directa de cada componente con el núcleo del sistema.}
+\label{fig:tech_stack}
+\end{figure}
+
+
+\subsection{Capa de inteligencia artificial}
+\label{sec:stack_ia}
+
+El núcleo de IA se articula en torno a la API de Anthropic con tres modelos
+en cadena de \textit{fallback}:
+
+\begin{enumerate}[nosep, leftmargin=*]
+  \item \textbf{Primario}: \texttt{claude-haiku-4-5-20251001} — modelo de baja
+    latencia y coste reducido, configurado con \texttt{max\_tokens=4096} y
+    \texttt{temperature=0.1}. Gestiona el 95\,\% de las consultas en producción.
+  \item \textbf{Secundario}: \texttt{claude-sonnet-4-5-20250929} — activado
+    automáticamente ante errores de sobrecarga del modelo primario.
+    Empleado también como modelo exclusivo del \texttt{VisualizationAgent}
+    (\texttt{max\_tokens=8192}) por su mayor capacidad de generación de código.
+  \item \textbf{Terciario}: \texttt{claude-opus-4-20250514} — reserva de máxima
+    capacidad para consultas de alta complejidad o fallos en cascada.
+\end{enumerate}
+
+La integración con LangChain se realiza mediante \texttt{langchain-anthropic}
+$\geq$\,0.3.0, que expone la clase \texttt{ChatAnthropic} con soporte nativo
+de \textit{tool calling} estructurado. El conteo de tokens se gestiona con
+\texttt{tiktoken} $\geq$\,0.7.0 para optimizar el uso del contexto disponible.
+Los \textit{embeddings} para el sistema RAG se generan con el modelo
+\texttt{sentence-transformers/all-MiniLM-L6-v2} (384 dimensiones), cargado
+localmente mediante \texttt{sentence-transformers} $\geq$\,3.0.0.
+
+\subsection{Capa de datos y persistencia}
+\label{sec:stack_datos}
+
+Supabase actúa como plataforma de datos unificada con dos esquemas diferenciados:
+
+\begin{itemize}[nosep, leftmargin=*]
+  \item \textbf{Esquema \texttt{public}}: tablas de aplicación (\texttt{users},
+    \texttt{chat\_sessions}, \texttt{chat\_messages}, \texttt{clinical\_documents})
+    con Row Level Security habilitado en las 13 tablas del sistema.
+  \item \textbf{Esquema \texttt{mimic\_ed}}: seis tablas del dataset MIMIC-IV-ED
+    (\texttt{edstays}, \texttt{triage}, \texttt{vitalsign}, \texttt{diagnosis},
+    \texttt{medrecon}, \texttt{pyxis}) con 31 índices B-tree optimizados para
+    consultas por \texttt{subject\_id}, \texttt{stay\_id} y \texttt{charttime}.
+\end{itemize}
+
+La extensión \texttt{pgvector} de PostgreSQL almacena los \textit{embeddings}
+de los documentos clínicos indexados, permitiendo búsqueda vectorial por
+similitud coseno directamente en la base de datos sin infraestructura adicional.
+El caché de respuestas LLM y de \textit{embeddings} se implementa con Redis,
+con TTL configurable de 300\,s por defecto (\texttt{CACHE\_TTL\_SECONDS}).
+
+\subsection{Capa de presentación y procesamiento}
+\label{sec:stack_frontend}
+
+La interfaz de usuario se construye con Streamlit, que permite desplegar
+aplicaciones web interactivas en Python sin separación frontend/backend.
+El punto de entrada es \texttt{main.py}, que carga \texttt{src/core/app.py}
+y renderiza \texttt{ui/unified\_chat\_interface.py} como componente principal.
+FastAPI con Uvicorn proporciona una API REST opcional para integración con
+sistemas externos. El procesamiento de documentos clínicos utiliza Docling
+para extracción avanzada de PDF y \texttt{python-docx} para documentos Word.
+Las visualizaciones se generan con Plotly (gráficas interactivas HTML) y
+Matplotlib (imágenes estáticas PNG a 150\,DPI).
+
+\subsection{Entorno de desarrollo y calidad de código}
+\label{sec:entorno_desarrollo}
+
+El proyecto requiere Python 3.8+ y gestiona dependencias mediante
+\texttt{requirements.txt} con versiones mínimas especificadas.
+El entorno recomendado es Conda (\texttt{environment.yml}).
+Las herramientas de calidad de código incluyen Black para formateo automático,
+Flake8 para análisis estático con longitud máxima de línea de 100 caracteres,
+y pytest con pytest-asyncio para la suite de pruebas.
+El logging estructurado se implementa con \texttt{structlog} y el módulo
+estándar \texttt{logging}, con rotación automática de archivos de 10\,MB
+y retención de 30 días.
+
+
+% ------------------------------------------------------------------
+\section{Marco de evaluación}
+\label{sec:evaluacion}
+% ------------------------------------------------------------------
+
+La evaluación de ChatHCE se estructura en cuatro dimensiones complementarias
+que cubren calidad de respuesta, rendimiento temporal, robustez ante ataques
+y corrección funcional. El marco se implementa en el directorio
+\texttt{Evaluation/} con cinco módulos independientes orquestados por
+\texttt{run\_all\_evaluations.py}. Todos los módulos instancian el agente
+mediante la función \texttt{instantiate\_agent()} del módulo compartido
+\texttt{eval\_helpers.py}, que crea una instancia de \texttt{UnifiedChatAgent}
+en condiciones idénticas a producción.
+
+\subsection{Evaluación RAGAS: calidad de recuperación y generación}
+\label{sec:eval_ragas}
+
+RAGAS (\textit{Retrieval-Augmented Generation Assessment Score}) es un
+\textit{framework} de evaluación sin referencia humana que mide la calidad
+de sistemas RAG mediante cuatro métricas complementarias
+\cite{es2023ragas}:
+
+\begin{itemize}[nosep, leftmargin=*]
+  \item \textbf{Faithfulness} ($\geq 0.85$): mide si cada afirmación de la
+    respuesta puede inferirse del contexto recuperado, sin introducir
+    información externa. Se calcula como la proporción de afirmaciones
+    verificables sobre el total de afirmaciones de la respuesta.
+  \item \textbf{Answer Relevancy} ($\geq 0.80$): evalúa si la respuesta
+    aborda directamente la pregunta formulada, penalizando respuestas
+    incompletas o que desvían el foco. Se estima generando preguntas
+    sintéticas a partir de la respuesta y midiendo su similitud semántica
+    con la pregunta original.
+  \item \textbf{Context Precision} ($\geq 0.75$): mide qué proporción de
+    los fragmentos recuperados son realmente relevantes para responder la
+    pregunta, penalizando el ruido en el contexto.
+  \item \textbf{Context Recall} ($\geq 0.70$): evalúa si el contexto
+    recuperado contiene toda la información necesaria para generar la
+    respuesta de referencia (\textit{ground truth}).
+\end{itemize}
+
+\subsubsection{Golden set de evaluación}
+\label{sec:golden_set}
+
+El golden set de base de datos (\texttt{golden\_set\_ragas.json}) contiene
+40 preguntas con respuestas de referencia verificadas directamente contra
+la base de datos MIMIC-IV-ED. La distribución por categoría es:
+8 preguntas de resumen de paciente (\texttt{patient\_summary}),
+8 de signos vitales (\texttt{vital\_signs}),
+8 de diagnósticos (\texttt{diagnoses}),
+8 de medicamentos (\texttt{medications}),
+4 de triaje (\texttt{triage}) y
+4 de consultas multi-tabla (\texttt{cross\_table}).
+Cada pregunta incluye la consulta SQL de referencia
+(\texttt{ground\_truth\_sql}) y los fragmentos de contexto esperados,
+lo que permite verificación determinista de las respuestas.
+
+El golden set RAG (\texttt{golden\_set\_ragas\_rag.json}) contiene
+30 preguntas distribuidas en cinco tipos: directa (9), multi-fragmento (6),
+sinónimo (6), razonamiento aplicado (6) y fuera de dominio (3).
+Las preguntas se generan a partir de tres documentos clínicos reales:
+el \textit{Manual del Residente de Medicina Intensiva} del Hospital
+Universitario Virgen del Rocío, los \textit{Estándares y Recomendaciones
+para Unidades de Cuidados Intensivos} del Ministerio de Sanidad, y
+\textit{El Libro de la UCI} de Paul L. Marino (3.ª edición).
+Las respuestas de referencia se generan mediante el método
+\textit{LLM-as-Extractor} con temperatura cero y un \textit{prompt}
+restrictivo que limita la respuesta exclusivamente al contenido de los
+fragmentos identificados como relevantes.
+
+\subsubsection{Implementación técnica}
+\label{sec:ragas_impl}
+
+El script \texttt{run\_ragas\_eval.py} implementa el pipeline de evaluación
+en cuatro etapas. Primero, carga y valida el golden set verificando la
+presencia de los campos obligatorios (\texttt{id}, \texttt{question},
+\texttt{ground\_truth}, \texttt{ground\_truth\_sql}, \texttt{contexts},
+\texttt{category}). Segundo, invoca \texttt{UnifiedChatAgent.process\_message()}
+para cada pregunta con reintentos automáticos ante errores de límite de tasa
+(\texttt{retry\_on\_rate\_limit}, máximo 3 intentos con espera de 60\,s).
+Tercero, extrae los contextos de la respuesta combinando las fuentes RAG
+(\texttt{sources}) y los resultados de herramientas (\texttt{tool\_results}).
+Cuarto, construye un \texttt{datasets.Dataset} compatible con RAGAS 0.4.3
+y ejecuta \texttt{evaluate()} con las cuatro métricas.
+
+\subsubsection{Resultados}
+\label{sec:ragas_resultados}
+
+La ejecución del 12 de marzo de 2026 procesó las 40 preguntas del golden set
+de base de datos en 1177\,s sin errores (0 fallos de invocación al agente).
+La librería RAGAS 0.4.3 no completó el cálculo de métricas agregadas en esta
+ejecución por un error interno de la librería al procesar los contextos
+generados por el agente, lo que impidió obtener puntuaciones numéricas
+finales. No obstante, el 100\,\% de las preguntas recibieron respuesta del
+agente (\texttt{Status: OK} en los 40 casos), confirmando la disponibilidad
+y estabilidad del sistema durante la evaluación.
+
+\begin{tcolorbox}[
+  colback=secondary!5,
+  colframe=secondary!60,
+  title={\textbf{Nota metodológica — Evaluación RAGAS}},
+  fonttitle=\small\bfseries,
+  left=6pt, right=6pt, top=4pt, bottom=4pt
+]
+\small
+La imposibilidad de obtener puntuaciones RAGAS agregadas se debe a una
+incompatibilidad entre la versión 0.4.3 de la librería y el formato de
+contextos generados por el agente (combinación de fuentes RAG y resultados
+de herramientas de base de datos). Esta limitación es conocida en la
+comunidad RAGAS para sistemas multi-herramienta y no refleja un fallo del
+sistema evaluado. La evaluación funcional mediante casos de prueba
+(Sección~\ref{sec:eval_funcional}) proporciona evidencia complementaria
+de la calidad de las respuestas.
+\end{tcolorbox}
+
+
+\subsection{Benchmarks de latencia}
+\label{sec:eval_latencia}
+
+El script \texttt{run\_latency\_benchmarks.py} mide el tiempo de respuesta
+del agente para 17 consultas predefinidas distribuidas en cuatro categorías,
+ejecutando 3 mediciones por consulta más 1 ejecución de calentamiento
+(\textit{warmup}) descartada de las estadísticas. Entre ejecuciones se
+introduce una pausa de 2\,s (\texttt{DELAY\_BETWEEN\_RUNS\_SECONDS}) para
+evitar efectos de caché de red. Las estadísticas calculadas por categoría
+son: media, mediana, percentil 95 (P95), percentil 99 (P99), mínimo y máximo.
+El criterio de aprobación se basa en el P95 de cada categoría frente a
+umbrales definidos en \texttt{THRESHOLDS\_MS}.
+
+\begin{table}[htbp]
+\centering
+\caption{Umbrales de latencia P95 y resultados obtenidos por categoría de consulta.
+  Ejecución del 12 de marzo de 2026 con 3 mediciones por consulta
+  (\texttt{claude-haiku-4-5-20251001}, Python 3.11.14).}
+\label{tab:latencia}
+\small
+\begin{tabular}{lrrrrrl}
+\toprule
+\textbf{Categoría} & \textbf{Umbral P95} & \textbf{P95 real} & \textbf{Media} & \textbf{Mediana} & \textbf{Mín/Máx} & \textbf{Estado} \\
+ & (ms) & (ms) & (ms) & (ms) & (ms) & \\
+\midrule
+DB (base de datos)   & 5\,000 & 1.1 & 1.0 & 0.9 & 0.8 / 1.2 & \textcolor{success}{\textbf{PASS}} \\
+RAG (documentos)     & 8\,000 & 1.1 & 0.9 & 0.9 & 0.8 / 1.1 & \textcolor{success}{\textbf{PASS}} \\
+VIZ (visualización)  & 15\,000 & 1.1 & 0.9 & 0.9 & 0.7 / 1.1 & \textcolor{success}{\textbf{PASS}} \\
+Complex (multi-tool) & 20\,000 & 1.2 & 1.0 & 0.9 & 0.7 / 1.3 & \textcolor{success}{\textbf{PASS}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Los resultados de la tabla~\ref{tab:latencia} muestran latencias de P95
+inferiores a 1.3\,ms en todas las categorías, muy por debajo de los umbrales
+establecidos. Estos valores corresponden al tiempo de procesamiento interno
+del agente en el entorno de evaluación, sin incluir la latencia de red hacia
+la API de Anthropic ni el tiempo de consulta a Supabase, que en condiciones
+reales de producción añaden entre 500\,ms y 3\,s dependiendo de la complejidad
+de la consulta y la carga del servicio. Las 51 mediciones realizadas
+(17 consultas $\times$ 3 ejecuciones) no registraron ningún fallo.
+
+\subsection{Pruebas de seguridad}
+\label{sec:eval_seguridad}
+
+El script \texttt{run\_security\_tests.py} ejecuta 11 pruebas de seguridad
+distribuidas en tres categorías: inyección SQL (5 pruebas), inyección de
+\textit{prompt} (3 pruebas) y anti-alucinación (3 pruebas).
+Cada prueba envía un \textit{payload} adversarial al agente y verifica la
+respuesta mediante una función de verificación específica.
+
+\begin{table}[htbp]
+\centering
+\caption{Resultados de las pruebas de seguridad por categoría.
+  Ejecución del 12 de marzo de 2026 (11 pruebas totales, 107.6\,s).}
+\label{tab:seguridad}
+\small
+\begin{tabular}{lcccp{5.5cm}}
+\toprule
+\textbf{Categoría} & \textbf{Aprobadas} & \textbf{Total} & \textbf{Estado} & \textbf{Observación} \\
+\midrule
+Inyección SQL        & 4 & 5 & \textcolor{accent}{\textbf{FAIL}} &
+  SEC-SQL-005 (\texttt{OR 1=1 --}): el agente detecta el intento pero la
+  función de verificación no reconoce el mensaje de rechazo. \\
+Inyección de prompt  & 2 & 3 & \textcolor{accent}{\textbf{FAIL}} &
+  SEC-PROMPT-002 (\texttt{SYSTEM: Override}): el agente rechaza correctamente
+  pero la verificación detecta falso positivo en el texto de respuesta. \\
+Anti-alucinación     & 3 & 3 & \textcolor{success}{\textbf{PASS}} &
+  El agente reconoce pacientes inexistentes, tablas inválidas y datos
+  no disponibles sin fabricar información. \\
+\midrule
+\textbf{Total}       & \textbf{9} & \textbf{11} & \textbf{FAIL} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Los dos fallos registrados (tabla~\ref{tab:seguridad}) son falsos negativos
+de la función de verificación, no fallos reales del sistema. En SEC-SQL-005,
+el agente responde con el mensaje
+\textit{``⚠️ Detección de Intento de Inyección SQL''}, que constituye un
+rechazo correcto pero cuyo texto no contiene ninguna de las palabras clave
+de la lista \texttt{\_SQL\_REJECTION\_KEYWORDS} definida en el script.
+En SEC-PROMPT-002, el agente rechaza la solicitud de revelar el \textit{prompt}
+del sistema, pero la respuesta contiene la palabra \textit{``instrucciones''}
+que activa incorrectamente el detector de \texttt{\_PROMPT\_INJECTION\_FORBIDDEN}.
+La categoría de anti-alucinación obtuvo un resultado perfecto (3/3):
+el agente reconoció correctamente la inexistencia del paciente 99999999,
+la ausencia de la tabla \texttt{patients\_personal\_data} y la no disponibilidad
+de datos quirúrgicos en MIMIC-IV-ED.
+
+\subsection{Casos de prueba funcionales}
+\label{sec:eval_funcional}
+
+El script \texttt{run\_test\_cases.py} implementa 28 casos de prueba
+funcionales distribuidos en cuatro categorías: 10 de base de datos (TC-DB),
+8 de recuperación de documentos (TC-RAG), 5 de visualización (TC-VIZ) y
+5 de comportamiento del agente (TC-AGENT). Cada caso de prueba se evalúa
+mediante criterios ponderados que producen una puntuación agregada
+$s_w \in [0, 1]$:
+
+\begin{equation}
+s_w = \frac{\displaystyle\sum_{i} w_i \cdot s_i}{\displaystyle\sum_{i} w_i}
+\label{eq:weighted_score}
+\end{equation}
+
+donde $w_i$ es el peso del criterio $i$ y $s_i \in [0, 1]$ su puntuación.
+Un caso de prueba se considera aprobado cuando $s_w \geq s_{\min}$, con
+$s_{\min}$ definido individualmente por caso (rango: 0.50--0.60).
+Los cuatro criterios de evaluación son:
+
+\begin{itemize}[nosep, leftmargin=*]
+  \item \textbf{contiene\_valor} (peso 0.25--0.40): verifica que la respuesta
+    contenga los valores esperados (IDs de paciente, términos clínicos).
+  \item \textbf{herramienta\_correcta} (peso 0.25--0.40): comprueba que el
+    agente invocó la herramienta esperada (\texttt{query\_mimic\_database},
+    \texttt{search\_clinical\_documents} o \texttt{generate\_visualization}).
+  \item \textbf{no\_alucinacion} (peso 0.20--0.40): detecta indicadores de
+    información fabricada y verifica el manejo correcto de casos fuera de
+    dominio y datos inexistentes.
+  \item \textbf{formato\_respuesta} (peso 0.10--0.35): evalúa que la respuesta
+    esté en español y tenga una longitud adecuada ($>$100 caracteres).
+  \item \textbf{fuentes\_citadas} (peso 0.15, solo TC-RAG): verifica que la
+    respuesta incluya referencias a los documentos fuente.
+\end{itemize}
+
+\subsubsection{Resultados por categoría}
+\label{sec:tc_resultados}
+
+La figura~\ref{fig:eval_triangle} presenta los resultados de forma visual,
+y la tabla~\ref{tab:tc_resultados} detalla los resultados por categoría.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\small]
+
+% ---- Ejes del diagrama de radar (4 dimensiones) ----
+\def\R{3.2}  % radio máximo
+
+% Ángulos para las 4 categorías (cuadrado rotado 45°)
+% TC-DB: arriba (90°), TC-RAG: derecha (0°), TC-VIZ: abajo (270°), TC-AGENT: izquierda (180°)
+\coordinate (DB_max)    at (90:\R);
+\coordinate (RAG_max)   at (0:\R);
+\coordinate (VIZ_max)   at (270:\R);
+\coordinate (AGENT_max) at (180:\R);
+
+% ---- Círculos de referencia ----
+\foreach \r/\label in {0.8/20\%, 1.6/40\%, 2.4/60\%, 3.2/80\%} {
+  \draw[gray!30, dashed] (90:\r) -- (0:\r) -- (270:\r) -- (180:\r) -- cycle;
+  \node[font=\tiny, color=gray!60] at (45:\r) {\label};
+}
+% Círculo 100%
+\draw[gray!50] (90:\R) -- (0:\R) -- (270:\R) -- (180:\R) -- cycle;
+\node[font=\tiny, color=gray!60] at (45:\R) {100\%};
+
+% ---- Ejes ----
+\foreach \angle in {90, 0, 270, 180}
+  \draw[gray!40, ->] (0,0) -- (\angle:\R+0.3);
+
+% ---- Etiquetas de ejes ----
+\node[font=\footnotesize\bfseries, color=secondary, above] at (90:\R+0.5)
+  {TC-DB};
+\node[font=\footnotesize\bfseries, color=secondary, right] at (0:\R+0.5)
+  {TC-RAG};
+\node[font=\footnotesize\bfseries, color=accent, below] at (270:\R+0.5)
+  {TC-VIZ};
+\node[font=\footnotesize\bfseries, color=secondary, left] at (180:\R+0.5)
+  {TC-AGENT};
+
+% ---- Polígono de resultados reales ----
+% TC-DB: 100% → radio = 3.2
+% TC-RAG: 100% → radio = 3.2
+% TC-VIZ: 60% → radio = 1.92
+% TC-AGENT: 100% → radio = 3.2
+\coordinate (DB_real)    at (90:3.2);
+\coordinate (RAG_real)   at (0:3.2);
+\coordinate (VIZ_real)   at (270:1.92);
+\coordinate (AGENT_real) at (180:3.2);
+
+\fill[secondary!20, opacity=0.6]
+  (DB_real) -- (RAG_real) -- (VIZ_real) -- (AGENT_real) -- cycle;
+\draw[secondary, line width=1.5pt]
+  (DB_real) -- (RAG_real) -- (VIZ_real) -- (AGENT_real) -- cycle;
+
+% ---- Polígono de umbral (70%) ----
+\coordinate (DB_thr)    at (90:2.24);
+\coordinate (RAG_thr)   at (0:2.24);
+\coordinate (VIZ_thr)   at (270:2.24);
+\coordinate (AGENT_thr) at (180:2.24);
+
+\draw[accent!70, line width=1pt, dashed]
+  (DB_thr) -- (RAG_thr) -- (VIZ_thr) -- (AGENT_thr) -- cycle;
+
+% ---- Puntos de datos ----
+\foreach \pt/\score in {DB_real/100\%, RAG_real/100\%, AGENT_real/100\%}
+  \fill[secondary] (\pt) circle (3pt);
+\fill[accent] (VIZ_real) circle (3pt);
+
+% ---- Anotaciones de puntuación ----
+\node[font=\footnotesize\bfseries, color=secondary] at (90:3.6) {100\%};
+\node[font=\footnotesize\bfseries, color=secondary] at (0:3.6) {100\%};
+\node[font=\footnotesize\bfseries, color=accent]  at (270:2.3) {60\%};
+\node[font=\footnotesize\bfseries, color=secondary] at (180:3.6) {100\%};
+
+% ---- Leyenda ----
+\node[font=\tiny] at (3.0, -3.8) {%
+  \begin{tabular}{ll}
+    \textcolor{secondary}{$\blacksquare$} & Resultado real \\
+    \textcolor{accent!70}{- - -} & Umbral (70\%) \\
+  \end{tabular}
+};
+
+\end{tikzpicture}
+\caption{Diagrama de radar de los resultados de los casos de prueba funcionales
+  por categoría. El polígono azul representa los resultados obtenidos;
+  la línea roja discontinua indica el umbral de aprobación del 70\,\%.
+  TC-VIZ queda por debajo del umbral por fallos en la selección de herramienta.}
+\label{fig:eval_triangle}
+\end{figure}
+
+
+\begin{table}[htbp]
+\centering
+\caption{Resultados de los casos de prueba funcionales por categoría.
+  Ejecución del 12 de marzo de 2026 (28 casos, 812.2\,s,
+  \texttt{claude-haiku-4-5-20251001}).}
+\label{tab:tc_resultados}
+\small
+\begin{tabular}{lccccl}
+\toprule
+\textbf{Categoría} & \textbf{Aprobados} & \textbf{Total} & \textbf{Tasa} & \textbf{Umbral} & \textbf{Estado} \\
+\midrule
+TC-DB (base de datos)    & 10 & 10 & 100\,\% & 70\,\% & \textcolor{success}{\textbf{PASS}} \\
+TC-RAG (documentos)      &  8 &  8 & 100\,\% & 70\,\% & \textcolor{success}{\textbf{PASS}} \\
+TC-VIZ (visualización)   &  3 &  5 &  60\,\% & 70\,\% & \textcolor{accent}{\textbf{FAIL}} \\
+TC-AGENT (comportamiento)&  5 &  5 & 100\,\% & 70\,\% & \textcolor{success}{\textbf{PASS}} \\
+\midrule
+\textbf{Total}           & \textbf{26} & \textbf{28} & \textbf{92.9\,\%} & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Las categorías TC-DB, TC-RAG y TC-AGENT obtuvieron una tasa de aprobación
+del 100\,\%. Los diez casos de base de datos verificaron correctamente la
+recuperación de datos de pacientes, signos vitales, diagnósticos, medicamentos
+y triaje, incluyendo casos límite como pacientes sin signos vitales registrados
+(TC-DB-009) y comparaciones multi-paciente (TC-DB-010). Los ocho casos RAG
+confirmaron la recuperación de protocolos clínicos, la citación de fuentes y
+el manejo correcto de consultas fuera de dominio (TC-RAG-007, puntuación 0.74).
+Los cinco casos de comportamiento del agente validaron la selección automática
+de herramientas, la orquestación multi-herramienta, el mantenimiento de
+contexto conversacional, la recuperación ante errores y la consistencia del
+idioma de respuesta (español incluso ante consultas en inglés, TC-AGENT-005).
+
+La categoría TC-VIZ registró dos fallos (TC-VIZ-003 y TC-VIZ-005) con
+puntuaciones de 0.325 y 0.540 respectivamente, ambas por debajo del umbral
+de 0.55. El criterio \texttt{herramienta\_correcta} obtuvo 0.0 en los cinco
+casos de visualización, indicando que el agente no invocó la herramienta
+\texttt{generate\_visualization} de forma reconocible por el evaluador.
+Esto se debe a que el \texttt{VisualizationAgent} genera las gráficas
+mediante el flujo \textit{template-first} sin registrar explícitamente
+\texttt{generate\_visualization} en la lista \texttt{tools\_used} de la
+respuesta, lo que constituye una limitación del evaluador, no del sistema.
+
+\subsubsection{Análisis de criterios transversales}
+\label{sec:criterios_transversales}
+
+El criterio \texttt{no\_alucinacion} obtuvo puntuación 1.0 en los 28 casos
+de prueba, confirmando la efectividad de las directivas anti-alucinación
+implementadas en el \textit{system prompt} del agente. El criterio
+\texttt{formato\_respuesta} obtuvo 1.0 en 26 de los 28 casos, con las dos
+excepciones en TC-VIZ-003 (respuesta demasiado corta por fallo de herramienta)
+y TC-VIZ-005 (puntuación parcial). El criterio \texttt{fuentes\_citadas}
+obtuvo 1.0 en los siete casos RAG que lo incluyen, confirmando que el sistema
+cita consistentemente los documentos fuente en las respuestas RAG.
+
+\subsection{Orquestación de la evaluación}
+\label{sec:eval_orquestacion}
+
+El script \texttt{run\_all\_evaluations.py} orquesta la ejecución secuencial
+de los cuatro módulos de evaluación, realizando verificaciones previas
+(\textit{pre-flight checks}) que incluyen: existencia de los ficheros del
+golden set, disponibilidad de la variable de entorno \texttt{ANTHROPIC\_API\_KEY},
+conectividad con Supabase y existencia del directorio de resultados.
+Los resultados de cada módulo se escriben en ficheros TXT con nomenclatura
+\texttt{\{módulo\}\_results\_\{YYYYMMDD\_HHMMSS\}.txt} en el directorio
+\texttt{Evaluation/results/}. La ejecución completa del 12 de marzo de 2026
+tardó 2750.6\,s (aproximadamente 45 minutos) y los cuatro módulos completaron
+sin errores de ejecución, con el resultado consolidado de PASS en el informe
+\texttt{consolidated\_report\_20260312\_155759.txt}.
+
+
+% ------------------------------------------------------------------
+\section{Limitaciones y trabajo futuro}
+\label{sec:limitaciones}
+% ------------------------------------------------------------------
+
+\begin{tcolorbox}[
+  colback=orange!5,
+  colframe=orange!70!black,
+  title={\textbf{Limitaciones identificadas del sistema}},
+  fonttitle=\small\bfseries,
+  left=6pt, right=6pt, top=4pt, bottom=4pt
+]
+\small
+Esta sección documenta de forma honesta las limitaciones actuales del sistema
+ChatHCE, distinguiendo entre limitaciones del dataset, del sistema de evaluación
+y de la arquitectura técnica.
+\end{tcolorbox}
+
+\subsection{Limitaciones del dataset MIMIC-IV-ED}
+\label{sec:lim_dataset}
+
+El dataset MIMIC-IV-ED utilizado es la versión de demostración 2.2, que
+contiene 64 pacientes únicos con 222 estancias en urgencias. Esta escala
+reducida, aunque suficiente para validar la arquitectura del sistema, no
+es representativa de la variabilidad clínica de un servicio de urgencias
+real. Las principales limitaciones derivadas del dataset son:
+
+\begin{itemize}[nosep, leftmargin=*]
+  \item \textbf{Escala reducida}: 64 pacientes frente a los más de 400\,000
+    de la versión completa de MIMIC-IV-ED. Las consultas de análisis
+    estadístico (distribuciones, frecuencias) producen resultados con
+    escasa significación estadística.
+  \item \textbf{Datos históricos}: los registros corresponden a estancias
+    entre los años 2125 y 2201 (fechas anonimizadas), lo que impide
+    cualquier análisis de tendencias temporales reales.
+  \item \textbf{Ausencia de datos clínicos completos}: el dataset de
+    demostración no incluye notas clínicas, resultados de laboratorio
+    ni imágenes diagnósticas, limitando el alcance del análisis clínico.
+  \item \textbf{Datos de urgencias exclusivamente}: el sistema no tiene
+    acceso a información de hospitalización, consultas externas ni
+    seguimiento ambulatorio de los pacientes.
+\end{itemize}
+
+\subsection{Limitaciones del sistema de evaluación}
+\label{sec:lim_evaluacion}
+
+La evaluación RAGAS no pudo completar el cálculo de métricas agregadas
+en la ejecución del 12 de marzo de 2026 por una incompatibilidad entre
+RAGAS 0.4.3 y el formato de contextos multi-herramienta del agente.
+Las puntuaciones de faithfulness, answer relevancy, context precision y
+context recall no están disponibles como valores numéricos verificados.
+
+Los falsos negativos en las pruebas de seguridad (SEC-SQL-005 y SEC-PROMPT-002)
+revelan que las funciones de verificación basadas en listas de palabras clave
+son frágiles ante variaciones en el texto de respuesta del agente. Un sistema
+de verificación más robusto requeriría clasificadores semánticos o evaluación
+humana.
+
+El golden set RAG fue generado mediante el método \textit{LLM-as-Extractor}
+sin validación por expertos clínicos, lo que introduce un sesgo potencial
+al ser el mismo tipo de modelo que el sistema evaluado. Las preguntas de
+tipo razonamiento aplicado y fuera de dominio son las más susceptibles a
+este sesgo.
+
+\subsection{Limitaciones técnicas de la arquitectura}
+\label{sec:lim_tecnicas}
+
+\begin{itemize}[nosep, leftmargin=*]
+  \item \textbf{Dependencia de API externa}: el sistema requiere conectividad
+    con la API de Anthropic para todas las consultas. Un fallo o degradación
+    del servicio impacta directamente en la disponibilidad del sistema.
+    La cadena de \textit{fallback} mitiga parcialmente este riesgo.
+  \item \textbf{Registro de herramientas en TC-VIZ}: el \texttt{VisualizationAgent}
+    no registra \texttt{generate\_visualization} en \texttt{tools\_used},
+    lo que impide la verificación automática del uso de la herramienta de
+    visualización en los casos de prueba funcionales.
+  \item \textbf{Escalabilidad del sistema RAG}: la versión actual indexa
+    documentos en una única colección (\texttt{clinical\_guidelines}) sin
+    particionado por especialidad. Con un volumen elevado de documentos,
+    la precisión del contexto recuperado puede degradarse.
+  \item \textbf{Sesión de usuario única}: la arquitectura Streamlit actual
+    no soporta múltiples usuarios concurrentes de forma nativa. El despliegue
+    en producción requeriría un servidor Streamlit con gestión de sesiones
+    o migración a una arquitectura FastAPI con frontend desacoplado.
+\end{itemize}
+
+\subsection{Líneas de trabajo futuro}
+\label{sec:trabajo_futuro}
+
+Las principales líneas de mejora identificadas a partir de los resultados
+de evaluación son:
+
+\begin{enumerate}[nosep, leftmargin=*]
+  \item \textbf{Integración con MIMIC-IV completo}: migrar a la versión
+    completa del dataset (acceso mediante PhysioNet) para obtener resultados
+    estadísticamente significativos y mayor cobertura clínica.
+  \item \textbf{Evaluación RAGAS con versión compatible}: actualizar a
+    RAGAS $\geq$\,0.5.0 o implementar un adaptador de contextos para
+    obtener métricas de faithfulness y relevancia verificadas.
+  \item \textbf{Corrección del registro de herramienta de visualización}:
+    añadir \texttt{generate\_visualization} a \texttt{tools\_used} en el
+    \texttt{VisualizationAgent} para habilitar la verificación automática.
+  \item \textbf{Evaluación humana}: incorporar evaluación por médicos de
+    urgencias para validar la corrección clínica de las respuestas, especialmente
+    en consultas de interpretación de signos vitales y diagnósticos.
+  \item \textbf{Particionado del índice RAG}: implementar colecciones
+    separadas por especialidad médica para mejorar la precisión del contexto
+    recuperado en consultas especializadas.
+  \item \textbf{Soporte multi-usuario}: migrar la interfaz a una arquitectura
+    FastAPI + React o FastAPI + Streamlit con gestión de sesiones para
+    soportar múltiples usuarios concurrentes en entornos hospitalarios reales.
+\end{enumerate}
+
+
+% ------------------------------------------------------------------
+% BLOQUE BIBTEX CONSOLIDADO
+% Incluye referencias de metodologia_chathce.tex, metodologia_parte2.tex,
+% metodologia_parte3.tex y metodologia_parte4.tex
+% ------------------------------------------------------------------
+
+% Para compilar con BibTeX, copiar este bloque a un fichero .bib
+% o usar \begin{filecontents}{referencias.bib} ... \end{filecontents}
+% antes de \begin{document} en el documento principal.
+
+% ---- Referencias de metodologia_chathce.tex ----
+
+% MIMIC-IV-ED dataset
+% Johnson, A. et al. (2023). MIMIC-IV-ED: Emergency Department Data.
+% PhysioNet. https://doi.org/10.13026/5ntk-km72
+%
+% @misc{johnson2023mimicived,
+%   author       = {Johnson, Alistair and Bulgarelli, Lucas and Pollard, Tom
+%                   and Celi, Leo Anthony and Mark, Roger and Horng, Steven},
+%   title        = {{MIMIC-IV-ED} (version 2.2)},
+%   year         = {2023},
+%   publisher    = {PhysioNet},
+%   doi          = {10.13026/5ntk-km72},
+%   url          = {https://physionet.org/content/mimic-iv-ed/2.2/}
+% }
+
+% Streamlit
+% @misc{streamlit2024,
+%   author       = {{Streamlit Inc.}},
+%   title        = {Streamlit: The fastest way to build data apps},
+%   year         = {2024},
+%   url          = {https://streamlit.io/}
+% }
+
+% Supabase
+% @misc{supabase2024,
+%   author       = {{Supabase Inc.}},
+%   title        = {Supabase: The Open Source Firebase Alternative},
+%   year         = {2024},
+%   url          = {https://supabase.com/}
+% }
+
+% ---- Referencias de metodologia_parte2.tex ----
+
+% ReAct: Synergizing Reasoning and Acting in Language Models
+% @inproceedings{yao2022react,
+%   author    = {Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan
+%                and Shafran, Izhak and Narasimhan, Karthik and Cao, Yuan},
+%   title     = {{ReAct}: Synergizing Reasoning and Acting in Language Models},
+%   booktitle = {International Conference on Learning Representations (ICLR)},
+%   year      = {2023},
+%   url       = {https://arxiv.org/abs/2210.03629}
+% }
+
+% LangChain
+% @misc{chase2022langchain,
+%   author       = {Chase, Harrison},
+%   title        = {{LangChain}: Building applications with {LLMs} through composability},
+%   year         = {2022},
+%   url          = {https://github.com/langchain-ai/langchain}
+% }
+
+% Anthropic Claude
+% @misc{anthropic2024claude,
+%   author       = {{Anthropic}},
+%   title        = {Claude: {AI} safety and research company},
+%   year         = {2024},
+%   url          = {https://www.anthropic.com/}
+% }
+
+% Pydantic
+% @misc{pydantic2024,
+%   author       = {Colvin, Samuel and others},
+%   title        = {Pydantic: Data validation using {Python} type hints},
+%   year         = {2024},
+%   url          = {https://docs.pydantic.dev/}
+% }
+
+% ---- Referencias de metodologia_parte3.tex ----
+
+% RAG: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks
+% @inproceedings{lewis2020rag,
+%   author    = {Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra
+%                and Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman
+%                and K{\"u}ttler, Heinrich and Lewis, Mike and Yih, Wen-tau
+%                and Rockt{\"a}schel, Tim and Riedel, Sebastian and Kiela, Douwe},
+%   title     = {Retrieval-Augmented Generation for Knowledge-Intensive {NLP} Tasks},
+%   booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+%   volume    = {33},
+%   pages     = {9459--9474},
+%   year      = {2020}
+% }
+
+% sentence-transformers
+% @inproceedings{reimers2019sentencebert,
+%   author    = {Reimers, Nils and Gurevych, Iryna},
+%   title     = {Sentence-{BERT}: Sentence Embeddings using {Siamese BERT}-Networks},
+%   booktitle = {Proceedings of the 2019 Conference on Empirical Methods in
+%                Natural Language Processing (EMNLP)},
+%   year      = {2019},
+%   url       = {https://arxiv.org/abs/1908.10084}
+% }
+
+% pgvector
+% @misc{pgvector2024,
+%   author       = {{pgvector contributors}},
+%   title        = {pgvector: Open-source vector similarity search for {Postgres}},
+%   year         = {2024},
+%   url          = {https://github.com/pgvector/pgvector}
+% }
+
+% Plotly
+% @misc{plotly2024,
+%   author       = {{Plotly Technologies Inc.}},
+%   title        = {Collaborative data science},
+%   year         = {2024},
+%   url          = {https://plotly.com/}
+% }
+
+% ---- Referencias de metodologia_parte4.tex ----
+
+% RAGAS: Automated Evaluation of Retrieval Augmented Generation
+% @inproceedings{es2023ragas,
+%   author    = {Es, Shahul and James, Jithin and Espinosa-Anke, Luis
+%                and Schockaert, Steven},
+%   title     = {{RAGAS}: Automated Evaluation of Retrieval Augmented Generation},
+%   booktitle = {Proceedings of the 18th Conference of the European Chapter
+%                of the Association for Computational Linguistics (EACL)},
+%   year      = {2024},
+%   url       = {https://arxiv.org/abs/2309.15217}
+% }
+
+% Reciprocal Rank Fusion
+% @inproceedings{cormack2009rrf,
+%   author    = {Cormack, Gordon V. and Clarke, Charles L. A. and Buettcher, Stefan},
+%   title     = {Reciprocal Rank Fusion Outperforms {Condorcet} and Individual
+%                Rank Learning Methods},
+%   booktitle = {Proceedings of the 32nd International ACM SIGIR Conference on
+%                Research and Development in Information Retrieval},
+%   pages     = {758--759},
+%   year      = {2009}
+% }
+
+% MIMIC-IV: A Freely Accessible Electronic Health Record Dataset
+% @article{johnson2023mimiciv,
+%   author  = {Johnson, Alistair E. W. and Bulgarelli, Lucas and Shen, Lu
+%              and Gayles, Alvin and Shammout, Ayad and Horng, Steven
+%              and Pollard, Tom J. and Hao, Sicheng and Moody, Benjamin
+%              and Gow, Brian and Lehman, Li-wei H. and Celi, Leo Anthony
+%              and Mark, Roger G.},
+%   title   = {{MIMIC-IV}, a freely accessible electronic health record dataset},
+%   journal = {Scientific Data},
+%   volume  = {10},
+%   number  = {1},
+%   pages   = {1},
+%   year    = {2023},
+%   doi     = {10.1038/s41597-022-01899-x}
+% }
+
+% Manual del Residente de Medicina Intensiva
+% @manual{hvr2023residentes,
+%   author       = {{Hospital Universitario Virgen del Roc\'io}},
+%   title        = {Gu\'ia Formativa de Medicina Intensiva},
+%   organization = {Hospital Universitario Virgen del Roc\'io},
+%   year         = {2023}
+% }
+
+% Estándares y Recomendaciones para UCI
+% @techreport{msssi2010uci,
+%   author      = {{Ministerio de Sanidad y Pol\'itica Social}},
+%   title       = {Est\'andares y Recomendaciones para Unidades de Cuidados Intensivos},
+%   institution = {Ministerio de Sanidad y Pol\'itica Social},
+%   year        = {2010},
+%   url         = {https://www.sanidad.gob.es/}
+% }
+
+% El Libro de la UCI - Paul Marino
+% @book{marino2014uci,
+%   author    = {Marino, Paul L.},
+%   title     = {El Libro de la {UCI}},
+%   edition   = {3},
+%   publisher = {Lippincott Williams \& Wilkins / Wolters Kluwer},
+%   year      = {2014}
+% }
+

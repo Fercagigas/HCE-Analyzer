@@ -1,0 +1,603 @@
+% ============================================================================
+% ChatHCE - Metodología del TFG
+% Secciones 3.8, 3.9 y 3.10
+% Para incluir desde el documento principal con \input{metodologia_parte3}
+% ============================================================================
+
+% --- Paquetes adicionales necesarios (añadir al preámbulo principal si no están) ---
+% \usepackage{tcolorbox}
+% \tcbuselibrary{skins,breakable}
+% \usepackage{listings}
+% \usepackage{tikz}
+% \usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,backgrounds,calc,decorations.pathreplacing}
+
+% ============================================================================
+\subsection{Pipeline RAG con Búsqueda Híbrida y Reranking}
+\label{sec:pipeline_rag}
+% ============================================================================
+
+El sistema RAG (\textit{Retrieval-Augmented Generation}) de ChatHCE implementa un pipeline de cinco etapas que combina técnicas de recuperación vectorial, léxica y neural para maximizar la precisión en la recuperación de guías clínicas. La Figura~\ref{fig:rag_pipeline} muestra el flujo completo desde la consulta del usuario hasta la respuesta fundamentada en documentos.
+
+\subsubsection{Arquitectura del Pipeline}
+
+El pipeline está implementado en \texttt{services/rag/improved\_rag\_service.py} mediante la clase \texttt{ImprovedRAGService}, que orquesta cuatro componentes especializados: \texttt{QueryAugmenter}, \texttt{SupabaseVectorStore}, \texttt{Reranker} y el cliente LLM de Anthropic. La inicialización carga el modelo de embeddings \texttt{sentence-transformers/all-MiniLM-L6-v2} (384 dimensiones, \texttt{normalize\_embeddings=True}) y establece la conexión con Supabase pgvector.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  stagenode/.style={
+    draw=#1!65, fill=#1!10, rounded corners=5pt,
+    minimum width=3.0cm, minimum height=1.1cm,
+    font=\small\sffamily\bfseries, text=#1!80, align=center,
+    drop shadow={shadow xshift=1.5pt, shadow yshift=-1.5pt, fill=#1!15, opacity=0.35}
+  },
+  subnode/.style={
+    draw=#1!50, fill=#1!8, rounded corners=3pt,
+    minimum width=2.6cm, minimum height=0.55cm,
+    font=\tiny\sffamily, text=#1!75, align=center
+  },
+  datanode/.style={
+    draw=gray!50, fill=gray!8, rounded corners=3pt,
+    minimum width=2.4cm, minimum height=0.5cm,
+    font=\tiny\sffamily\itshape, text=gray!70, align=center
+  },
+  pipelinearrow/.style={
+    -{Stealth[length=6pt,width=4pt]}, very thick, color=#1!60
+  },
+  stagearrow/.style={
+    -{Stealth[length=5pt]}, thick, color=#1!55
+  }
+]
+
+% ---- Etapa 1: Consulta ----
+\node[stagenode=blue] (q) at (0, 0) {Etapa 1\\Consulta\\del usuario};
+\node[datanode] (qd) at (0, -1.4) {texto libre\\en español};
+
+% ---- Etapa 2: Augmentación ----
+\node[stagenode=teal] (aug) at (3.5, 0) {Etapa 2\\Query\\Augmentation};
+\node[subnode=teal] (mq) at (3.5, -1.2) {Multi-Query\\(3 variantes)};
+\node[subnode=teal] (hyde) at (3.5, -1.9) {HyDE\\(doc. hipotético)};
+
+% ---- Etapa 3: Búsqueda Híbrida ----
+\node[stagenode=purple] (search) at (7.0, 0) {Etapa 3\\Búsqueda\\Híbrida};
+\node[subnode=purple] (vec) at (7.0, -1.2) {pgvector\\(coseno, 384d)};
+\node[subnode=purple] (fts) at (7.0, -1.9) {tsvector\\(BM25 español)};
+\node[subnode=purple] (rrf) at (7.0, -2.6) {RRF $k=60$};
+
+% ---- Etapa 4: Expansión Padre ----
+\node[stagenode=orange] (expand) at (10.5, 0) {Etapa 4\\Expansión\\Padre-Hijo};
+\node[subnode=orange] (child) at (10.5, -1.2) {child: 400 chars\\(búsqueda)};
+\node[subnode=orange] (parent) at (10.5, -1.9) {parent: 1500 chars\\(contexto LLM)};
+
+% ---- Etapa 5: Reranking ----
+\node[stagenode=success] (rerank) at (14.0, 0) {Etapa 5\\Cross-Encoder\\Reranking};
+\node[subnode=success] (ce) at (14.0, -1.2) {ms-marco-MiniLM\\-L6-v2};
+\node[subnode=success] (topk) at (14.0, -1.9) {top-$k=5$\\resultado final};
+
+% ---- Flechas principales ----
+\draw[pipelinearrow=blue] (q.east) -- (aug.west);
+\draw[pipelinearrow=teal] (aug.east) -- (search.west);
+\draw[pipelinearrow=purple] (search.east) -- (expand.west);
+\draw[pipelinearrow=orange] (expand.east) -- (rerank.west);
+
+% ---- Flechas internas ----
+\draw[stagearrow=teal] (mq.south) -- (hyde.north);
+\draw[stagearrow=purple] (vec.south) -- (fts.north);
+\draw[stagearrow=purple] (fts.south) -- (rrf.north);
+\draw[stagearrow=orange] (child.south) -- (parent.north);
+\draw[stagearrow=success] (ce.south) -- (topk.north);
+
+% ---- Supabase pgvector (abajo) ----
+\node[draw=ragcolor!55, fill=ragcolor!8, rounded corners=4pt,
+      minimum width=4.5cm, minimum height=0.7cm,
+      font=\small\sffamily\bfseries, text=ragcolor!80, align=center] (supa) at (8.75, -4.2)
+  {Supabase pgvector — tabla \texttt{rag\_chunks}\\RPC \texttt{hybrid\_search(query\_embedding, query\_text, match\_count, rrf\_k)}};
+
+\draw[stagearrow=purple] (search.south) -- ++(0,-0.8) -- (supa.north);
+\draw[stagearrow=orange] (expand.south) -- ++(0,-0.8) -- (supa.north);
+
+% ---- Salida ----
+\node[draw=success!60, fill=success!10, rounded corners=4pt,
+      minimum width=3.5cm, minimum height=0.7cm,
+      font=\small\sffamily\bfseries, text=success!80, align=center] (out) at (14.0, -4.2)
+  {Chunks con fuentes\\para citación obligatoria};
+\draw[pipelinearrow=success] (rerank.south) -- (out.north);
+
+\end{tikzpicture}
+\caption{Pipeline RAG de cinco etapas en ChatHCE. La búsqueda híbrida (Etapa 3) combina similitud vectorial y búsqueda léxica mediante RRF con $k=60$. La expansión padre-hijo (Etapa 4) recupera el contexto completo para el LLM. El cross-encoder (Etapa 5) reordena los resultados por relevancia semántica profunda.}
+\label{fig:rag_pipeline}
+\end{figure*}
+
+\subsubsection{Etapa 1 — Chunking Jerárquico Padre-Hijo}
+\label{sec:chunking}
+
+La indexación de documentos clínicos utiliza el \texttt{ParentChildChunker} (\texttt{services/rag/parent\_child\_chunker.py}), que implementa una estrategia de chunking jerárquico con dos niveles de granularidad. Los parámetros por defecto, definidos en el constructor de \texttt{ImprovedRAGService}, son:
+
+\begin{itemize}[nosep, leftmargin=*]
+  \item \textbf{Chunks hijo} (\texttt{child\_size=400} caracteres): unidades de búsqueda. Su tamaño está optimizado para el modelo de embeddings \texttt{all-MiniLM-L6-v2}, que captura mejor la semántica en fragmentos cortos \citep{Wang2020}. La división se realiza por oraciones completas para preservar la coherencia semántica.
+  \item \textbf{Chunks padre} (\texttt{parent\_size=1500} caracteres): unidades de contexto. Cada chunk hijo referencia a su chunk padre mediante la columna \texttt{parent\_id} en la tabla \texttt{rag\_chunks}. Cuando un chunk hijo es recuperado, el sistema expande automáticamente al padre para proporcionar contexto clínico completo al LLM.
+\end{itemize}
+
+Los chunks hijo se almacenan con embeddings vectoriales (\texttt{embedding: vector(384)}); los chunks padre se almacenan sin embedding (\texttt{embedding: NULL}, \texttt{is\_parent: TRUE}) y se recuperan únicamente mediante JOIN por \texttt{parent\_id}. La inserción se realiza en lotes de 50 registros para evitar límites de payload de la API de Supabase.
+
+\subsubsection{Etapa 2 — Augmentación de Consultas}
+\label{sec:query_augmentation}
+
+El \texttt{QueryAugmenter} (\texttt{services/rag/query\_augmenter.py}) implementa dos técnicas complementarias de augmentación para mejorar el recall de la búsqueda:
+
+\textbf{Multi-Query Generation.} Genera hasta \texttt{max\_queries} variantes de la consulta original (configurable mediante \texttt{settings.rag.query\_augmentation\_max\_queries}) usando Claude Haiku (\texttt{settings.rag.query\_augmentation\_model}) con temperatura 0.4. El prompt del sistema (\texttt{MULTI\_QUERY\_SYSTEM\_PROMPT}) instruye al modelo a generar reformulaciones que capturen diferentes aspectos semánticos de la consulta original, aumentando la probabilidad de recuperar documentos relevantes con distintas formulaciones terminológicas.
+
+\textbf{HyDE (Hypothetical Document Embeddings)} \citep{Gao2022}. Genera un documento hipotético que respondería a la consulta, usando temperatura 0.2 y \texttt{max\_tokens=250} (\texttt{HYDE\_SYSTEM\_PROMPT}). El embedding de este documento hipotético se usa como vector de búsqueda adicional, aprovechando que los documentos reales relevantes tendrán mayor similitud con un documento hipotético bien formulado que con la consulta original corta.
+
+Las consultas augmentadas se combinan con la consulta original para la búsqueda híbrida, maximizando el recall sin sacrificar precisión (el reranking posterior filtra los resultados irrelevantes).
+
+\subsubsection{Etapa 3 — Búsqueda Híbrida con RRF}
+\label{sec:hybrid_search}
+
+La búsqueda híbrida se ejecuta mediante la función RPC \texttt{hybrid\_search} de PostgreSQL, invocada desde \texttt{SupabaseVectorStore.hybrid\_search()} (\texttt{services/rag/supabase\_vector\_store.py}):
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{codebg}, frame=single, rulecolor=\color{gray!30},
+  breaklines=true, columns=fullflexible]
+result = self.client.rpc(
+    "hybrid_search",
+    {
+        "query_embedding": query_embedding,  # vector(384)
+        "query_text": query,                 # para tsvector
+        "match_count": top_k,               # resultados a retornar
+        "rrf_k": 60,                        # constante RRF
+    },
+).execute()
+\end{lstlisting}
+
+La función RPC combina dos rankings mediante \textbf{Reciprocal Rank Fusion} (RRF) \citep{Cormack2009}. Dado un conjunto de documentos $D$ y dos rankings $R_{\text{vec}}$ (similitud coseno pgvector) y $R_{\text{fts}}$ (BM25 con tsvector en español), la puntuación RRF de cada documento $d$ se calcula como:
+
+\begin{equation}
+\text{RRF}(d) = \frac{1}{k + r_{\text{vec}}(d)} + \frac{1}{k + r_{\text{fts}}(d)}
+\label{eq:rrf}
+\end{equation}
+
+donde $k=60$ es la constante de suavizado que mitiga el impacto de los primeros puestos y $r(d)$ es la posición del documento en cada ranking. La elección de $k=60$ sigue la recomendación original de \citet{Cormack2009}, que demostró su robustez empírica en múltiples colecciones de documentos sin necesidad de calibración.
+
+La búsqueda léxica utiliza \texttt{tsvector} con configuración \texttt{spanish}, que aplica stemming morfológico en español (p.ej., ``cardíaco'', ``cardíacos'' y ``cardíaca'' se reducen al mismo lexema). Esto mejora el recall para variantes morfológicas de términos médicos, especialmente relevante para guías clínicas redactadas con terminología variable. Si la búsqueda híbrida no retorna resultados, el sistema degrada elegantemente a búsqueda vectorial pura mediante \texttt{SupabaseVectorStore.vector\_search()}.
+
+\subsubsection{Etapa 4 — Expansión Padre-Hijo}
+
+Tras la búsqueda híbrida, los chunks hijo recuperados se expanden a sus chunks padre mediante la columna \texttt{parent\_id}. El método \texttt{SupabaseVectorStore.get\_parent\_chunk(parent\_id)} recupera el chunk padre con una query directa por \texttt{chunk\_id}. Esta expansión garantiza que el LLM recibe el contexto clínico completo (1500 caracteres) en lugar del fragmento de búsqueda (400 caracteres), preservando la continuidad de protocolos, dosificaciones y criterios diagnósticos que frecuentemente se extienden más allá de 400 caracteres.
+
+\subsubsection{Etapa 5 — Reranking con Cross-Encoder}
+\label{sec:reranking}
+
+El \texttt{Reranker} (\texttt{services/rag/reranker.py}) reordena los chunks recuperados usando el modelo \texttt{cross-encoder/ms-marco-MiniLM-L-6-v2} (constante \texttt{DEFAULT\_MODEL} en la clase). A diferencia de los bi-encoders usados para la búsqueda (que codifican consulta y documento de forma independiente), el cross-encoder procesa el par (consulta, documento) conjuntamente, permitiendo una evaluación de relevancia más precisa mediante atención cruzada entre tokens de ambos textos \citep{Nogueira2019}.
+
+El pipeline de reranking opera con \texttt{fetch\_k = top\_k * 3} candidatos cuando \texttt{rerank=True} (por defecto \texttt{top\_k=5}, por tanto \texttt{fetch\_k=15}): se recuperan 15 candidatos de la búsqueda híbrida y se reordenan para retornar los 5 más relevantes. Si el modelo de reranking no está disponible (error de carga), el \texttt{Reranker} implementa degradación elegante retornando los candidatos sin reordenar, garantizando que el sistema continúa operativo aunque con menor precisión.
+
+\subsubsection{Integración con el Agente}
+
+La \texttt{RAGTool} (\texttt{services/unified\_chat/tools/rag\_tool.py}) expone el pipeline completo al agente mediante el esquema Pydantic \texttt{RAGToolInput}, con campos \texttt{query} (consulta clínica), \texttt{specialty} (filtro opcional por especialidad) y \texttt{top\_k} (número de resultados, por defecto 5). Los resultados incluyen el contenido del chunk padre, la puntuación de relevancia, el nombre del documento fuente (\texttt{filename}), la especialidad y el tipo de documento, que el agente debe citar obligatoriamente en su respuesta según las directivas anti-alucinación (véase Sección~\ref{sec:antihallucination_37}).
+
+
+% ============================================================================
+\subsection{Motor de Visualización con Enfoque Template-First}
+\label{sec:motor_visualizacion}
+% ============================================================================
+
+El motor de visualización de ChatHCE genera gráficas interactivas de datos clínicos mediante un enfoque \textit{template-first}: primero intenta seleccionar una plantilla predefinida determinista; solo si no existe plantilla adecuada recurre a la generación de código por LLM. Este diseño reduce la latencia de $\sim$4 s (generación LLM) a $\sim$0.4 s (plantilla) en el 90\% de los casos, manteniendo la flexibilidad para visualizaciones atípicas.
+
+\subsubsection{Arquitectura del Motor}
+
+El motor está compuesto por cuatro componentes en cadena, implementados en \texttt{services/medical\_agent/}:
+
+\begin{enumerate}[nosep, leftmargin=*]
+  \item \textbf{\texttt{DataPreprocessor}} (\texttt{data\_preprocessor.py}): limpieza y validación de datos antes de la visualización.
+  \item \textbf{\texttt{VisualizationSelector}} (\texttt{visualization\_selector.py}): selección automática de plantilla basada en características de los datos.
+  \item \textbf{\texttt{VisualizationTemplates}} (\texttt{visualization\_templates.py}): biblioteca de 12+ plantillas Plotly predefinidas (Singleton).
+  \item \textbf{\texttt{VisualizationAgent}} (\texttt{visualization\_agent.py}): generación de código Python por LLM como fallback (inicialización \textit{lazy}).
+\end{enumerate}
+
+\subsubsection{Preprocesamiento de Datos}
+
+El \texttt{DataPreprocessor} aplica un pipeline de limpieza vectorizado sobre el \texttt{DataFrame} de entrada antes de cualquier visualización:
+
+\begin{itemize}[nosep, leftmargin=*]
+  \item \textbf{Ordenación temporal}: conversión de la columna \texttt{charttime} a \texttt{datetime64} con \texttt{infer\_datetime\_format=True} y ordenación ascendente. Si la columna temporal no existe, el preprocesador emite una advertencia y continúa sin ordenar.
+  \item \textbf{Eliminación de duplicados}: registros duplicados por \texttt{(charttime, métricas)} se eliminan con \texttt{keep='first'} para evitar artefactos en gráficas de tendencias.
+  \item \textbf{Detección de outliers}: método IQR (\textit{Interquartile Range}) con límites $Q_1 - 1.5 \cdot \text{IQR}$ y $Q_3 + 1.5 \cdot \text{IQR}$, o Z-score con umbral $|z| > 3$. Los outliers se marcan con la columna \texttt{is\_outlier} sin eliminarlos, preservando la integridad de los datos clínicos.
+  \item \textbf{Validación de métricas}: exclusión de columnas con más del \texttt{null\_threshold=0.5} (50\%) de valores nulos. Los valores infinitos (\texttt{np.inf}, \texttt{-np.inf}) se reemplazan por \texttt{NaN} para compatibilidad con Plotly.
+  \item \textbf{Caché de validación}: los resultados de \texttt{validate\_metrics()} se cachean con clave \texttt{hash(shape, columns) : hash(metrics)} hasta un máximo de 50 entradas, evitando revalidaciones redundantes en consultas repetidas.
+\end{itemize}
+
+El \texttt{DataPreprocessor} registra métricas de rendimiento (\texttt{execution\_time\_ms}) para monitorización, accesibles mediante \texttt{get\_performance\_stats()}.
+
+\subsubsection{Selección Automática de Plantilla}
+
+El \texttt{VisualizationSelector} analiza las características estadísticas del \texttt{DataFrame} (tipos de columnas, cardinalidad, presencia de series temporales) y aplica un árbol de decisión determinista para seleccionar la plantilla óptima. Las constantes del selector son: \texttt{MAX\_CATEGORIES\_BAR = 20}, \texttt{MAX\_CATEGORIES\_PIE = 8}, \texttt{MIN\_METRICS\_HEATMAP = 3}, \texttt{MAX\_METRICS\_TIMELINE = 5}.
+
+La Figura~\ref{fig:viz_selector} muestra el árbol de decisión completo con las 12 plantillas disponibles.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  decnode/.style={
+    draw=warning!65, fill=warning!10, diamond, aspect=2.8,
+    minimum width=1.2cm, font=\tiny\sffamily\bfseries,
+    text=warning!80, inner sep=1pt, align=center
+  },
+  leafnode/.style={
+    draw=#1!65, fill=#1!15, rounded corners=3pt,
+    minimum width=2.2cm, minimum height=0.55cm,
+    font=\tiny\sffamily\bfseries, text=#1!80, align=center
+  },
+  treearrow/.style={
+    -{Stealth[length=4pt]}, thick, color=gray!60
+  },
+  yeslabel/.style={font=\tiny\sffamily\itshape, text=success!70},
+  nolabel/.style={font=\tiny\sffamily\itshape, text=accent!70}
+]
+
+% Raíz
+\node[decnode] (r1) at (0, 0) {¿columna\\temporal?};
+
+% Rama SÍ temporal
+\node[decnode] (r2) at (-5, -1.8) {¿num.\\métricas?};
+\node[leafnode=blue] (t1) at (-8, -3.6) {\texttt{timeline}\\(1 métrica)};
+\node[leafnode=teal] (t2) at (-5, -3.6) {\texttt{comparison}\\(2--5 métricas)};
+\node[leafnode=purple] (t3) at (-2, -3.6) {\texttt{heatmap}\\($>$5 métricas)};
+
+% Rama NO temporal
+\node[decnode] (r3) at (5, -1.8) {¿col.\\categórica?};
+
+% Rama categórica SÍ
+\node[decnode] (r4) at (2.5, -3.6) {¿cardinalidad\\$\leq 20$?};
+\node[leafnode=orange] (t4) at (1.0, -5.4) {\texttt{bar}\\($\leq 20$ cats)};
+\node[decnode] (r5) at (4.0, -5.4) {¿solo\\categórica?};
+\node[leafnode=success] (t5) at (3.0, -7.2) {\texttt{pie}\\($\leq 8$ cats)};
+\node[leafnode=gray] (t6) at (5.5, -7.2) {\texttt{table}\\($>8$ cats)};
+
+% Rama categórica NO
+\node[decnode] (r6) at (7.5, -3.6) {¿num.\\columnas?};
+\node[leafnode=purple] (t7) at (6.0, -5.4) {\texttt{heatmap}\\($\geq 3$ num.)};
+\node[decnode] (r7) at (8.5, -5.4) {¿exactamente\\2 num.?};
+\node[leafnode=dbcolor] (t8) at (7.5, -7.2) {\texttt{scatter}\\(2 num.)};
+\node[decnode] (r8) at (10.0, -7.2) {¿con\\categórica?};
+\node[leafnode=vizcolor] (t9) at (9.0, -9.0) {\texttt{box}\\(num+cat)};
+\node[leafnode=ragcolor] (t10) at (11.5, -9.0) {\texttt{histogram}\\(1 num.)};
+
+% Fallback
+\node[leafnode=gray] (fallback) at (0, -9.0) {\texttt{table}\\(fallback)};
+
+% Flechas raíz
+\draw[treearrow] (r1.west) -- (r2.north) node[midway, above, yeslabel] {sí};
+\draw[treearrow] (r1.east) -- (r3.north) node[midway, above, nolabel] {no};
+
+% Flechas temporal
+\draw[treearrow] (r2.west) -- (t1.north) node[midway, left, yeslabel] {1};
+\draw[treearrow] (r2.south) -- (t2.north) node[midway, right, yeslabel] {2--5};
+\draw[treearrow] (r2.east) -- (t3.north) node[midway, right, nolabel] {$>$5};
+
+% Flechas categórica
+\draw[treearrow] (r3.west) -- (r4.north) node[midway, above, yeslabel] {sí};
+\draw[treearrow] (r3.east) -- (r6.north) node[midway, above, nolabel] {no};
+
+\draw[treearrow] (r4.west) -- (t4.north) node[midway, left, yeslabel] {sí};
+\draw[treearrow] (r4.east) -- (r5.north) node[midway, right, nolabel] {no};
+\draw[treearrow] (r5.west) -- (t5.north) node[midway, left, yeslabel] {sí};
+\draw[treearrow] (r5.east) -- (t6.north) node[midway, right, nolabel] {no};
+
+% Flechas numéricas
+\draw[treearrow] (r6.west) -- (t7.north) node[midway, left, yeslabel] {$\geq 3$};
+\draw[treearrow] (r6.east) -- (r7.north) node[midway, right, nolabel] {$<3$};
+\draw[treearrow] (r7.west) -- (t8.north) node[midway, left, yeslabel] {sí};
+\draw[treearrow] (r7.east) -- (r8.north) node[midway, right, nolabel] {no};
+\draw[treearrow] (r8.west) -- (t9.north) node[midway, left, yeslabel] {sí};
+\draw[treearrow] (r8.east) -- (t10.north) node[midway, right, nolabel] {no};
+
+% Fallback
+\draw[treearrow, dashed, color=gray!50] (r1.south) -- (fallback.north)
+  node[midway, right, font=\tiny\sffamily\itshape, text=gray!60] {fallback};
+
+\end{tikzpicture}
+\caption{Árbol de decisión del \texttt{VisualizationSelector}. Las constantes \texttt{MAX\_CATEGORIES\_BAR=20}, \texttt{MAX\_CATEGORIES\_PIE=8}, \texttt{MIN\_METRICS\_HEATMAP=3} y \texttt{MAX\_METRICS\_TIMELINE=5} definen los umbrales de cada nodo de decisión. El nodo \texttt{table} actúa como fallback universal cuando ninguna regla se aplica.}
+\label{fig:viz_selector}
+\end{figure*}
+
+
+\subsubsection{Biblioteca de Plantillas Predefinidas}
+
+El \texttt{VisualizationTemplates} (Singleton, \texttt{\_instance = None}) implementa 12 tipos de plantilla Plotly, más el alias \texttt{distribution} $\rightarrow$ \texttt{histogram}. La Tabla~\ref{tab:viz_templates} resume los tipos disponibles con sus casos de uso clínico.
+
+\begin{table}[H]
+\centering
+\caption{Plantillas de visualización disponibles en \texttt{VisualizationTemplates} con casos de uso clínico en ChatHCE.}
+\label{tab:viz_templates}
+\footnotesize
+\begin{tabularx}{\columnwidth}{llX}
+\toprule
+\textbf{Tipo} & \textbf{Plotly base} & \textbf{Caso de uso clínico} \\
+\midrule
+\texttt{timeline} & \texttt{go.Scatter} & Evolución temporal de un signo vital (p.ej., FC a lo largo de la estancia) \\
+\texttt{comparison} & \texttt{go.Scatter} & Comparativa de 2--5 signos vitales en el tiempo \\
+\texttt{bar} & \texttt{go.Bar} & Frecuencia de diagnósticos ICD por categoría \\
+\texttt{scatter} & \texttt{go.Scatter} & Correlación entre dos variables (p.ej., FC vs.\ SpO$_2$) \\
+\texttt{histogram} & \texttt{go.Histogram} & Distribución de valores de triaje (acuidad, dolor) \\
+\texttt{box} & \texttt{go.Box} & Variabilidad de signos vitales por disposición \\
+\texttt{violin} & \texttt{go.Violin} & Distribución de estancias por género o raza \\
+\texttt{heatmap} & \texttt{go.Heatmap} & Correlación entre múltiples signos vitales ($\geq 3$) \\
+\texttt{pie} & \texttt{go.Pie} & Proporción de disposiciones ($\leq 8$ categorías) \\
+\texttt{sunburst} & \texttt{go.Sunburst} & Jerarquía diagnóstica (capítulo ICD $\rightarrow$ código) \\
+\texttt{table} & \texttt{go.Table} & Datos tabulares sin patrón visual claro \\
+\texttt{indicator} & \texttt{go.Indicator} & KPI único (p.ej., tiempo medio de estancia) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Generación de Código por LLM (Fallback)}
+
+Cuando el \texttt{VisualizationSelector} no encuentra una plantilla adecuada, el \texttt{VisualizationAgent} genera código Python con Claude Sonnet 4.5 (\texttt{self.viz\_settings.model\_name}). La inicialización del agente es \textit{lazy}: el cliente LLM no se instancia hasta la primera invocación, ahorrando memoria en el 90\% de las consultas que usan plantillas.
+
+El código generado debe crear obligatoriamente una variable \texttt{fig} de tipo \texttt{plotly.graph\_objects.Figure}. Antes de la ejecución, el \texttt{ImprovedCodeValidator} (que extiende \texttt{CodeValidator}) aplica validación AST en tres niveles:
+
+\begin{enumerate}[nosep, leftmargin=*]
+  \item \textbf{Seguridad base} (\texttt{CodeValidator.validate\_code()}): análisis AST del árbol de sintaxis abstracta para detectar nombres prohibidos (\texttt{eval}, \texttt{exec}, \texttt{compile}, \texttt{open}, \texttt{file}, \texttt{input}, \texttt{raw\_input}, \texttt{execfile}, \texttt{reload}, \texttt{vars}, \texttt{dir}, \texttt{globals}, \texttt{locals}, \texttt{delattr}, \texttt{setattr}) e importaciones de módulos prohibidos (\texttt{os}, \texttt{sys}, \texttt{subprocess}, \texttt{socket}, \texttt{urllib}, \texttt{requests}, \texttt{http}, \texttt{ftplib}, \texttt{telnetlib}, \texttt{pickle}, \texttt{shelve}, \texttt{marshal}, \texttt{imp}).
+  \item \textbf{Existencia de \texttt{fig}} (\texttt{\_check\_fig\_variable()}): verifica que el código asigna la variable \texttt{fig} mediante \texttt{ast.Assign} o \texttt{ast.AugAssign}.
+  \item \textbf{Columnas y métodos} (\texttt{check\_column\_usage()}, \texttt{check\_plotly\_methods()}): verifica que el código solo accede a columnas disponibles en el \texttt{DataFrame} y usa métodos de Plotly conocidos (\texttt{go.Figure}, \texttt{go.Scatter}, \texttt{go.Bar}, etc.).
+\end{enumerate}
+
+El código validado se ejecuta en un namespace restringido mediante \texttt{SafeCodeExecutor.execute()}, que usa \texttt{exec(code, safe\_namespace)} con \texttt{\_\_builtins\_\_} reducido a funciones seguras (\texttt{print}, \texttt{len}, \texttt{range}, \texttt{enumerate}, \texttt{zip}, \texttt{map}, \texttt{filter}, \texttt{sum}, \texttt{min}, \texttt{max}, \texttt{abs}, \texttt{round}, \texttt{sorted}, \texttt{list}, \texttt{dict}, \texttt{tuple}, \texttt{set}, \texttt{str}, \texttt{int}, \texttt{float}, \texttt{bool}) y módulos permitidos (\texttt{pd}, \texttt{np}, \texttt{go}, \texttt{px}). La salida estándar y de error se capturan con \texttt{redirect\_stdout} y \texttt{redirect\_stderr} para evitar fugas de información.
+
+
+% ============================================================================
+\subsection{Seguridad, Validación y Mecanismos Anti-Alucinación}
+\label{sec:seguridad}
+% ============================================================================
+
+La seguridad en ChatHCE se implementa como un sistema de defensa en profundidad (\textit{defense in depth}) con múltiples capas independientes. Ninguna capa es suficiente por sí sola; la robustez emerge de su combinación. La Figura~\ref{fig:security_layers} ilustra la arquitectura de seguridad como murallas concéntricas, donde cada capa detiene una clase diferente de amenaza.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  wallstyle/.style={
+    draw=#1!60, fill=#1!7, rounded corners=8pt,
+    minimum width=#2, minimum height=#3,
+    font=\footnotesize\sffamily
+  },
+  labelstyle/.style={
+    font=\footnotesize\sffamily\bfseries, text=#1!75
+  },
+  iconnode/.style={
+    draw=#1!55, fill=#1!18, rounded corners=4pt,
+    minimum width=2.8cm, minimum height=0.65cm,
+    font=\tiny\sffamily\bfseries, text=#1!80, align=center
+  },
+  threatarrow/.style={
+    -{Stealth[length=5pt]}, very thick, color=accent!70, dashed
+  },
+  blockarrow/.style={
+    -{Stealth[length=4pt]}, thick, color=success!60
+  }
+]
+
+% ---- Capa 5 (exterior): Rate Limiting ----
+\node[wallstyle=gray, 16cm, 10.5cm] (w5) at (0, 0) {};
+\node[labelstyle=gray, anchor=north west] at ([xshift=8pt, yshift=-6pt]w5.north west)
+  {Capa 5 — Rate Limiting (ventana deslizante)};
+\node[iconnode=gray] at (-5.5, 4.2) {30 req/min · 300 req/h};
+\node[iconnode=gray] at (-1.5, 4.2) {burst: 5 req/10 s};
+\node[iconnode=gray] at (2.5, 4.2) {bloqueo progresivo};
+\node[iconnode=gray] at (6.0, 4.2) {msg $\leq$ 5000 chars};
+
+% ---- Capa 4: Autenticación ----
+\node[wallstyle=blue, 13.5cm, 8.5cm] (w4) at (0, -0.5) {};
+\node[labelstyle=blue, anchor=north west] at ([xshift=8pt, yshift=-6pt]w4.north west)
+  {Capa 4 — Autenticación y Autorización (Supabase Auth + RLS)};
+\node[iconnode=blue] at (-4.5, 3.0) {JWT tokens};
+\node[iconnode=blue] at (-1.0, 3.0) {Row Level Security};
+\node[iconnode=blue] at (2.5, 3.0) {13 tablas protegidas};
+\node[iconnode=blue] at (5.5, 3.0) {sesiones: máx. 3};
+
+% ---- Capa 3: Validación SQL ----
+\node[wallstyle=orange, 11.0cm, 6.5cm] (w3) at (0, -1.0) {};
+\node[labelstyle=orange, anchor=north west] at ([xshift=8pt, yshift=-6pt]w3.north west)
+  {Capa 3 — Validación SQL Multicapa (DatabaseService)};
+\node[iconnode=orange] at (-3.5, 1.6) {solo SELECT};
+\node[iconnode=orange] at (-0.5, 1.6) {lista negra DDL/DML};
+\node[iconnode=orange] at (2.8, 1.6) {tablas whitelist};
+\node[iconnode=orange] at (-3.5, 0.8) {sin \texttt{;} ni \texttt{--}};
+\node[iconnode=orange] at (-0.5, 0.8) {sin PG\_SLEEP};
+\node[iconnode=orange] at (2.8, 0.8) {máx. 2000 chars};
+
+% ---- Capa 2: Sandbox AST ----
+\node[wallstyle=purple, 8.5cm, 4.5cm] (w2) at (0, -1.5) {};
+\node[labelstyle=purple, anchor=north west] at ([xshift=8pt, yshift=-6pt]w2.north west)
+  {Capa 2 — Sandbox AST (CodeValidator + SafeCodeExecutor)};
+\node[iconnode=purple] at (-2.5, 0.0) {AST walk\\módulos prohibidos};
+\node[iconnode=purple] at (0.5, 0.0) {namespace\\restringido};
+\node[iconnode=purple] at (3.2, 0.0) {stdout/stderr\\capturados};
+
+% ---- Capa 1 (interior): Anti-Alucinación ----
+\node[wallstyle=accent, 6.0cm, 2.5cm] (w1) at (0, -2.0) {};
+\node[labelstyle=accent, anchor=north west] at ([xshift=8pt, yshift=-6pt]w1.north west)
+  {Capa 1 — Anti-Alucinación (Prompt del Sistema)};
+\node[iconnode=accent] at (-1.5, -2.5) {prohibiciones\\absolutas};
+\node[iconnode=accent] at (1.5, -2.5) {citación\\obligatoria};
+
+% ---- Amenaza exterior ----
+\node[draw=accent!70, fill=accent!12, rounded corners=4pt,
+      font=\small\sffamily\bfseries, text=accent!80, align=center,
+      minimum width=2.5cm, minimum height=0.8cm] (threat) at (9.5, 0) {Amenaza\\externa};
+\draw[threatarrow] (threat.west) -- (w5.east)
+  node[midway, above, font=\tiny\sffamily\itshape, text=accent!70] {DoS / abuso};
+
+% ---- Activo protegido ----
+\node[draw=success!65, fill=success!12, rounded corners=5pt,
+      font=\small\sffamily\bfseries, text=success!80, align=center,
+      minimum width=2.5cm, minimum height=0.8cm] (asset) at (0, -3.8) {Datos clínicos\\MIMIC-IV-ED};
+
+\end{tikzpicture}
+\caption{Arquitectura de seguridad de ChatHCE como murallas concéntricas. Cada capa detiene una clase diferente de amenaza: la capa exterior (Rate Limiting) previene el abuso por volumen; la autenticación controla el acceso; la validación SQL previene inyección; el sandbox AST aísla la ejecución de código; las directivas anti-alucinación garantizan la veracidad clínica.}
+\label{fig:security_layers}
+\end{figure*}
+
+\subsubsection{Capa 1 — Rate Limiting con Ventana Deslizante}
+\label{sec:rate_limiting}
+
+El \texttt{RateLimiter} (\texttt{services/rate\_limiter.py}) implementa un algoritmo de \textbf{ventana deslizante} (\textit{sliding window}) \citep{Fielding2000} con tres niveles de protección independientes. El patrón Singleton (\texttt{\_instance = None}, \texttt{\_lock = threading.Lock()}) garantiza estado compartido entre todas las peticiones concurrentes con seguridad de hilos (\textit{thread-safe}).
+
+Los límites configurados mediante \texttt{RateLimitConfig} son:
+
+\begin{itemize}[nosep, leftmargin=*]
+  \item \textbf{Burst limit}: máximo 5 peticiones en 10 segundos (\texttt{burst\_limit=5}, \texttt{burst\_window=10.0 s}). Previene ráfagas de peticiones automatizadas.
+  \item \textbf{Límite por minuto}: máximo 30 peticiones/minuto (\texttt{max\_requests\_per\_minute=30}). Configurable desde \texttt{settings.security.rate\_limit\_per\_minute}.
+  \item \textbf{Límite por hora}: máximo 300 peticiones/hora (\texttt{max\_requests\_per\_hour=300}). Configurable desde \texttt{settings.security.rate\_limit\_per\_hour}.
+  \item \textbf{Longitud de mensaje}: máximo 5000 caracteres (\texttt{max\_message\_length=5000}). Previene ataques de prompt injection por volumen.
+\end{itemize}
+
+El sistema aplica \textbf{bloqueo progresivo} ante violaciones repetidas: la primera violación bloquea 30 s, la segunda 60 s, la tercera 120 s, la cuarta 300 s y la quinta o posterior 600 s (secuencia \texttt{[30, 60, 120, 300, 600]}). Este mecanismo desincentiva los intentos de fuerza bruta sin bloquear permanentemente a usuarios legítimos que cometen errores ocasionales. La clave de identificación es \texttt{user:\{user\_id\}} para usuarios autenticados o \texttt{ip:\{ip\_address\}} como fallback para peticiones no autenticadas.
+
+La limpieza automática de entradas expiradas se ejecuta cada \texttt{cleanup\_interval=300 s} (5 minutos), eliminando entradas sin actividad en las últimas 2 horas para prevenir fugas de memoria.
+
+\subsubsection{Capa 2 — Autenticación y Autorización}
+
+La autenticación se gestiona mediante Supabase Auth con tokens JWT. El \texttt{AuthService} (\texttt{services/auth/auth\_service.py}) y el \texttt{SessionManager} (\texttt{services/auth/session\_manager.py}) gestionan el ciclo de vida de las sesiones. Row Level Security (RLS) está habilitado en las 13 tablas del sistema, garantizando que cada usuario solo puede acceder a sus propios datos de conversación. Un trigger de base de datos limita a 3 el número máximo de sesiones activas por usuario, previniendo la acumulación de sesiones huérfanas.
+
+\subsubsection{Capa 3 — Validación SQL Multicapa}
+\label{sec:sql_validation}
+
+El \texttt{DatabaseService} (\texttt{services/medical\_agent/services/database\_service.py}) implementa validación SQL en el método \texttt{\_validate\_query()} con seis controles independientes:
+
+\begin{enumerate}[nosep, leftmargin=*]
+  \item \textbf{Longitud máxima}: consultas de más de 2000 caracteres son rechazadas.
+  \item \textbf{Solo SELECT}: la consulta debe comenzar con \texttt{SELECT} (verificado con \texttt{query\_upper.startswith('SELECT')}).
+  \item \textbf{Lista negra de keywords DDL/DML}: \texttt{DROP}, \texttt{DELETE}, \texttt{INSERT}, \texttt{UPDATE}, \texttt{ALTER}, \texttt{CREATE}, \texttt{TRUNCATE}, \texttt{GRANT}, \texttt{REVOKE}, \texttt{EXEC}, \texttt{EXECUTE}, \texttt{UNION}, \texttt{DECLARE}, \texttt{CURSOR}, \texttt{COPY}, \texttt{VACUUM}, \texttt{ANALYZE}, \texttt{COMMENT}, \texttt{SECURITY}, \texttt{OWNER}. La detección usa expresiones regulares con límites de palabra (\texttt{r'\textbackslash b' + keyword + r'\textbackslash b'}) para evitar falsos positivos.
+  \item \textbf{Caracteres prohibidos}: punto y coma (\texttt{;}), comentarios SQL (\texttt{--}) y bloques de comentario (\texttt{/*}) son rechazados para prevenir ataques de multi-statement y comentarios de evasión.
+  \item \textbf{Tablas del sistema}: acceso a \texttt{PG\_*} e \texttt{INFORMATION\_SCHEMA} bloqueado mediante regex.
+  \item \textbf{Funciones peligrosas de PostgreSQL}: \texttt{PG\_SLEEP}, \texttt{PG\_READ\_FILE}, \texttt{PG\_WRITE\_FILE}, \texttt{DBLINK}, \texttt{LO\_IMPORT}, \texttt{LO\_EXPORT}, \texttt{CURRENT\_SETTING}, \texttt{SET\_CONFIG} están explícitamente bloqueadas.
+  \item \textbf{Whitelist de tablas}: solo se permiten las tablas \texttt{ALLOWED\_TABLES = \{diagnosis, edstays, triage, vitalsign, medrecon, pyxis\}}. Cualquier referencia a tablas no incluidas en esta lista es rechazada.
+\end{enumerate}
+
+El acceso a datos se realiza exclusivamente mediante la API de Supabase (\texttt{supabase-py}) con el método \texttt{.schema('mimic\_ed').table(name).select(...).eq(...).limit(limit).execute()}, que parametriza automáticamente los valores y previene inyección SQL. El decorador \texttt{@retry\_on\_failure(max\_retries=3, delay=1.0, backoff=2.0)} aplica reintentos con backoff exponencial (delays: 1 s, 2 s, 4 s) ante errores de conexión o timeout, sin reintentar errores de validación (\texttt{ValidationError}) que son deterministas.
+
+\subsubsection{Capa 4 — Sandbox de Ejecución de Código}
+\label{sec:sandbox}
+
+La ejecución de código Python generado por el \texttt{VisualizationAgent} se realiza en un entorno aislado mediante \texttt{SafeCodeExecutor} (\texttt{services/medical\_agent/code\_executor.py}). El aislamiento opera en dos niveles complementarios:
+
+\textbf{Validación estática (AST).} El \texttt{ImprovedCodeValidator} analiza el árbol de sintaxis abstracta del código antes de ejecutarlo, sin necesidad de ejecutarlo. Detecta nombres prohibidos (\texttt{eval}, \texttt{exec}, \texttt{compile}, \texttt{open}, \texttt{file}, \texttt{input}, \texttt{raw\_input}, \texttt{execfile}, \texttt{reload}, \texttt{vars}, \texttt{dir}, \texttt{globals}, \texttt{locals}, \texttt{delattr}, \texttt{setattr}), módulos prohibidos (\texttt{os}, \texttt{sys}, \texttt{subprocess}, \texttt{socket}, \texttt{urllib}, \texttt{requests}, \texttt{http}, \texttt{ftplib}, \texttt{telnetlib}, \texttt{pickle}, \texttt{shelve}, \texttt{marshal}, \texttt{imp}) y módulos no incluidos en la lista blanca (\texttt{plotly}, \texttt{plotly.graph\_objects}, \texttt{plotly.express}, \texttt{pandas}, \texttt{numpy}, \texttt{datetime}, \texttt{math}).
+
+\textbf{Namespace restringido (runtime).} El método \texttt{\_create\_safe\_namespace()} construye un diccionario de ejecución con \texttt{\_\_builtins\_\_} reducido a 22 funciones seguras y los módulos \texttt{pd}, \texttt{np}, \texttt{go}, \texttt{px}. La llamada \texttt{exec(code, safe\_namespace)} ejecuta el código en este namespace aislado, sin acceso al namespace global del proceso. La salida estándar y de error se capturan con \texttt{redirect\_stdout} y \texttt{redirect\_stderr} para evitar fugas de información sensible.
+
+Este enfoque de doble validación (estática + runtime) sigue el principio de defensa en profundidad: la validación AST es más rápida y detecta la mayoría de los intentos maliciosos antes de la ejecución; el namespace restringido actúa como red de seguridad para casos que la validación estática no detecte.
+
+
+\subsubsection{Capa 5 — Directivas Anti-Alucinación}
+\label{sec:antihallucination_310}
+
+\begin{tcolorbox}[
+  enhanced, breakable,
+  colback=accent!3, colframe=accent!40,
+  title={\footnotesize\sffamily\bfseries\color{white} Sistema Anti-Alucinación — Diseño y Justificación},
+  attach boxed title to top left={yshift=-2mm, xshift=4mm},
+  boxed title style={colback=accent!55, rounded corners},
+  left=5pt, right=5pt, top=5pt, bottom=5pt
+]
+\footnotesize
+La alucinación en LLMs aplicados a medicina es un riesgo crítico: un modelo que inventa valores de signos vitales, diagnósticos o medicamentos puede inducir decisiones clínicas incorrectas. ChatHCE implementa un sistema anti-alucinación de cinco dimensiones que opera en el nivel más temprano posible: el prompt del sistema, antes de que el modelo genere cualquier token de respuesta.
+
+\textbf{Principio de diseño}: interceptar antes de generar es computacionalmente más barato y más fiable que corregir después de generar. Las directivas en el prompt del sistema condicionan el comportamiento del modelo en cada turno de conversación, sin overhead de post-procesamiento.
+
+Las cinco dimensiones del sistema, implementadas en \texttt{get\_anti\_hallucination\_directives()} del \texttt{PromptManager} (\texttt{services/medical\_agent/prompt\_manager.py}), son:
+
+\begin{enumerate}[nosep, leftmargin=*]
+  \item \textbf{Prohibiciones absolutas de identificadores}: el modelo tiene prohibido explícitamente inventar \texttt{subject\_id}, \texttt{stay\_id} o \texttt{hadm\_id}. Solo puede usar identificadores obtenidos de una consulta real a la base de datos mediante \texttt{DatabaseTool}.
+  \item \textbf{Prohibiciones absolutas de valores clínicos}: temperatura, frecuencia cardíaca, presión arterial, saturación de oxígeno, frecuencia respiratoria, resultados de laboratorio, diagnósticos ICD y medicamentos deben provenir exclusivamente de herramientas. Ningún valor numérico puede ser generado por el modelo.
+  \item \textbf{Protocolos para datos faltantes}: respuestas estandarizadas ante ausencia de datos: ``No encontré información sobre [X] en el dataset'', ``Algunos registros tienen datos incompletos para [campo]'', ``El paciente [ID] no existe en MIMIC-IV-ED''. Estas frases previenen que el modelo rellene huecos con valores plausibles pero falsos.
+  \item \textbf{Citación obligatoria de fuentes}: toda información clínica debe ir acompañada de la tabla de origen (``Según los datos obtenidos de la tabla \texttt{vitalsign}...'') o el documento fuente (``Según [nombre del documento]...''). La citación hace trazable cada dato y permite al usuario verificar la fuente.
+  \item \textbf{Diferenciación datos/interpretaciones}: el modelo usa lenguaje verificado para datos directos (``Los registros muestran...'', ``Según los datos disponibles...'') y lenguaje condicional para interpretaciones (``Esto podría indicar...'', ``Una posible interpretación es...'', ``Analizando los datos disponibles...''). Esta distinción lingüística comunica explícitamente el nivel de certeza al usuario clínico.
+\end{enumerate}
+
+\textbf{Limitaciones reconocidas}: las directivas de prompt son instrucciones, no restricciones técnicas. Un modelo suficientemente capaz podría ignorarlas. La defensa técnica complementaria es la arquitectura de herramientas: el agente \textit{debe} invocar \texttt{DatabaseTool} o \texttt{RAGTool} para obtener datos reales, y el \texttt{AgentExecutor} registra qué herramientas se invocaron (\texttt{return\_intermediate\_steps=True}), permitiendo auditar si la respuesta está fundamentada en datos reales o generada sin herramientas.
+\end{tcolorbox}
+
+\subsubsection{Resumen de la Arquitectura de Seguridad}
+
+La Tabla~\ref{tab:security_summary} resume las cinco capas de seguridad con sus componentes de implementación, amenazas mitigadas y limitaciones reconocidas.
+
+\begin{table*}[t]
+\centering
+\caption{Resumen de las cinco capas de seguridad de ChatHCE con componentes, amenazas mitigadas y limitaciones.}
+\label{tab:security_summary}
+\footnotesize
+\begin{tabularx}{\textwidth}{llXX}
+\toprule
+\textbf{Capa} & \textbf{Componente} & \textbf{Amenaza mitigada} & \textbf{Limitación} \\
+\midrule
+5 — Rate Limiting & \texttt{RateLimiter} & DoS, abuso por volumen, prompt injection por longitud & No previene ataques lentos distribuidos \\
+\addlinespace
+4 — Autenticación & Supabase Auth + RLS & Acceso no autorizado a datos de otros usuarios & Depende de la seguridad de Supabase \\
+\addlinespace
+3 — Validación SQL & \texttt{DatabaseService.\_validate\_query()} & SQL injection, acceso a tablas del sistema, DDL/DML & No valida semántica de la consulta \\
+\addlinespace
+2 — Sandbox AST & \texttt{CodeValidator} + \texttt{SafeCodeExecutor} & Ejecución de código malicioso, acceso al sistema de archivos & No es un sandbox completo del proceso \\
+\addlinespace
+1 — Anti-Alucinación & \texttt{PromptManager.get\_anti\_hallucination\_directives()} & Generación de información clínica falsa & Instrucciones, no restricciones técnicas \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+La combinación de estas cinco capas implementa el principio de \textit{defense in depth}: ninguna capa es suficiente por sí sola, pero su combinación hace que un atacante deba superar múltiples barreras independientes para comprometer el sistema. En el contexto clínico de ChatHCE, la capa más crítica es la anti-alucinación (Capa 1), ya que los datos clínicos incorrectos pueden tener consecuencias directas sobre la toma de decisiones médicas, independientemente de si el error proviene de un atacante externo o de las limitaciones intrínsecas del modelo de lenguaje.
+
+% ============================================================================
+% REFERENCIAS BibTeX adicionales para metodologia_parte3.tex
+% ============================================================================
+%
+% @inproceedings{Cormack2009,
+%   author    = {Cormack, Gordon V. and Clarke, Charles L. A. and Buettcher, Stefan},
+%   title     = {Reciprocal Rank Fusion Outperforms Condorcet and Individual Rank Learning Methods},
+%   booktitle = {Proceedings of the 32nd International ACM SIGIR Conference on Research and Development in Information Retrieval},
+%   year      = {2009},
+%   pages     = {758--759},
+%   doi       = {10.1145/1571941.1572114}
+% }
+%
+% @inproceedings{Gao2022,
+%   author    = {Gao, Luyu and Ma, Xueguang and Lin, Jimmy and Callan, Jamie},
+%   title     = {Precise Zero-Shot Dense Retrieval without Relevance Labels},
+%   booktitle = {Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics},
+%   year      = {2023},
+%   pages     = {1762--1777},
+%   doi       = {10.18653/v1/2023.acl-long.99}
+% }
+%
+% @inproceedings{Wang2020,
+%   author    = {Wang, Kexin and Reimers, Nils and Gurevych, Iryna},
+%   title     = {{TSDAE}: Using Transformer-based Sequential Denoising Auto-Encoder
+%                for Unsupervised Sentence Embedding Learning},
+%   booktitle = {Findings of the Association for Computational Linguistics: EMNLP 2021},
+%   year      = {2021},
+%   url       = {https://arxiv.org/abs/2104.06979}
+% }
+%
+% @inproceedings{Nogueira2019,
+%   author    = {Nogueira, Rodrigo and Cho, Kyunghyun},
+%   title     = {Passage Re-ranking with {BERT}},
+%   booktitle = {arXiv preprint arXiv:1901.04085},
+%   year      = {2019},
+%   url       = {https://arxiv.org/abs/1901.04085}
+% }
+%
+% @techreport{Fielding2000,
+%   author      = {Fielding, Roy Thomas},
+%   title       = {Architectural Styles and the Design of Network-based Software Architectures},
+%   institution = {University of California, Irvine},
+%   year        = {2000},
+%   type        = {Doctoral dissertation},
+%   url         = {https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm}
+% }
+%
+% @misc{Reimers2019,
+%   author    = {Reimers, Nils and Gurevych, Iryna},
+%   title     = {Sentence-{BERT}: Sentence Embeddings using Siamese {BERT}-Networks},
+%   year      = {2019},
+%   booktitle = {Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing},
+%   doi       = {10.18653/v1/D19-1410}
+% }

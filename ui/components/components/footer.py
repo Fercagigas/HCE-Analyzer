@@ -28,12 +28,12 @@ def show_footer():
             st.markdown("Médicos • Enfermeros • Especialistas")
         
         with col2:
-            st.markdown("**🔒 Seguro y Confiable**")
-            st.markdown("Datos Encriptados • HIPAA Compliant")
+            st.markdown("**🎯 Chat Unificado**")
+            st.markdown("Acceso Inteligente • MIMIC-IV-ED • RAG")
         
         with col3:
             st.markdown("**🤖 IA Avanzada**")
-            st.markdown("Modelos LLM • RAG • Análisis Inteligente")
+            st.markdown("Claude • Anthropic • Visualizaciones Dinámicas")
         
         st.markdown("---")  # Separador
         
@@ -41,10 +41,10 @@ def show_footer():
         col1, col2 = st.columns([2, 1])
         
         with col1:
-            st.markdown(f"© {datetime.now().year} HCE Analyzer. Desarrollado con ❤️ para mejorar la atención médica.")
+            st.markdown(f"© {datetime.now().year} ChatHCE. Trabajo de Fin de Máster por Fernando Cagigas.")
         
         with col2:
-            st.markdown("[Términos de Uso](#) | [Privacidad](#) | [Soporte](#)")
+            st.markdown("[Documentación](docs/) | [GitHub](#) | [Contacto](#)")
     
     # Información técnica (solo en modo debug)
     if st.session_state.get('show_debug_info', False):
@@ -79,38 +79,39 @@ def show_quick_help():
         st.markdown("""
         ### 🚀 Inicio Rápido
         
-        **1. Análisis de HCE:**
-        - Sube un archivo PDF o introduce texto
-        - Selecciona el tipo de análisis
-        - Obtén interpretación médica detallada
+        **🎯 Chat Unificado (Recomendado):**
+        - Interfaz única para todas tus consultas
+        - Acceso automático a MIMIC-IV-ED y documentos clínicos
+        - Visualizaciones generadas automáticamente
+        - Sin necesidad de cambiar entre modos
         
-        **2. Chat Clínico:**
-        - Haz preguntas sobre protocolos médicos
-        - Consulta guías clínicas del hospital
-        - Obtén respuestas basadas en evidencia
+        **Ejemplos de Consultas:**
+        - "Muéstrame información del paciente 10014729"
+        - "¿Cuál es el protocolo para hipertensión?"
+        - "Gráfica de signos vitales del paciente 10014729"
+        - "¿El tratamiento del paciente sigue las guías?"
         
-        **3. Añadir Contexto:**
-        - Sube guías clínicas en PDF
-        - Organiza por especialidad
-        - Mejora las respuestas del sistema
+        **📁 Gestión de Documentos:**
+        - Sube guías clínicas (PDF, DOCX, TXT)
+        - Indexación automática
+        - Disponibles inmediatamente en el chat
         
         ### 🔧 Atajos de Teclado
-        - `Ctrl + Enter`: Enviar formulario
-        - `Ctrl + /`: Mostrar/ocultar ayuda
+        - `Ctrl + Enter`: Enviar mensaje
         - `Esc`: Cerrar modales
         
-        ### 📞 Soporte
-        - Email: soporte@hce-analyzer.com
-        - Teléfono: +1 (555) 123-4567
-        - Documentación: [docs.hce-analyzer.com](https://docs.hce-analyzer.com)
+        ### 📚 Documentación
+        - [Guía de Usuario](docs/UNIFIED_CHAT_USER_GUIDE.md)
+        - [Ejemplos de Consultas](docs/UNIFIED_CHAT_QUERY_EXAMPLES.md)
+        - [Solución de Problemas](docs/UNIFIED_CHAT_TROUBLESHOOTING.md)
         """)
 
 def show_system_status():
     """Muestra estado del sistema"""
     # Simular verificación de estado
     services_status = {
-        "🤖 Servicio de IA": "✅ Operativo",
-        "🗄️ Base de Datos": "✅ Operativo", 
+        "🎯 Chat Unificado": "✅ Operativo",
+        "🗄️ MIMIC-IV-ED": "✅ Operativo", 
         "🔍 Sistema RAG": "✅ Operativo",
         "🔐 Autenticación": "✅ Operativo"
     }

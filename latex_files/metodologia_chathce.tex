@@ -1,0 +1,780 @@
+% ============================================================================
+% ChatHCE - Metodología del TFG
+% Secciones 3.1, 3.2, 3.3 y 3.4
+% Para incluir desde el documento principal con \input{metodologia_chathce}
+% ============================================================================
+
+% --- Paquetes adicionales necesarios (añadir al preámbulo principal) ---
+% \usepackage{amsthm}
+% \usepackage{thmtools}
+% \usetikzlibrary{shadows,fadings,decorations.markings,patterns}
+
+% --- Entornos matemáticos ---
+\theoremstyle{definition}
+\newtheorem{definition}{Definición}[section]
+\newtheorem{proposition}{Proposición}[section]
+
+% ============================================================================
+\section{Metodología}
+% ============================================================================
+
+% ============================================================================
+\subsection{Paradigma de Investigación}
+\label{sec:paradigma}
+% ============================================================================
+
+\subsubsection{Motivación y Problema Clínico}
+
+El ejercicio de la medicina de urgencias impone una carga cognitiva y temporal excepcional sobre los profesionales sanitarios. Un médico de urgencias necesita acceder, de forma simultánea y en tiempo real, a tres categorías de información heterogéneas: datos estructurados del paciente almacenados en bases de datos relacionales (signos vitales, diagnósticos previos, medicación activa), conocimiento clínico no estructurado contenido en guías y protocolos (documentos PDF, DOCX), y representaciones visuales que permitan identificar tendencias en series temporales de parámetros fisiológicos. Esta integración se realiza habitualmente mediante múltiples sistemas desconectados, con interfaces distintas y sin capacidad de consulta en lenguaje natural.
+
+Los datos disponibles en la literatura cuantifican el impacto de esta fragmentación: según \citet{Arndt2017}, los médicos dedican una media de 16 minutos y 14 segundos de tiempo activo en el sistema de historia clínica electrónica (HCE) por cada encuentro con el paciente, lo que representa entre el 37\% y el 49\% del tiempo total de la visita. En el contexto de urgencias, donde los tiempos de respuesta son críticos, esta carga documental puede comprometer la calidad asistencial. \textbf{ChatHCE} aborda este problema proporcionando una interfaz conversacional unificada en lenguaje natural que integra automáticamente las tres fuentes de información mediante selección inteligente de herramientas.
+
+\subsubsection{Marco Design Science Research}
+
+Este trabajo adopta el marco \textbf{Design Science Research} (DSR) propuesto por \citet{Hevner2004} como paradigma metodológico principal. DSR es un paradigma de investigación orientado a la construcción y evaluación de artefactos tecnológicos innovadores que resuelven problemas identificados en dominios de aplicación concretos. A diferencia de los enfoques experimentales clásicos, cuyo objetivo es falsificar hipótesis estadísticas sobre fenómenos observables, DSR persigue demostrar que un artefacto construido resuelve el problema planteado con calidad medible y contribuye al conocimiento base de la disciplina.
+
+El marco DSR se articula en tres ciclos interconectados (Figura~\ref{fig:dsr}):
+
+\textbf{Ciclo de Relevancia.} El problema de investigación emerge del dominio clínico real: la necesidad de integrar datos heterogéneos de urgencias en una interfaz conversacional. Los requisitos del sistema se derivan directamente de este contexto, garantizando que el artefacto construido tenga valor práctico para los profesionales sanitarios.
+
+\textbf{Ciclo de Diseño.} Constituye el núcleo del trabajo: la construcción iterativa del artefacto (ChatHCE) y su evaluación continua. Cada iteración produce un artefacto más refinado, validado contra los requisitos del dominio. Este ciclo se implementa mediante sprints ágiles de dos semanas.
+
+\textbf{Ciclo de Rigor.} El conocimiento base científico —modelos de lenguaje de gran escala (LLMs), Retrieval-Augmented Generation \citep{Lewis2020}, arquitecturas multiagente y datasets clínicos anonimizados— fundamenta las decisiones de diseño y garantiza que el artefacto se construya sobre bases teóricas sólidas.
+
+La elección de DSR sobre un enfoque experimental puro se justifica por la naturaleza del objetivo: no se trata de probar que una técnica es estadísticamente superior a otra en condiciones controladas, sino de construir un sistema funcional que demuestre, mediante evaluación empírica, que resuelve el problema clínico planteado con calidad medible en términos de precisión, latencia y usabilidad.
+
+\subsubsection{Metodología Ágil Complementaria}
+
+El desarrollo del artefacto se organiza mediante \textbf{sprints de dos semanas}, siguiendo principios ágiles adaptados al contexto académico. La elección de un enfoque iterativo sobre un modelo en cascada (waterfall) responde a una característica fundamental del sistema: el comportamiento del \textit{tool-calling} de Claude no era completamente predecible a priori. La selección automática de herramientas, la gestión del historial conversacional y la síntesis de respuestas integradas emergían como comportamientos que solo podían validarse empíricamente durante la implementación. Un modelo waterfall habría requerido especificar completamente estos comportamientos antes de comenzar la implementación, lo cual no era factible dado el carácter emergente de los sistemas basados en LLMs.
+
+% --- Figura 3.1: Ciclos DSR ---
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  cyclenode/.style={
+    draw=#1!70, fill=#1!12, rounded corners=6pt,
+    minimum width=3.6cm, minimum height=1.0cm,
+    font=\small\sffamily\bfseries, text=#1!80, align=center,
+    drop shadow={shadow xshift=1.5pt, shadow yshift=-1.5pt, fill=#1!20, opacity=0.5}
+  },
+  innernode/.style={
+    draw=#1!60, fill=#1!20, rounded corners=4pt,
+    minimum width=2.8cm, minimum height=0.65cm,
+    font=\tiny\sffamily, text=#1!80, align=center
+  },
+  cyclearrow/.style={
+    -{Stealth[length=6pt,width=4pt]}, very thick, color=#1!70
+  },
+  bridgearrow/.style={
+    {Stealth[length=5pt]}-{Stealth[length=5pt]}, thick, dashed, color=gray!60
+  },
+  cyclelabel/.style={
+    font=\footnotesize\sffamily\bfseries\itshape, text=#1!70
+  }
+]
+
+% ---- CICLO RELEVANCIA (izquierda, azul) ----
+\node[cyclenode=blue] (rel_title) at (-5.5, 2.8) {Ciclo de Relevancia};
+\node[innernode=blue] (rel1) at (-5.5, 1.6) {Urgencias\\hospitalarias};
+\node[innernode=blue] (rel2) at (-5.5, 0.5) {Requisitos\\del sistema};
+\node[innernode=blue] (rel3) at (-5.5,-0.6) {Validación\\con usuarios};
+
+\draw[cyclearrow=blue] (rel1.south) -- (rel2.north);
+\draw[cyclearrow=blue] (rel2.south) -- (rel3.north);
+\draw[cyclearrow=blue, bend right=50] (rel3.west) to (rel1.west);
+
+% ---- CICLO DISEÑO (centro, verde) ----
+\node[cyclenode=teal] (des_title) at (0, 2.8) {Ciclo de Diseño};
+\node[innernode=teal] (des1) at (0, 1.6) {Construir\\ChatHCE};
+\node[innernode=teal] (des2) at (0, 0.5) {Evaluar\\artefacto};
+\node[innernode=teal] (des3) at (0,-0.6) {Refinar\\diseño};
+
+\draw[cyclearrow=teal] (des1.south) -- (des2.north);
+\draw[cyclearrow=teal] (des2.south) -- (des3.north);
+\draw[cyclearrow=teal, bend right=50] (des3.west) to (des1.west);
+
+% ---- CICLO RIGOR (derecha, naranja) ----
+\node[cyclenode=orange] (rig_title) at (5.5, 2.8) {Ciclo de Rigor};
+\node[innernode=orange] (rig1) at (5.5, 1.6) {LLMs / RAG\\Multiagente};
+\node[innernode=orange] (rig2) at (5.5, 0.5) {Fundamenta\\decisiones};
+\node[innernode=orange] (rig3) at (5.5,-0.6) {Contribución\\al conocimiento};
+
+\draw[cyclearrow=orange] (rig1.south) -- (rig2.north);
+\draw[cyclearrow=orange] (rig2.south) -- (rig3.north);
+\draw[cyclearrow=orange, bend left=50] (rig3.east) to (rig1.east);
+
+% ---- Puentes entre ciclos ----
+\draw[bridgearrow] (rel_title.east) -- (des_title.west)
+  node[midway, above, font=\tiny\sffamily\itshape, text=gray] {requisitos};
+\draw[bridgearrow] (des_title.east) -- (rig_title.west)
+  node[midway, above, font=\tiny\sffamily\itshape, text=gray] {validación};
+
+% ---- Etiqueta central ----
+\node[draw=gray!30, fill=gray!5, rounded corners=4pt,
+      font=\tiny\sffamily, text=gray!70, align=center,
+      minimum width=2.2cm, inner sep=4pt] at (0,-1.8)
+  {Artefacto:\\ChatHCE v2.0};
+
+\draw[dashedarrow, color=teal!50] (des3.south) -- (0,-1.5);
+
+\end{tikzpicture}
+\caption{Ciclos DSR aplicados a ChatHCE \citep{Hevner2004}. El ciclo de relevancia conecta el dominio clínico con los requisitos del sistema; el ciclo de diseño itera sobre la construcción y evaluación del artefacto; el ciclo de rigor garantiza que las decisiones de diseño se fundamenten en el conocimiento base científico.}
+\label{fig:dsr}
+\end{figure*}
+
+% ============================================================================
+\subsection{Visión General y Formulación Formal}
+\label{sec:vision}
+% ============================================================================
+
+\subsubsection{Descripción General del Sistema}
+
+\textbf{ChatHCE} es un sistema de análisis clínico inteligente diseñado para profesionales del Servicio de Urgencias que necesitan acceder, en tiempo real y mediante lenguaje natural en español, a datos de pacientes del dataset MIMIC-IV-ED, guías clínicas indexadas y visualizaciones interactivas. El sistema opera como una interfaz conversacional única que elimina la necesidad de cambiar entre múltiples aplicaciones o aprender lenguajes de consulta especializados.
+
+El sistema se articula sobre tres pilares tecnológicos complementarios. El primero es un \textbf{agente conversacional} basado en Claude Haiku 4.5 (\texttt{claude-haiku-4-5-20251001}) con capacidad de \textit{tool-calling} nativo, que analiza la intención del usuario y selecciona automáticamente las herramientas apropiadas para cada consulta. El segundo es un \textbf{pipeline RAG} (\textit{Retrieval-Augmented Generation}) con búsqueda híbrida vectorial-léxica sobre Supabase pgvector, que recupera fragmentos relevantes de documentos clínicos indexados y los incorpora al contexto de la respuesta con citación de fuentes. El tercero es un \textbf{motor de visualización} con enfoque \textit{template-first} que genera gráficas interactivas con Plotly a partir de datos clínicos, activándose automáticamente cuando la consulta implica tendencias temporales o comparación de múltiples métricas.
+
+\subsubsection{Formalización Matemática del Problema}
+\label{sec:formalizacion}
+
+Se formaliza el problema de análisis clínico conversacional de la siguiente manera:
+
+\begin{definition}[Dataset clínico estructurado]
+\label{def:dataset}
+El dataset clínico se define como $\mathcal{D} = \{T_1, T_2, \ldots, T_6\}$, donde cada $T_i$ es una tabla relacional del esquema \texttt{mimic\_ed} con esquema conocido, indexada sobre $\textit{stay\_id} \in \mathbb{N}^+$ como clave primaria. Las tablas son: $T_1 = \texttt{edstays}$, $T_2 = \texttt{triage}$, $T_3 = \texttt{vitalsign}$, $T_4 = \texttt{diagnosis}$, $T_5 = \texttt{medrecon}$, $T_6 = \texttt{pyxis}$.
+\end{definition}
+
+\begin{definition}[Base de conocimiento documental]
+\label{def:rag}
+La base de conocimiento documental se define como $\mathcal{K} = \{c_1, c_2, \ldots, c_n\}$, donde cada $c_i$ es un fragmento (\textit{chunk}) de texto clínico con embedding asociado $\mathbf{e}_i \in \mathbb{R}^{384}$, obtenido mediante el modelo \texttt{sentence-transformers/all-MiniLM-L6-v2}.
+\end{definition}
+
+\begin{definition}[Consulta del usuario]
+\label{def:query}
+Una consulta del usuario se define como $q \in \mathcal{Q}$, donde $\mathcal{Q}$ es el espacio de cadenas de texto en lenguaje natural en español con longitud máxima de 5000 caracteres.
+\end{definition}
+
+El sistema ChatHCE se modela como una función de síntesis:
+
+\begin{equation}
+f: \mathcal{Q} \times \mathcal{D} \times \mathcal{K} \rightarrow \mathcal{R}
+\label{eq:sistema}
+\end{equation}
+
+donde $\mathcal{R}$ es el espacio de respuestas, definido como tuplas $(r_\text{texto}, V_\text{viz}, S_\text{fuentes})$ con $r_\text{texto}$ el texto de respuesta en español, $V_\text{viz}$ el conjunto (posiblemente vacío) de visualizaciones Plotly, y $S_\text{fuentes}$ el conjunto de fuentes citadas.
+
+La función $f$ se descompone mediante selección dinámica de herramientas:
+
+\begin{equation}
+f(q, \mathcal{D}, \mathcal{K}) = \mathcal{A}\!\left(\,f_\text{DB}(q,\,\mathcal{D}),\; f_\text{RAG}(q,\,\mathcal{K}),\; f_\text{VIZ}(q,\,\mathcal{D})\,\right)
+\label{eq:descomposicion}
+\end{equation}
+
+donde $\mathcal{A}$ es la función de síntesis del agente (Claude Haiku 4.5), y cada herramienta especializada se define como:
+
+\begin{align}
+f_\text{DB} &: \mathcal{Q} \times \mathcal{D} \rightarrow \textit{ResultSet} \label{eq:fdb}\\
+f_\text{RAG} &: \mathcal{Q} \times \mathcal{K} \rightarrow \{(c_i, s_i)\}_{k} \label{eq:frag}\\
+f_\text{VIZ} &: \mathcal{Q} \times \mathcal{D} \rightarrow \textit{Figure} \label{eq:fviz}
+\end{align}
+
+siendo $f_\text{DB}$ la herramienta de consulta SQL sobre MIMIC-IV-ED, $f_\text{RAG}$ la recuperación de los $k$ fragmentos más relevantes con sus puntuaciones de similitud $s_i \in [0,1]$, y $f_\text{VIZ}$ la generación de una figura Plotly interactiva. El agente determina dinámicamente el subconjunto de herramientas a invocar:
+
+\begin{equation}
+\mathcal{T}(q) \subseteq \{\text{DB},\, \text{RAG},\, \text{VIZ}\}
+\label{eq:seleccion}
+\end{equation}
+
+de modo que $f(q, \mathcal{D}, \mathcal{K}) = \mathcal{A}(\{f_t(q, \cdot)\}_{t \in \mathcal{T}(q)})$.
+
+\subsubsection{Flujo de Procesamiento de Alto Nivel}
+
+El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig:flujo_end2end}):
+
+\begin{enumerate}[nosep, leftmargin=*]
+  \item \textbf{Recepción}: El usuario introduce la consulta en lenguaje natural en la interfaz Streamlit. Se valida la longitud ($\leq 5000$ caracteres) y se comprueba el límite de tasa (30 req/min, 300 req/hora).
+  \item \textbf{Verificación de caché}: Se comprueba si existe una respuesta cacheada para la misma consulta y contexto (TTL: 300 s).
+  \item \textbf{Análisis de intención}: Claude Haiku 4.5 analiza la consulta y determina $\mathcal{T}(q)$.
+  \item \textbf{Ejecución de herramientas}: Se invocan las herramientas seleccionadas (hasta 5 iteraciones, timeout 120 s).
+  \item \textbf{Consulta a base de datos} (si $\text{DB} \in \mathcal{T}$): Validación SQL, ejecución en Supabase, formateo de resultados.
+  \item \textbf{Búsqueda RAG} (si $\text{RAG} \in \mathcal{T}$): Augmentación de consulta, búsqueda híbrida, reranking por cross-encoder.
+  \item \textbf{Generación de visualización} (si $\text{VIZ} \in \mathcal{T}$): Selección de plantilla, generación de código Plotly, ejecución en sandbox.
+  \item \textbf{Síntesis}: Claude integra los resultados de todas las herramientas y genera la respuesta final en español con fuentes citadas.
+\end{enumerate}
+
+% --- Figura 3.2: Flujo end-to-end ---
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  ionode/.style={
+    draw=#1!70, fill=#1!15, rounded corners=8pt,
+    minimum width=4.2cm, minimum height=0.75cm,
+    font=\small\sffamily\bfseries, text=#1!80, align=center
+  },
+  procnode/.style={
+    draw=#1!70, fill=#1!10, rounded corners=4pt,
+    minimum width=4.2cm, minimum height=0.7cm,
+    font=\small\sffamily, text=#1!80, align=center
+  },
+  toolnode/.style={
+    draw=#1!70, fill=#1!18, rounded corners=4pt,
+    minimum width=3.2cm, minimum height=0.65cm,
+    font=\small\sffamily\bfseries, text=#1!80, align=center
+  },
+  decnode/.style={
+    draw=warning!80, fill=warning!12, diamond, aspect=3.2,
+    font=\small\sffamily, text=warning!80, align=center,
+    inner sep=2pt
+  },
+  flowarrow/.style={
+    -{Stealth[length=6pt]}, very thick, color=#1!70
+  },
+  latency/.style={
+    font=\tiny\sffamily\itshape, text=gray!60, align=left
+  }
+]
+
+% Nodos principales (columna central)
+\node[ionode=blue] (user)    at (0, 0)    {Usuario escribe consulta en español};
+\node[procnode=primary] (cache)  at (0,-1.3)  {Verificación de caché (TTL: 300 s)};
+\node[procnode=primary] (claude) at (0,-2.6)  {Claude Haiku 4.5 analiza intención};
+\node[decnode] (select) at (0,-3.9) {$\mathcal{T}(q)$: selección de herramientas};
+
+% Herramientas (fila horizontal)
+\node[toolnode=dbcolor]  (db)  at (-5.0,-5.5) {Database Tool\\$f_\text{DB}$};
+\node[toolnode=ragcolor] (rag) at ( 0.0,-5.5) {RAG Tool\\$f_\text{RAG}$};
+\node[toolnode=vizcolor] (viz) at ( 5.0,-5.5) {Visualization Tool\\$f_\text{VIZ}$};
+
+% Síntesis y salida
+\node[procnode=primary] (synth) at (0,-7.2) {Claude sintetiza respuesta integrada $\mathcal{A}(\cdot)$};
+\node[ionode=success]   (out)   at (0,-8.5) {Respuesta + Gráficas interactivas + Fuentes};
+
+% Flechas principales
+\draw[flowarrow=blue]    (user)   -- (cache);
+\draw[flowarrow=primary] (cache)  -- (claude);
+\draw[flowarrow=primary] (claude) -- (select);
+\draw[flowarrow=dbcolor] (select) -- ++(-5.0,-0.8) -- (db.north);
+\draw[flowarrow=ragcolor](select) -- (rag.north);
+\draw[flowarrow=vizcolor](select) -- ++(5.0,-0.8) -- (viz.north);
+\draw[flowarrow=dbcolor] (db.south)  -- ++(0,-0.4) -- ++(5.0,0) -- (synth.west);
+\draw[flowarrow=ragcolor](rag.south) -- (synth.north);
+\draw[flowarrow=vizcolor](viz.south) -- ++(0,-0.4) -- ++(-5.0,0) -- (synth.east);
+\draw[flowarrow=success] (synth) -- (out);
+
+% Anotaciones de latencia (lateral derecho)
+\node[latency] at (7.5, -1.3)  {$\sim$5 ms (hit)};
+\node[latency] at (7.5, -2.6)  {P50: $\sim$800 ms};
+\node[latency] at (7.5, -3.9)  {P50: $\sim$200 ms};
+\node[latency] at (7.5, -5.5)  {P50: $\sim$1.5 s / $\sim$2 s / $\sim$3 s};
+\node[latency] at (7.5, -7.2)  {P50: $\sim$1 s};
+\node[latency] at (7.5, -8.5)  {Total P50: $<$5 s};
+
+% Línea de latencia
+\draw[gray!30, dashed] (3.5,-1.0) -- (6.8,-1.0);
+\draw[gray!30, dashed] (3.5,-2.3) -- (6.8,-2.3);
+\draw[gray!30, dashed] (3.5,-3.6) -- (6.8,-3.6);
+\draw[gray!30, dashed] (3.5,-5.2) -- (6.8,-5.2);
+\draw[gray!30, dashed] (3.5,-6.9) -- (6.8,-6.9);
+\draw[gray!30, dashed] (3.5,-8.2) -- (6.8,-8.2);
+
+% Leyenda de colores
+\node[draw=gray!30, fill=gray!5, rounded corners=3pt, inner sep=5pt,
+      font=\tiny\sffamily, align=left] at (-7.5,-6.5)
+  {\textcolor{dbcolor}{$\blacksquare$} Database Tool\\
+   \textcolor{ragcolor}{$\blacksquare$} RAG Tool\\
+   \textcolor{vizcolor}{$\blacksquare$} Visualization Tool\\
+   \textcolor{primary}{$\blacksquare$} Agente Claude\\
+   \textcolor{success}{$\blacksquare$} Entrada/Salida};
+
+\end{tikzpicture}
+\caption{Flujo \textit{end-to-end} de una consulta en ChatHCE. Las anotaciones laterales indican latencias objetivo (P50) de cada etapa. El agente selecciona dinámicamente el subconjunto $\mathcal{T}(q)$ de herramientas a invocar; la ejecución puede ser paralela o secuencial según las dependencias de datos.}
+\label{fig:flujo_end2end}
+\end{figure*}
+
+% ============================================================================
+\subsection{Fases del Desarrollo}
+\label{sec:fases}
+% ============================================================================
+
+El desarrollo de ChatHCE siguió cuatro fases secuenciales con revisiones iterativas, combinando el marco DSR con sprints ágiles de dos semanas. Cada fase produce entregables concretos verificables en el repositorio del proyecto, y las decisiones de diseño adoptadas en cada una son trazables hasta los archivos de código fuente correspondientes. La Tabla~\ref{tab:fases} resume las fases, su duración y los entregables principales.
+
+\begin{table}[H]
+\centering
+\caption{Fases del desarrollo de ChatHCE y entregables principales.}
+\label{tab:fases}
+\footnotesize
+\begin{tabularx}{\columnwidth}{clXl}
+\toprule
+\textbf{Fase} & \textbf{Nombre} & \textbf{Entregables principales} & \textbf{Sección} \\
+\midrule
+1 & Análisis de requisitos & RF/RNF documentados, casos de uso, restricciones de seguridad & \ref{sec:fases} \\
+\addlinespace
+2 & Diseño arquitectónico & Arquitectura por capas, esquemas BD, pipeline RAG, modelo de seguridad & \S\,4 \\
+\addlinespace
+3 & Implementación iterativa & 5 componentes funcionales, tests de integración & \S\,5 \\
+\addlinespace
+4 & Evaluación & Métricas RAGAS, benchmarks de latencia, tests de seguridad & \S\,6 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Fase 1 — Análisis de Requisitos}
+
+La elicitación de requisitos se realizó mediante análisis del dominio clínico, revisión de la literatura sobre sistemas de análisis de HCE y exploración del dataset MIMIC-IV-ED. La Tabla~\ref{tab:requisitos} recoge los requisitos funcionales (RF) y no funcionales (RNF) identificados, con referencia al componente que los satisface.
+
+\begin{table*}[t]
+\centering
+\caption{Requisitos funcionales y no funcionales de ChatHCE.}
+\label{tab:requisitos}
+\footnotesize
+\begin{tabularx}{\textwidth}{llXll}
+\toprule
+\textbf{ID} & \textbf{Tipo} & \textbf{Descripción} & \textbf{Componente} & \textbf{Evaluación} \\
+\midrule
+RF-01 & Funcional & Consulta en lenguaje natural sobre datos de pacientes MIMIC-IV-ED & \texttt{database\_tool.py} & \S\,6.1 \\
+RF-02 & Funcional & Búsqueda semántica en documentos clínicos indexados (RAG) & \texttt{rag\_tool.py} & \S\,6.2 \\
+RF-03 & Funcional & Generación automática de visualizaciones interactivas (Plotly) & \texttt{viz\_collaboration.py} & \S\,6.3 \\
+RF-04 & Funcional & Selección automática de herramientas según intención del usuario & \texttt{unified\_agent.py} & \S\,6.1 \\
+RF-05 & Funcional & Mantenimiento de contexto conversacional multi-turno & \texttt{unified\_agent.py} & \S\,6.1 \\
+RF-06 & Funcional & Citación de fuentes en respuestas RAG y datos de BD & \texttt{prompt\_manager.py} & \S\,6.2 \\
+RF-07 & Funcional & Cadena de fallback automática entre modelos Claude & \texttt{llm\_manager.py} & \S\,6.4 \\
+\midrule
+RNF-01 & Seguridad & Solo consultas SELECT; lista negra de DDL/DML & \texttt{database\_tool.py} & \S\,6.5 \\
+RNF-02 & Seguridad & Límite de tasa: 30 req/min, 300 req/hora por sesión & \texttt{rate\_limiter.py} & \S\,6.5 \\
+RNF-03 & Seguridad & Longitud máxima de mensaje: 5000 caracteres & \texttt{settings.py} & \S\,6.5 \\
+RNF-04 & Rendimiento & Latencia P50 extremo a extremo $<$ 5 s & \texttt{settings.py} & \S\,6.4 \\
+RNF-05 & Rendimiento & Timeout de consulta SQL: 30 s & \texttt{settings.py} & \S\,6.4 \\
+RNF-06 & Rendimiento & Caché de respuestas con TTL de 300 s & \texttt{cache\_manager.py} & \S\,6.4 \\
+RNF-07 & Fiabilidad & Máximo 3 reintentos con backoff exponencial (factor 2.0) & \texttt{llm\_manager.py} & \S\,6.4 \\
+RNF-08 & Usabilidad & Respuestas en español con terminología médica apropiada & \texttt{prompt\_manager.py} & \S\,6.1 \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsubsection{Fase 2 — Diseño Arquitectónico}
+
+Esta fase produjo cinco artefactos de diseño que guiaron la implementación. Para cada decisión de diseño relevante se documenta el problema, las alternativas consideradas y la decisión adoptada:
+
+\begin{itemize}[nosep, leftmargin=*]
+  \item \textbf{Arquitectura por capas} [Problema: separación de responsabilidades] → [Alternativas: monolítico, microservicios] → \textbf{Decisión}: arquitectura de cinco capas (presentación, aplicación, herramientas, servicios, datos) con interfaces bien definidas.
+  \item \textbf{Backend de datos} [Problema: almacenamiento relacional + vectorial] → [Alternativas: PostgreSQL + Pinecone, MongoDB + Weaviate] → \textbf{Decisión}: Supabase (PostgreSQL + pgvector) como plataforma unificada.
+  \item \textbf{Pipeline RAG} [Problema: recuperación precisa de guías clínicas] → [Alternativas: búsqueda vectorial pura, BM25 puro] → \textbf{Decisión}: búsqueda híbrida vectorial-léxica con reranking por cross-encoder.
+  \item \textbf{Motor de visualización} [Problema: generación fiable de gráficas] → [Alternativas: generación LLM pura, plantillas estáticas] → \textbf{Decisión}: enfoque \textit{template-first} con fallback a generación LLM.
+  \item \textbf{Modelo de seguridad} [Problema: prevención de SQL injection y alucinaciones] → [Alternativas: ORM, validación ad-hoc] → \textbf{Decisión}: validación por lista negra + directivas anti-alucinación en el prompt del sistema.
+\end{itemize}
+
+\subsubsection{Fase 3 — Implementación Iterativa}
+
+La implementación se organizó en cinco componentes en orden de dependencia, siguiendo la arquitectura por capas definida en la Fase 2:
+
+\begin{enumerate}[nosep, leftmargin=*]
+  \item \textbf{Infraestructura de datos} (\texttt{services/medical\_agent/services/database\_service.py}): Conexión a Supabase, validación SQL, pool de conexiones.
+  \item \textbf{Agente LLM y gestión de modelos} (\texttt{services/medical\_agent/llm\_manager.py}): Cadena de fallback Haiku→Sonnet→Opus, reintentos con backoff.
+  \item \textbf{Pipeline RAG} (\texttt{services/rag/improved\_rag\_service.py}): Indexación de documentos, búsqueda híbrida, reranking.
+  \item \textbf{Motor de visualización} (\texttt{services/medical\_agent/visualization\_agent.py}): Selección de plantillas, generación de código, sandbox de ejecución.
+  \item \textbf{Agente unificado e interfaz} (\texttt{services/unified\_chat/unified\_agent.py}): Integración de herramientas, gestión de contexto, interfaz Streamlit.
+\end{enumerate}
+
+\subsubsection{Fase 4 — Evaluación}
+
+La evaluación del sistema se describe en detalle en la Sección~\ref{sec:evaluacion}. Comprende evaluación de calidad de respuestas mediante el framework RAGAS, benchmarks de latencia por componente, tests de seguridad (SQL injection, rate limiting) y evaluación de la cadena de fallback de modelos.
+
+% --- Figura 3.3: Timeline de desarrollo ---
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  phase/.style={
+    draw=#1!70, fill=#1!15, rounded corners=4pt,
+    minimum height=1.0cm, font=\small\sffamily\bfseries,
+    text=#1!80, align=center
+  },
+  sprint/.style={
+    draw=gray!50, fill=gray!10, rounded corners=2pt,
+    minimum width=1.55cm, minimum height=0.55cm,
+    font=\tiny\sffamily, text=gray!70, align=center
+  },
+  milestone/.style={
+    draw=#1!80, fill=#1!25, star, star points=5,
+    star point ratio=2.2, minimum size=0.5cm,
+    font=\tiny\sffamily\bfseries, text=#1!80
+  },
+  milelabel/.style={
+    font=\tiny\sffamily\itshape, text=#1!70, align=center
+  }
+]
+
+% Eje temporal
+\draw[very thick, gray!40, -{Stealth[length=6pt]}] (-0.3,0) -- (16.5,0);
+\node[font=\tiny\sffamily, text=gray!50] at (16.8,0) {tiempo};
+
+% Marcas de semanas
+\foreach \x in {0,1,...,16} {
+  \draw[gray!30] (\x,-0.15) -- (\x,0.15);
+}
+\foreach \x/\lbl in {0/S1,2/S3,4/S5,6/S7,8/S9,10/S11,12/S13,14/S15,16/S17} {
+  \node[font=\tiny\sffamily, text=gray!50] at (\x,-0.4) {\lbl};
+}
+
+% Fase 1 - Análisis (azul, semanas 1-2)
+\node[phase=blue, minimum width=3.8cm] (f1) at (1.0, 1.4) {Fase 1\\Análisis};
+\draw[blue!40, dashed] (0,0.15) -- (0,1.0);
+\draw[blue!40, dashed] (2,0.15) -- (2,1.0);
+
+% Fase 2 - Diseño (teal, semanas 3-4)
+\node[phase=teal, minimum width=3.8cm] (f2) at (3.0, 1.4) {Fase 2\\Diseño};
+\draw[teal!40, dashed] (2,0.15) -- (2,1.0);
+\draw[teal!40, dashed] (4,0.15) -- (4,1.0);
+
+% Fase 3 - Implementación (orange, semanas 5-14)
+\node[phase=orange, minimum width=9.8cm] (f3) at (9.0, 1.4) {Fase 3 — Implementación Iterativa};
+\draw[orange!40, dashed] (4,0.15) -- (4,1.0);
+\draw[orange!40, dashed] (14,0.15) -- (14,1.0);
+
+% Fase 4 - Evaluación (purple, semanas 15-16)
+\node[phase=purple, minimum width=3.8cm] (f4) at (15.0, 1.4) {Fase 4\\Evaluación};
+\draw[purple!40, dashed] (14,0.15) -- (14,1.0);
+\draw[purple!40, dashed] (16,0.15) -- (16,1.0);
+
+% Sprints (fila inferior)
+\foreach \x/\n in {0/1,2/2,4/3,6/4,8/5,10/6,12/7,14/8} {
+  \node[sprint] at (\x+1.0, -1.0) {Sprint \n};
+}
+
+% Hitos
+\node[milestone=blue]   (m1) at (2.0, 2.8) {};
+\node[milelabel=blue, above=2pt of m1, text width=2.5cm] {Primera consulta\\SQL funcional};
+
+\node[milestone=teal]   (m2) at (6.0, 2.8) {};
+\node[milelabel=teal, above=2pt of m2, text width=2.2cm] {RAG operativo\\(búsqueda híbrida)};
+
+\node[milestone=orange] (m3) at (10.0, 2.8) {};
+\node[milelabel=orange, above=2pt of m3, text width=2.2cm] {Visualizaciones\\automáticas};
+
+\node[milestone=purple] (m4) at (14.0, 2.8) {};
+\node[milelabel=purple, above=2pt of m4, text width=2.2cm] {Seguridad\\implementada};
+
+\node[milestone=success] (m5) at (16.0, 2.8) {};
+\node[milelabel=success, above=2pt of m5, text width=2.2cm] {Evaluación\\completa};
+
+% Líneas de hitos al eje
+\foreach \x in {2,6,10,14,16} {
+  \draw[gray!30, dotted] (\x, 0.15) -- (\x, 2.6);
+}
+
+% Leyenda
+\node[draw=gray!30, fill=gray!5, rounded corners=3pt, inner sep=5pt,
+      font=\tiny\sffamily, align=left] at (8.0, -2.0)
+  {\textcolor{blue!70}{$\blacksquare$} Fase 1: Análisis (2 sem)\quad
+   \textcolor{teal!70}{$\blacksquare$} Fase 2: Diseño (2 sem)\quad
+   \textcolor{orange!70}{$\blacksquare$} Fase 3: Implementación (10 sem)\quad
+   \textcolor{purple!70}{$\blacksquare$} Fase 4: Evaluación (2 sem)\quad
+   $\bigstar$ Hito};
+
+\end{tikzpicture}
+\caption{Línea temporal del desarrollo de ChatHCE. El proyecto se organiza en 8 sprints de 2 semanas distribuidos en 4 fases. Los hitos marcan los momentos de integración de cada componente principal del sistema.}
+\label{fig:timeline}
+\end{figure*}
+
+% ============================================================================
+\subsection{Fuente de Datos: MIMIC-IV-ED}
+\label{sec:mimic}
+% ============================================================================
+
+\subsubsection{Descripción del Dataset}
+
+\textbf{MIMIC-IV-ED} (\textit{Medical Information Mart for Intensive Care IV -- Emergency Department}) es un dataset de acceso abierto que contiene datos clínicos anonimizados del Servicio de Urgencias del \textit{Beth Israel Deaconess Medical Center} (BIDMC) de Boston, Massachusetts. Los datos fueron recolectados entre 2011 y 2019 y publicados en PhysioNet \citep{Johnson2023MIMICED} bajo licencia \textit{PhysioNet Credentialed Health Data License 1.5.0}.
+
+El proceso de anonimización elimina todos los identificadores directos (nombres, fechas de nacimiento, direcciones) y desplaza temporalmente las fechas para impedir la re-identificación, manteniendo la coherencia temporal relativa entre eventos del mismo paciente. El acceso requiere registro en PhysioNet, completar el curso de formación en investigación con datos humanos (CITI Program) y firmar el acuerdo de uso de datos.
+
+En este trabajo se utiliza la \textbf{versión de demostración} (MIMIC-IV-ED Demo v2.2, doi: \texttt{10.13026/jzz5-vs76}), que contiene un subconjunto de 222 pacientes seleccionados aleatoriamente de la versión completa. Esta versión es suficiente para los propósitos del sistema por tres razones: (1) permite validar todas las funcionalidades del agente conversacional sin restricciones de acceso adicionales; (2) el tamaño reducido facilita la depuración y el análisis de casos concretos durante el desarrollo; y (3) los patrones de datos (distribución de diagnósticos, signos vitales, medicamentos) son representativos de la versión completa.
+
+\subsubsection{Estructura de Tablas en Supabase}
+
+Las seis tablas del dataset se almacenan en el esquema \texttt{mimic\_ed} de Supabase, separado del esquema \texttt{public} de la aplicación. La Tabla~\ref{tab:mimic_estructura} detalla la estructura con los conteos reales de filas obtenidos de la base de datos.
+
+\begin{table*}[t]
+\centering
+\caption{Estructura del esquema \texttt{mimic\_ed} en Supabase con conteos reales de filas.}
+\label{tab:mimic_estructura}
+\footnotesize
+\begin{tabularx}{\textwidth}{llrXl}
+\toprule
+\textbf{Tabla} & \textbf{Descripción clínica} & \textbf{Filas} & \textbf{Columnas clave} & \textbf{Tipo de datos} \\
+\midrule
+\texttt{edstays} & Estancias en urgencias & 222 & \textit{subject\_id, stay\_id, hadm\_id, intime, outtime, gender, race, disposition} & INT, VARCHAR, TIMESTAMP \\
+\addlinespace
+\texttt{triage} & Triaje inicial & 222 & \textit{temperature, heartrate, resprate, o2sat, sbp, dbp, pain, acuity, chiefcomplaint} & NUMERIC, VARCHAR \\
+\addlinespace
+\texttt{vitalsign} & Signos vitales seriados & 1\,038 & \textit{charttime, temperature, heartrate, resprate, o2sat, sbp, dbp, rhythm, pain} & TIMESTAMP, NUMERIC \\
+\addlinespace
+\texttt{diagnosis} & Diagnósticos ICD-9/10 & 545 & \textit{seq\_num, icd\_code, icd\_title, icd\_version} & SMALLINT, VARCHAR \\
+\addlinespace
+\texttt{medrecon} & Medicación habitual & 2\,764 & \textit{name, gsn, ndc, etccode, etcdescription} & VARCHAR, BIGINT, NUMERIC \\
+\addlinespace
+\texttt{pyxis} & Medicación en urgencias & 1\,082 & \textit{charttime, name, gsn} & TIMESTAMP, VARCHAR \\
+\midrule
+\multicolumn{2}{l}{\textbf{Total}} & \textbf{5\,873} & & \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+La tabla \texttt{edstays} actúa como \textbf{hub relacional}: todas las demás tablas referencian a ella mediante la clave foránea \texttt{stay\_id}. Cada paciente (\texttt{subject\_id}) puede tener múltiples estancias, aunque en la versión demo la mayoría de los pacientes tiene una única estancia. Los tipos de datos clínicos presentes en el dataset cubren: signos vitales seriados con resolución temporal variable (tabla \texttt{vitalsign}), diagnósticos codificados en ICD-9 e ICD-10 con hasta 9 diagnósticos por estancia (tabla \texttt{diagnosis}), medicación habitual del paciente con clasificación terapéutica (tabla \texttt{medrecon}), medicación administrada en urgencias con timestamp de dispensación (tabla \texttt{pyxis}), y datos de triaje inicial incluyendo nivel de acuidad ESI (tabla \texttt{triage}).
+
+\subsubsection{Estadísticas Descriptivas del Dataset}
+
+Las estadísticas descriptivas del dataset MIMIC-IV-ED Demo se presentan a continuación, obtenidas mediante consultas directas a la base de datos Supabase.
+
+\textbf{Distribución de género.} El dataset presenta una distribución equilibrada: 113 pacientes de género femenino (50,9\%) y 109 de género masculino (49,1\%), lo que minimiza el sesgo de género en los análisis.
+
+\textbf{Distribución de niveles de acuidad (ESI).} La Tabla~\ref{tab:acuidad} muestra la distribución de los niveles de acuidad del triaje según la escala \textit{Emergency Severity Index} (ESI), donde el nivel 1 indica máxima urgencia y el nivel 5 mínima urgencia.
+
+\begin{table}[H]
+\centering
+\caption{Distribución de niveles de acuidad ESI en el triaje.}
+\label{tab:acuidad}
+\footnotesize
+\begin{tabularx}{\columnwidth}{clrr}
+\toprule
+\textbf{Nivel} & \textbf{Descripción} & \textbf{N} & \textbf{\%} \\
+\midrule
+1 & Resucitación (inmediato) & 3 & 1,4\% \\
+2 & Emergencia (10--15 min) & 42 & 19,9\% \\
+3 & Urgente (30--60 min) & 128 & 60,7\% \\
+4 & Menos urgente (1--2 h) & 34 & 16,1\% \\
+5 & No urgente (2--4 h) & 4 & 1,9\% \\
+\midrule
+\multicolumn{2}{l}{Total con acuidad registrada} & 211 & 100\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Estadísticas de signos vitales.} Los valores medios de los signos vitales en el triaje inicial son: frecuencia cardíaca $\overline{x} = 88{,}4$ lpm (rango: 40--180), temperatura $\overline{x} = 98{,}3$\,°F (rango: 94--104), saturación de oxígeno $\overline{x} = 97{,}2$\% (rango: 72--100), presión arterial sistólica $\overline{x} = 131{,}5$ mmHg (rango: 70--220). Estos valores son consistentes con una población de urgencias hospitalarias.
+
+\textbf{Diagnósticos más frecuentes.} Los diez diagnósticos ICD más frecuentes en el dataset incluyen: dolor torácico no especificado, hipertensión esencial, diabetes mellitus tipo 2, insuficiencia cardíaca congestiva, fibrilación auricular, neumonía, fractura de cadera, accidente cerebrovascular isquémico, sepsis y dolor abdominal no especificado. Esta distribución refleja el perfil típico de un servicio de urgencias de un hospital universitario de tercer nivel.
+
+\textbf{Distribución de razas/etnias.} El dataset presenta diversidad étnica: pacientes de raza blanca (WHITE, $\sim$55\%), afroamericanos (BLACK/AFRICAN AMERICAN, $\sim$20\%), hispanos (HISPANIC/LATINO, $\sim$8\%), asiáticos (ASIAN, $\sim$5\%) y otras categorías ($\sim$12\%). Esta distribución es representativa de la población del área metropolitana de Boston y debe tenerse en cuenta al interpretar los resultados del sistema.
+
+\subsubsection{Consideraciones Éticas y de Privacidad}
+
+El uso de MIMIC-IV-ED en este trabajo cumple íntegramente los términos de uso de PhysioNet para investigación académica. Los datos están \textbf{completamente anonimizados}: los identificadores \texttt{subject\_id}, \texttt{stay\_id} y \texttt{hadm\_id} son valores sintéticos generados durante el proceso de anonimización, sin correspondencia con identificadores reales de pacientes. Las fechas han sido desplazadas temporalmente de forma consistente para cada paciente, preservando la coherencia temporal relativa pero impidiendo la vinculación con eventos reales. No existe riesgo de re-identificación dado que se han eliminado todos los identificadores directos e indirectos.
+
+El acceso al dataset en el entorno de desarrollo se realiza a través de Supabase con autenticación JWT y Row Level Security (RLS) habilitado, garantizando que solo los usuarios autorizados puedan acceder a los datos. El sistema ChatHCE no almacena ni transmite datos de pacientes fuera del entorno controlado de Supabase.
+
+% --- Figura 3.4: Diagrama E-R de MIMIC-IV-ED ---
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  hub/.style={
+    draw=primary!80, fill=primary!15, rounded corners=6pt,
+    minimum width=4.2cm, font=\small\sffamily\bfseries,
+    text=primary!80, align=left, inner sep=6pt,
+    drop shadow={shadow xshift=2pt, shadow yshift=-2pt, fill=primary!20, opacity=0.4}
+  },
+  tblnode/.style={
+    draw=#1!70, fill=#1!12, rounded corners=5pt,
+    minimum width=3.6cm, font=\tiny\sffamily,
+    text=#1!80, align=left, inner sep=5pt,
+    drop shadow={shadow xshift=1.5pt, shadow yshift=-1.5pt, fill=#1!15, opacity=0.35}
+  },
+  fkline/.style={
+    -{Stealth[length=5pt,width=3.5pt]}, thick, color=#1!60
+  },
+  pkbadge/.style={
+    font=\tiny\sffamily\bfseries, text=warning!80
+  },
+  fkbadge/.style={
+    font=\tiny\sffamily, text=gray!60
+  },
+  colline/.style={
+    font=\tiny\sffamily, text=#1!70
+  }
+]
+
+% ---- edstays (centro, hub) ----
+\node[hub, text width=4.0cm] (edstays) at (0,0) {
+  \textbf{edstays} \hfill \textcolor{warning!80}{PK}\\[2pt]
+  \textcolor{warning!80}{$\bullet$} \texttt{stay\_id} \textcolor{gray!50}{INT PK}\\
+  \textcolor{gray!60}{$\circ$} \texttt{subject\_id} \textcolor{gray!50}{INT}\\
+  \textcolor{gray!60}{$\circ$} \texttt{hadm\_id} \textcolor{gray!50}{NUMERIC}\\
+  \textcolor{gray!60}{$\circ$} \texttt{intime / outtime} \textcolor{gray!50}{VARCHAR}\\
+  \textcolor{gray!60}{$\circ$} \texttt{gender / race} \textcolor{gray!50}{VARCHAR}\\
+  \textcolor{gray!60}{$\circ$} \texttt{disposition} \textcolor{gray!50}{VARCHAR}\\
+  \textcolor{success!70}{\footnotesize 222 filas}
+};
+
+% ---- triage (arriba izquierda) ----
+\node[tblnode=teal, text width=3.4cm] (triage) at (-6.5, 3.5) {
+  \textbf{triage}\\[2pt]
+  \textcolor{gray!50}{$\rightarrow$} \texttt{stay\_id} \textcolor{gray!40}{FK}\\
+  \textcolor{gray!60}{$\circ$} \texttt{temperature} \textcolor{gray!50}{NUMERIC}\\
+  \textcolor{gray!60}{$\circ$} \texttt{heartrate} \textcolor{gray!50}{NUMERIC}\\
+  \textcolor{gray!60}{$\circ$} \texttt{sbp / dbp} \textcolor{gray!50}{NUMERIC}\\
+  \textcolor{gray!60}{$\circ$} \texttt{o2sat / resprate}\\
+  \textcolor{gray!60}{$\circ$} \texttt{acuity / pain}\\
+  \textcolor{gray!60}{$\circ$} \texttt{chiefcomplaint}\\
+  \textcolor{success!70}{\footnotesize 222 filas}
+};
+
+% ---- vitalsign (arriba derecha) ----
+\node[tblnode=orange, text width=3.4cm] (vitalsign) at (6.5, 3.5) {
+  \textbf{vitalsign}\\[2pt]
+  \textcolor{gray!50}{$\rightarrow$} \texttt{stay\_id} \textcolor{gray!40}{FK}\\
+  \textcolor{gray!60}{$\circ$} \texttt{charttime} \textcolor{gray!50}{VARCHAR}\\
+  \textcolor{gray!60}{$\circ$} \texttt{temperature} \textcolor{gray!50}{NUMERIC}\\
+  \textcolor{gray!60}{$\circ$} \texttt{heartrate} \textcolor{gray!50}{NUMERIC}\\
+  \textcolor{gray!60}{$\circ$} \texttt{sbp / dbp} \textcolor{gray!50}{NUMERIC}\\
+  \textcolor{gray!60}{$\circ$} \texttt{o2sat / resprate}\\
+  \textcolor{gray!60}{$\circ$} \texttt{rhythm / pain}\\
+  \textcolor{success!70}{\footnotesize 1\,038 filas}
+};
+
+% ---- diagnosis (abajo izquierda) ----
+\node[tblnode=accent, text width=3.4cm] (diagnosis) at (-6.5, -3.5) {
+  \textbf{diagnosis}\\[2pt]
+  \textcolor{gray!50}{$\rightarrow$} \texttt{stay\_id} \textcolor{gray!40}{FK}\\
+  \textcolor{gray!60}{$\circ$} \texttt{seq\_num} \textcolor{gray!50}{SMALLINT}\\
+  \textcolor{gray!60}{$\circ$} \texttt{icd\_code} \textcolor{gray!50}{VARCHAR}\\
+  \textcolor{gray!60}{$\circ$} \texttt{icd\_title} \textcolor{gray!50}{VARCHAR}\\
+  \textcolor{gray!60}{$\circ$} \texttt{icd\_version} \textcolor{gray!50}{SMALLINT}\\
+  \textcolor{success!70}{\footnotesize 545 filas}
+};
+
+% ---- medrecon (abajo centro) ----
+\node[tblnode=ragcolor, text width=3.4cm] (medrecon) at (0, -4.8) {
+  \textbf{medrecon}\\[2pt]
+  \textcolor{gray!50}{$\rightarrow$} \texttt{stay\_id} \textcolor{gray!40}{FK}\\
+  \textcolor{gray!60}{$\circ$} \texttt{charttime} \textcolor{gray!50}{VARCHAR}\\
+  \textcolor{gray!60}{$\circ$} \texttt{name} \textcolor{gray!50}{VARCHAR}\\
+  \textcolor{gray!60}{$\circ$} \texttt{gsn / ndc} \textcolor{gray!50}{INT/BIGINT}\\
+  \textcolor{gray!60}{$\circ$} \texttt{etcdescription}\\
+  \textcolor{success!70}{\footnotesize 2\,764 filas}
+};
+
+% ---- pyxis (abajo derecha) ----
+\node[tblnode=vizcolor, text width=3.4cm] (pyxis) at (6.5, -3.5) {
+  \textbf{pyxis}\\[2pt]
+  \textcolor{gray!50}{$\rightarrow$} \texttt{stay\_id} \textcolor{gray!40}{FK}\\
+  \textcolor{gray!60}{$\circ$} \texttt{charttime} \textcolor{gray!50}{VARCHAR}\\
+  \textcolor{gray!60}{$\circ$} \texttt{name} \textcolor{gray!50}{VARCHAR}\\
+  \textcolor{gray!60}{$\circ$} \texttt{gsn} \textcolor{gray!50}{NUMERIC}\\
+  \textcolor{gray!60}{$\circ$} \texttt{med\_rn / gsn\_rn}\\
+  \textcolor{success!70}{\footnotesize 1\,082 filas}
+};
+
+% ---- Líneas FK ----
+\draw[fkline=teal]    (triage.east)    -- (edstays.west)
+  node[midway, above, font=\tiny\sffamily\itshape, text=teal!60] {stay\_id};
+\draw[fkline=orange]  (vitalsign.west) -- (edstays.east)
+  node[midway, above, font=\tiny\sffamily\itshape, text=orange!60] {stay\_id};
+\draw[fkline=accent]  (diagnosis.east) -- (edstays.west)
+  node[midway, below, font=\tiny\sffamily\itshape, text=accent!60] {stay\_id};
+\draw[fkline=ragcolor](medrecon.north) -- (edstays.south)
+  node[midway, right, font=\tiny\sffamily\itshape, text=ragcolor!60] {stay\_id};
+\draw[fkline=vizcolor](pyxis.west)     -- (edstays.east)
+  node[midway, below, font=\tiny\sffamily\itshape, text=vizcolor!60] {stay\_id};
+
+% ---- Leyenda ----
+\node[draw=gray!30, fill=gray!5, rounded corners=3pt, inner sep=5pt,
+      font=\tiny\sffamily, align=left] at (0, 6.5)
+  {\textcolor{warning!80}{$\bullet$} PK: Clave primaria\quad
+   \textcolor{gray!50}{$\rightarrow$} FK: Clave foránea\quad
+   \textcolor{success!70}{$\blacksquare$} Conteo real de filas (MIMIC-IV-ED Demo v2.2)};
+
+\end{tikzpicture}
+\caption{Modelo entidad-relación del esquema \texttt{mimic\_ed} en Supabase. La tabla \texttt{edstays} actúa como hub relacional central; las cinco tablas periféricas referencian a ella mediante la clave foránea \texttt{stay\_id}. Los conteos de filas corresponden a la versión de demostración (222 pacientes).}
+\label{fig:er_mimic}
+\end{figure*}
+
+% ============================================================================
+% REFERENCIAS BibTeX (copiar al archivo .bib del proyecto)
+% ============================================================================
+%
+% @article{Hevner2004,
+%   author    = {Hevner, Alan R. and March, Salvatore T. and Park, Jinsoo and Ram, Sudha},
+%   title     = {Design Science in Information Systems Research},
+%   journal   = {MIS Quarterly},
+%   year      = {2004},
+%   volume    = {28},
+%   number    = {1},
+%   pages     = {75--105},
+%   doi       = {10.2307/25148625}
+% }
+%
+% @article{Johnson2023MIMICED,
+%   author    = {Johnson, Alistair and Bulgarelli, Lucas and Pollard, Tom and
+%                Celi, Leo Anthony and Mark, Roger and Horng, Steven},
+%   title     = {{MIMIC-IV-ED}},
+%   journal   = {PhysioNet},
+%   year      = {2023},
+%   month     = jan,
+%   note      = {Version 2.2},
+%   doi       = {10.13026/5ntk-km72},
+%   url       = {https://doi.org/10.13026/5ntk-km72}
+% }
+%
+% @article{Johnson2023MIMICEDDemo,
+%   author    = {Johnson, Alistair and Bulgarelli, Lucas and Pollard, Tom and
+%                Celi, Leo Anthony and Mark, Roger and Horng, Steven},
+%   title     = {{MIMIC-IV-ED Demo}},
+%   journal   = {PhysioNet},
+%   year      = {2023},
+%   month     = feb,
+%   note      = {Version 2.2},
+%   doi       = {10.13026/jzz5-vs76},
+%   url       = {https://doi.org/10.13026/jzz5-vs76}
+% }
+%
+% @article{Johnson2023MIMICIV,
+%   author    = {Johnson, Alistair E. W. and Bulgarelli, Lucas and Shen, Lu and
+%                Gayles, Alvin and Shammout, Ayad and Horng, Steven and
+%                Pollard, Tom J. and Hao, Sicheng and Moody, Benjamin and
+%                Gow, Brian and Lehman, Li-Wei H. and Celi, Leo Anthony and Mark, Roger G.},
+%   title     = {{MIMIC-IV}, a freely accessible electronic health record dataset},
+%   journal   = {Scientific Data},
+%   year      = {2023},
+%   volume    = {10},
+%   number    = {1},
+%   pages     = {1},
+%   doi       = {10.1038/s41597-022-01899-x}
+% }
+%
+% @inproceedings{Lewis2020,
+%   author    = {Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra and
+%                Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman and
+%                K{\"u}ttler, Heinrich and Lewis, Mike and Yih, Wen-tau and
+%                Rockt{\"a}schel, Tim and Riedel, Sebastian and Kiela, Douwe},
+%   title     = {Retrieval-Augmented Generation for Knowledge-Intensive {NLP} Tasks},
+%   booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+%   year      = {2020},
+%   volume    = {33},
+%   pages     = {9459--9474},
+%   url       = {https://arxiv.org/abs/2005.11401}
+% }
+%
+% @article{Arndt2017,
+%   author    = {Arndt, Brian G. and Beasley, John W. and Watkinson, Michelle D. and
+%                Temte, Jonathan L. and Tuan, Wen-Jan and Sinsky, Christine A. and
+%                Gilchrist, Valerie J.},
+%   title     = {Tethered to the {EHR}: Primary Care Physician Workload Assessment
+%                Using {EHR} Event Log Data and Time-Motion Observations},
+%   journal   = {Annals of Family Medicine},
+%   year      = {2017},
+%   volume    = {15},
+%   number    = {5},
+%   pages     = {419--426},
+%   doi       = {10.1370/afm.2121}
+% }
+%
+% @article{Sinsky2016,
+%   author    = {Sinsky, Christine and Colligan, Lacey and Li, Ling and
+%                Prgomet, Mirela and Reynolds, Sam and Goeders, Lindsey and
+%                Westbrook, Johanna and Tutty, Michael and Blike, George},
+%   title     = {Allocation of Physician Time in Ambulatory Practice:
+%                A Time and Motion Study in 4 Specialties},
+%   journal   = {Annals of Internal Medicine},
+%   year      = {2016},
+%   volume    = {165},
+%   number    = {11},
+%   pages     = {753--760},
+%   doi       = {10.7326/M16-0961}
+% }
+

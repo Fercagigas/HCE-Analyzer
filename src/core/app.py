@@ -2,30 +2,40 @@
 import streamlit as st
 import os
 from pathlib import Path
+import traceback
 
-# Configuración de la página
-st.set_page_config(
-    page_title="HCE Analyzer - Análisis Clínico Inteligente",
-    page_icon="🏥",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# Import logging configuration
+from config.logging_config import get_logger
 
-# Importaciones locales
-from services.auth.session_manager import SessionManager
-from ui.components.components.auth_pages import show_login_page
-from ui.components.components.sidebar import show_sidebar
-from ui.components.components.analysis_form import show_analysis_form
-from services.clinical_chat import show_clinical_chat
-from ui.components.components.document_manager import show_document_manager
-from ui.components.components.footer import show_footer
-from config.config import APP_NAME, APP_TAGLINE, APP_DESCRIPTION, APP_ICON
+# Get logger for this module
+logger = get_logger(__name__)
 
-# Inicializar estado de sesión
-SessionManager.init_session()
+# Importaciones locales (lazy imports moved to functions to avoid circular imports)
+def _get_imports():
+    """Lazy imports to avoid issues when module is imported"""
+    from services.auth.session_manager import SessionManager
+    from ui.components.components.auth_pages import show_login_page, show_logout_confirmation
+    from ui.components.components.sidebar import show_sidebar
+    from ui.components.components.document_manager import show_document_manager
+    from ui.components.components.footer import show_footer
+    from ui.unified_chat_interface import show_unified_chat
+    from config.config import APP_NAME, APP_TAGLINE, APP_DESCRIPTION, APP_ICON
+    return {
+        'SessionManager': SessionManager,
+        'show_login_page': show_login_page,
+        'show_logout_confirmation': show_logout_confirmation,
+        'show_sidebar': show_sidebar,
+        'show_document_manager': show_document_manager,
+        'show_footer': show_footer,
+        'show_unified_chat': show_unified_chat,
+        'APP_NAME': APP_NAME,
+        'APP_TAGLINE': APP_TAGLINE,
+        'APP_DESCRIPTION': APP_DESCRIPTION,
+        'APP_ICON': APP_ICON
+    }
 
 # Estilos CSS personalizados
-st.markdown("""
+_CUSTOM_CSS = """
     <style>
         /* Ocultar elementos de formulario de Streamlit */
         div[data-testid="InputInstructions"] > span:nth-child(1) {
@@ -63,10 +73,16 @@ st.markdown("""
             font-weight: 500;
         }
     </style>
-""", unsafe_allow_html=True)
+"""
 
-def show_welcome_screen():
-    """Pantalla de bienvenida con opciones principales"""
+def show_welcome_screen(imports):
+    """Pantalla de bienvenida con Chat Unificado como opción principal"""
+    APP_ICON = imports['APP_ICON']
+    APP_NAME = imports['APP_NAME']
+    APP_DESCRIPTION = imports['APP_DESCRIPTION']
+    APP_TAGLINE = imports['APP_TAGLINE']
+    SessionManager = imports['SessionManager']
+    
     st.markdown(f"""
         <div class="main-header">
             <h1>{APP_ICON} {APP_NAME}</h1>
@@ -75,54 +91,34 @@ def show_welcome_screen():
         </div>
     """, unsafe_allow_html=True)
     
-    # Opciones principales
-    col1, col2, col3 = st.columns(3)
+    # Destacar Chat Unificado como opción principal
+    st.markdown("""
+        <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                    padding: 2rem; border-radius: 15px; margin: 2rem 0; text-align: center;'>
+            <h2 style='color: white; margin: 0;'>🎯 Chat Unificado</h2>
+            <p style='color: white; font-size: 1.1em; margin: 1rem 0;'>
+                Interfaz inteligente con acceso automático a datos MIMIC-IV-ED y documentos clínicos
+            </p>
+            <p style='color: rgba(255,255,255,0.9); font-size: 0.95em;'>
+                ✨ Sin cambio de modos • 🤖 Selección automática de herramientas • 📊 Visualizaciones dinámicas
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
     
-    with col1:
-        st.markdown("""
-            <div class="feature-card">
-                <h3>📊 Análisis de HCE</h3>
-                <p>Analiza historias clínicas y reportes médicos con IA avanzada</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("🆕 Nueva Sesión de Análisis", use_container_width=True, type="primary"):
-            success, session = SessionManager.create_chat_session("Análisis HCE")
+    # Botón principal para Chat Unificado
+    col_left, col_center, col_right = st.columns([1, 2, 1])
+    with col_center:
+        if st.button("🚀 Iniciar Chat Unificado", use_container_width=True, type="primary", key="main_unified"):
+            success, session = SessionManager.create_chat_session("Chat Unificado")
             if success:
+                # Limpiar mensajes anteriores
+                st.session_state.unified_messages = []
                 st.session_state.current_session = session
-                st.session_state.current_mode = "analysis"
+                st.session_state.current_mode = "unified_chat"
                 st.rerun()
             else:
                 st.error("Error al crear la sesión")
-    
-    with col2:
-        st.markdown("""
-            <div class="feature-card">
-                <h3>💬 Consultas Clínicas</h3>
-                <p>Consulta guías clínicas y protocolos hospitalarios</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("🔍 Chat Clínico", use_container_width=True, type="secondary"):
-            success, session = SessionManager.create_chat_session("Consulta Clínica")
-            if success:
-                st.session_state.current_session = session
-                st.session_state.current_mode = "clinical_chat"
-                st.rerun()
-            else:
-                st.error("Error al crear la sesión")
-    
-    with col3:
-        st.markdown("""
-            <div class="feature-card">
-                <h3>📚 Gestión de Documentos</h3>
-                <p>Añade y gestiona guías clínicas y protocolos</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("📁 Añadir Contexto", use_container_width=True):
-            st.session_state.current_mode = "document_manager"
-            st.rerun()
+
 
 def show_chat_history():
     """Muestra el historial de chat de la sesión actual"""
@@ -142,7 +138,7 @@ def show_chat_history():
                 with st.chat_message("assistant"):
                     st.write(msg['content'])
 
-def show_user_greeting():
+def _show_user_greeting():
     """Muestra saludo personalizado al usuario"""
     if st.session_state.user:
         display_name = st.session_state.user.get('name') or st.session_state.user.get('email', '')
@@ -153,43 +149,111 @@ def show_user_greeting():
         """, unsafe_allow_html=True)
 
 def main():
-    """Función principal de la aplicación"""
-    SessionManager.init_session()
+    """Función principal de la aplicación con logging detallado"""
+    logger.info("🎯 Starting main application function")
+    
+    # Configuración de la página - DEBE ser lo primero
+    st.set_page_config(
+        page_title="HCE Analyzer - Análisis Clínico Inteligente",
+        page_icon="🏥",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+    logger.info("🖥️ Streamlit page configuration set")
+    
+    # Aplicar estilos CSS
+    st.markdown(_CUSTOM_CSS, unsafe_allow_html=True)
+    
+    try:
+        # Lazy imports
+        logger.info("📦 Loading imports...")
+        imports = _get_imports()
+        SessionManager = imports['SessionManager']
+        show_login_page = imports['show_login_page']
+        show_logout_confirmation = imports['show_logout_confirmation']
+        show_sidebar = imports['show_sidebar']
+        show_document_manager = imports['show_document_manager']
+        show_footer = imports['show_footer']
+        show_unified_chat = imports['show_unified_chat']
+        logger.info("✅ Imports loaded successfully")
+        
+        # Initialize session
+        logger.info("🔧 Initializing session manager...")
+        SessionManager.init_session()
+        logger.info("✅ Session manager initialized")
 
-    # Verificar autenticación
-    if not SessionManager.is_authenticated():
-        show_login_page()
+        # Verificar autenticación
+        if not SessionManager.is_authenticated():
+            logger.info("🔐 User not authenticated, showing login page")
+            show_login_page()
+            show_footer()
+            return
+
+        logger.info("✅ User authenticated successfully")
+        
+        # Verificar si se debe mostrar confirmación de logout
+        if st.session_state.get('show_logout_confirmation', False):
+            logger.info("🚪 Showing logout confirmation")
+            show_logout_confirmation()
+            return
+
+        # Mostrar saludo del usuario
+        _show_user_greeting()
+        
+        # Mostrar barra lateral
+        logger.info("📋 Rendering sidebar...")
+        show_sidebar()
+
+        # Contenido principal basado en el modo actual
+        current_mode = st.session_state.get('current_mode', 'welcome')
+        logger.info(f"🎨 Rendering content for mode: {current_mode}")
+        
+        if current_mode == 'welcome' or not st.session_state.get('current_session'):
+            logger.info("🏠 Showing welcome screen")
+            show_welcome_screen(imports)
+        
+        elif current_mode == 'unified_chat':
+            logger.info("🎯 Showing Unified Chat interface")
+            st.title(f"🎯 {st.session_state.current_session['title']}")
+            try:
+                show_unified_chat()
+                logger.info("✅ Unified Chat interface rendered successfully")
+            except Exception as e:
+                logger.error(f"❌ Error rendering Unified Chat: {str(e)}")
+                logger.error(f"Unified Chat error traceback: {traceback.format_exc()}")
+                st.error(f"Error cargando Chat Unificado: {str(e)}")
+                st.info("💡 Intente recargar la página o contacte al soporte técnico")
+
+        elif current_mode == 'document_manager':
+            logger.info("📚 Showing document manager")
+            st.title("📚 Gestión de Documentos Clínicos")
+            show_document_manager()
+        
+        # Footer
         show_footer()
-        return
-
-    # Mostrar saludo del usuario
-    show_user_greeting()
-    
-    # Mostrar barra lateral
-    show_sidebar()
-
-    # Contenido principal basado en el modo actual
-    current_mode = st.session_state.get('current_mode', 'welcome')
-    
-    if current_mode == 'welcome' or not st.session_state.get('current_session'):
-        show_welcome_screen()
-    
-    elif current_mode == 'analysis':
-        st.title(f"📊 {st.session_state.current_session['title']}")
-        show_chat_history()
-        show_analysis_form()
-    
-    elif current_mode == 'clinical_chat':
-        st.title(f"💬 {st.session_state.current_session['title']}")
-        show_chat_history()
-        show_clinical_chat()
-    
-    elif current_mode == 'document_manager':
-        st.title("📚 Gestión de Documentos Clínicos")
-        show_document_manager()
-    
-    # Footer
-    show_footer()
+        
+        logger.info("✅ Main application function completed successfully")
+        
+    except Exception as e:
+        logger.critical(f"💥 Critical error in main function: {str(e)}")
+        logger.critical(f"Main function traceback: {traceback.format_exc()}")
+        
+        # Show user-friendly error message
+        st.error("❌ Error crítico en la aplicación")
+        st.error(f"Detalle técnico: {str(e)}")
+        
+        with st.expander("🔧 Información de depuración", expanded=False):
+            st.code(traceback.format_exc())
+            st.info("💡 Sugerencias:")
+            st.markdown("""
+            - Recargue la página (F5)
+            - Verifique su conexión a internet
+            - Contacte al soporte técnico si el problema persiste
+            - Revise los logs del sistema para más detalles
+            """)
+        
+        # Re-raise the exception for proper error handling
+        raise
 
 if __name__ == "__main__":
     main()

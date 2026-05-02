@@ -423,7 +423,7 @@ class ConfigValidator:
         }
         
         # Verificar variables de entorno críticas
-        required_env_vars = ['GROQ_API_KEY', 'SUPABASE_URL', 'SUPABASE_KEY']
+        required_env_vars = ['ANTHROPIC_API_KEY', 'SUPABASE_URL', 'SUPABASE_KEY']
         
         for var in required_env_vars:
             if not os.getenv(var):
