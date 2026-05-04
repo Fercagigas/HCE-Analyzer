@@ -16,7 +16,7 @@ Este hallazgo es especialmente relevante dado que las alucinaciones constituyen 
 
 \section{Consultas a base de datos}
 
-El sistema muestra alta precisión en la recuperación y presentación de datos estructurados del \textit{dataset} \ac{MIMIC}-IV-\ac{ED}. Los 10~casos funcionales TC-DB fueron superados, con 6~de ellos obteniendo puntuación perfecta. La métrica Context Recall DB (0,85) confirma que el pipeline recupera la mayor parte de la información necesaria. Los 7~tests de inyección \ac{SQL} fueron rechazados, validando el modelo de seguridad de la herramienta de base de datos.
+El sistema muestra alta precisión en la recuperación y presentación de datos estructurados del \textit{dataset} \acs{MIMIC}-IV-\acs{ED}. Los 10~casos funcionales TC-DB fueron superados, con 6~de ellos obteniendo puntuación perfecta. La métrica Context Recall DB (0,85) confirma que el pipeline recupera la mayor parte de la información necesaria. Los 7~tests de inyección \ac{SQL} fueron rechazados, validando el modelo de seguridad de la herramienta de base de datos.
 
 Los casos con menor puntuación (TC-DB-007, TC-DB-008, TC-DB-009) reflejan diferencias de formato entre la respuesta generada y el \textit{ground truth}, no errores de contenido. El agente ofrece respuestas factualmente correctas pero con una presentación que difiere de la esperada por el evaluador automático.
 

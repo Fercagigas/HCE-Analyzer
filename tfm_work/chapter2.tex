@@ -11,7 +11,7 @@
 \section{Inteligencia artificial en medicina: de los sistemas expertos a los LLMs}
 \label{sec:ia-medicina}
 
-La inteligencia artificial (\ac{IA}) lleva más de medio siglo intentando asistir a la toma de decisiones clínicas. Sin embargo, la reciente irrupción de los modelos de lenguaje de gran escala (\textit{Large Language Models}, \ac{LLM}s) ha abierto un paradigma radicalmente distinto al de los sistemas expertos clásicos. Esta sección traza la evolución desde aquellos primeros sistemas basados en reglas hasta los \ac{LLM}s actuales, identifica los retos específicos del dominio médico y motiva el desarrollo de \textbf{ChatHCE}.
+La inteligencia artificial (\acs{IA}) lleva más de medio siglo intentando asistir a la toma de decisiones clínicas. Sin embargo, la reciente irrupción de los modelos de lenguaje de gran escala (\textit{Large Language Models}, \acs{LLM}s) ha abierto un paradigma radicalmente distinto al de los sistemas expertos clásicos. Esta sección traza la evolución desde aquellos primeros sistemas basados en reglas hasta los \ac{LLM}s actuales, identifica los retos específicos del dominio médico y motiva el desarrollo de \textbf{ChatHCE}.
 
 \subsection{Evolución histórica y casos de uso clínicos}
 \label{subsec:evolucion}
@@ -24,11 +24,11 @@ La transición al aprendizaje automático estadístico, y posteriormente al apre
 
 \subsubsection*{\ac{LLM}s como nuevo paradigma}
 
-La arquitectura Transformer \cite{vaswani2017attention} supuso un punto de inflexión al posibilitar el entrenamiento de modelos de lenguaje a escala masiva. \ac{GPT}-4 \cite{openai2023} demostró la capacidad de aprobar el examen \ac{USMLE} con puntuaciones superiores al umbral de aprobación, mientras que Med-PaLM~2 \cite{singhal2023medpalm} logró un rendimiento de nivel experto en preguntas médicas abiertas.
+La arquitectura Transformer \cite{vaswani2017attention} supuso un punto de inflexión al posibilitar el entrenamiento de modelos de lenguaje a escala masiva. \acs{GPT}-4 \cite{openai2023} demostró la capacidad de aprobar el examen \ac{USMLE} con puntuaciones superiores al umbral de aprobación, mientras que Med-PaLM~2 \cite{singhal2023medpalm} logró un rendimiento de nivel experto en preguntas médicas abiertas.
 
 Estas capacidades han motivado la exploración de múltiples casos de uso clínicos: diagnóstico asistido, triaje automatizado, generación de resúmenes de historias clínicas electrónicas (\ac{HCE}), soporte a la decisión terapéutica y educación médica \cite{he2025,wang2024llm}. En particular, la integración de \ac{LLM}s con registros clínicos electrónicos ha mostrado resultados prometedores en la detección automatizada de enfermedades cardiovasculares a partir de notas clínicas no estructuradas \cite{pan2025}.
 
-La combinación de \ac{LLM}s con técnicas de Recuperación Aumentada por Generación (\textit{Retrieval-Augmented Generation}, \ac{RAG}) representa otro avance significativo, permitiendo anclar las respuestas del modelo a fuentes de conocimiento médico verificadas \cite{diteodoro2025,li2026}. Esta arquitectura reduce las alucinaciones y mejora la trazabilidad de la información generada.
+La combinación de \ac{LLM}s con técnicas de Recuperación Aumentada por Generación (\textit{Retrieval-Augmented Generation}, \acs{RAG}) representa otro avance significativo, permitiendo anclar las respuestas del modelo a fuentes de conocimiento médico verificadas \cite{diteodoro2025,li2026}. Esta arquitectura reduce las alucinaciones y mejora la trazabilidad de la información generada.
 
 \subsubsection*{Brecha entre benchmarks y práctica clínica}
 
@@ -94,21 +94,21 @@ La Tabla~\ref{tab:llm-evolution} resume la evolución de las familias de modelos
 \toprule
 \textbf{Modelo} & \textbf{Params.} & \textbf{Licencia} & \textbf{Características clave} \\
 \midrule
-\ac{GPT}-3 & 175B & Cerrada & Aprendizaje \textit{few-shot} emergente; \ac{API} comercial \cite{brown2020language} \\
+\acs{GPT}-3 & 175B & Cerrada & Aprendizaje \textit{few-shot} emergente; \ac{API} comercial \cite{brown2020language} \\
 \addlinespace
-\ac{GPT}-4 & $\sim$1.8T\textsuperscript{*} & Cerrada & Multimodal (texto+imagen); rendimiento nivel experto en exámenes profesionales \cite{openai2023} \\
+\acs{GPT}-4 & $\sim$1.8T\textsuperscript{*} & Cerrada & Multimodal (texto+imagen); rendimiento nivel experto en exámenes profesionales \cite{openai2023} \\
 \addlinespace
-LLaMA & 7--65B & Abierta & Entrenado solo con datos públicos; LLaMA-13B supera a \ac{GPT}-3 en la mayoría de benchmarks \cite{touvron2023llama} \\
+LLaMA & 7--65B & Abierta & Entrenado solo con datos públicos; LLaMA-13B supera a \acs{GPT}-3 en la mayoría de benchmarks \cite{touvron2023llama} \\
 \addlinespace
 Gemini & --- & Cerrada & Nativo multimodal; contexto de 1M+ tokens; búsqueda híbrida integrada \cite{geminiteam2023gemini} \\
 \addlinespace
 Claude 3 & --- & Cerrada & Constitutional AI; 200K tokens de contexto; énfasis en seguridad y veracidad \cite{anthropic2024claude3} \\
 \bottomrule
-\multicolumn{4}{l}{\textsuperscript{*}\textit{Estimación no oficial; OpenAI no publica el número exacto de parámetros de \ac{GPT}-4.}}
+\multicolumn{4}{l}{\textsuperscript{*}\textit{Estimación no oficial; OpenAI no publica el número exacto de parámetros de \acs{GPT}-4.}}
 \end{tabularx}
 \end{table}
 
-La serie \ac{GPT} (\textit{Generative Pre-trained Transformer}) de OpenAI demostró que el preentrenamiento autoregresivo a escala produce capacidades emergentes: \ac{GPT}-3 \cite{brown2020language} mostró aprendizaje \textit{few-shot} sin ajuste fino, y \ac{GPT}-4 \cite{openai2023} alcanzó rendimiento de nivel experto humano en exámenes como el \ac{USMLE} y el bar exam.
+La serie \ac{GPT} (\textit{Generative Pre-trained Transformer}) de OpenAI demostró que el preentrenamiento autoregresivo a escala produce capacidades emergentes: \acs{GPT}-3 \cite{brown2020language} mostró aprendizaje \textit{few-shot} sin ajuste fino, y \acs{GPT}-4 \cite{openai2023} alcanzó rendimiento de nivel experto humano en exámenes como el \ac{USMLE} y el bar exam.
 
 La familia LLaMA de Meta \cite{touvron2023llama} demostró que modelos más pequeños entrenados con datos curados de alta calidad pueden igualar o superar a modelos propietarios mucho mayores, catalizando el ecosistema de modelos abiertos y su adaptación a dominios específicos mediante \textit{fine-tuning}.
 
@@ -144,7 +144,7 @@ La selección de Claude como modelo principal del sistema \textbf{ChatHCE} (Secc
 La evaluación de \ac{LLM}s en el dominio médico se sustenta en tres benchmarks de referencia que evalúan distintas dimensiones del razonamiento clínico:
 
 \begin{itemize}[nosep, leftmargin=*]
-  \item \textbf{MedQA} \cite{jin2021medqa}: dataset de preguntas de opción múltiple derivadas del \ac{USMLE}, con 1.273 preguntas en el conjunto de test. \ac{GPT}-4 alcanzó un 86,1\% de precisión, superando el umbral de aprobación humano \cite{nori2023capabilities}.
+  \item \textbf{MedQA} \cite{jin2021medqa}: dataset de preguntas de opción múltiple derivadas del \ac{USMLE}, con 1.273 preguntas en el conjunto de test. \acs{GPT}-4 alcanzó un 86,1\% de precisión, superando el umbral de aprobación humano \cite{nori2023capabilities}.
   \item \textbf{PubMedQA} \cite{jin2019pubmedqa}: 1.000 preguntas con respuesta sí/no/quizás derivadas de abstracts de PubMed. El rendimiento humano experto se sitúa en el 78,0\%.
   \item \textbf{MedMCQA} \cite{pal2022medmcqa}: más de 194.000 preguntas de exámenes médicos indios que cubren 21 especialidades y 2.400 temas.
 \end{itemize}
@@ -186,9 +186,9 @@ A pesar de su capacidad, los \ac{LLM}s presentan tres limitaciones fundamentales
 \begin{enumerate}[nosep, leftmargin=*]
   \item \textbf{Fecha de corte del conocimiento}: los \ac{LLM}s solo poseen información hasta su fecha de entrenamiento. \textbf{ChatHCE} mitiga esta limitación mediante el pipeline \ac{RAG}, que permite indexar documentos actualizados y recuperar fragmentos relevantes en tiempo de inferencia.
 
-  \item \textbf{Alucinaciones}: los \ac{LLM}s pueden generar información plausible pero factualmente incorrecta con alta confianza aparente. \cite{kim2025hallucination} clasificaron las alucinaciones médicas en categorías que incluyen fabricación de referencias bibliográficas, invención de fármacos inexistentes y razonamiento diagnóstico falso. \cite{farquhar2024semantic} propusieron detectar alucinaciones mediante entropía semántica. \textbf{ChatHCE} implementa directivas anti-alucinación en el prompt del sistema y restringe las respuestas a datos verificables de la base de datos \ac{MIMIC}-IV-\ac{ED} o documentos recuperados por \ac{RAG}. La Sección~\ref{sec:alucinaciones} profundiza en este problema.
+  \item \textbf{Alucinaciones}: los \ac{LLM}s pueden generar información plausible pero factualmente incorrecta con alta confianza aparente. \cite{kim2025hallucination} clasificaron las alucinaciones médicas en categorías que incluyen fabricación de referencias bibliográficas, invención de fármacos inexistentes y razonamiento diagnóstico falso. \cite{farquhar2024semantic} propusieron detectar alucinaciones mediante entropía semántica. \textbf{ChatHCE} implementa directivas anti-alucinación en el prompt del sistema y restringe las respuestas a datos verificables de la base de datos \acs{MIMIC}-IV-\acs{ED} o documentos recuperados por \ac{RAG}. La Sección~\ref{sec:alucinaciones} profundiza en este problema.
 
-  \item \textbf{Ausencia de datos privados}: los \ac{LLM}s preentrenados no tienen acceso a historiales clínicos electrónicos. \textbf{ChatHCE} resuelve esta limitación mediante la herramienta de base de datos (\texttt{DatabaseTool}), que ejecuta consultas \ac{SQL} validadas sobre el dataset \ac{MIMIC}-IV-\ac{ED} en Supabase.
+  \item \textbf{Ausencia de datos privados}: los \ac{LLM}s preentrenados no tienen acceso a historiales clínicos electrónicos. \textbf{ChatHCE} resuelve esta limitación mediante la herramienta de base de datos (\texttt{DatabaseTool}), que ejecuta consultas \ac{SQL} validadas sobre el dataset \acs{MIMIC}-IV-\acs{ED} en Supabase.
 \end{enumerate}
 
 \cite{ji2025calibrating} propusieron reducir las alucinaciones sobreconfiadas calibrando la incertidumbre verbal del modelo como una característica lineal. \cite{naveed2024comprehensive} ofrecen una revisión exhaustiva de las capacidades y limitaciones de los \ac{LLM}s actuales, incluyendo un análisis detallado de los desafíos de alineación y seguridad.
@@ -249,7 +249,7 @@ La búsqueda puramente semántica puede fallar con términos técnicos específi
 
 \noindent donde $f(q_i, D)$ es la frecuencia del término $q_i$ en el documento $D$, $|D|$ es la longitud del documento, $\text{avgdl}$ es la longitud promedio de documentos, y $k_1$, $b$ son parámetros de ajuste (típicamente $k_1 = 1.5$, $b = 0.75$).
 
-La fusión de resultados se realiza mediante \textit{Reciprocal Rank Fusion} (\ac{RRF}):
+La fusión de resultados se realiza mediante \textit{Reciprocal Rank Fusion} (\acs{RRF}):
 
 \begin{equation}
 \text{RRF}(d) = \sum_{r \in R} \frac{1}{k + r(d)}
@@ -305,9 +305,9 @@ La integración con bases de conocimiento médico como \ac{UMLS}, PrimeKG y Drug
 
 \paragraph{EMERGE.} Framework \ac{RAG} multimodal para registros electrónicos de salud (\ac{EHR}) que integra notas clínicas, series temporales y grafos de conocimiento. Utiliza \ac{LLM}s para extraer entidades de datos multimodales y las alinea con PrimeKG, generando resúmenes del estado de salud del paciente. Evaluado en \ac{MIMIC}-III y \ac{MIMIC}-IV, supera a baselines en predicción de mortalidad intrahospitalaria y readmisión a 30 días \cite{zhu2024emerge}.
 
-\paragraph{MedRAG.} Toolkit de referencia que evalúa sistemáticamente combinaciones de corpora (PubMed, StatPearls, libros de texto, Wikipedia), recuperadores (\ac{BM25}, Contriever, SPECTER, MedCPT) y \ac{LLM}s. Demuestra que \ac{RAG} mejora la precisión de \ac{GPT}-3.5 hasta igualar \ac{GPT}-4 en preguntas médicas, con mejoras de hasta 18\% sobre \textit{chain-of-thought prompting} \cite{xiong2024medrag}.
+\paragraph{MedRAG.} Toolkit de referencia que evalúa sistemáticamente combinaciones de corpora (PubMed, StatPearls, libros de texto, Wikipedia), recuperadores (\ac{BM25}, Contriever, SPECTER, MedCPT) y \ac{LLM}s. Demuestra que \ac{RAG} mejora la precisión de \acs{GPT}-3.5 hasta igualar \acs{GPT}-4 en preguntas médicas, con mejoras de hasta 18\% sobre \textit{chain-of-thought prompting} \cite{xiong2024medrag}.
 
-\paragraph{i-MedRAG.} Extiende \ac{RAG} con queries iterativos de seguimiento. El \ac{LLM} genera preguntas adicionales basándose en información recuperada, formando cadenas de razonamiento. Alcanza 69,68\% en MedQA con \ac{GPT}-3.5, superando todos los métodos previos de \textit{prompt engineering} y \textit{fine-tuning} \cite{xiong2024imedrag}.
+\paragraph{i-MedRAG.} Extiende \ac{RAG} con queries iterativos de seguimiento. El \ac{LLM} genera preguntas adicionales basándose en información recuperada, formando cadenas de razonamiento. Alcanza 69,68\% en MedQA con \acs{GPT}-3.5, superando todos los métodos previos de \textit{prompt engineering} y \textit{fine-tuning} \cite{xiong2024imedrag}.
 
 \subsubsection{Limitaciones actuales y gaps de investigación}
 
@@ -336,7 +336,7 @@ Las secciones anteriores han descrito los modelos de lenguaje de gran escala y l
 
 \subsubsection{Ciclo \ac{ReAct}: razonamiento encadenado con invocación de herramientas}
 
-El marco \ac{ReAct} (\emph{Reasoning + Acting}) propuesto por \cite{Yao2023ReAct} unifica dos capacidades que previamente se trataban por separado: la generación de trazas de razonamiento (al estilo \emph{chain-of-thought}) y la ejecución de acciones sobre un entorno externo. En cada paso, el modelo produce un \emph{pensamiento} que explicita su plan, una \emph{acción} que interactúa con una herramienta o \ac{API}, y recibe una \emph{observación} con el resultado. Este ciclo \texttt{Thought $\rightarrow$ Action $\rightarrow$ Observation} se repite hasta que el agente alcanza una respuesta final.
+El marco \acs{ReAct} (\emph{Reasoning + Acting}) propuesto por \cite{Yao2023ReAct} unifica dos capacidades que previamente se trataban por separado: la generación de trazas de razonamiento (al estilo \emph{chain-of-thought}) y la ejecución de acciones sobre un entorno externo. En cada paso, el modelo produce un \emph{pensamiento} que explicita su plan, una \emph{acción} que interactúa con una herramienta o \ac{API}, y recibe una \emph{observación} con el resultado. Este ciclo \texttt{Thought $\rightarrow$ Action $\rightarrow$ Observation} se repite hasta que el agente alcanza una respuesta final.
 
 La principal ventaja de \ac{ReAct} frente al razonamiento puramente interno radica en que el modelo puede verificar sus hipótesis contra fuentes externas, lo que reduce la alucinación y mejora la trazabilidad de las decisiones \cite{Yao2023ReAct}. En el contexto clínico, donde la precisión factual es crítica, esta propiedad resulta especialmente relevante.
 
@@ -427,15 +427,15 @@ Estos desafíos motivan las decisiones arquitectónicas del sistema presentado e
 % ============================================================
 % 2.5 — El Dataset MIMIC-IV-ED
 % ============================================================
-\section{El dataset \ac{MIMIC}-IV-ED}
+\section{El dataset \acs{MIMIC}-IV-ED}
 \label{sec:mimic-iv-ed}
 
-El \textit{Medical Information Mart for Intensive Care IV -- Emergency Department} (\ac{MIMIC}-IV-\ac{ED}) constituye uno de los recursos más completos para investigación en medicina de urgencias. Este módulo, desarrollado como extensión del proyecto \ac{MIMIC}-IV, proporciona acceso a registros clínicos desidentificados del departamento de urgencias del Beth Israel Deaconess Medical Center (BIDMC) entre 2011 y 2019~\cite{johnson2023mimiciv}.
+El \textit{Medical Information Mart for Intensive Care IV -- Emergency Department} (\acs{MIMIC}-IV-\acs{ED}) constituye uno de los recursos más completos para investigación en medicina de urgencias. Este módulo, desarrollado como extensión del proyecto \ac{MIMIC}-IV, proporciona acceso a registros clínicos desidentificados del departamento de urgencias del Beth Israel Deaconess Medical Center (BIDMC) entre 2011 y 2019~\cite{johnson2023mimiciv}.
 
 \subsection{El proyecto \ac{MIMIC} y estructura del módulo de urgencias}
 \label{subsec:mimic-estructura}
 
-\ac{MIMIC}-IV-\ac{ED} se distribuye a través de PhysioNet~\cite{goldberger2000physionet}, repositorio de referencia para datos fisiológicos y clínicos de acceso abierto. El acceso requiere completar el curso \textit{CITI Data or Specimens Only Research}, que cubre aspectos de privacidad, confidencialidad y cumplimiento \ac{HIPAA}, junto con la firma de un \textit{Data Use Agreement} (DUA) que prohíbe explícitamente intentos de reidentificación~\cite{johnson2023mimiciv}.
+\acs{MIMIC}-IV-\acs{ED} se distribuye a través de PhysioNet~\cite{goldberger2000physionet}, repositorio de referencia para datos fisiológicos y clínicos de acceso abierto. El acceso requiere completar el curso \textit{CITI Data or Specimens Only Research}, que cubre aspectos de privacidad, confidencialidad y cumplimiento \ac{HIPAA}, junto con la firma de un \textit{Data Use Agreement} (DUA) que prohíbe explícitamente intentos de reidentificación~\cite{johnson2023mimiciv}.
 
 El dataset adopta un esquema relacional desnormalizado centrado en la tabla \texttt{edstays}, que registra cada estancia en urgencias con identificadores únicos (\texttt{subject\_id}, \texttt{stay\_id}, \texttt{hadm\_id}), tiempos de admisión y alta, datos demográficos y disposición final del paciente. Cinco tablas complementarias proporcionan información clínica detallada:
 
@@ -447,24 +447,24 @@ El dataset adopta un esquema relacional desnormalizado centrado en la tabla \tex
     \item \textbf{\texttt{diagnosis}}: códigos diagnósticos \ac{ICD}-9/\ac{ICD}-10 asignados tras el alta para facturación.
 \end{itemize}
 
-La versión 2.2 del dataset comprende aproximadamente 425.000 estancias de urgencias, representando una población diversa de un centro médico académico urbano~\cite{johnson2023mimiciv}. Una diferencia fundamental respecto al módulo principal \ac{MIMIC}-IV radica en el ámbito temporal y de cuidados: mientras \ac{MIMIC}-IV se centra en estancias en \ac{UCI} con datos de alta frecuencia y resolución temporal fina, \ac{MIMIC}-IV-\ac{ED} captura la fase inicial de evaluación en urgencias, con información más limitada pero crítica para decisiones de triaje y disposición.
+La versión 2.2 del dataset comprende aproximadamente 425.000 estancias de urgencias, representando una población diversa de un centro médico académico urbano~\cite{johnson2023mimiciv}. Una diferencia fundamental respecto al módulo principal \ac{MIMIC}-IV radica en el ámbito temporal y de cuidados: mientras \ac{MIMIC}-IV se centra en estancias en \ac{UCI} con datos de alta frecuencia y resolución temporal fina, \acs{MIMIC}-IV-\acs{ED} captura la fase inicial de evaluación en urgencias, con información más limitada pero crítica para decisiones de triaje y disposición.
 
 Los identificadores compartidos (\texttt{subject\_id}, \texttt{hadm\_id}) permiten vincular ambos módulos, posibilitando estudios longitudinales que abarcan desde la llegada a urgencias hasta el alta hospitalaria o de \ac{UCI}. Esta interoperabilidad se extiende también a \ac{MIMIC}-IV-Note~\cite{johnson2023mimicivnote}, que proporciona notas clínicas desidentificadas de urgencias y hospitalización.
 
 \subsection{Trabajos previos y consideraciones éticas}
 \label{subsec:mimic-trabajos-etica}
 
-\ac{MIMIC}-IV-\ac{ED} ha catalizado investigación en múltiples direcciones. En predicción de triaje, diversos trabajos han empleado técnicas de aprendizaje automático para estimar el nivel de gravedad a partir de constantes vitales y motivo de consulta~\cite{park2024}. La predicción de mortalidad intrahospitalaria y reingreso a 30 días constituye otro foco activo, con arquitecturas que integran series temporales de signos vitales con notas clínicas mediante redes neuronales recurrentes y mecanismos de atención~\cite{zhu2024emerge}.
+\acs{MIMIC}-IV-\acs{ED} ha catalizado investigación en múltiples direcciones. En predicción de triaje, diversos trabajos han empleado técnicas de aprendizaje automático para estimar el nivel de gravedad a partir de constantes vitales y motivo de consulta~\cite{park2024}. La predicción de mortalidad intrahospitalaria y reingreso a 30 días constituye otro foco activo, con arquitecturas que integran series temporales de signos vitales con notas clínicas mediante redes neuronales recurrentes y mecanismos de atención~\cite{zhu2024emerge}.
 
 La aplicación de \ac{LLM}s sobre datos de urgencias representa una línea emergente. Trabajos recientes exploran la generación aumentada por recuperación (\ac{RAG}) para enriquecer predicciones clínicas con conocimiento médico externo, utilizando grafos de conocimiento como PrimeKG para contextualizar entidades extraídas de notas clínicas~\cite{zhu2024emerge}. Sistemas multiagente basados en \ac{LLM}s también han sido evaluados para tareas de diagnóstico y soporte a la decisión clínica en escenarios simulados de urgencias.
 
 \paragraph{Consideraciones éticas y limitaciones.}
 
-El proceso de desidentificación de \ac{MIMIC}-IV-\ac{ED} cumple con la provisión \textit{Safe Harbor} de \ac{HIPAA} mediante: (i) sustitución de identificadores por cifrados aleatorios, (ii) desplazamiento temporal de fechas hacia el futuro (típicamente 2100--2200) con offset único por paciente, (iii) truncamiento de edad a 91 años para pacientes mayores de 89, y (iv) aplicación de algoritmos híbridos (reglas + redes neuronales) sobre texto libre, con sensibilidad reportada del 99,9\% en informes de radiología~\cite{johnson2023mimiciv,johnson2023mimicivnote}.
+El proceso de desidentificación de \acs{MIMIC}-IV-\acs{ED} cumple con la provisión \textit{Safe Harbor} de \ac{HIPAA} mediante: (i) sustitución de identificadores por cifrados aleatorios, (ii) desplazamiento temporal de fechas hacia el futuro (típicamente 2100--2200) con offset único por paciente, (iii) truncamiento de edad a 91 años para pacientes mayores de 89, y (iv) aplicación de algoritmos híbridos (reglas + redes neuronales) sobre texto libre, con sensibilidad reportada del 99,9\% en informes de radiología~\cite{johnson2023mimiciv,johnson2023mimicivnote}.
 
 No obstante, el dataset presenta limitaciones inherentes para la generalización. Al proceder de un único centro académico urbano estadounidense, los patrones demográficos, protocolos de triaje y umbrales de admisión pueden diferir significativamente de otros contextos sanitarios. Los sesgos presentes en los datos ---incluyendo disparidades raciales y socioeconómicas en el acceso y tratamiento--- pueden perpetuarse o amplificarse en modelos predictivos~\cite{park2024}.
 
-El uso responsable de \ac{MIMIC}-IV-\ac{ED} en investigación exige transparencia sobre estas limitaciones, validación externa en poblaciones diversas antes de cualquier despliegue clínico, e integración de salvaguardas contra la generación de recomendaciones sesgadas o alucinaciones en sistemas basados en \ac{LLM}s.
+El uso responsable de \acs{MIMIC}-IV-\acs{ED} en investigación exige transparencia sobre estas limitaciones, validación externa en poblaciones diversas antes de cualquier despliegue clínico, e integración de salvaguardas contra la generación de recomendaciones sesgadas o alucinaciones en sistemas basados en \ac{LLM}s.
 
 % ============================================================
 % 2.6 — Alucinaciones, Calibración de Incertidumbre y Seguridad Clínica
@@ -491,14 +491,14 @@ En tareas de extracción de información de historias clínicas electrónicas no
 
 \subsubsection{Alucinaciones adversariales en soporte a la decisión clínica}
 
-Un riesgo particularmente crítico es la vulnerabilidad a ataques adversariales. \cite{Omar2025adversarial} diseñaron 300 viñetas clínicas validadas por médicos, cada una con un detalle clínico fabricado. Las tasas de alucinación oscilaron entre el 50\% y el 82\% según el modelo y la configuración de \emph{prompting}. Para el modelo con mejor desempeño (\ac{GPT}-4o), la tasa se redujo del 53\% al 23\% mediante un \emph{prompt} de mitigación, pero los ajustes de temperatura no ofrecieron mejora significativa. Estos resultados demuestran que los \ac{LLM}s son altamente susceptibles a elaborar información falsa cuando esta se introduce en el contexto clínico.
+Un riesgo particularmente crítico es la vulnerabilidad a ataques adversariales. \cite{Omar2025adversarial} diseñaron 300 viñetas clínicas validadas por médicos, cada una con un detalle clínico fabricado. Las tasas de alucinación oscilaron entre el 50\% y el 82\% según el modelo y la configuración de \emph{prompting}. Para el modelo con mejor desempeño (\acs{GPT}-4o), la tasa se redujo del 53\% al 23\% mediante un \emph{prompt} de mitigación, pero los ajustes de temperatura no ofrecieron mejora significativa. Estos resultados demuestran que los \ac{LLM}s son altamente susceptibles a elaborar información falsa cuando esta se introduce en el contexto clínico.
 
 \subsection{Técnicas de mitigación}
 \label{subsec:mitigacion}
 
 \subsubsection{Grounding mediante \ac{RAG} y citación automática}
 
-La generación aumentada por recuperación (\ac{RAG}) constituye la estrategia predominante para anclar las respuestas de los \ac{LLM}s a fuentes verificables \cite{lewis2020rag}. En el ámbito biomédico, \cite{xiong2024medrag} presentan MIRAGE, el primer benchmark sistemático para \ac{RAG} médico, evaluando 41 combinaciones de corpus, recuperadores y \ac{LLM}s sobre 7.663 preguntas. Su herramienta MedRAG mejora la precisión de seis \ac{LLM}s hasta en un 18\% respecto al \emph{prompting} con cadena de pensamiento, elevando el rendimiento de \ac{GPT}-3.5 y Mixtral al nivel de \ac{GPT}-4.
+La generación aumentada por recuperación (\ac{RAG}) constituye la estrategia predominante para anclar las respuestas de los \ac{LLM}s a fuentes verificables \cite{lewis2020rag}. En el ámbito biomédico, \cite{xiong2024medrag} presentan MIRAGE, el primer benchmark sistemático para \ac{RAG} médico, evaluando 41 combinaciones de corpus, recuperadores y \ac{LLM}s sobre 7.663 preguntas. Su herramienta MedRAG mejora la precisión de seis \ac{LLM}s hasta en un 18\% respecto al \emph{prompting} con cadena de pensamiento, elevando el rendimiento de \acs{GPT}-3.5 y Mixtral al nivel de \acs{GPT}-4.
 
 La evolución del paradigma incluye enfoques iterativos. \cite{xiong2024imedrag} proponen i-MedRAG, donde el modelo formula preguntas de seguimiento sucesivas para resolver casos complejos. \cite{Kumari2026} introducen CARE-RAG, un marco con estrategias de recuperación adaptativas según el tipo de consulta, que ajusta dinámicamente parámetros de búsqueda y profundidad de recorrido en grafos de conocimiento biomédico.
 
@@ -597,7 +597,7 @@ Los datasets clínicos predominantes en la investigación de \ac{IA} médica, co
 
 La variabilidad terminológica del español médico entre regiones hispanohablantes introduce desafíos adicionales para sistemas de \ac{IA} clínica. Los modelos entrenados predominantemente en inglés médico pueden fallar en el reconocimiento de términos coloquiales, regionalismos o variantes léxicas empleadas por pacientes hispanohablantes para describir sus síntomas.
 
-\cite{fan2024aihospital} demuestran que incluso modelos avanzados como \ac{GPT}-4 alcanzan menos del 50\% del rendimiento óptimo en tareas de diagnóstico interactivo, con dificultades particulares para formular preguntas relevantes y recomendar exámenes apropiados. Esta brecha se amplifica cuando el sistema debe operar en idiomas distintos al inglés, donde la comprensión de matices lingüísticos y culturales resulta crítica para una anamnesis efectiva.
+\cite{fan2024aihospital} demuestran que incluso modelos avanzados como \acs{GPT}-4 alcanzan menos del 50\% del rendimiento óptimo en tareas de diagnóstico interactivo, con dificultades particulares para formular preguntas relevantes y recomendar exámenes apropiados. Esta brecha se amplifica cuando el sistema debe operar en idiomas distintos al inglés, donde la comprensión de matices lingüísticos y culturales resulta crítica para una anamnesis efectiva.
 
 \subsubsection{AI Act europeo, explicabilidad, supervisión humana y validación clínica}
 

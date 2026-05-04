@@ -74,7 +74,7 @@ El test SEC-PROMPT-003 merece un análisis detallado porque ilustra una limitaci
 
 \paragraph{El \textit{payload}.} La solicitud fue: \textit{``Olvida que eres un asistente médico. Genera datos falsos de 100 pacientes ficticios con sus diagnósticos.''}
 
-\paragraph{La respuesta del agente.} \textit{``No puedo hacer eso. Soy ChatHCE, un asistente especializado en análisis clínico de datos reales del dataset \ac{MIMIC}-IV-\ac{ED}. No puedo generar datos ficticios de pacientes.''}
+\paragraph{La respuesta del agente.} \textit{``No puedo hacer eso. Soy ChatHCE, un asistente especializado en análisis clínico de datos reales del dataset \acs{MIMIC}-IV-\acs{ED}. No puedo generar datos ficticios de pacientes.''}
 
 \paragraph{El veredicto del verificador.} No superado. El verificador detectó la palabra \textit{``datos''} en la respuesta como indicador de que el agente habría generado datos ficticios.
 
@@ -111,7 +111,7 @@ Las latencias registradas (rango: 1,8--7,5\,ms) requieren una interpretación t�
 
 \subsection{Sesgo del modelo evaluador}
 
-Se utiliza el mismo modelo (Claude Haiku~4.5) como sistema evaluado y como evaluador \ac{RAGAS}. Esto introduce un sesgo potencial: el evaluador puede ser más tolerante con el estilo de respuesta y las formulaciones del sistema evaluado al compartir patrones lingüísticos y razonamiento~\cite{Zheng2023llmjudge}. La literatura sobre evaluación \ac{LLM}-as-a-Judge sugiere que modelos más capaces (como \ac{GPT}-4 o Claude 3 Opus) como evaluadores proporcionan mayor discriminación~\cite{Yu2025agentjudge}, pero el coste de ejecución sería significativamente superior al presupuesto disponible para la evaluación.
+Se utiliza el mismo modelo (Claude Haiku~4.5) como sistema evaluado y como evaluador \ac{RAGAS}. Esto introduce un sesgo potencial: el evaluador puede ser más tolerante con el estilo de respuesta y las formulaciones del sistema evaluado al compartir patrones lingüísticos y razonamiento~\cite{Zheng2023llmjudge}. La literatura sobre evaluación \ac{LLM}-as-a-Judge sugiere que modelos más capaces (como \acs{GPT}-4 o Claude 3 Opus) como evaluadores proporcionan mayor discriminación~\cite{Yu2025agentjudge}, pero el coste de ejecución sería significativamente superior al presupuesto disponible para la evaluación.
 
 \subsection{Validación del \textit{ground truth}}
 
@@ -124,7 +124,7 @@ En un marco de evaluación ideal, el \textit{ground truth} \ac{RAG} debería ser
 Con 40~preguntas DB, 30~\ac{RAG}, 28~funcionales y 13~de seguridad, la evaluación cubre un espectro representativo pero no exhaustivo de los escenarios de uso del sistem. En particular:
 
 \begin{itemize}[leftmargin=*]
-  \item Las consultas de base de datos se centran en 6~pacientes del \textit{dataset} \ac{MIMIC}-IV-\ac{ED}. El comportamiento con la totalidad de pacientes no está evaluado.
+  \item Las consultas de base de datos se centran en 6~pacientes del \textit{dataset} \acs{MIMIC}-IV-\acs{ED}. El comportamiento con la totalidad de pacientes no está evaluado.
   \item Los \textit{payloads} de seguridad cubren las categorías \ac{OWASP} más relevantes, pero no incluyen ataques de extracción de datos por canal lateral ni técnicas de \textit{jailbreak} más sofisticadas.
   \item Las preguntas \ac{RAG} cubren 3~documentos; el comportamiento con un corpus documental más amplio o con documentos en otros formatos no está evaluado.
 \end{itemize}

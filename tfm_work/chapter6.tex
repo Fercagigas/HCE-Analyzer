@@ -13,7 +13,7 @@ Este capítulo sintetiza las contribuciones del presente Trabajo Fin de Máster,
 
 El presente trabajo ha abordado el diseño, implementación y evaluación de \textbf{ChatHCE}, un sistema de análisis clínico inteligente para el servicio de urgencias. El sistema integra tres capacidades fundamentales ---consulta de datos estructurados, recuperación de documentos clínicos y generación de visualizaciones--- mediante una interfaz conversacional unificada en lenguaje natural.
 
-El desarrollo ha seguido la metodología \textit{Design Science Research} \cite{Hevner2004,Peffers2007dsrm}, con ciclos iterativos de diseño, construcción y evaluación. El artefacto resultante opera sobre el dataset \ac{MIMIC}-IV-\ac{ED} \cite{johnson2023mimiciv} desplegado en Supabase, y utiliza Claude Haiku 4.5 como motor de inferencia principal con capacidad de \textit{tool-calling} nativo.
+El desarrollo ha seguido la metodología \textit{Design Science Research} \cite{Hevner2004,Peffers2007dsrm}, con ciclos iterativos de diseño, construcción y evaluación. El artefacto resultante opera sobre el dataset \acs{MIMIC}-IV-\acs{ED} \cite{johnson2023mimiciv} desplegado en Supabase, y utiliza Claude Haiku 4.5 como motor de inferencia principal con capacidad de \textit{tool-calling} nativo.
 
 La evaluación empírica se ha estructurado en cuatro dimensiones: calidad semántica de respuestas (métricas \ac{RAGAS}), rendimiento temporal, robustez de seguridad y funcionalidad operativa. Los resultados obtenidos permiten responder a las cinco preguntas de investigación planteadas en el capítulo introductorio.
 
@@ -52,7 +52,7 @@ La métrica de \textit{Context Precision} de 0,55 indica que aproximadamente el 
 
 \textbf{Conclusión:} El modelo de defensa en profundidad implementado demuestra alta efectividad en la prevención de alucinaciones y amenazas de seguridad. De los 13 tests de seguridad, 12 fueron superados: 7 de inyección \ac{SQL}, 2 de inyección de prompts y 3 de anti-alucinación.
 
-El criterio \texttt{no\_alucinacion} obtuvo puntuación perfecta (1,0) en los 28 casos de prueba funcionales, constituyendo el resultado más significativo para un sistema de asistencia clínica. El sistema reconoce explícitamente la ausencia de datos sin fabricar información, respondiendo con mensajes como ``El paciente con subject\_id 9999 no existe en el dataset \ac{MIMIC}-IV-\ac{ED}''.
+El criterio \texttt{no\_alucinacion} obtuvo puntuación perfecta (1,0) en los 28 casos de prueba funcionales, constituyendo el resultado más significativo para un sistema de asistencia clínica. El sistema reconoce explícitamente la ausencia de datos sin fabricar información, respondiendo con mensajes como ``El paciente con subject\_id 9999 no existe en el dataset \acs{MIMIC}-IV-\acs{ED}''.
 
 La defensa opera en múltiples niveles: (1) directivas anti-alucinación en el prompt del sistema que instruyen al modelo a fundamentar sus respuestas únicamente en datos verificables; (2) validación \ac{SQL} con lista negra de 18 \textit{keywords} peligrosos y detección de tautologías mediante 11 patrones regex; (3) sandbox \ac{AST} para ejecución segura de código de visualización.
 
@@ -103,7 +103,7 @@ El presente trabajo realiza las siguientes contribuciones al campo de los sistem
 El presente trabajo presenta las siguientes limitaciones que deben considerarse en la interpretación de los resultados:
 
 \begin{itemize}
-    \item \textbf{Dataset de demostración}: La evaluación se realizó sobre la versión demo de \ac{MIMIC}-IV-\ac{ED} (222 pacientes), que aunque mantiene patrones representativos, no permite evaluar el comportamiento del sistema a escala real.
+    \item \textbf{Dataset de demostración}: La evaluación se realizó sobre la versión demo de \acs{MIMIC}-IV-\acs{ED} (222 pacientes), que aunque mantiene patrones representativos, no permite evaluar el comportamiento del sistema a escala real.
     
     \item \textbf{Evaluación monolingüe}: El sistema y su evaluación se han centrado exclusivamente en español médico; la generalización a otros idiomas requiere validación adicional.
     

@@ -62,7 +62,7 @@ Este patrón \textit{Adapter} permite que cada herramienta defina su esquema Pyd
 \subsection{Database Tool (\texttt{query\_mimic\_database})}
 \label{sec:appendix_dbtool}
 
-La herramienta de base de datos proporciona acceso seguro y de solo lectura al dataset \ac{MIMIC}-IV-\ac{ED}. Implementa validación multicapa de consultas \ac{SQL} y soporta cinco tipos de consulta predefinidos.
+La herramienta de base de datos proporciona acceso seguro y de solo lectura al dataset \acs{MIMIC}-IV-\acs{ED}. Implementa validación multicapa de consultas \ac{SQL} y soporta cinco tipos de consulta predefinidos.
 
 \subsubsection{Tipos de Consulta}
 
@@ -392,7 +392,7 @@ El campo \texttt{raw\_output} se truncaba a 1000 caracteres en \texttt{\_extract
 
 \begin{table}[H]
 \centering
-\caption{Evolución de métricas \ac{RAGAS} en el golden set DB (40 preguntas sobre \ac{MIMIC}-IV-\ac{ED}).}
+\caption{Evolución de métricas \ac{RAGAS} en el golden set DB (40 preguntas sobre \acs{MIMIC}-IV-\acs{ED}).}
 \label{tab:appendix_ragas_db}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lrrr}
@@ -484,7 +484,7 @@ Documentada en detalle en la Sección~\ref{sec:appendix_dbtool}. Incluye lista n
 
 \subsection{Capa 4: autenticación JWT y row level security}
 
-Supabase Auth proporciona autenticación JWT con RLS habilitado en las 13 tablas del sistema (6 tablas \ac{MIMIC}-IV-\ac{ED} + 7 tablas de aplicación). Las políticas RLS garantizan que cada usuario solo puede acceder a sus propias sesiones, mensajes y preferencias.
+Supabase Auth proporciona autenticación JWT con RLS habilitado en las 13 tablas del sistema (6 tablas \acs{MIMIC}-IV-\acs{ED} + 7 tablas de aplicación). Las políticas RLS garantizan que cada usuario solo puede acceder a sus propias sesiones, mensajes y preferencias.
 
 \subsection{Capa 5: audit logging}
 
@@ -505,7 +505,7 @@ Prohibiciones absolutas & NUNCA inventar subject\_id, stay\_id, hadm\_id; NUNCA 
 Datos faltantes & Si no encuentra datos: ``No encontré información sobre [X]''; si hay nulos: ``Algunos registros tienen datos incompletos'' \\
 Citación de fuentes & Siempre indicar herramienta usada y tabla de origen; para \ac{RAG}, citar documento fuente \\
 Incertidumbre & Distinguir datos verificados de interpretaciones; usar ``Según los datos disponibles...'' \\
-Limitaciones & \ac{MIMIC}-IV-\ac{ED} es dataset demo con 222 pacientes; solo urgencias; sin laboratorio, imagen ni cirugía \\
+Limitaciones & \acs{MIMIC}-IV-\acs{ED} es dataset demo con 222 pacientes; solo urgencias; sin laboratorio, imagen ni cirugía \\
 Concisión & Responder únicamente lo preguntado; no añadir información no solicitada \\
 Fidelidad & Basar respuesta exclusivamente en datos de herramientas; no usar conocimiento general \\
 \bottomrule
@@ -561,7 +561,7 @@ El test fallido (SEC-PROMPT-003) corresponde a una solicitud de generación de d
 \label{sec:appendix_db}
 % ====================================================================
 
-\subsection{Tablas \ac{MIMIC}-IV-ED}
+\subsection{Tablas \acs{MIMIC}-IV-ED}
 
 \begin{table}[H]
 \centering
@@ -763,7 +763,7 @@ El prompt del sistema del agente está estructurado en 10 secciones ordenadas qu
 \textbf{N} & \textbf{Sección} & \textbf{Contenido} \\
 \midrule
 1 & IDENTIDAD & Nombre (ChatHCE), rol (asistente clínico), propósito y contexto de uso \\
-2 & CONTEXTO & Dataset \ac{MIMIC}-IV-\ac{ED}: 222 pacientes, 6 tablas, urgencias hospitalarias \\
+2 & CONTEXTO & Dataset \acs{MIMIC}-IV-\acs{ED}: 222 pacientes, 6 tablas, urgencias hospitalarias \\
 3 & HERRAMIENTAS & Documentación de las 3 herramientas con parámetros y ejemplos \\
 4 & ANTI-ALUCINACIÓN & Prohibiciones absolutas, manejo de datos faltantes, citación, incertidumbre \\
 5 & IDIOMA & Respuestas siempre en español, terminología médica apropiada \\
@@ -931,7 +931,7 @@ Agente & LangChain 1.2.7~\citep{chase2022langchain} & Orquestación y herramient
 \ac{LLM} principal & Claude Haiku 4.5 & Agente conversacional \\
 \ac{LLM} viz. & Claude Sonnet 4.5 & Generación de código \\
 SDK Anthropic & anthropic 0.77.0 & Cliente \ac{API} de Claude \\
-Base de datos & Supabase PostgreSQL 15~\citep{supabase2020,postgresql2024} & \ac{MIMIC}-IV-\ac{ED} + aplicación \\
+Base de datos & Supabase PostgreSQL 15~\citep{supabase2020,postgresql2024} & \acs{MIMIC}-IV-\acs{ED} + aplicación \\
 Vector store & pgvector 0.8.0~\citep{pgvector2024} & Embeddings \ac{RAG} \\
 Cliente BD & supabase-py & Acceso desde Python \\
 Embeddings & sentence-transformers 5.2.2~\citep{reimers2019sentencebert} & all-MiniLM-L6-v2 (384d) \\

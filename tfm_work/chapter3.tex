@@ -46,13 +46,13 @@
 
 El ejercicio de la medicina de urgencias impone una carga cognitiva y temporal excepcional sobre los profesionales sanitarios. Un médico de urgencias necesita acceder, de forma simultánea y en tiempo real, a tres categorías de información heterogéneas: datos estructurados del paciente almacenados en bases de datos relacionales (signos vitales, diagnósticos previos, medicación activa), conocimiento clínico no estructurado contenido en guías y protocolos (documentos PDF, DOCX), y representaciones visuales que permitan identificar tendencias en series temporales de parámetros fisiológicos. Esta integración se realiza habitualmente mediante múltiples sistemas desconectados, con interfaces distintas y sin capacidad de consulta en lenguaje natural. Recientes revisiones sistemáticas han documentado el potencial de los modelos de lenguaje de gran escala para tareas clínicas como resumen, consulta de conocimiento y predicción \citep{wang2024chatgpt}.
 
-Según \citep{arun2025ethical}, los médicos dedican una media de 16 minutos y 14 segundos de tiempo activo en el sistema de historia clínica electrónica (\ac{HCE}) por cada encuentro con el paciente, lo que representa entre el 37\% y el 49\% del tiempo total de la visita. En urgencias, donde los tiempos de respuesta son críticos, esta carga documental puede comprometer la calidad asistencial. El sistema \textbf{AgentClinic} \citep{AgentClinic2025} ha demostrado que los agentes conversacionales pueden simular entornos clínicos completos, mientras que revisiones como las de \citep{Amugongo2025systematic} confirman la viabilidad de sistemas \ac{RAG} en el dominio sanitario.
+Según \citep{arun2025ethical}, los médicos dedican una media de 16 minutos y 14 segundos de tiempo activo en el sistema de historia clínica electrónica (\acs{HCE}) por cada encuentro con el paciente, lo que representa entre el 37\% y el 49\% del tiempo total de la visita. En urgencias, donde los tiempos de respuesta son críticos, esta carga documental puede comprometer la calidad asistencial. El sistema \textbf{AgentClinic} \citep{AgentClinic2025} ha demostrado que los agentes conversacionales pueden simular entornos clínicos completos, mientras que revisiones como las de \citep{Amugongo2025systematic} confirman la viabilidad de sistemas \ac{RAG} en el dominio sanitario.
 
-\textbf{ChatHCE} aborda este problema proporcionando una interfaz conversacional unificada en lenguaje natural que integra automáticamente las tres fuentes de información mediante selección inteligente de herramientas. El sistema opera sobre el dataset \ac{MIMIC}-IV-\ac{ED} \citep{johnson2023mimiciv}, un conjunto de datos clínicos anonimizados ampliamente utilizado en investigación biomédica, y ha sido diseñado para responder a cinco preguntas de investigación fundamentales que guían su arquitectura técnica.
+\textbf{ChatHCE} aborda este problema proporcionando una interfaz conversacional unificada en lenguaje natural que integra automáticamente las tres fuentes de información mediante selección inteligente de herramientas. El sistema opera sobre el dataset \acs{MIMIC}-IV-\acs{ED} \citep{johnson2023mimiciv}, un conjunto de datos clínicos anonimizados ampliamente utilizado en investigación biomédica, y ha sido diseñado para responder a cinco preguntas de investigación fundamentales que guían su arquitectura técnica.
 
 \subsection{Preguntas de investigación}
 
-Este capítulo describe la arquitectura de ChatHCE en función de cinco preguntas de investigación (\ac{RQ}) que abordan los principales desafíos técnicos de un sistema conversacional clínico:
+Este capítulo describe la arquitectura de ChatHCE en función de cinco preguntas de investigación (\acs{RQ}) que abordan los principales desafíos técnicos de un sistema conversacional clínico:
 
 \begin{description}[nosep, leftmargin=1em, labelindent=0em]
   \item[\textbf{RQ1}:] ¿Cómo puede una \textbf{arquitectura de agente unificado} con \textit{tool-calling} nativo alcanzar latencias P50 inferiores a 5 segundos mientras reduce el error acumulado en comparación con arquitecturas multi-agente?
@@ -75,7 +75,7 @@ Las siguientes secciones describen cómo la arquitectura de ChatHCE responde a c
 
 \subsection{Descripción funcional}
 
-\textbf{ChatHCE} es un sistema de análisis clínico inteligente diseñado para profesionales del Servicio de Urgencias que necesitan acceder, en tiempo real y mediante lenguaje natural en español, a datos de pacientes del dataset \ac{MIMIC}-IV-\ac{ED}, guías clínicas indexadas y visualizaciones interactivas. El sistema opera como una interfaz conversacional única que elimina la necesidad de cambiar entre múltiples aplicaciones o aprender lenguajes de consulta especializados.
+\textbf{ChatHCE} es un sistema de análisis clínico inteligente diseñado para profesionales del Servicio de Urgencias que necesitan acceder, en tiempo real y mediante lenguaje natural en español, a datos de pacientes del dataset \acs{MIMIC}-IV-\acs{ED}, guías clínicas indexadas y visualizaciones interactivas. El sistema opera como una interfaz conversacional única que elimina la necesidad de cambiar entre múltiples aplicaciones o aprender lenguajes de consulta especializados.
 
 El sistema se articula sobre tres pilares tecnológicos complementarios:
 
@@ -415,7 +415,7 @@ ChatHCE sigue una arquitectura de cinco capas con separación estricta de respon
 Para una descripción completa de las tablas, índices y esquemas de datos, véase el Anexo~\ref{appendix:arquitectura}.
 
 % ====================================================================
-\section{Fuente de datos: \ac{MIMIC}-IV-ED}
+\section{Fuente de datos: \acs{MIMIC}-IV-ED}
 \label{sec:mimic}
 % ====================================================================
 
@@ -967,7 +967,7 @@ El proceso opera en dos fases. En la \textbf{primera fase}, cada pregunta del \t
 
 En la \textbf{segunda fase}, cada tupla \texttt{(pregunta, respuesta, contextos, referencia)} se evalúa con \texttt{ragas.evaluate()} usando un \texttt{HuggingFace Dataset} de una fila. Las puntuaciones individuales se agregan como media aritmética al final de la ejecución.
 
-El módulo \ac{RAGAS} se ejecuta dos veces: una con el \textit{golden set} DB (\texttt{subset=db}, 40~preguntas sobre \ac{MIMIC}-IV-\ac{ED}) y otra con el \textit{golden set} \ac{RAG} (\texttt{subset=rag}, 30~preguntas sobre documentos clínicos). Ambas ejecuciones generan informes independientes.
+El módulo \ac{RAGAS} se ejecuta dos veces: una con el \textit{golden set} DB (\texttt{subset=db}, 40~preguntas sobre \acs{MIMIC}-IV-\acs{ED}) y otra con el \textit{golden set} \ac{RAG} (\texttt{subset=rag}, 30~preguntas sobre documentos clínicos). Ambas ejecuciones generan informes independientes.
 
 
 \subsection{Benchmarks de latencia}
@@ -1018,11 +1018,11 @@ donde $w_i$ es el peso del criterio $i$ y $s_i$ su puntuación en el rango $[0, 
 \subsection{Materiales de evaluación}
 \label{subsec:materiales}
 
-\subsubsection{Golden Set DB (Base de Datos \ac{MIMIC}-IV-\ac{ED})}
+\subsubsection{Golden Set DB (Base de Datos \acs{MIMIC}-IV-\acs{ED})}
 
-El conjunto de evaluación DB comprende 40~preguntas en español distribuidas en seis categorías temáticas sobre el \textit{dataset} \ac{MIMIC}-IV-\ac{ED}~\cite{johnson2023mimiciv} (Tabla~\ref{tab:golden_set_db}). Cada pregunta incluye: una consulta en lenguaje natural (\texttt{question}), una respuesta de referencia verificada (\texttt{ground\_truth}), una consulta \ac{SQL} de verificación (\texttt{ground\_truth\_sql}), y fragmentos de contexto que fundamentan la respuesta (\texttt{contexts}).
+El conjunto de evaluación DB comprende 40~preguntas en español distribuidas en seis categorías temáticas sobre el \textit{dataset} \acs{MIMIC}-IV-\acs{ED}~\cite{johnson2023mimiciv} (Tabla~\ref{tab:golden_set_db}). Cada pregunta incluye: una consulta en lenguaje natural (\texttt{question}), una respuesta de referencia verificada (\texttt{ground\_truth}), una consulta \ac{SQL} de verificación (\texttt{ground\_truth\_sql}), y fragmentos de contexto que fundamentan la respuesta (\texttt{contexts}).
 
-Las respuestas de referencia fueron construidas ejecutando las consultas \ac{SQL} de verificación directamente contra la base de datos Supabase con el esquema \ac{MIMIC}-IV-\ac{ED}, y redactando manualmente la respuesta esperada en español con los valores exactos obtenidos.
+Las respuestas de referencia fueron construidas ejecutando las consultas \ac{SQL} de verificación directamente contra la base de datos Supabase con el esquema \acs{MIMIC}-IV-\acs{ED}, y redactando manualmente la respuesta esperada en español con los valores exactos obtenidos.
 
 \begin{table}[H]
 \centering
