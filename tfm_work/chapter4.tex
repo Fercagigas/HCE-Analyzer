@@ -17,14 +17,14 @@
 Se presentan a continuación los resultados obtenidos en la evaluación del sistema ChatHCE, ejecutada el 28 de abril de 2026. El tiempo total de ejecución fue de 3075,8~segundos (~51~minutos). Los cinco módulos completaron su ejecución sin errores de proceso.
 
 
-\section{Calidad de respuestas: \ac{RAGAS} DB}
+\section{Calidad de respuestas: \acs{RAGAS} DB}
 \label{sec:res_ragas_db}
 
 Las 40~preguntas del \textit{golden set} DB fueron procesadas sin errores (tasa de error: 0\,\%) en 752,3~segundos. La Tabla~\ref{tab:res_ragas_db} presenta las cuatro métricas \ac{RAGAS} obtenidas.
 
 \begin{table}[H]
 \centering
-\caption{Métricas \ac{RAGAS} --- \textit{Golden Set} DB (40~preguntas, 0~errores, 752,3\,s).}
+\caption{Métricas \acs{RAGAS} --- \textit{Golden Set} DB (40~preguntas, 0~errores, 752,3\,s).}
 \label{tab:res_ragas_db}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lc}
@@ -71,21 +71,21 @@ Context Recall     & 0,8458 \\
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Métricas \ac{RAGAS} del \textit{golden set} DB. Context Recall obtiene la puntuación más alta (0,85); Answer Relevancy la más baja (0,49).}
+\caption{Métricas \acs{RAGAS} del \textit{golden set} DB. Context Recall obtiene la puntuación más alta (0,85); Answer Relevancy la más baja (0,49).}
 \label{fig:res_ragas_db_barras}
 \end{figure}
 
 Context Recall (0,8458) fue la métrica con mayor puntuación. Answer Relevancy (0,4944) registró la puntuación más baja del conjunto. Faithfulness se situó en 0,7357 y Context Precision en 0,6021.
 
 
-\section{Calidad de respuestas: \ac{RAGAS} RAG}
+\section{Calidad de respuestas: \acs{RAGAS} RAG}
 \label{sec:res_ragas_rag}
 
 Las 30~preguntas del \textit{golden set} \ac{RAG} fueron procesadas sin errores en 1812,1~segundos. La Tabla~\ref{tab:res_ragas_rag} presenta los resultados.
 
 \begin{table}[H]
 \centering
-\caption{Métricas \ac{RAGAS} --- \textit{Golden Set} \ac{RAG} (30~preguntas, 0~errores, 1812,1\,s).}
+\caption{Métricas \acs{RAGAS} --- \textit{Golden Set} \acs{RAG} (30~preguntas, 0~errores, 1812,1\,s).}
 \label{tab:res_ragas_rag}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lc}
@@ -132,7 +132,7 @@ Context Recall     & 0,4894 \\
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Métricas \ac{RAGAS} del \textit{golden set} \ac{RAG}. Faithfulness obtiene la puntuación más alta (0,57); las restantes métricas se sitúan en el rango 0,48--0,55.}
+\caption{Métricas \acs{RAGAS} del \textit{golden set} \acs{RAG}. Faithfulness obtiene la puntuación más alta (0,57); las restantes métricas se sitúan en el rango 0,48--0,55.}
 \label{fig:res_ragas_rag_barras}
 \end{figure}
 
@@ -181,7 +181,7 @@ La Figura~\ref{fig:res_comparativa_ragas} muestra la comparativa entre ambos \te
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Comparativa de métricas \ac{RAGAS} entre los \textit{golden sets} DB y \ac{RAG}.}
+\caption{Comparativa de métricas \acs{RAGAS} entre los \textit{golden sets} DB y \acs{RAG}.}
 \label{fig:res_comparativa_ragas}
 \end{figure}
 
@@ -241,7 +241,7 @@ Complex & 2,0 & 2,0 & 2,3 & 1,8 & 2,3 \\
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Latencias por categoría: media, P95 y máximo. La categoría \ac{RAG} presenta la mayor variabilidad (máx: 7,5\,ms).}
+\caption{Latencias por categoría: media, P95 y máximo. La categoría \acs{RAG} presenta la mayor variabilidad (máx: 7,5\,ms).}
 \label{fig:res_latencia_barras}
 \end{figure}
 

@@ -183,7 +183,7 @@ El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig
 \end{figure*}
 
 % ====================================================================
-\section{Arquitectura de agente unificado (\ac{RQ}1)}
+\section{Arquitectura de agente unificado (\acs{RQ}1)}
 \label{sec:agente_unificado}
 % ====================================================================
 
@@ -278,7 +278,7 @@ La Figura~\ref{fig:comparativa_agentes} ilustra la diferencia estructural entre 
 
 \end{tikzpicture}%
 }% end resizebox
-\caption{Comparativa entre arquitectura multi-agente (izquierda, descartada) y agente unificado (derecha, adoptada). El agente unificado reduce llamadas \ac{LLM} de 3--5 a 1 por turno, eliminando error acumulado y reduciendo latencia. La cadena de fallback garantiza continuidad operativa (\textbf{RQ4}).}
+\caption{Comparativa entre arquitectura multi-agente (izquierda, descartada) y agente unificado (derecha, adoptada). El agente unificado reduce llamadas \acs{LLM} de 3--5 a 1 por turno, eliminando error acumulado y reduciendo latencia. La cadena de fallback garantiza continuidad operativa (\textbf{RQ4}).}
 \label{fig:comparativa_agentes}
 \end{figure*}
 
@@ -398,7 +398,7 @@ ChatHCE sigue una arquitectura de cinco capas con separación estricta de respon
 
 \end{tikzpicture}%
 }% end resizebox
-\caption{Arquitectura por capas de ChatHCE con interfaces entre capas. Cada capa solo puede comunicarse con la capa inmediatamente inferior. Patrones de diseño: Adapter (\texttt{ClaudeToolAdapter}), Singleton (\texttt{CacheManager}, \texttt{RateLimiter}, \texttt{ImprovedRAGService}), Strategy (búsqueda \ac{RAG}), Factory (\texttt{ClaudeToolRegistry}), Chain of Responsibility (fallback \ac{LLM}).}
+\caption{Arquitectura por capas de ChatHCE con interfaces entre capas. Cada capa solo puede comunicarse con la capa inmediatamente inferior. Patrones de diseño: Adapter (\texttt{ClaudeToolAdapter}), Singleton (\texttt{CacheManager}, \texttt{RateLimiter}, \texttt{ImprovedRAGService}), Strategy (búsqueda \acs{RAG}), Factory (\texttt{ClaudeToolRegistry}), Chain of Responsibility (fallback \acs{LLM}).}
 \label{fig:capas_interfaces}
 \end{figure*}
 
@@ -581,7 +581,7 @@ La tabla \texttt{edstays} actúa como \textbf{hub relacional}: todas las demás 
 \end{figure*}
 
 % ====================================================================
-\section{Sistema \ac{RAG} con búsqueda híbrida (\ac{RQ}2)}
+\section{Sistema \acs{RAG} con búsqueda híbrida (\acs{RQ}2)}
 \label{sec:rag}
 % ====================================================================
 
@@ -679,7 +679,7 @@ El pipeline se divide en dos fases: \textbf{indexación} (offline) y \textbf{rec
 
 \end{tikzpicture}%
 }% end resizebox
-\caption{Pipeline \ac{RAG} completo. Arriba: indexación con chunking jerárquico padre-hijo (3000/800 chars). Abajo: recuperación con augmentación, búsqueda híbrida, fusión \ac{RRF} ($k=60$) y reranking cross-encoder. Este diseño responde a \textbf{RQ2}.}
+\caption{Pipeline \acs{RAG} completo. Arriba: indexación con chunking jerárquico padre-hijo (3000/800 chars). Abajo: recuperación con augmentación, búsqueda híbrida, fusión \acs{RRF} ($k=60$) y reranking cross-encoder. Este diseño responde a \textbf{RQ2}.}
 \label{fig:rag_pipeline}
 \end{figure*}
 
@@ -696,7 +696,7 @@ La búsqueda combina dos estrategias ejecutadas en PostgreSQL mediante funciones
 
 donde $k = 60$ es la constante de suavizado. El reranking final utiliza el cross-encoder \texttt{ms-marco-MiniLM-L-6-v2}, con \texttt{top\_k=8} y \texttt{fetch\_k=32} candidatos evaluados.
 
-\subsection{Mejoras al pipeline \ac{RAG}: diagnóstico y resultados}
+\subsection{Mejoras al pipeline \acs{RAG}: diagnóstico y resultados}
 \label{sec:rag_mejoras}
 
 Durante la evaluación con el framework \ac{RAGAS} \citep{Es2023ragas}, se detectó que las métricas de \textit{Context Precision} y \textit{Context Recall} eran cercanas a cero a pesar de tener los documentos correctamente indexados. Un diagnóstico exhaustivo identificó seis causas raíz, incluyendo: desalineación del \textit{system prompt} con los documentos indexados (documentos sobre \ac{UCI}, no urgencias), truncado del prompt por límite insuficiente de tokens (4000 tokens), truncado del contenido \ac{RAG} a 600 caracteres, y \texttt{top\_k} insuficiente para fragmentos dispersos.
@@ -705,7 +705,7 @@ Las mejoras implementadas (Tabla~\ref{tab:rag_mejoras}) produjeron incrementos s
 
 \begin{table}[H]
 \centering
-\caption{Mejoras implementadas en el pipeline \ac{RAG}.}
+\caption{Mejoras implementadas en el pipeline \acs{RAG}.}
 \label{tab:rag_mejoras}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lXX}
@@ -724,7 +724,7 @@ raw\_observation & Truncado 1000 chars & Texto completo \\
 
 \begin{table}[H]
 \centering
-\caption{Evolución de métricas \ac{RAGAS} en el \textit{golden set} \ac{RAG} tras las mejoras.}
+\caption{Evolución de métricas \acs{RAGAS} en el \textit{golden set} \acs{RAG} tras las mejoras.}
 \label{tab:rag_evolucion}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lrrr}
@@ -742,7 +742,7 @@ Context Recall & 0.033 & \textbf{0.469} & \textbf{+0.436} \\
 La mejora más significativa se observa en \textit{Context Precision} (+4000\%) y \textit{Context Recall} (+1300\%), confirmando que el agente ahora invoca correctamente \texttt{search\_clinical\_documents} y recupera contexto real de los documentos indexados. Las métricas de \textit{Faithfulness} y \textit{Answer Relevancy} presentan aún margen de mejora en directivas anti-alucinación y concisión de respuestas \ac{RAG}. Para un análisis detallado del diagnóstico, los cambios implementados y las métricas pendientes, véase el Anexo~\ref{appendix:arquitectura}.
 
 % ====================================================================
-\section{Seguridad y mitigación de alucinaciones (\ac{RQ}3)}
+\section{Seguridad y mitigación de alucinaciones (\acs{RQ}3)}
 \label{sec:seguridad}
 % ====================================================================
 
@@ -820,7 +820,7 @@ Las capas 1--2 protegen contra abuso y denegación de servicio. La capa 3 implem
 Los resultados de las pruebas de seguridad demuestran 12/13 tests aprobados (92.3\%), con 7/7 en inyección \ac{SQL} y 3/3 en anti-alucinación. El único test fallido corresponde a una solicitud de generación de datos ficticios donde la negativa del agente no fue suficientemente explícita. Para una descripción detallada de cada capa, las reglas de validación \ac{SQL}, y la implementación del sandbox \ac{AST}, véase el Anexo~\ref{appendix:arquitectura}.
 
 % ====================================================================
-\section{Estrategia de fallback para continuidad operativa (\ac{RQ}4)}
+\section{Estrategia de fallback para continuidad operativa (\acs{RQ}4)}
 \label{sec:fallback}
 % ====================================================================
 
@@ -830,7 +830,7 @@ La implementación utiliza reintentos con backoff exponencial: 3 intentos por mo
 
 \begin{table}[H]
 \centering
-\caption{Cadena de modelos \ac{LLM} con parámetros de configuración (\textbf{RQ4}).}
+\caption{Cadena de modelos \acs{LLM} con parámetros de configuración (\textbf{RQ4}).}
 \label{tab:models}
 \footnotesize
 \begin{tabularx}{\columnwidth}{llrrr}
@@ -849,7 +849,7 @@ Visualización & \texttt{claude-sonnet-4-5} & 8192 & 0.1 & 45s \\
 Para una descripción detallada de la lógica de reintentos, los parámetros de backoff y el diagrama de secuencia del escalado, véase el Anexo~\ref{appendix:arquitectura}.
 
 % ====================================================================
-\section{Motor de visualización template-first (\ac{RQ}5)}
+\section{Motor de visualización template-first (\acs{RQ}5)}
 \label{sec:visualizacion}
 % ====================================================================
 
@@ -900,7 +900,7 @@ El pipeline sigue cuatro etapas (Figura~\ref{fig:viz_pipeline}): preprocesamient
 
 \end{tikzpicture}%
 }% end resizebox
-\caption{Pipeline de visualización template-first. El 90\% de las consultas se resuelven con plantillas predefinidas ($\sim$0.4\,s); el 10\% restante utiliza generación \ac{LLM} ($\sim$4\,s). Este diseño responde a \textbf{RQ5}.}
+\caption{Pipeline de visualización template-first. El 90\% de las consultas se resuelven con plantillas predefinidas ($\sim$0.4\,s); el 10\% restante utiliza generación \acs{LLM} ($\sim$4\,s). Este diseño responde a \textbf{RQ5}.}
 \label{fig:viz_pipeline}
 \end{figure}
 
@@ -908,7 +908,7 @@ El sistema dispone de 12+ plantillas predefinidas para los casos clínicos más 
 
 \begin{table}[H]
 \centering
-\caption{Comparativa de rendimiento: template-first vs.\ generación \ac{LLM} (\textbf{RQ5}).}
+\caption{Comparativa de rendimiento: template-first vs.\ generación \acs{LLM} (\textbf{RQ5}).}
 \label{tab:metricas_viz}
 \footnotesize
 \begin{tabularx}{\columnwidth}{Xrr}
@@ -1059,7 +1059,7 @@ El \textit{golden set} \ac{RAG} (\texttt{golden\_set\_ragas\_rag.json}) contiene
 
 \begin{table}[H]
 \centering
-\caption{Distribución del \textit{golden set} \ac{RAG} por tipo de pregunta.}
+\caption{Distribución del \textit{golden set} \acs{RAG} por tipo de pregunta.}
 \label{tab:golden_set_rag}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lcc}

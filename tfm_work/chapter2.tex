@@ -56,7 +56,7 @@ Los avances y limitaciones expuestos configuran el espacio de oportunidad en el 
 % ============================================================
 % 2.2 — Modelos de Lenguaje de Gran Escala (LLMs)
 % ============================================================
-\section{Modelos de lenguaje de gran escala (\ac{LLM}s)}
+\section{Modelos de lenguaje de gran escala (\acs{LLM}s)}
 \label{sec:llms}
 
 Los modelos de lenguaje de gran escala constituyen el núcleo de razonamiento del sistema \textbf{ChatHCE}. Esta sección analiza los fundamentos arquitectónicos que posibilitan su funcionamiento, la evolución de los modelos más relevantes y los criterios que justifican la selección de Claude como motor de inferencia del sistema.
@@ -87,7 +87,7 @@ La Tabla~\ref{tab:llm-evolution} resume la evolución de las familias de modelos
 
 \begin{table}[H]
 \centering
-\caption{Evolución de las principales familias de \ac{LLM}s. Se indican parámetros aproximados del modelo más capaz de cada familia, tipo de licencia y características distintivas.}
+\caption{Evolución de las principales familias de \acs{LLM}s. Se indican parámetros aproximados del modelo más capaz de cada familia, tipo de licencia y características distintivas.}
 \label{tab:llm-evolution}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lllX}
@@ -136,7 +136,7 @@ La selección de Claude como modelo principal del sistema \textbf{ChatHCE} (Secc
   \item \textbf{Cadena de fallback}: el \texttt{ClaudeLLMManager} del sistema implementa una jerarquía de modelos (Haiku 4.5 $\rightarrow$ Sonnet 4.5 $\rightarrow$ Opus 4) con \textit{backoff} exponencial, optimizando el balance entre latencia, coste y capacidad de razonamiento según la complejidad de la consulta.
 \end{enumerate}
 
-\subsection{\ac{LLM}s para tareas médicas: comparativa y criterios de selección}
+\subsection{\acs{LLM}s para tareas médicas: comparativa y criterios de selección}
 \label{subsec:llms-medical}
 
 \paragraph{Benchmarks clínicos.}
@@ -157,7 +157,7 @@ Existen dos estrategias principales para adaptar un \ac{LLM} generalista al domi
 
 \begin{table}[H]
 \centering
-\caption{Comparativa entre \textit{fine-tuning} y \textit{prompt engineering} para la adaptación de \ac{LLM}s al dominio médico.}
+\caption{Comparativa entre \textit{fine-tuning} y \textit{prompt engineering} para la adaptación de \acs{LLM}s al dominio médico.}
 \label{tab:finetuning-vs-prompting}
 \footnotesize
 \begin{tabularx}{\columnwidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
@@ -196,7 +196,7 @@ A pesar de su capacidad, los \ac{LLM}s presentan tres limitaciones fundamentales
 % ============================================================
 % 2.3 — Retrieval-Augmented Generation (RAG) en el Dominio Clínico
 % ============================================================
-\section{Retrieval-Augmented Generation (\ac{RAG}) en el dominio clínico}
+\section{Retrieval-Augmented Generation (\acs{RAG}) en el dominio clínico}
 \label{sec:rag_clinico}
 
 Los \ac{LLM}s presentan limitaciones críticas en el dominio clínico: tendencia a generar información plausible pero incorrecta (alucinaciones), conocimiento desactualizado fijado en el momento del entrenamiento, y dificultad para actualizar información sin costosos procesos de re-entrenamiento \cite{lewis2020rag}. \textit{Retrieval-Augmented Generation} (\ac{RAG}) emerge como solución a estas limitaciones, combinando la capacidad generativa de los \ac{LLM}s con sistemas de recuperación de información externa.
@@ -292,7 +292,7 @@ La evaluación de sistemas \ac{RAG} requiere métricas específicas:
 
 El benchmark MIRAGE \cite{xiong2024medrag} proporciona evaluación sistemática con 7.663 preguntas de cinco datasets médicos, estableciendo configuraciones óptimas para \ac{RAG} clínico.
 
-\subsection{Aplicaciones de \ac{RAG} en medicina}
+\subsection{Aplicaciones de \acs{RAG} en medicina}
 \label{subsec:aplicaciones_rag}
 
 \subsubsection{Consulta de guías clínicas y protocolos}
@@ -331,7 +331,7 @@ Estos gaps motivan el presente trabajo, que busca desarrollar un sistema \ac{RAG
 
 Las secciones anteriores han descrito los modelos de lenguaje de gran escala y las técnicas de generación aumentada por recuperación que constituyen los componentes individuales del sistema propuesto. En esta sección se aborda cómo dichos componentes se integran mediante el paradigma \emph{agéntico}: un \ac{LLM} deja de ser un generador pasivo de texto para convertirse en un agente autónomo capaz de razonar, planificar y actuar sobre un entorno mediante la invocación de herramientas externas \cite{Wang2024SurveyAgents}.
 
-\subsection{Del \ac{LLM} al agente: \ac{ReAct} y tool calling}
+\subsection{Del \acs{LLM} al agente: \acs{ReAct} y tool calling}
 \label{subsec:react}
 
 \subsubsection{Ciclo \ac{ReAct}: razonamiento encadenado con invocación de herramientas}
@@ -432,7 +432,7 @@ Estos desafíos motivan las decisiones arquitectónicas del sistema presentado e
 
 El \textit{Medical Information Mart for Intensive Care IV -- Emergency Department} (\acs{MIMIC}-IV-\acs{ED}) constituye uno de los recursos más completos para investigación en medicina de urgencias. Este módulo, desarrollado como extensión del proyecto \ac{MIMIC}-IV, proporciona acceso a registros clínicos desidentificados del departamento de urgencias del Beth Israel Deaconess Medical Center (BIDMC) entre 2011 y 2019~\cite{johnson2023mimiciv}.
 
-\subsection{El proyecto \ac{MIMIC} y estructura del módulo de urgencias}
+\subsection{El proyecto \acs{MIMIC} y estructura del módulo de urgencias}
 \label{subsec:mimic-estructura}
 
 \acs{MIMIC}-IV-\acs{ED} se distribuye a través de PhysioNet~\cite{goldberger2000physionet}, repositorio de referencia para datos fisiológicos y clínicos de acceso abierto. El acceso requiere completar el curso \textit{CITI Data or Specimens Only Research}, que cubre aspectos de privacidad, confidencialidad y cumplimiento \ac{HIPAA}, junto con la firma de un \textit{Data Use Agreement} (DUA) que prohíbe explícitamente intentos de reidentificación~\cite{johnson2023mimiciv}.
@@ -474,7 +474,7 @@ El uso responsable de \acs{MIMIC}-IV-\acs{ED} en investigación exige transparen
 
 La adopción de \ac{LLM}s en entornos clínicos está condicionada por un riesgo transversal: la generación de contenido plausible pero factualmente incorrecto, fenómeno conocido como \emph{alucinación} \cite{Ji2023hallucination}. En medicina, una alucinación puede traducirse en una dosis farmacológica inexistente, un diagnóstico diferencial fabricado o la cita de evidencia clínica ficticia, con consecuencias directas sobre la seguridad del paciente \cite{kim2025hallucination,Ahmad2023}. Esta sección examina la taxonomía del problema, las estrategias de mitigación más relevantes y los enfoques de calibración de incertidumbre que permiten trasladar estos modelos hacia un uso clínico más seguro.
 
-\subsection{El problema de las alucinaciones en \ac{LLM}s médicos}
+\subsection{El problema de las alucinaciones en \acs{LLM}s médicos}
 \label{subsec:problema_alucinaciones}
 
 \subsubsection{Taxonomía de las alucinaciones}
@@ -544,7 +544,7 @@ En conjunto, la evidencia revisada establece que la mitigación de alucinaciones
 % ============================================================
 % 2.7 — Seguridad, Privacidad y Marco Ético en IA Clínica
 % ============================================================
-\section{Seguridad, privacidad y marco ético en \ac{IA} clínica}
+\section{Seguridad, privacidad y marco ético en \acs{IA} clínica}
 \label{sec:seguridad_privacidad}
 
 El despliegue de sistemas de inteligencia artificial en entornos clínicos introduce desafíos críticos en materia de seguridad de datos, privacidad del paciente y gobernanza ética. La naturaleza sensible de la información sanitaria, combinada con las capacidades emergentes de los \ac{LLM}s, exige marcos normativos robustos y estrategias técnicas específicas para garantizar un uso responsable de estas tecnologías.

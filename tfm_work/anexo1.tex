@@ -92,7 +92,7 @@ La herramienta de base de datos proporciona acceso seguro y de solo lectura al d
 
 \begin{table}[H]
 \centering
-\caption{Reglas de validación de seguridad \ac{SQL} implementadas en la Database Tool.}
+\caption{Reglas de validación de seguridad \acs{SQL} implementadas en la Database Tool.}
 \label{tab:appendix_sqlsec}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lX}
@@ -163,7 +163,7 @@ El flujo de ejecución del \ac{RAG} Tool sigue siete etapas secuenciales:
 
 \begin{table}[H]
 \centering
-\caption{Documentos clínicos indexados en el sistema \ac{RAG} con descripción detallada.}
+\caption{Documentos clínicos indexados en el sistema \acs{RAG} con descripción detallada.}
 \label{tab:appendix_ragdocs}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lX}
@@ -290,7 +290,7 @@ def generate_with_llm(data: pd.DataFrame, request: str) -> str:
 \end{lstlisting}
 
 % ====================================================================
-\section{Pipeline \ac{RAG}: detalles técnicos completos}
+\section{Pipeline \acs{RAG}: detalles técnicos completos}
 \label{sec:appendix_rag}
 % ====================================================================
 
@@ -392,7 +392,7 @@ El campo \texttt{raw\_output} se truncaba a 1000 caracteres en \texttt{\_extract
 
 \begin{table}[H]
 \centering
-\caption{Evolución de métricas \ac{RAGAS} en el golden set DB (40 preguntas sobre \acs{MIMIC}-IV-\acs{ED}).}
+\caption{Evolución de métricas \acs{RAGAS} en el golden set DB (40 preguntas sobre \acs{MIMIC}-IV-\acs{ED}).}
 \label{tab:appendix_ragas_db}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lrrr}
@@ -409,7 +409,7 @@ Context Recall & 0.7917 & \textbf{0.8458} & \textbf{+0.054} \\
 
 \begin{table}[H]
 \centering
-\caption{Evolución de métricas \ac{RAGAS} en el golden set \ac{RAG} (30 preguntas sobre guías clínicas \ac{UCI}).}
+\caption{Evolución de métricas \acs{RAGAS} en el golden set \acs{RAG} (30 preguntas sobre guías clínicas \acs{UCI}).}
 \label{tab:appendix_ragas_rag}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lrrr}
@@ -478,7 +478,7 @@ La primera línea de defensa opera sobre la consulta del usuario antes de cualqu
   \item \textbf{Formato}: Verificación de codificación UTF-8 válida.
 \end{itemize}
 
-\subsection{Capa 3: validación \ac{SQL} multicapa}
+\subsection{Capa 3: validación \acs{SQL} multicapa}
 
 Documentada en detalle en la Sección~\ref{sec:appendix_dbtool}. Incluye lista negra de operaciones DDL/DML, detección de tautologías (10 patrones), inyección por comentarios, restricción a tablas permitidas del esquema \texttt{mimic\_ed}, bloqueo de funciones peligrosas, y límite de complejidad.
 
@@ -512,7 +512,7 @@ Fidelidad & Basar respuesta exclusivamente en datos de herramientas; no usar con
 \end{tabularx}
 \end{table}
 
-\subsection{Sandbox \ac{AST} para visualizaciones}
+\subsection{Sandbox \acs{AST} para visualizaciones}
 
 El código Plotly generado por el \ac{LLM} se ejecuta en un entorno aislado con validación \ac{AST}:
 
@@ -585,7 +585,7 @@ El test fallido (SEC-PROMPT-003) corresponde a una solicitud de generación de d
 \end{tabularx}
 \end{table}
 
-\subsection{Tabla Vectorial \ac{RAG} (\texttt{rag\_chunks})}
+\subsection{Tabla Vectorial \acs{RAG} (\texttt{rag\_chunks})}
 
 \begin{table}[H]
 \centering
@@ -681,7 +681,7 @@ Presión arterial diastólica & \texttt{dbp} & 60 -- 90 & mmHg \\
 \end{table}
 
 % ====================================================================
-\section{Gestor de modelos \ac{LLM}: implementación detallada}
+\section{Gestor de modelos \acs{LLM}: implementación detallada}
 \label{sec:appendix_llm}
 % ====================================================================
 
@@ -689,7 +689,7 @@ Presión arterial diastólica & \texttt{dbp} & 60 -- 90 & mmHg \\
 
 \begin{table}[H]
 \centering
-\caption{Configuración completa de la cadena de modelos \ac{LLM}.}
+\caption{Configuración completa de la cadena de modelos \acs{LLM}.}
 \label{tab:appendix_models}
 \footnotesize
 \begin{tabularx}{\columnwidth}{llrrrX}
