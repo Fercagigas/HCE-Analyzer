@@ -7,9 +7,9 @@
 \section{Introducción}
 \label{sec:introduccion_contexto}
 
-La inteligencia artificial (IA) ha experimentado una transformación radical en la última década, impulsada fundamentalmente por el desarrollo de los modelos de lenguaje de gran escala (\textit{Large Language Models}, LLMs). Desde los sistemas expertos clásicos como MYCIN \cite{shortliffe1976} e INTERNIST-I \cite{miller1982}, que operaban mediante reglas de producción codificadas manualmente, hasta los actuales modelos basados en la arquitectura Transformer \cite{vaswani2017attention}, el campo ha evolucionado hacia sistemas capaces de procesar lenguaje natural con un nivel de sofisticación sin precedentes.
+La inteligencia artificial (\ac{IA}) ha experimentado una transformación radical en la última década, impulsada fundamentalmente por el desarrollo de los modelos de lenguaje de gran escala (\textit{Large Language Models}, \ac{LLM}s). Desde los sistemas expertos clásicos como MYCIN \cite{shortliffe1976} e INTERNIST-I \cite{miller1982}, que operaban mediante reglas de producción codificadas manualmente, hasta los actuales modelos basados en la arquitectura Transformer \cite{vaswani2017attention}, el campo ha evolucionado hacia sistemas capaces de procesar lenguaje natural con un nivel de sofisticación sin precedentes.
 
-En el ámbito médico, esta evolución adquiere especial relevancia. Los LLMs han demostrado capacidades notables en tareas clínicas: GPT-4 ha superado el umbral de aprobación del examen USMLE \cite{openai2023}, mientras que Med-PaLM~2 ha alcanzado rendimiento de nivel experto en preguntas médicas abiertas \cite{singhal2023medpalm}. Sin embargo, la brecha entre el rendimiento en \textit{benchmarks} controlados y la aplicabilidad clínica real sigue siendo considerable \cite{park2024,wang2024chatgpt}. Los modelos pueden generar respuestas que parecen correctas pero contienen errores factuales sutiles ---un fenómeno conocido como \emph{alucinación}--- con consecuencias potencialmente graves en contextos médicos \cite{kim2025hallucination}.
+En el ámbito médico, esta evolución adquiere especial relevancia. Los \ac{LLM}s han demostrado capacidades notables en tareas clínicas: \ac{GPT}-4 ha superado el umbral de aprobación del examen \ac{USMLE} \cite{openai2023}, mientras que Med-PaLM~2 ha alcanzado rendimiento de nivel experto en preguntas médicas abiertas \cite{singhal2023medpalm}. Sin embargo, la brecha entre el rendimiento en \textit{benchmarks} controlados y la aplicabilidad clínica real sigue siendo considerable \cite{park2024,wang2024chatgpt}. Los modelos pueden generar respuestas que parecen correctas pero contienen errores factuales sutiles ---un fenómeno conocido como \emph{alucinación}--- con consecuencias potencialmente graves en contextos médicos \cite{kim2025hallucination}.
 
 El servicio de urgencias representa un entorno particularmente desafiante para la aplicación de estas tecnologías. Los profesionales sanitarios deben acceder simultáneamente a datos estructurados del paciente (signos vitales, diagnósticos, medicación), conocimiento clínico no estructurado (guías y protocolos), pruebas de imagen y representaciones visuales de tendencias temporales, todo ello bajo presiones de tiempo extremas. Según estudios recientes, los médicos dedican una media de 16 minutos en el sistema de historia clínica electrónica por cada encuentro con el paciente, representando hasta el 49\% del tiempo total de la visita \cite{arun2025ethical}.
 
@@ -18,18 +18,18 @@ El servicio de urgencias representa un entorno particularmente desafiante para l
 
 La fragmentación de la información clínica constituye un problema estructural en los servicios de urgencias. Los profesionales sanitarios deben navegar entre múltiples sistemas desconectados, como son bases de datos relacionales, repositorios documentales o aplicaciones de visualización, sistemas que no cuentan con capacidad de consulta unificada en lenguaje natural. Esta dispersión no solo incrementa la carga cognitiva, sino que puede comprometer la calidad asistencial en un entorno donde los tiempos de respuesta son críticos.
 
-Los avances recientes en sistemas de generación aumentada por recuperación (\textit{Retrieval-Augmented Generation}, RAG) ofrecen una solución prometedora a estas limitaciones \cite{lewis2020rag}. RAG permite combinar la capacidad generativa de los LLMs con mecanismos de recuperación sobre fuentes de conocimiento verificadas, reduciendo las alucinaciones y mejorando la trazabilidad de la información generada \cite{xiong2024medrag}. Sin embargo, la implementación efectiva de estos sistemas en el dominio clínico presenta desafíos específicos: la necesidad de precisión factual absoluta, la integración con datos estructurados y no estructurados, y la exigencia de latencias reducidas compatibles con la práctica clínica.
+Los avances recientes en sistemas de generación aumentada por recuperación (\textit{Retrieval-Augmented Generation}, \ac{RAG}) ofrecen una solución prometedora a estas limitaciones \cite{lewis2020rag}. \ac{RAG} permite combinar la capacidad generativa de los \ac{LLM}s con mecanismos de recuperación sobre fuentes de conocimiento verificadas, reduciendo las alucinaciones y mejorando la trazabilidad de la información generada \cite{xiong2024medrag}. Sin embargo, la implementación efectiva de estos sistemas en el dominio clínico presenta desafíos específicos: la necesidad de precisión factual absoluta, la integración con datos estructurados y no estructurados, y la exigencia de latencias reducidas compatibles con la práctica clínica.
 
-Paralelamente, el paradigma de los \emph{agentes} basados en LLMs ha emergido como una arquitectura capaz de orquestar múltiples herramientas de forma autónoma \cite{Wang2024SurveyAgents,Plaat2025AgenticSurvey}. El marco ReAct (\emph{Reasoning + Acting}) \cite{Yao2023ReAct} unifica el razonamiento explícito con la invocación de herramientas externas, permitiendo que el modelo verifique sus hipótesis contra fuentes de datos reales. No obstante, las arquitecturas multi-agente tradicionales presentan limitaciones en términos de latencia y acumulación de errores que las hacen inadecuadas para entornos clínicos de tiempo real.
+Paralelamente, el paradigma de los \emph{agentes} basados en \ac{LLM}s ha emergido como una arquitectura capaz de orquestar múltiples herramientas de forma autónoma \cite{Wang2024SurveyAgents,Plaat2025AgenticSurvey}. El marco \ac{ReAct} (\emph{Reasoning + Acting}) \cite{Yao2023ReAct} unifica el razonamiento explícito con la invocación de herramientas externas, permitiendo que el modelo verifique sus hipótesis contra fuentes de datos reales. No obstante, las arquitecturas multi-agente tradicionales presentan limitaciones en términos de latencia y acumulación de errores que las hacen inadecuadas para entornos clínicos de tiempo real.
 
-Este trabajo se sitúa en la intersección de estas tres líneas de investigación, LLMs clínicos, RAG biomédico y sistemas agénticos, con el objetivo de desarrollar un sistema de análisis clínico inteligente que supere las limitaciones actuales mediante innovaciones arquitectónicas específicas.
+Este trabajo se sitúa en la intersección de estas tres líneas de investigación, \ac{LLM}s clínicos, \ac{RAG} biomédico y sistemas agénticos, con el objetivo de desarrollar un sistema de análisis clínico inteligente que supere las limitaciones actuales mediante innovaciones arquitectónicas específicas.
 
 \section{Objetivos y preguntas de investigación}
 \label{sec:objetivos}
 
 El presente Trabajo Fin de Máster tiene como objetivo general el diseño, implementación y evaluación de \textbf{ChatHCE}, un sistema de análisis clínico inteligente para el servicio de urgencias que integra consulta de datos estructurados, recuperación de documentos clínicos y generación de visualizaciones mediante una interfaz conversacional unificada en lenguaje natural.
 
-Este objetivo general se desglosa en cinco preguntas de investigación (RQ) que abordan los principales desafíos técnicos identificados en el estado del arte:
+Este objetivo general se desglosa en cinco preguntas de investigación (\ac{RQ}) que abordan los principales desafíos técnicos identificados en el estado del arte:
 
 \subsection{RQ1: Eficiencia de la arquitectura de agente unificado}
 
@@ -37,39 +37,39 @@ Este objetivo general se desglosa en cinco preguntas de investigación (RQ) que 
 \textit{¿En qué medida un Agente Unificado con capacidad de tool-calling nativo (Claude Haiku 4.5) supera a las arquitecturas multi-agente tradicionales en términos de latencia y reducción del error acumulado en consultas clínicas complejas?}
 \end{quote}
 
-Las arquitecturas multi-agente, aunque conceptualmente elegantes, requieren múltiples llamadas secuenciales al LLM (orquestador, agentes especializados, crítico, síntesis), multiplicando la latencia y aumentando el riesgo de errores acumulados entre nodos \cite{Zuo2025KG4Diagnosis}. Esta RQ evalúa si un agente unificado con selección dinámica de herramientas puede alcanzar latencias P50 inferiores a 5 segundos mientras mantiene la precisión funcional.
+Las arquitecturas multi-agente, aunque conceptualmente elegantes, requieren múltiples llamadas secuenciales al \ac{LLM} (orquestador, agentes especializados, crítico, síntesis), multiplicando la latencia y aumentando el riesgo de errores acumulados entre nodos \cite{Zuo2025KG4Diagnosis}. Esta \ac{RQ} evalúa si un agente unificado con selección dinámica de herramientas puede alcanzar latencias P50 inferiores a 5 segundos mientras mantiene la precisión funcional.
 
-\subsection{RQ2: Optimización RAG mediante búsqueda híbrida y chunking jerárquico}
+\subsection{RQ2: Optimización \ac{RAG} mediante búsqueda híbrida y chunking jerárquico}
 
 \begin{quote}
-\textit{¿Cómo impacta la combinación de búsqueda híbrida (vectorial-léxica) con Reciprocal Rank Fusion (RRF) y fragmentación jerárquica en la precisión de la recuperación de protocolos clínicos?}
+\textit{¿Cómo impacta la combinación de búsqueda híbrida (vectorial-léxica) con Reciprocal Rank Fusion (\ac{RRF}) y fragmentación jerárquica en la precisión de la recuperación de protocolos clínicos?}
 \end{quote}
 
-La búsqueda puramente semántica puede fallar con términos técnicos específicos o códigos médicos. Esta RQ investiga si la fusión de búsqueda vectorial (mediante embeddings) con búsqueda léxica (BM25) \cite{robertson2009bm25}, combinada mediante RRF \cite{cormack2009rrf} y estrategias de chunking padre-hijo, mejora la precisión de recuperación sobre guías clínicas indexadas.
+La búsqueda puramente semántica puede fallar con términos técnicos específicos o códigos médicos. Esta \ac{RQ} investiga si la fusión de búsqueda vectorial (mediante embeddings) con búsqueda léxica (\ac{BM25}) \cite{robertson2009bm25}, combinada mediante \ac{RRF} \cite{cormack2009rrf} y estrategias de chunking padre-hijo, mejora la precisión de recuperación sobre guías clínicas indexadas.
 
 \subsection{RQ3: Mitigación de alucinaciones mediante defensa en profundidad}
 
 \begin{quote}
-\textit{¿Cuál es la efectividad de un modelo de defensa en profundidad (validación SQL multicapa, sandbox AST, directivas de prompt anti-alucinación) para garantizar la seguridad clínica y reducir alucinaciones?}
+\textit{¿Cuál es la efectividad de un modelo de defensa en profundidad (validación \ac{SQL} multicapa, sandbox \ac{AST}, directivas de prompt anti-alucinación) para garantizar la seguridad clínica y reducir alucinaciones?}
 \end{quote}
 
-Las alucinaciones en sistemas LLM médicos representan un riesgo crítico para la seguridad del paciente \cite{kim2025hallucination,farquhar2024semantic}. Esta RQ evalúa la efectividad de múltiples capas de protección ---desde directivas en el prompt del sistema hasta validación a nivel de herramienta y servicio--- para prevenir la generación de información médica fabricada.
+Las alucinaciones en sistemas \ac{LLM} médicos representan un riesgo crítico para la seguridad del paciente \cite{kim2025hallucination,farquhar2024semantic}. Esta \ac{RQ} evalúa la efectividad de múltiples capas de protección ---desde directivas en el prompt del sistema hasta validación a nivel de herramienta y servicio--- para prevenir la generación de información médica fabricada.
 
 \subsection{RQ4: Estrategias de fallback y continuidad operativa}
 
 \begin{quote}
-\textit{¿Cómo influye una cadena de fallback multinivel (Haiku $\rightarrow$ Sonnet $\rightarrow$ Opus) en la fiabilidad y disponibilidad del sistema ante fallos de API o rate limiting?}
+\textit{¿Cómo influye una cadena de fallback multinivel (Haiku $\rightarrow$ Sonnet $\rightarrow$ Opus) en la fiabilidad y disponibilidad del sistema ante fallos de \ac{API} o rate limiting?}
 \end{quote}
 
-La dependencia de APIs externas introduce puntos de fallo potenciales en sistemas de producción. Esta RQ analiza si una jerarquía de modelos con escalado automático y \textit{backoff} exponencial puede garantizar la continuidad operativa del sistema bajo condiciones adversas.
+La dependencia de APIs externas introduce puntos de fallo potenciales en sistemas de producción. Esta \ac{RQ} analiza si una jerarquía de modelos con escalado automático y \textit{backoff} exponencial puede garantizar la continuidad operativa del sistema bajo condiciones adversas.
 
 \subsection{RQ5: Visualización dinámica ``template-first'' vs. generación por LLM}
 
 \begin{quote}
-\textit{¿Qué beneficios aporta un enfoque template-first para la generación de visualizaciones clínicas ($\sim$0.4\,s) frente a la generación íntegra por LLM ($\sim$4\,s) en términos de latencia, determinismo y calidad visual?}
+\textit{¿Qué beneficios aporta un enfoque template-first para la generación de visualizaciones clínicas ($\sim$0.4\,s) frente a la generación íntegra por \ac{LLM} ($\sim$4\,s) en términos de latencia, determinismo y calidad visual?}
 \end{quote}
 
-La generación de visualizaciones mediante LLMs presenta variabilidad y latencias elevadas. Esta RQ compara un enfoque basado en plantillas predefinidas ---donde el LLM selecciona y parametriza plantillas Plotly--- con la generación completa de código por el modelo.
+La generación de visualizaciones mediante \ac{LLM}s presenta variabilidad y latencias elevadas. Esta \ac{RQ} compara un enfoque basado en plantillas predefinidas ---donde el LLM selecciona y parametriza plantillas Plotly--- con la generación completa de código por el modelo.
 
 \section{Objetivos complementarios}
 \label{sec:objetivos_complementarios}
@@ -78,7 +78,7 @@ Además de las cinco preguntas de investigación principales, el presente trabaj
 
 \subsection{Despliegue de base de datos clínica en la nube}
 
-El sistema requiere acceso eficiente a datos clínicos estructurados. Se ha diseñado e implementado un esquema relacional sobre el dataset MIMIC-IV-ED \cite{johnson2023mimiciv} desplegado en Supabase, una plataforma que combina PostgreSQL con capacidades vectoriales (pgvector) para búsqueda semántica. Este objetivo incluye la migración de las seis tablas del dataset, la configuración de índices optimizados y la implementación de políticas de seguridad a nivel de fila.
+El sistema requiere acceso eficiente a datos clínicos estructurados. Se ha diseñado e implementado un esquema relacional sobre el dataset \ac{MIMIC}-IV-\ac{ED} \cite{johnson2023mimiciv} desplegado en Supabase, una plataforma que combina PostgreSQL con capacidades vectoriales (pgvector) para búsqueda semántica. Este objetivo incluye la migración de las seis tablas del dataset, la configuración de índices optimizados y la implementación de políticas de seguridad a nivel de fila.
 
 \subsection{Creación de la plataforma conversacional}
 
@@ -86,7 +86,7 @@ El sistema se materializa como una aplicación web interactiva desarrollada con 
 
 \begin{itemize}[nosep, leftmargin=*]
     \item Interfaz de chat conversacional con historial persistente.
-    \item Gestor de documentos clínicos con indexación automática para RAG.
+    \item Gestor de documentos clínicos con indexación automática para \ac{RAG}.
     \item Panel de visualizaciones interactivas generadas dinámicamente.
     \item Sistema de autenticación y gestión de sesiones.
     \item Monitorización de latencias y métricas de rendimiento.
@@ -95,9 +95,9 @@ El sistema se materializa como una aplicación web interactiva desarrollada con 
 \section{Metodología de investigación}
 \label{sec:metodologia}
 
-El presente trabajo adopta la metodología \textit{Design Science Research} (DSR) \cite{Hevner2004,Peffers2007dsrm}, un paradigma de investigación orientado a la resolución de problemas mediante la creación y evaluación de artefactos tecnológicos innovadores. La investigación se articula en torno al desarrollo del sistema ChatHCE, estructurándose en las fases fundamentales de diseño, construcción, demostración y validación.
+El presente trabajo adopta la metodología \textit{Design Science Research} (\ac{DSR}) \cite{Hevner2004,Peffers2007dsrm}, un paradigma de investigación orientado a la resolución de problemas mediante la creación y evaluación de artefactos tecnológicos innovadores. La investigación se articula en torno al desarrollo del sistema ChatHCE, estructurándose en las fases fundamentales de diseño, construcción, demostración y validación.
 
-El artefacto resultante se somete a un marco de evaluación multidimensional que permite verificar su utilidad y rendimiento técnico: (1) calidad semántica de las respuestas mediante métricas RAGAS \cite{Es2023ragas}; (2) rendimiento temporal a través de la medición de latencias por categoría; (3) robustez de seguridad mediante una batería de pruebas adversariales; y (4) funcionalidad operativa mediante casos de prueba que validan la integración de todos los componentes del sistema.
+El artefacto resultante se somete a un marco de evaluación multidimensional que permite verificar su utilidad y rendimiento técnico: (1) calidad semántica de las respuestas mediante métricas \ac{RAGAS} \cite{Es2023ragas}; (2) rendimiento temporal a través de la medición de latencias por categoría; (3) robustez de seguridad mediante una batería de pruebas adversariales; y (4) funcionalidad operativa mediante casos de prueba que validan la integración de todos los componentes del sistema.
 
 \section{Estructura del documento}
 \label{sec:estructura}
@@ -105,9 +105,9 @@ El artefacto resultante se somete a un marco de evaluación multidimensional que
 El resto del documento se organiza de la siguiente manera:
 
 \begin{description}[nosep]
-    \item[Capítulo 2 --- Marco Teórico:] Revisión del estado del arte en LLMs médicos, RAG clínico, sistemas multi-agente, el dataset MIMIC-IV-ED y técnicas de mitigación de alucinaciones.
+    \item[Capítulo 2 --- Marco Teórico:] Revisión del estado del arte en \ac{LLM}s médicos, \ac{RAG} clínico, sistemas multi-agente, el dataset \ac{MIMIC}-IV-\ac{ED} y técnicas de mitigación de alucinaciones.
     
-    \item[Capítulo 3 --- Arquitectura y Funcionamiento:] Descripción detallada de la arquitectura de ChatHCE, incluyendo el agente unificado, el pipeline RAG, el sistema de visualización y los mecanismos de seguridad.
+    \item[Capítulo 3 --- Arquitectura y Funcionamiento:] Descripción detallada de la arquitectura de ChatHCE, incluyendo el agente unificado, el pipeline \ac{RAG}, el sistema de visualización y los mecanismos de seguridad.
     
     \item[Capítulo 4 --- Resultados y Análisis:] Presentación y análisis de los resultados de la evaluación empírica según las cuatro dimensiones del marco de evaluación.
     

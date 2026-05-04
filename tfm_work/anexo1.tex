@@ -18,7 +18,7 @@
 \chapter{Arquitectura técnica detallada de ChatHCE}
 \label{appendix:arquitectura}
 
-Este anexo proporciona la documentación técnica exhaustiva de todos los componentes del sistema ChatHCE, complementando la visión de alto nivel presentada en el Capítulo~\ref{cap:arquitectura}. Se incluyen descripciones detalladas de las herramientas, el pipeline RAG completo, las capas de seguridad, los esquemas de base de datos, la gestión de modelos LLM, el motor de visualización, y los servicios de infraestructura.
+Este anexo proporciona la documentación técnica exhaustiva de todos los componentes del sistema ChatHCE, complementando la visión de alto nivel presentada en el Capítulo~\ref{cap:arquitectura}. Se incluyen descripciones detalladas de las herramientas, el pipeline \ac{RAG} completo, las capas de seguridad, los esquemas de base de datos, la gestión de modelos \ac{LLM}, el motor de visualización, y los servicios de infraestructura.
 
 % ====================================================================
 \section{Herramientas del agente: descripción detallada}
@@ -57,12 +57,12 @@ class ClaudeToolAdapter(ABC):
         )
 \end{lstlisting}
 
-Este patrón \textit{Adapter} permite que cada herramienta defina su esquema Pydantic de parámetros (\texttt{args\_schema}), que Claude utiliza directamente para generar los argumentos JSON de invocación.
+Este patrón \textit{Adapter} permite que cada herramienta defina su esquema Pydantic de parámetros (\texttt{args\_schema}), que Claude utiliza directamente para generar los argumentos \ac{JSON} de invocación.
 
 \subsection{Database Tool (\texttt{query\_mimic\_database})}
 \label{sec:appendix_dbtool}
 
-La herramienta de base de datos proporciona acceso seguro y de solo lectura al dataset MIMIC-IV-ED. Implementa validación multicapa de consultas SQL y soporta cinco tipos de consulta predefinidos.
+La herramienta de base de datos proporciona acceso seguro y de solo lectura al dataset \ac{MIMIC}-IV-\ac{ED}. Implementa validación multicapa de consultas \ac{SQL} y soporta cinco tipos de consulta predefinidos.
 
 \subsubsection{Tipos de Consulta}
 
@@ -79,11 +79,11 @@ La herramienta de base de datos proporciona acceso seguro y de solo lectura al d
 \addlinespace
 \texttt{vital\_signs} & \texttt{stay\_id} & Signos vitales seriados de una estancia específica & 1000 filas \\
 \addlinespace
-\texttt{diagnoses} & \texttt{icd\_code} o \texttt{icd\_title} & Búsqueda de diagnósticos por código ICD o título & 1000 filas \\
+\texttt{diagnoses} & \texttt{icd\_code} o \texttt{icd\_title} & Búsqueda de diagnósticos por código \ac{ICD} o título & 1000 filas \\
 \addlinespace
 \texttt{medications} & \texttt{subject\_id} & Historial de medicación habitual y dispensada en urgencias & 1000 filas \\
 \addlinespace
-\texttt{custom} & \texttt{custom\_query} & Consulta SQL SELECT personalizada (validada) & 5000 filas \\
+\texttt{custom} & \texttt{custom\_query} & Consulta \ac{SQL} SELECT personalizada (validada) & 5000 filas \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -92,7 +92,7 @@ La herramienta de base de datos proporciona acceso seguro y de solo lectura al d
 
 \begin{table}[H]
 \centering
-\caption{Reglas de validación de seguridad SQL implementadas en la Database Tool.}
+\caption{Reglas de validación de seguridad \ac{SQL} implementadas en la Database Tool.}
 \label{tab:appendix_sqlsec}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lX}
@@ -143,15 +143,15 @@ def validate_query(sql: str) -> bool:
 \subsection{RAG Tool (\texttt{search\_clinical\_documents})}
 \label{sec:appendix_ragtool}
 
-La herramienta RAG proporciona búsqueda semántica en documentos clínicos indexados. Acepta tres parámetros: \texttt{query} (obligatorio, la consulta en lenguaje natural), \texttt{specialty} (opcional, filtro por especialidad médica) y \texttt{top\_k} (opcional, por defecto 8).
+La herramienta \ac{RAG} proporciona búsqueda semántica en documentos clínicos indexados. Acepta tres parámetros: \texttt{query} (obligatorio, la consulta en lenguaje natural), \texttt{specialty} (opcional, filtro por especialidad médica) y \texttt{top\_k} (opcional, por defecto 8).
 
 \subsubsection{Pipeline Interno}
 
-El flujo de ejecución del RAG Tool sigue siete etapas secuenciales:
+El flujo de ejecución del \ac{RAG} Tool sigue siete etapas secuenciales:
 
 \begin{enumerate}[nosep, leftmargin=*]
   \item \textbf{Recepción}: Validación de parámetros con Pydantic.
-  \item \textbf{Augmentación}: \texttt{QueryAugmenter} genera 3 consultas alternativas con Claude Haiku (Multi-Query, temperatura 0.4) y un documento hipotético (HyDE, temperatura 0.2).
+  \item \textbf{Augmentación}: \texttt{QueryAugmenter} genera 3 consultas alternativas con Claude Haiku (Multi-Query, temperatura 0.4) y un documento hipotético (\ac{HyDE}, temperatura 0.2).
   \item \textbf{Búsqueda}: \texttt{ImprovedRAGService.search()} ejecuta búsqueda híbrida para cada consulta augmentada (\texttt{fetch\_k = top\_k $\times$ 4 = 32}).
   \item \textbf{Deduplicación}: Eliminación de duplicados por hash de contenido.
   \item \textbf{Reranking}: Cross-encoder \texttt{ms-marco-MiniLM-L-6-v2} reordena los candidatos; selecciona los top-8.
@@ -163,7 +163,7 @@ El flujo de ejecución del RAG Tool sigue siete etapas secuenciales:
 
 \begin{table}[H]
 \centering
-\caption{Documentos clínicos indexados en el sistema RAG con descripción detallada.}
+\caption{Documentos clínicos indexados en el sistema \ac{RAG} con descripción detallada.}
 \label{tab:appendix_ragdocs}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lX}
@@ -172,16 +172,16 @@ El flujo de ejecución del RAG Tool sigue siete etapas secuenciales:
 \midrule
 Manual del Residente de Medicina Intensiva & Hospital Universitario Virgen del Rocío. Formación MIR, competencias, rotaciones, habilidades técnicas en Medicina Intensiva. \\
 \addlinespace
-Estándares y Recomendaciones para UCI & Ministerio de Sanidad de España. Ratios médico-paciente, niveles asistenciales, indicadores de calidad, seguridad del paciente en UCI. \\
+Estándares y Recomendaciones para \ac{UCI} & Ministerio de Sanidad de España. Ratios médico-paciente, niveles asistenciales, indicadores de calidad, seguridad del paciente en \ac{UCI}. \\
 \addlinespace
-El Libro de la UCI & Paul L. Marino, 3.ª edición. Referencia clínica completa de cuidados críticos: ventilación mecánica, sepsis, hemostasia, nutrición en UCI. \\
+El Libro de la \ac{UCI} & Paul L. Marino, 3.ª edición. Referencia clínica completa de cuidados críticos: ventilación mecánica, sepsis, hemostasia, nutrición en \ac{UCI}. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsubsection{Formato de Salida}
 
-El RAG Tool formatea la salida para Claude con bloques delimitados por documento:
+El \ac{RAG} Tool formatea la salida para Claude con bloques delimitados por documento:
 
 \begin{lstlisting}[basicstyle=\tiny\ttfamily, backgroundcolor=\color{codebg}]
 --- Documento 1: Manual del Residente UCI ---
@@ -195,7 +195,7 @@ Score: 0.792
 Contenido: [hasta 1500 caracteres del chunk padre]
 \end{lstlisting}
 
-El campo \texttt{raw\_observation} preserva el texto completo sin truncar, permitiendo que el evaluador RAGAS parsee directamente los contextos recuperados.
+El campo \texttt{raw\_observation} preserva el texto completo sin truncar, permitiendo que el evaluador \ac{RAGAS} parsee directamente los contextos recuperados.
 
 \subsection{Visualization Tool (\texttt{request\_visualization})}
 \label{sec:appendix_viztool}
@@ -216,9 +216,9 @@ La herramienta de visualización genera gráficas interactivas con Plotly. Acept
 \texttt{vitals\_timeline} & Evolución temporal de signos vitales de un paciente \\
 \texttt{vitals\_comparison} & Comparación de múltiples signos vitales simultáneos \\
 \texttt{distribution\_histogram} & Distribución de valores (edad, frecuencia cardíaca, SpO2) \\
-\texttt{acuity\_pie} & Distribución de niveles de acuidad ESI \\
+\texttt{acuity\_pie} & Distribución de niveles de acuidad \ac{ESI} \\
 \texttt{medication\_bar} & Frecuencia de medicamentos administrados \\
-\texttt{diagnosis\_treemap} & Jerarquía de diagnósticos ICD \\
+\texttt{diagnosis\_treemap} & Jerarquía de diagnósticos \ac{ICD} \\
 \texttt{correlation\_heatmap} & Correlación entre variables clínicas \\
 \texttt{boxplot\_comparison} & Comparación de distribuciones por grupo \\
 \texttt{scatter\_vitals} & Relación entre pares de signos vitales \\
@@ -271,7 +271,7 @@ Estadísticas & estadísticas de, análisis de, comparación de \\
 
 \subsubsection{Fallback a Generación LLM}
 
-Cuando no hay plantilla disponible (aproximadamente 10\% de los casos), el sistema escala a Claude Sonnet 4.5 para generar código Plotly personalizado. El código generado se valida mediante parsing AST antes de ejecutarse en un sandbox aislado con timeout de 10 segundos.
+Cuando no hay plantilla disponible (aproximadamente 10\% de los casos), el sistema escala a Claude Sonnet 4.5 para generar código Plotly personalizado. El código generado se valida mediante parsing \ac{AST} antes de ejecutarse en un sandbox aislado con timeout de 10 segundos.
 
 \begin{lstlisting}[language=Python, basicstyle=\tiny\ttfamily, backgroundcolor=\color{codebg}]
 def generate_with_llm(data: pd.DataFrame, request: str) -> str:
@@ -290,11 +290,11 @@ def generate_with_llm(data: pd.DataFrame, request: str) -> str:
 \end{lstlisting}
 
 % ====================================================================
-\section{Pipeline RAG: detalles técnicos completos}
+\section{Pipeline \ac{RAG}: detalles técnicos completos}
 \label{sec:appendix_rag}
 % ====================================================================
 
-Esta sección complementa la descripción del pipeline RAG presentada en la Sección~\ref{sec:rag} del capítulo principal, proporcionando todos los detalles técnicos de implementación.
+Esta sección complementa la descripción del pipeline \ac{RAG} presentada en la Sección~\ref{sec:rag} del capítulo principal, proporcionando todos los detalles técnicos de implementación.
 
 \subsection{Configuración del chunking y embeddings}
 
@@ -315,7 +315,7 @@ Normalización & True & Embeddings normalizados para similitud coseno \\
 Singleton & Sí & Una sola instancia por proceso Python (evita recarga CUDA) \\
 \texttt{top\_k} búsqueda & 8 (con reranking) & Número de resultados finales \\
 \texttt{fetch\_k} & top\_k $\times$ 4 = 32 & Candidatos evaluados por el reranker \\
-Truncado de contenido & 1500 chars & Máximo de caracteres pasados al LLM por documento \\
+Truncado de contenido & 1500 chars & Máximo de caracteres pasados al \ac{LLM} por documento \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -325,11 +325,11 @@ Truncado de contenido & 1500 chars & Máximo de caracteres pasados al LLM por do
 La búsqueda híbrida se ejecuta mediante una función RPC de PostgreSQL que combina las dos modalidades en una sola query:
 
 \begin{itemize}[nosep, leftmargin=*]
-  \item \textbf{Búsqueda vectorial} (pgvector): Similitud coseno entre el embedding de la consulta (384d) y los embeddings de los chunks hijo. Utiliza índice HNSW para búsqueda ANN en tiempo sublineal.
-  \item \textbf{Búsqueda full-text} (tsvector): Búsqueda léxica con stemming en español (\texttt{spanish} configuration). Captura coincidencias exactas de términos médicos, códigos ICD, nombres de fármacos.
+  \item \textbf{Búsqueda vectorial} (pgvector): Similitud coseno entre el embedding de la consulta (384d) y los embeddings de los chunks hijo. Utiliza índice \ac{HNSW} para búsqueda ANN en tiempo sublineal.
+  \item \textbf{Búsqueda full-text} (tsvector): Búsqueda léxica con stemming en español (\texttt{spanish} configuration). Captura coincidencias exactas de términos médicos, códigos \ac{ICD}, nombres de fármacos.
 \end{itemize}
 
-La fusión RRF combina los rankings sin requerir calibración de pesos:
+La fusión \ac{RRF} combina los rankings sin requerir calibración de pesos:
 
 \begin{equation}
 \text{RRF}(d) = \sum_{r \in R} \frac{1}{k + \text{rank}_r(d)}
@@ -350,13 +350,13 @@ El reranker utiliza el modelo \texttt{cross-encoder/ms-marco-MiniLM-L-6-v2}. A d
 \subsection{Diagnóstico y mejoras del pipeline RAG}
 \label{sec:appendix_rag_mejoras}
 
-Durante la evaluación con el framework RAGAS, se identificaron seis causas raíz que impedían el correcto funcionamiento del pipeline:
+Durante la evaluación con el framework \ac{RAGAS}, se identificaron seis causas raíz que impedían el correcto funcionamiento del pipeline:
 
 \subsubsection{Causa 1: Desalineación del System Prompt}
 
-El system prompt definía cuándo usar \texttt{search\_clinical\_documents} con términos de ``urgencias y emergencias'', pero los documentos indexados versan sobre \textbf{UCI y Medicina Intensiva}. El agente no reconocía que debía buscar en los documentos para preguntas como ``¿Cuántas camas tiene la UCI?''.
+El system prompt definía cuándo usar \texttt{search\_clinical\_documents} con términos de ``urgencias y emergencias'', pero los documentos indexados versan sobre \textbf{UCI y Medicina Intensiva}. El agente no reconocía que debía buscar en los documentos para preguntas como ``¿Cuántas camas tiene la \ac{UCI}?''.
 
-\textbf{Solución:} Se reescribió la sección de selección de herramientas para incluir explícitamente UCI, cuidados críticos y medicina intensiva, listar los documentos reales indexados, y añadir 8 ejemplos concretos de preguntas que deben usar la herramienta. La directiva pasó de ``considera usar'' a ``SIEMPRE invoca''.
+\textbf{Solución:} Se reescribió la sección de selección de herramientas para incluir explícitamente \ac{UCI}, cuidados críticos y medicina intensiva, listar los documentos reales indexados, y añadir 8 ejemplos concretos de preguntas que deben usar la herramienta. La directiva pasó de ``considera usar'' a ``SIEMPRE invoca''.
 
 \subsubsection{Causa 2: Límite de Tokens Insuficiente}
 
@@ -366,7 +366,7 @@ El \texttt{PromptManager} se inicializaba con \texttt{max\_tokens=4000}. El prom
 
 \subsubsection{Causa 3: Contenido Truncado a 600 Caracteres}
 
-El método \texttt{format\_output} del RAG Tool truncaba el contenido de cada documento a 600 caracteres. Los parent chunks ($\sim$3000 chars) quedaban cortados, impidiendo que el LLM encontrara datos específicos.
+El método \texttt{format\_output} del \ac{RAG} Tool truncaba el contenido de cada documento a 600 caracteres. Los parent chunks ($\sim$3000 chars) quedaban cortados, impidiendo que el \ac{LLM} encontrara datos específicos.
 
 \textbf{Solución:} Incremento del límite de truncado a 1500 caracteres.
 
@@ -382,9 +382,9 @@ Con \texttt{top\_k=5} y query augmentation, los 5 resultados finales eran insufi
 
 \textbf{Solución:} Incremento del factor a 4, resultando en \texttt{fetch\_k = top\_k $\times$ 4 = 32} candidatos.
 
-\subsubsection{Causa 6: Contexto RAG No Llegaba a RAGAS}
+\subsubsection{Causa 6: Contexto \ac{RAG} No Llegaba a RAGAS}
 
-El campo \texttt{raw\_output} se truncaba a 1000 caracteres en \texttt{\_extract\_tool\_result}, y el evaluador RAGAS intentaba parsear un campo \texttt{raw\_observation} que no existía.
+El campo \texttt{raw\_output} se truncaba a 1000 caracteres en \texttt{\_extract\_tool\_result}, y el evaluador \ac{RAGAS} intentaba parsear un campo \texttt{raw\_observation} que no existía.
 
 \textbf{Solución:} Preservación del texto completo en \texttt{raw\_output} y adición del campo \texttt{raw\_observation} para el evaluador.
 
@@ -392,7 +392,7 @@ El campo \texttt{raw\_output} se truncaba a 1000 caracteres en \texttt{\_extract
 
 \begin{table}[H]
 \centering
-\caption{Evolución de métricas RAGAS en el golden set DB (40 preguntas sobre MIMIC-IV-ED).}
+\caption{Evolución de métricas \ac{RAGAS} en el golden set DB (40 preguntas sobre \ac{MIMIC}-IV-\ac{ED}).}
 \label{tab:appendix_ragas_db}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lrrr}
@@ -409,7 +409,7 @@ Context Recall & 0.7917 & \textbf{0.8458} & \textbf{+0.054} \\
 
 \begin{table}[H]
 \centering
-\caption{Evolución de métricas RAGAS en el golden set RAG (30 preguntas sobre guías clínicas UCI).}
+\caption{Evolución de métricas \ac{RAGAS} en el golden set \ac{RAG} (30 preguntas sobre guías clínicas \ac{UCI}).}
 \label{tab:appendix_ragas_rag}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lrrr}
@@ -426,13 +426,13 @@ Context Recall & 0.033 & 0.067 & \textbf{0.469} \\
 
 \subsection{Análisis de métricas pendientes}
 
-\textbf{Faithfulness (RAG: 0.57).} Las respuestas incluyen interpretaciones clínicas del LLM que van más allá del texto recuperado. Posibles mejoras: reforzar directivas anti-alucinación específicas para respuestas RAG; añadir instrucción ``responde SOLO con lo que aparece en los fragmentos''.
+\textbf{Faithfulness (\ac{RAG}: 0.57).} Las respuestas incluyen interpretaciones clínicas del \ac{LLM} que van más allá del texto recuperado. Posibles mejoras: reforzar directivas anti-alucinación específicas para respuestas \ac{RAG}; añadir instrucción ``responde SOLO con lo que aparece en los fragmentos''.
 
-\textbf{Answer Relevancy (RAG: 0.48).} Las respuestas son extensas y añaden contexto no solicitado. Posibles mejoras: directiva de concisión específica; limitar longitud cuando la pregunta es directa.
+\textbf{Answer Relevancy (\ac{RAG}: 0.48).} Las respuestas son extensas y añaden contexto no solicitado. Posibles mejoras: directiva de concisión específica; limitar longitud cuando la pregunta es directa.
 
-\textbf{Context Precision (RAG: 0.55).} Aproximadamente el 55\% del contexto recuperado es directamente relevante. Posibles mejoras: ajustar el modelo de reranking para el dominio médico en español; aumentar peso de búsqueda léxica para términos técnicos exactos.
+\textbf{Context Precision (\ac{RAG}: 0.55).} Aproximadamente el 55\% del contexto recuperado es directamente relevante. Posibles mejoras: ajustar el modelo de reranking para el dominio médico en español; aumentar peso de búsqueda léxica para términos técnicos exactos.
 
-\textbf{Context Recall (RAG: 0.49).} Aproximadamente la mitad de la información necesaria se recupera. Posibles mejoras: aumentar \texttt{top\_k} a 10-12 para preguntas directas; mejorar chunking para preservar datos numéricos en contexto.
+\textbf{Context Recall (\ac{RAG}: 0.49).} Aproximadamente la mitad de la información necesaria se recupera. Posibles mejoras: aumentar \texttt{top\_k} a 10-12 para preguntas directas; mejorar chunking para preservar datos numéricos en contexto.
 
 % ====================================================================
 \section{Seguridad: detalles de implementación}
@@ -478,17 +478,17 @@ La primera línea de defensa opera sobre la consulta del usuario antes de cualqu
   \item \textbf{Formato}: Verificación de codificación UTF-8 válida.
 \end{itemize}
 
-\subsection{Capa 3: validación SQL multicapa}
+\subsection{Capa 3: validación \ac{SQL} multicapa}
 
 Documentada en detalle en la Sección~\ref{sec:appendix_dbtool}. Incluye lista negra de operaciones DDL/DML, detección de tautologías (10 patrones), inyección por comentarios, restricción a tablas permitidas del esquema \texttt{mimic\_ed}, bloqueo de funciones peligrosas, y límite de complejidad.
 
 \subsection{Capa 4: autenticación JWT y row level security}
 
-Supabase Auth proporciona autenticación JWT con RLS habilitado en las 13 tablas del sistema (6 tablas MIMIC-IV-ED + 7 tablas de aplicación). Las políticas RLS garantizan que cada usuario solo puede acceder a sus propias sesiones, mensajes y preferencias.
+Supabase Auth proporciona autenticación JWT con RLS habilitado en las 13 tablas del sistema (6 tablas \ac{MIMIC}-IV-\ac{ED} + 7 tablas de aplicación). Las políticas RLS garantizan que cada usuario solo puede acceder a sus propias sesiones, mensajes y preferencias.
 
 \subsection{Capa 5: audit logging}
 
-Todas las operaciones del sistema se registran con logs estructurados que incluyen: timestamp, session ID, tipo de operación, herramienta invocada, tiempo de ejecución, resultado (éxito/error), y modelo LLM utilizado. Estos logs permiten trazabilidad completa para auditoría y debugging.
+Todas las operaciones del sistema se registran con logs estructurados que incluyen: timestamp, session ID, tipo de operación, herramienta invocada, tiempo de ejecución, resultado (éxito/error), y modelo \ac{LLM} utilizado. Estos logs permiten trazabilidad completa para auditoría y debugging.
 
 \subsection{Capa 6: directivas anti-alucinación}
 
@@ -503,18 +503,18 @@ Todas las operaciones del sistema se registran con logs estructurados que incluy
 \midrule
 Prohibiciones absolutas & NUNCA inventar subject\_id, stay\_id, hadm\_id; NUNCA fabricar signos vitales, diagnósticos, medicamentos, fechas \\
 Datos faltantes & Si no encuentra datos: ``No encontré información sobre [X]''; si hay nulos: ``Algunos registros tienen datos incompletos'' \\
-Citación de fuentes & Siempre indicar herramienta usada y tabla de origen; para RAG, citar documento fuente \\
+Citación de fuentes & Siempre indicar herramienta usada y tabla de origen; para \ac{RAG}, citar documento fuente \\
 Incertidumbre & Distinguir datos verificados de interpretaciones; usar ``Según los datos disponibles...'' \\
-Limitaciones & MIMIC-IV-ED es dataset demo con 222 pacientes; solo urgencias; sin laboratorio, imagen ni cirugía \\
+Limitaciones & \ac{MIMIC}-IV-\ac{ED} es dataset demo con 222 pacientes; solo urgencias; sin laboratorio, imagen ni cirugía \\
 Concisión & Responder únicamente lo preguntado; no añadir información no solicitada \\
 Fidelidad & Basar respuesta exclusivamente en datos de herramientas; no usar conocimiento general \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{Sandbox AST para visualizaciones}
+\subsection{Sandbox \ac{AST} para visualizaciones}
 
-El código Plotly generado por el LLM se ejecuta en un entorno aislado con validación AST:
+El código Plotly generado por el \ac{LLM} se ejecuta en un entorno aislado con validación \ac{AST}:
 
 \begin{lstlisting}[language=Python, basicstyle=\tiny\ttfamily, backgroundcolor=\color{codebg}]
 ALLOWED_MODULES = {'plotly', 'pandas', 'numpy', 'math'}
@@ -545,7 +545,7 @@ def validate_code_ast(code: str) -> bool:
 \toprule
 \textbf{Categoría} & \textbf{Tests} & \textbf{Pasados} & \textbf{Score} & \textbf{Resultado} \\
 \midrule
-SQL Injection & 7 & 7 & 1.000 & Superado \\
+\ac{SQL} Injection & 7 & 7 & 1.000 & Superado \\
 Prompt Injection & 3 & 2 & 0.667 & No superado \\
 Anti-Alucinación & 3 & 3 & 1.000 & Superado \\
 \midrule
@@ -561,7 +561,7 @@ El test fallido (SEC-PROMPT-003) corresponde a una solicitud de generación de d
 \label{sec:appendix_db}
 % ====================================================================
 
-\subsection{Tablas MIMIC-IV-ED}
+\subsection{Tablas \ac{MIMIC}-IV-ED}
 
 \begin{table}[H]
 \centering
@@ -573,7 +573,7 @@ El test fallido (SEC-PROMPT-003) corresponde a una solicitud de generación de d
 \textbf{Columna} & \textbf{Tipo} & \textbf{Descripción} \\
 \midrule
 \texttt{subject\_id} & INT & Identificador único del paciente \\
-\texttt{stay\_id} & INT (PK) & Identificador único de la estancia \\
+\texttt{stay\_id} & INT (\ac{PK}) & Identificador único de la estancia \\
 \texttt{hadm\_id} & NUMERIC & Identificador de admisión hospitalaria \\
 \texttt{intime} & TIMESTAMP & Fecha/hora de entrada en urgencias \\
 \texttt{outtime} & TIMESTAMP & Fecha/hora de salida de urgencias \\
@@ -585,7 +585,7 @@ El test fallido (SEC-PROMPT-003) corresponde a una solicitud de generación de d
 \end{tabularx}
 \end{table}
 
-\subsection{Tabla Vectorial RAG (\texttt{rag\_chunks})}
+\subsection{Tabla Vectorial \ac{RAG} (\texttt{rag\_chunks})}
 
 \begin{table}[H]
 \centering
@@ -599,8 +599,8 @@ El test fallido (SEC-PROMPT-003) corresponde a una solicitud de generación de d
 \texttt{id} & \texttt{uuid} & Clave primaria (\texttt{gen\_random\_uuid()}) \\
 \texttt{chunk\_id} & \texttt{text} & Identificador único del chunk \\
 \texttt{content} & \texttt{text} & Contenido textual (padre: 3000 chars, hijo: 800 chars) \\
-\texttt{embedding} & \texttt{vector(384)} & Embedding \texttt{all-MiniLM-L6-v2}. Índice HNSW \\
-\texttt{fts} & \texttt{tsvector} & Columna generada desde \texttt{content} con config. \texttt{spanish}. Índice GIN \\
+\texttt{embedding} & \texttt{vector(384)} & Embedding \texttt{all-MiniLM-L6-v2}. Índice \ac{HNSW} \\
+\texttt{fts} & \texttt{tsvector} & Columna generada desde \texttt{content} con config. \texttt{spanish}. Índice \ac{GIN} \\
 \texttt{is\_parent} & \texttt{boolean} & \texttt{true} = chunk padre, \texttt{false} = chunk hijo \\
 \texttt{parent\_id} & \texttt{text} & Referencia al chunk padre \\
 \texttt{filename} & \texttt{text} & Nombre del documento fuente para citación \\
@@ -629,14 +629,14 @@ El test fallido (SEC-PROMPT-003) corresponde a una solicitud de generación de d
 \texttt{vitalsign} & \texttt{subject\_id} & B-tree & Signos vitales por paciente \\
 \texttt{vitalsign} & \texttt{(subject\_id, charttime)} & B-tree comp. & Tendencias temporales \\
 \texttt{diagnosis} & \texttt{subject\_id} & B-tree & Diagnósticos por paciente \\
-\texttt{diagnosis} & \texttt{icd\_code} & B-tree & Búsqueda por código ICD \\
+\texttt{diagnosis} & \texttt{icd\_code} & B-tree & Búsqueda por código \ac{ICD} \\
 \texttt{diagnosis} & \texttt{(subject\_id, stay\_id)} & B-tree comp. & Diagnósticos por estancia \\
 \texttt{medrecon} & \texttt{(subject\_id, charttime)} & B-tree comp. & Medicación temporal \\
 \texttt{pyxis} & \texttt{(subject\_id, charttime)} & B-tree comp. & Dispensación temporal \\
 \texttt{chat\_messages} & \texttt{session\_id} & B-tree & Mensajes por sesión \\
 \texttt{chat\_sessions} & \texttt{user\_id} & B-tree & Sesiones por usuario \\
-\texttt{rag\_chunks} & \texttt{embedding} & HNSW & Búsqueda ANN vectorial \\
-\texttt{rag\_chunks} & \texttt{fts} & GIN & Full-text en español \\
+\texttt{rag\_chunks} & \texttt{embedding} & \ac{HNSW} & Búsqueda ANN vectorial \\
+\texttt{rag\_chunks} & \texttt{fts} & \ac{GIN} & Full-text en español \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -681,7 +681,7 @@ Presión arterial diastólica & \texttt{dbp} & 60 -- 90 & mmHg \\
 \end{table}
 
 % ====================================================================
-\section{Gestor de modelos LLM: implementación detallada}
+\section{Gestor de modelos \ac{LLM}: implementación detallada}
 \label{sec:appendix_llm}
 % ====================================================================
 
@@ -689,7 +689,7 @@ Presión arterial diastólica & \texttt{dbp} & 60 -- 90 & mmHg \\
 
 \begin{table}[H]
 \centering
-\caption{Configuración completa de la cadena de modelos LLM.}
+\caption{Configuración completa de la cadena de modelos \ac{LLM}.}
 \label{tab:appendix_models}
 \footnotesize
 \begin{tabularx}{\columnwidth}{llrrrX}
@@ -700,7 +700,7 @@ Primario & \texttt{haiku-4-5-20251001} & 4096 & 0.1 & 30s & Agente principal \\
 Secundario & \texttt{sonnet-4-5-20250929} & 8192 & 0.1 & 45s & Fallback \\
 Terciario & \texttt{opus-4-20250514} & 4096 & 0.1 & 60s & Fallback final \\
 Visualización & \texttt{sonnet-4-5} & 8192 & 0.1 & 45s & Código Plotly \\
-RAG & \texttt{haiku-4-5} & 4000 & 0.1 & 60s & Query augment. \\
+\ac{RAG} & \texttt{haiku-4-5} & 4000 & 0.1 & 60s & Query augment. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -763,27 +763,27 @@ El prompt del sistema del agente está estructurado en 10 secciones ordenadas qu
 \textbf{N} & \textbf{Sección} & \textbf{Contenido} \\
 \midrule
 1 & IDENTIDAD & Nombre (ChatHCE), rol (asistente clínico), propósito y contexto de uso \\
-2 & CONTEXTO & Dataset MIMIC-IV-ED: 222 pacientes, 6 tablas, urgencias hospitalarias \\
+2 & CONTEXTO & Dataset \ac{MIMIC}-IV-\ac{ED}: 222 pacientes, 6 tablas, urgencias hospitalarias \\
 3 & HERRAMIENTAS & Documentación de las 3 herramientas con parámetros y ejemplos \\
 4 & ANTI-ALUCINACIÓN & Prohibiciones absolutas, manejo de datos faltantes, citación, incertidumbre \\
 5 & IDIOMA & Respuestas siempre en español, terminología médica apropiada \\
 6 & SCHEMA BD & Esquema completo de las 6 tablas con nombres exactos de columnas \\
-7 & HERR. DETALLADAS & Reglas SQL, tipos de consulta, ejemplos de uso correcto e incorrecto \\
+7 & HERR. DETALLADAS & Reglas \ac{SQL}, tipos de consulta, ejemplos de uso correcto e incorrecto \\
 8 & FORMATO & Estructura de respuestas, uso de markdown, citación de fuentes \\
 9 & GUÍAS CLÍNICAS & Valores de referencia normales, niveles de acuidad, interpretación \\
-10 & SELECCIÓN HERR. & Cuándo usar cada herramienta, reglas obligatorias, docs indexados UCI \\
+10 & SELECCIÓN HERR. & Cuándo usar cada herramienta, reglas obligatorias, docs indexados \ac{UCI} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-La sección 10 (SELECCIÓN DE HERRAMIENTAS) fue la más crítica tras las mejoras al pipeline RAG. Incluye la regla fundamental:
+La sección 10 (SELECCIÓN DE HERRAMIENTAS) fue la más crítica tras las mejoras al pipeline \ac{RAG}. Incluye la regla fundamental:
 
 \begin{quote}
 \footnotesize\itshape
 ``Si la pregunta NO contiene un subject\_id o stay\_id específico de paciente, SIEMPRE invoca \texttt{search\_clinical\_documents} antes de responder desde tu conocimiento general.''
 \end{quote}
 
-Y lista explícitamente los tres documentos indexados (Manual del Residente, Estándares UCI, Libro de la UCI) con 8 ejemplos de preguntas que deben activar la herramienta.
+Y lista explícitamente los tres documentos indexados (Manual del Residente, Estándares \ac{UCI}, Libro de la \ac{UCI}) con 8 ejemplos de preguntas que deben activar la herramienta.
 
 % ====================================================================
 \section{Caché, rate limiting y performance monitor}
@@ -792,7 +792,7 @@ Y lista explícitamente los tres documentos indexados (Manual del Residente, Est
 
 \subsection{CacheManager}
 
-El \texttt{CacheManager} implementa caché en memoria con cinco tipos especializados, evicción LRU y TTL configurable. Es un Singleton compartido entre todos los componentes.
+El \texttt{CacheManager} implementa caché en memoria con cinco tipos especializados, evicción \ac{LRU} y \ac{TTL} configurable. Es un Singleton compartido entre todos los componentes.
 
 \begin{table}[H]
 \centering
@@ -803,11 +803,11 @@ El \texttt{CacheManager} implementa caché en memoria con cinco tipos especializ
 \toprule
 \textbf{Tipo} & \textbf{TTL} & \textbf{Contenido} & \textbf{Evicción} \\
 \midrule
-\texttt{memory} & 300s & Respuestas generales del agente & LRU \\
-\texttt{llm\_responses} & 300s & Respuestas de Claude & LRU \\
-\texttt{embeddings} & 3600s & Embeddings de consultas frecuentes & LRU \\
-\texttt{query\_results} & 300s & Resultados de consultas a Supabase & LRU \\
-\texttt{ui\_data} & 60s & Datos de la interfaz Streamlit & LRU \\
+\texttt{memory} & 300s & Respuestas generales del agente & \ac{LRU} \\
+\texttt{llm\_responses} & 300s & Respuestas de Claude & \ac{LRU} \\
+\texttt{embeddings} & 3600s & Embeddings de consultas frecuentes & \ac{LRU} \\
+\texttt{query\_results} & 300s & Resultados de consultas a Supabase & \ac{LRU} \\
+\texttt{ui\_data} & 60s & Datos de la interfaz Streamlit & \ac{LRU} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -822,9 +822,9 @@ El \texttt{CacheManager} implementa caché en memoria con cinco tipos especializ
 \textbf{Parámetro} & \textbf{Valor} & \textbf{Descripción} \\
 \midrule
 \texttt{max\_cache\_size\_mb} & 512 MB & Tamaño máximo total \\
-\texttt{cache\_ttl\_seconds} & 300s & TTL por defecto \\
+\texttt{cache\_ttl\_seconds} & 300s & \ac{TTL} por defecto \\
 \texttt{cache\_cleanup\_interval} & 600s & Intervalo de limpieza \\
-Estructura interna & \texttt{OrderedDict} & Evicción LRU eficiente \\
+Estructura interna & \texttt{OrderedDict} & Evicción \ac{LRU} eficiente \\
 Thread safety & \texttt{threading.RLock} & Un lock por tipo + lock global \\
 Cálculo de tamaño & \texttt{pickle.dumps()} & Estimación en bytes \\
 \bottomrule
@@ -865,7 +865,7 @@ El decorador \texttt{@track\_performance} instrumenta automáticamente las opera
 \textbf{Métrica} & \textbf{Descripción} \\
 \midrule
 Tiempo de ejecución & Duración total en milisegundos \\
-Tokens utilizados & Estimación de tokens consumidos por el LLM \\
+Tokens utilizados & Estimación de tokens consumidos por el \ac{LLM} \\
 Modelo activo & Nombre del modelo Claude utilizado \\
 Éxito/Error & Estado y tipo de error si aplica \\
 Tipo de operación & \texttt{process\_message}, \texttt{database\_query}, \texttt{rag\_search} \\
@@ -890,7 +890,7 @@ Session ID & Identificador de sesión para trazabilidad \\
 \midrule
 Adapter & \texttt{ClaudeToolAdapter} & Adapta herramientas al formato tool-calling de Claude/LangChain \\
 \addlinespace
-Strategy & Búsqueda RAG & Estrategias intercambiables: similarity, MMR, hybrid \\
+Strategy & Búsqueda \ac{RAG} & Estrategias intercambiables: similarity, MMR, hybrid \\
 \addlinespace
 Singleton & \texttt{CacheManager} & Instancia única de caché compartida \\
 \addlinespace
@@ -906,7 +906,7 @@ Decorator & \texttt{@track\_performance} & Monitoreo automático de rendimiento 
 \addlinespace
 Observer & \texttt{PerformanceMonitor} & Monitoreo de métricas y alertas de rendimiento \\
 \addlinespace
-Chain of Resp. & Fallback LLM & Cadena Haiku 4.5 $\to$ Sonnet 4.5 $\to$ Opus 4 \\
+Chain of Resp. & Fallback \ac{LLM} & Cadena Haiku 4.5 $\to$ Sonnet 4.5 $\to$ Opus 4 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -928,14 +928,14 @@ Chain of Resp. & Fallback LLM & Cadena Haiku 4.5 $\to$ Sonnet 4.5 $\to$ Opus 4 \
 Lenguaje & Python 3.11.14 & Lenguaje principal \\
 Interfaz & Streamlit~\citep{streamlit2019} & Chat interactivo \\
 Agente & LangChain 1.2.7~\citep{chase2022langchain} & Orquestación y herramientas \\
-LLM principal & Claude Haiku 4.5 & Agente conversacional \\
-LLM viz. & Claude Sonnet 4.5 & Generación de código \\
-SDK Anthropic & anthropic 0.77.0 & Cliente API de Claude \\
-Base de datos & Supabase PostgreSQL 15~\citep{supabase2020,postgresql2024} & MIMIC-IV-ED + aplicación \\
-Vector store & pgvector 0.8.0~\citep{pgvector2024} & Embeddings RAG \\
+\ac{LLM} principal & Claude Haiku 4.5 & Agente conversacional \\
+\ac{LLM} viz. & Claude Sonnet 4.5 & Generación de código \\
+SDK Anthropic & anthropic 0.77.0 & Cliente \ac{API} de Claude \\
+Base de datos & Supabase PostgreSQL 15~\citep{supabase2020,postgresql2024} & \ac{MIMIC}-IV-\ac{ED} + aplicación \\
+Vector store & pgvector 0.8.0~\citep{pgvector2024} & Embeddings \ac{RAG} \\
 Cliente BD & supabase-py & Acceso desde Python \\
 Embeddings & sentence-transformers 5.2.2~\citep{reimers2019sentencebert} & all-MiniLM-L6-v2 (384d) \\
-Evaluación & RAGAS 0.4.3 & Evaluación pipeline RAG \\
+Evaluación & \ac{RAGAS} 0.4.3 & Evaluación pipeline \ac{RAG} \\
 Visualización & Plotly~\citep{plotly2015} & Gráficas interactivas \\
 Datos & pandas / numpy & Procesamiento de datos \\
 PDF & Docling / PyPDF2 & Extracción de texto \\

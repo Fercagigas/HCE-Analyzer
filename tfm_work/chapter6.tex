@@ -13,9 +13,9 @@ Este capítulo sintetiza las contribuciones del presente Trabajo Fin de Máster,
 
 El presente trabajo ha abordado el diseño, implementación y evaluación de \textbf{ChatHCE}, un sistema de análisis clínico inteligente para el servicio de urgencias. El sistema integra tres capacidades fundamentales ---consulta de datos estructurados, recuperación de documentos clínicos y generación de visualizaciones--- mediante una interfaz conversacional unificada en lenguaje natural.
 
-El desarrollo ha seguido la metodología \textit{Design Science Research} \cite{Hevner2004,Peffers2007dsrm}, con ciclos iterativos de diseño, construcción y evaluación. El artefacto resultante opera sobre el dataset MIMIC-IV-ED \cite{johnson2023mimiciv} desplegado en Supabase, y utiliza Claude Haiku 4.5 como motor de inferencia principal con capacidad de \textit{tool-calling} nativo.
+El desarrollo ha seguido la metodología \textit{Design Science Research} \cite{Hevner2004,Peffers2007dsrm}, con ciclos iterativos de diseño, construcción y evaluación. El artefacto resultante opera sobre el dataset \ac{MIMIC}-IV-\ac{ED} \cite{johnson2023mimiciv} desplegado en Supabase, y utiliza Claude Haiku 4.5 como motor de inferencia principal con capacidad de \textit{tool-calling} nativo.
 
-La evaluación empírica se ha estructurado en cuatro dimensiones: calidad semántica de respuestas (métricas RAGAS), rendimiento temporal, robustez de seguridad y funcionalidad operativa. Los resultados obtenidos permiten responder a las cinco preguntas de investigación planteadas en el capítulo introductorio.
+La evaluación empírica se ha estructurado en cuatro dimensiones: calidad semántica de respuestas (métricas \ac{RAGAS}), rendimiento temporal, robustez de seguridad y funcionalidad operativa. Los resultados obtenidos permiten responder a las cinco preguntas de investigación planteadas en el capítulo introductorio.
 
 \section{Conclusiones por pregunta de investigación}
 \label{sec:conclusiones_rq}
@@ -26,21 +26,21 @@ La evaluación empírica se ha estructurado en cuatro dimensiones: calidad semá
 \textit{¿En qué medida un Agente Unificado con capacidad de tool-calling nativo supera a las arquitecturas multi-agente tradicionales en términos de latencia y reducción del error acumulado?}
 \end{quote}
 
-\textbf{Conclusión:} La arquitectura de agente unificado implementada en ChatHCE demuestra ventajas significativas sobre las alternativas multi-agente evaluadas conceptualmente. El sistema alcanza latencias P50 inferiores a 5 segundos para consultas con caché habilitado, con tiempos de respuesta de milisegundos para respuestas cacheadas y entre 4--22 segundos para consultas nuevas que requieren invocación del LLM.
+\textbf{Conclusión:} La arquitectura de agente unificado implementada en ChatHCE demuestra ventajas significativas sobre las alternativas multi-agente evaluadas conceptualmente. El sistema alcanza latencias P50 inferiores a 5 segundos para consultas con caché habilitado, con tiempos de respuesta de milisegundos para respuestas cacheadas y entre 4--22 segundos para consultas nuevas que requieren invocación del \ac{LLM}.
 
-La reducción a una única llamada LLM por turno ---frente a las 3--5 llamadas típicas de arquitecturas multi-agente--- elimina el error acumulado entre nodos de procesamiento. El mecanismo de \textit{tool-calling} nativo de Claude Haiku 4.5 genera estructuras JSON tipadas que especifican herramienta y parámetros, eliminando el \textit{parsing} de texto libre propenso a errores. La tasa de éxito en selección de herramientas alcanza el 78,6\% en la evaluación funcional, con los fallos concentrados en casos específicos de visualización de datos agregados.
+La reducción a una única llamada \ac{LLM} por turno ---frente a las 3--5 llamadas típicas de arquitecturas multi-agente--- elimina el error acumulado entre nodos de procesamiento. El mecanismo de \textit{tool-calling} nativo de Claude Haiku 4.5 genera estructuras \ac{JSON} tipadas que especifican herramienta y parámetros, eliminando el \textit{parsing} de texto libre propenso a errores. La tasa de éxito en selección de herramientas alcanza el 78,6\% en la evaluación funcional, con los fallos concentrados en casos específicos de visualización de datos agregados.
 
 Esta arquitectura resulta especialmente adecuada para entornos clínicos donde la latencia y la fiabilidad son críticas. La simplicidad estructural facilita además la depuración y el mantenimiento del sistema.
 
-\subsection{RQ2: Optimización RAG mediante búsqueda híbrida y chunking jerárquico}
+\subsection{RQ2: Optimización \ac{RAG} mediante búsqueda híbrida y chunking jerárquico}
 
 \begin{quote}
-\textit{¿Cómo impacta la combinación de búsqueda híbrida (vectorial-léxica) con RRF y fragmentación jerárquica en la precisión de la recuperación de protocolos clínicos?}
+\textit{¿Cómo impacta la combinación de búsqueda híbrida (vectorial-léxica) con \ac{RRF} y fragmentación jerárquica en la precisión de la recuperación de protocolos clínicos?}
 \end{quote}
 
-\textbf{Conclusión:} El pipeline RAG implementado alcanza una métrica de \textit{Context Recall} de 0,49, indicando que el sistema recupera aproximadamente la mitad de la información necesaria para generar respuestas correctas. Este resultado valida la efectividad de la combinación de búsqueda híbrida (vectorial mediante pgvector + léxica mediante tsvector) con fusión RRF ($k=60$).
+\textbf{Conclusión:} El pipeline \ac{RAG} implementado alcanza una métrica de \textit{Context Recall} de 0,49, indicando que el sistema recupera aproximadamente la mitad de la información necesaria para generar respuestas correctas. Este resultado valida la efectividad de la combinación de búsqueda híbrida (vectorial mediante pgvector + léxica mediante tsvector) con fusión \ac{RRF} ($k=60$).
 
-La estrategia de chunking jerárquico padre-hijo contribuye a preservar el contexto semántico de los fragmentos recuperados, evitando la fragmentación de información relacionada. La augmentación de consultas mediante técnicas multi-query y HyDE (\textit{Hypothetical Document Embeddings}) mejora la recuperación en consultas ambiguas o complejas.
+La estrategia de chunking jerárquico padre-hijo contribuye a preservar el contexto semántico de los fragmentos recuperados, evitando la fragmentación de información relacionada. La augmentación de consultas mediante técnicas multi-query y \ac{HyDE} (\textit{Hypothetical Document Embeddings}) mejora la recuperación en consultas ambiguas o complejas.
 
 La métrica de \textit{Context Precision} de 0,55 indica que aproximadamente el 45\% del contexto recuperado constituye ruido informativo, un efecto colateral de la estrategia de \textit{parent document retrieval}. Este balance entre cobertura y precisión puede optimizarse ajustando el parámetro \textit{top-k} según las características del corpus documental.
 
@@ -50,13 +50,13 @@ La métrica de \textit{Context Precision} de 0,55 indica que aproximadamente el 
 \textit{¿Cuál es la efectividad de un modelo de defensa en profundidad para garantizar la seguridad clínica y reducir alucinaciones?}
 \end{quote}
 
-\textbf{Conclusión:} El modelo de defensa en profundidad implementado demuestra alta efectividad en la prevención de alucinaciones y amenazas de seguridad. De los 13 tests de seguridad, 12 fueron superados: 7 de inyección SQL, 2 de inyección de prompts y 3 de anti-alucinación.
+\textbf{Conclusión:} El modelo de defensa en profundidad implementado demuestra alta efectividad en la prevención de alucinaciones y amenazas de seguridad. De los 13 tests de seguridad, 12 fueron superados: 7 de inyección \ac{SQL}, 2 de inyección de prompts y 3 de anti-alucinación.
 
-El criterio \texttt{no\_alucinacion} obtuvo puntuación perfecta (1,0) en los 28 casos de prueba funcionales, constituyendo el resultado más significativo para un sistema de asistencia clínica. El sistema reconoce explícitamente la ausencia de datos sin fabricar información, respondiendo con mensajes como ``El paciente con subject\_id 9999 no existe en el dataset MIMIC-IV-ED''.
+El criterio \texttt{no\_alucinacion} obtuvo puntuación perfecta (1,0) en los 28 casos de prueba funcionales, constituyendo el resultado más significativo para un sistema de asistencia clínica. El sistema reconoce explícitamente la ausencia de datos sin fabricar información, respondiendo con mensajes como ``El paciente con subject\_id 9999 no existe en el dataset \ac{MIMIC}-IV-\ac{ED}''.
 
-La defensa opera en múltiples niveles: (1) directivas anti-alucinación en el prompt del sistema que instruyen al modelo a fundamentar sus respuestas únicamente en datos verificables; (2) validación SQL con lista negra de 18 \textit{keywords} peligrosos y detección de tautologías mediante 11 patrones regex; (3) sandbox AST para ejecución segura de código de visualización.
+La defensa opera en múltiples niveles: (1) directivas anti-alucinación en el prompt del sistema que instruyen al modelo a fundamentar sus respuestas únicamente en datos verificables; (2) validación \ac{SQL} con lista negra de 18 \textit{keywords} peligrosos y detección de tautologías mediante 11 patrones regex; (3) sandbox \ac{AST} para ejecución segura de código de visualización.
 
-La métrica \textit{Faithfulness} de RAGAS (0,75) indica que el 24,5\% de las afirmaciones incluyen interpretación clínica añadida no presente explícitamente en el contexto. Aunque técnicamente constituye información no fundamentada, en el dominio clínico esta elaboración ---cuando es médicamente correcta--- puede aportar valor al profesional sanitario.
+La métrica \textit{Faithfulness} de \ac{RAGAS} (0,75) indica que el 24,5\% de las afirmaciones incluyen interpretación clínica añadida no presente explícitamente en el contexto. Aunque técnicamente constituye información no fundamentada, en el dominio clínico esta elaboración ---cuando es médicamente correcta--- puede aportar valor al profesional sanitario.
 
 \subsection{RQ4: Estrategias de fallback y continuidad operativa}
 
@@ -64,33 +64,33 @@ La métrica \textit{Faithfulness} de RAGAS (0,75) indica que el 24,5\% de las af
 \textit{¿Cómo influye una cadena de fallback multinivel (Haiku $\rightarrow$ Sonnet $\rightarrow$ Opus) en la fiabilidad y disponibilidad del sistema?}
 \end{quote}
 
-\textbf{Conclusión:} La cadena de fallback implementada en el \texttt{ClaudeLLMManager} proporciona un mecanismo robusto de continuidad operativa. El sistema escala automáticamente entre modelos bajo tres condiciones: rate limiting (error 429), errores de API (5xx o timeout), y respuesta vacía o truncada del modelo.
+\textbf{Conclusión:} La cadena de fallback implementada en el \texttt{ClaudeLLMManager} proporciona un mecanismo robusto de continuidad operativa. El sistema escala automáticamente entre modelos bajo tres condiciones: rate limiting (error 429), errores de \ac{API} (5xx o timeout), y respuesta vacía o truncada del modelo.
 
-La configuración de reintentos con \textit{backoff} exponencial (multiplicador 2.0, espera mínima 1s, máxima 60s, 3 intentos por modelo) balancea resiliencia y latencia. En la evaluación, no se registraron fallos de ejecución atribuibles a indisponibilidad de la API, lo que valida la efectividad del mecanismo aunque no se produjeron condiciones de activación del fallback durante las pruebas.
+La configuración de reintentos con \textit{backoff} exponencial (multiplicador 2.0, espera mínima 1s, máxima 60s, 3 intentos por modelo) balancea resiliencia y latencia. En la evaluación, no se registraron fallos de ejecución atribuibles a indisponibilidad de la \ac{API}, lo que valida la efectividad del mecanismo aunque no se produjeron condiciones de activación del fallback durante las pruebas.
 
 El diseño de la cadena (Haiku $\rightarrow$ Sonnet $\rightarrow$ Opus) optimiza el balance entre latencia, coste y capacidad de razonamiento: Haiku gestiona el 95\% de las consultas estándar con latencia mínima, mientras que Sonnet y Opus se reservan para consultas complejas o situaciones de sobrecarga.
 
 \subsection{RQ5: Visualización dinámica ``template-first'' vs. generación por LLM}
 
 \begin{quote}
-\textit{¿Qué beneficios aporta un enfoque template-first para la generación de visualizaciones clínicas frente a la generación íntegra por LLM?}
+\textit{¿Qué beneficios aporta un enfoque template-first para la generación de visualizaciones clínicas frente a la generación íntegra por \ac{LLM}?}
 \end{quote}
 
-\textbf{Conclusión:} El enfoque \textit{template-first} implementado ofrece ventajas claras en latencia y determinismo. Las visualizaciones generadas mediante plantillas Plotly predefinidas alcanzan tiempos de generación de aproximadamente 0,4 segundos, frente a los 4 segundos típicos de la generación completa de código por LLM.
+\textbf{Conclusión:} El enfoque \textit{template-first} implementado ofrece ventajas claras en latencia y determinismo. Las visualizaciones generadas mediante plantillas Plotly predefinidas alcanzan tiempos de generación de aproximadamente 0,4 segundos, frente a los 4 segundos típicos de la generación completa de código por \ac{LLM}.
 
-El sistema define seis plantillas especializadas para signos vitales clínicos (frecuencia cardíaca, temperatura, presión arterial, saturación de oxígeno, frecuencia respiratoria, dolor), cada una con configuración óptima de colores, rangos de referencia y etiquetas. El LLM selecciona la plantilla apropiada y proporciona los parámetros necesarios (principalmente \texttt{stay\_id}), eliminando la variabilidad asociada a la generación de código.
+El sistema define seis plantillas especializadas para signos vitales clínicos (frecuencia cardíaca, temperatura, presión arterial, saturación de oxígeno, frecuencia respiratoria, dolor), cada una con configuración óptima de colores, rangos de referencia y etiquetas. El \ac{LLM} selecciona la plantilla apropiada y proporciona los parámetros necesarios (principalmente \texttt{stay\_id}), eliminando la variabilidad asociada a la generación de código.
 
 Sin embargo, la evaluación funcional reveló una limitación: la categoría TC-VIZ obtuvo la puntuación más baja (0,548), con el criterio \texttt{herramienta\_correcta} en 0,0 para los 5 casos. El análisis de causa raíz identificó que la herramienta \texttt{request\_visualization} requiere identificadores de paciente, lo que impide generar visualizaciones de datos agregados poblacionales. Esta limitación arquitectónica representa la principal área de mejora identificada.
 
 \section{Contribuciones principales}
 \label{sec:contribuciones}
 
-El presente trabajo realiza las siguientes contribuciones al campo de los sistemas de IA clínica:
+El presente trabajo realiza las siguientes contribuciones al campo de los sistemas de \ac{IA} clínica:
 
 \begin{enumerate}
     \item \textbf{Arquitectura de agente unificado optimizada para latencia}: Demostración de que un agente único con \textit{tool-calling} nativo puede superar a arquitecturas multi-agente en entornos clínicos donde la latencia es crítica, manteniendo la funcionalidad de orquestación de múltiples herramientas.
     
-    \item \textbf{Pipeline RAG clínico con búsqueda híbrida}: Implementación y evaluación de un pipeline RAG que combina búsqueda vectorial y léxica con fusión RRF y chunking jerárquico, alcanzando cobertura del 80\% en recuperación de información clínica.
+    \item \textbf{Pipeline \ac{RAG} clínico con búsqueda híbrida}: Implementación y evaluación de un pipeline \ac{RAG} que combina búsqueda vectorial y léxica con fusión \ac{RRF} y chunking jerárquico, alcanzando cobertura del 80\% en recuperación de información clínica.
     
     \item \textbf{Modelo de defensa en profundidad anti-alucinación}: Diseño y validación de un esquema de seguridad multicapa que logra tasa cero de alucinación en los escenarios evaluados, crítico para la aplicación en entornos de decisión clínica.
     
@@ -103,7 +103,7 @@ El presente trabajo realiza las siguientes contribuciones al campo de los sistem
 El presente trabajo presenta las siguientes limitaciones que deben considerarse en la interpretación de los resultados:
 
 \begin{itemize}
-    \item \textbf{Dataset de demostración}: La evaluación se realizó sobre la versión demo de MIMIC-IV-ED (222 pacientes), que aunque mantiene patrones representativos, no permite evaluar el comportamiento del sistema a escala real.
+    \item \textbf{Dataset de demostración}: La evaluación se realizó sobre la versión demo de \ac{MIMIC}-IV-\ac{ED} (222 pacientes), que aunque mantiene patrones representativos, no permite evaluar el comportamiento del sistema a escala real.
     
     \item \textbf{Evaluación monolingüe}: El sistema y su evaluación se han centrado exclusivamente en español médico; la generalización a otros idiomas requiere validación adicional.
     
@@ -111,7 +111,7 @@ El presente trabajo presenta las siguientes limitaciones que deben considerarse 
     
     \item \textbf{Visualizaciones limitadas a pacientes individuales}: El sistema actual no soporta visualizaciones de datos agregados poblacionales, restringiendo casos de uso epidemiológicos.
     
-    \item \textbf{Dependencia de APIs externas}: La arquitectura depende de la disponibilidad de la API de Anthropic, introduciendo un punto de fallo potencial no completamente mitigable por el mecanismo de fallback.
+    \item \textbf{Dependencia de APIs externas}: La arquitectura depende de la disponibilidad de la \ac{API} de Anthropic, introduciendo un punto de fallo potencial no completamente mitigable por el mecanismo de fallback.
 \end{itemize}
 
 \section{Trabajo futuro}
@@ -134,9 +134,9 @@ Los resultados de la evaluación y las limitaciones identificadas abren múltipl
 \begin{description}
     \item[Reranking con cross-encoders biomédicos:] Implementación de modelos de reranking especializados como MedCPT-Cross-Encoder \cite{jin2023medcpt} para mejorar la precisión de los fragmentos recuperados.
     
-    \item[RAG iterativo:] Exploración de técnicas de RAG con queries de seguimiento \cite{xiong2024imedrag}, donde el sistema formula preguntas adicionales basándose en información recuperada previamente para resolver consultas complejas.
+    \item[\ac{RAG} iterativo:] Exploración de técnicas de \ac{RAG} con queries de seguimiento \cite{xiong2024imedrag}, donde el sistema formula preguntas adicionales basándose en información recuperada previamente para resolver consultas complejas.
     
-    \item[Integración con grafos de conocimiento:] Enriquecimiento del contexto recuperado mediante conexión con bases de conocimiento biomédico estructurado (UMLS, SNOMED CT, DrugBank).
+    \item[Integración con grafos de conocimiento:] Enriquecimiento del contexto recuperado mediante conexión con bases de conocimiento biomédico estructurado (\ac{UMLS}, \ac{SNOMEDCT}, DrugBank).
 \end{description}
 
 \subsection{Mejoras en seguridad y confiabilidad}
@@ -144,7 +144,7 @@ Los resultados de la evaluación y las limitaciones identificadas abren múltipl
 \begin{description}
     \item[Calibración de incertidumbre:] Implementación de técnicas de cuantificación de incertidumbre como entropía semántica \cite{farquhar2024semantic} para detectar respuestas de baja confianza y activar mecanismos de verificación adicional.
     
-    \item[Defensa contra inyección indirecta:] Desarrollo de protecciones contra ataques de inyección de prompts a través de datos de contexto manipulados, un vector de amenaza emergente en sistemas RAG.
+    \item[Defensa contra inyección indirecta:] Desarrollo de protecciones contra ataques de inyección de prompts a través de datos de contexto manipulados, un vector de amenaza emergente en sistemas \ac{RAG}.
     
     \item[Auditoría y trazabilidad:] Implementación de logs estructurados que registren cada decisión del agente, herramienta invocada y fuente citada, facilitando la auditoría clínica y el cumplimiento normativo.
 \end{description}
@@ -154,9 +154,9 @@ Los resultados de la evaluación y las limitaciones identificadas abren múltipl
 \begin{description}
     \item[Evaluación con profesionales sanitarios:] Diseño y ejecución de estudios de usabilidad con médicos de urgencias para evaluar la utilidad percibida, la confianza en las respuestas y la integración con flujos de trabajo clínicos.
     
-    \item[Escalado a MIMIC-IV completo:] Migración a la versión completa del dataset (425.000 estancias) para evaluar el rendimiento del sistema a escala real y optimizar índices y estrategias de caché.
+    \item[Escalado a \ac{MIMIC}-IV completo:] Migración a la versión completa del dataset (425.000 estancias) para evaluar el rendimiento del sistema a escala real y optimizar índices y estrategias de caché.
     
-    \item[Cumplimiento normativo:] Análisis de los requisitos regulatorios (RGPD, normativa de dispositivos médicos) para el despliegue del sistema en entornos clínicos reales, incluyendo evaluación de riesgos y documentación técnica.
+    \item[Cumplimiento normativo:] Análisis de los requisitos regulatorios (\ac{RGPD}, normativa de dispositivos médicos) para el despliegue del sistema en entornos clínicos reales, incluyendo evaluación de riesgos y documentación técnica.
     
     \item[Despliegue piloto:] Implementación de un piloto controlado en un servicio de urgencias, con métricas de impacto en tiempo de acceso a información y satisfacción de usuarios.
 \end{description}
@@ -164,10 +164,10 @@ Los resultados de la evaluación y las limitaciones identificadas abren múltipl
 \section{Reflexión final}
 \label{sec:reflexion}
 
-El desarrollo de sistemas de IA para asistencia clínica representa uno de los desafíos más exigentes del campo: la combinación de requisitos de precisión factual absoluta, latencia reducida, trazabilidad de información y seguridad ante amenazas adversariales configura un espacio de diseño altamente restringido.
+El desarrollo de sistemas de \ac{IA} para asistencia clínica representa uno de los desafíos más exigentes del campo: la combinación de requisitos de precisión factual absoluta, latencia reducida, trazabilidad de información y seguridad ante amenazas adversariales configura un espacio de diseño altamente restringido.
 
-ChatHCE demuestra que es posible construir sistemas funcionales que aborden estos requisitos mediante decisiones arquitectónicas fundamentadas: un agente unificado que minimiza latencia y errores acumulados, un pipeline RAG híbrido que balancea cobertura y precisión, un modelo de defensa en profundidad que previene alucinaciones, y un enfoque \textit{template-first} que garantiza determinismo en visualizaciones.
+ChatHCE demuestra que es posible construir sistemas funcionales que aborden estos requisitos mediante decisiones arquitectónicas fundamentadas: un agente unificado que minimiza latencia y errores acumulados, un pipeline \ac{RAG} híbrido que balancea cobertura y precisión, un modelo de defensa en profundidad que previene alucinaciones, y un enfoque \textit{template-first} que garantiza determinismo en visualizaciones.
 
-Los resultados obtenidos ---particularmente la tasa cero de alucinación en todos los escenarios evaluados--- sugieren que los LLMs, adecuadamente configurados y restringidos, pueden constituir herramientas valiosas de asistencia clínica. Sin embargo, el camino hacia el despliegue clínico real requiere validación adicional, evaluación con profesionales sanitarios y cumplimiento de marcos regulatorios específicos del dominio médico.
+Los resultados obtenidos ---particularmente la tasa cero de alucinación en todos los escenarios evaluados--- sugieren que los \ac{LLM}s, adecuadamente configurados y restringidos, pueden constituir herramientas valiosas de asistencia clínica. Sin embargo, el camino hacia el despliegue clínico real requiere validación adicional, evaluación con profesionales sanitarios y cumplimiento de marcos regulatorios específicos del dominio médico.
 
 La convergencia de inteligencia artificial y medicina representa, en palabras de \citet{Topol2019deepmedicine}, una de las transformaciones más significativas de la práctica médica contemporánea. Este trabajo contribuye a ese objetivo con un sistema diseñado desde su concepción para priorizar la seguridad del paciente, la trazabilidad de la información y la integración fluida con los flujos de trabajo clínicos.

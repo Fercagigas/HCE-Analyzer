@@ -46,24 +46,24 @@
 
 El ejercicio de la medicina de urgencias impone una carga cognitiva y temporal excepcional sobre los profesionales sanitarios. Un médico de urgencias necesita acceder, de forma simultánea y en tiempo real, a tres categorías de información heterogéneas: datos estructurados del paciente almacenados en bases de datos relacionales (signos vitales, diagnósticos previos, medicación activa), conocimiento clínico no estructurado contenido en guías y protocolos (documentos PDF, DOCX), y representaciones visuales que permitan identificar tendencias en series temporales de parámetros fisiológicos. Esta integración se realiza habitualmente mediante múltiples sistemas desconectados, con interfaces distintas y sin capacidad de consulta en lenguaje natural. Recientes revisiones sistemáticas han documentado el potencial de los modelos de lenguaje de gran escala para tareas clínicas como resumen, consulta de conocimiento y predicción \citep{wang2024chatgpt}.
 
-Según \citep{arun2025ethical}, los médicos dedican una media de 16 minutos y 14 segundos de tiempo activo en el sistema de historia clínica electrónica (HCE) por cada encuentro con el paciente, lo que representa entre el 37\% y el 49\% del tiempo total de la visita. En urgencias, donde los tiempos de respuesta son críticos, esta carga documental puede comprometer la calidad asistencial. El sistema \textbf{AgentClinic} \citep{AgentClinic2025} ha demostrado que los agentes conversacionales pueden simular entornos clínicos completos, mientras que revisiones como las de \citep{Amugongo2025systematic} confirman la viabilidad de sistemas RAG en el dominio sanitario.
+Según \citep{arun2025ethical}, los médicos dedican una media de 16 minutos y 14 segundos de tiempo activo en el sistema de historia clínica electrónica (\ac{HCE}) por cada encuentro con el paciente, lo que representa entre el 37\% y el 49\% del tiempo total de la visita. En urgencias, donde los tiempos de respuesta son críticos, esta carga documental puede comprometer la calidad asistencial. El sistema \textbf{AgentClinic} \citep{AgentClinic2025} ha demostrado que los agentes conversacionales pueden simular entornos clínicos completos, mientras que revisiones como las de \citep{Amugongo2025systematic} confirman la viabilidad de sistemas \ac{RAG} en el dominio sanitario.
 
-\textbf{ChatHCE} aborda este problema proporcionando una interfaz conversacional unificada en lenguaje natural que integra automáticamente las tres fuentes de información mediante selección inteligente de herramientas. El sistema opera sobre el dataset MIMIC-IV-ED \citep{johnson2023mimiciv}, un conjunto de datos clínicos anonimizados ampliamente utilizado en investigación biomédica, y ha sido diseñado para responder a cinco preguntas de investigación fundamentales que guían su arquitectura técnica.
+\textbf{ChatHCE} aborda este problema proporcionando una interfaz conversacional unificada en lenguaje natural que integra automáticamente las tres fuentes de información mediante selección inteligente de herramientas. El sistema opera sobre el dataset \ac{MIMIC}-IV-\ac{ED} \citep{johnson2023mimiciv}, un conjunto de datos clínicos anonimizados ampliamente utilizado en investigación biomédica, y ha sido diseñado para responder a cinco preguntas de investigación fundamentales que guían su arquitectura técnica.
 
 \subsection{Preguntas de investigación}
 
-Este capítulo describe la arquitectura de ChatHCE en función de cinco preguntas de investigación (RQ) que abordan los principales desafíos técnicos de un sistema conversacional clínico:
+Este capítulo describe la arquitectura de ChatHCE en función de cinco preguntas de investigación (\ac{RQ}) que abordan los principales desafíos técnicos de un sistema conversacional clínico:
 
 \begin{description}[nosep, leftmargin=1em, labelindent=0em]
   \item[\textbf{RQ1}:] ¿Cómo puede una \textbf{arquitectura de agente unificado} con \textit{tool-calling} nativo alcanzar latencias P50 inferiores a 5 segundos mientras reduce el error acumulado en comparación con arquitecturas multi-agente?
   
-  \item[\textbf{RQ2}:] ¿En qué medida la \textbf{búsqueda híbrida} (vectorial + léxica) combinada con \textit{Reciprocal Rank Fusion} (RRF, $k=60$) y \textbf{chunking jerárquico} padre-hijo mejora la precisión de recuperación respecto a búsqueda vectorial pura?
+  \item[\textbf{RQ2}:] ¿En qué medida la \textbf{búsqueda híbrida} (vectorial + léxica) combinada con \textit{Reciprocal Rank Fusion} (\ac{RRF}, $k=60$) y \textbf{chunking jerárquico} padre-hijo mejora la precisión de recuperación respecto a búsqueda vectorial pura?
   
-  \item[\textbf{RQ3}:] ¿Cómo implementar una estrategia de \textbf{defensa en profundidad} con múltiples capas de seguridad (validación SQL, sandbox AST, directivas de prompt) para mitigar alucinaciones y garantizar la integridad de los datos clínicos?
+  \item[\textbf{RQ3}:] ¿Cómo implementar una estrategia de \textbf{defensa en profundidad} con múltiples capas de seguridad (validación \ac{SQL}, sandbox \ac{AST}, directivas de prompt) para mitigar alucinaciones y garantizar la integridad de los datos clínicos?
   
-  \item[\textbf{RQ4}:] ¿Qué mecanismos de \textbf{fallback} (Haiku $\rightarrow$ Sonnet $\rightarrow$ Opus) garantizan la continuidad operativa ante fallos de API o rate limiting?
+  \item[\textbf{RQ4}:] ¿Qué mecanismos de \textbf{fallback} (Haiku $\rightarrow$ Sonnet $\rightarrow$ Opus) garantizan la continuidad operativa ante fallos de \ac{API} o rate limiting?
   
-  \item[\textbf{RQ5}:] ¿Cuáles son los beneficios de un enfoque \textbf{\textit{template-first}} en visualización ($\sim$0.4\,s) frente a generación por LLM ($\sim$4\,s) en términos de latencia y determinismo?
+  \item[\textbf{RQ5}:] ¿Cuáles son los beneficios de un enfoque \textbf{\textit{template-first}} en visualización ($\sim$0.4\,s) frente a generación por \ac{LLM} ($\sim$4\,s) en términos de latencia y determinismo?
 \end{description}
 
 Las siguientes secciones describen cómo la arquitectura de ChatHCE responde a cada una de estas preguntas. Para un análisis técnico exhaustivo de cada componente, véase el Anexo~\ref{appendix:arquitectura}.
@@ -75,13 +75,13 @@ Las siguientes secciones describen cómo la arquitectura de ChatHCE responde a c
 
 \subsection{Descripción funcional}
 
-\textbf{ChatHCE} es un sistema de análisis clínico inteligente diseñado para profesionales del Servicio de Urgencias que necesitan acceder, en tiempo real y mediante lenguaje natural en español, a datos de pacientes del dataset MIMIC-IV-ED, guías clínicas indexadas y visualizaciones interactivas. El sistema opera como una interfaz conversacional única que elimina la necesidad de cambiar entre múltiples aplicaciones o aprender lenguajes de consulta especializados.
+\textbf{ChatHCE} es un sistema de análisis clínico inteligente diseñado para profesionales del Servicio de Urgencias que necesitan acceder, en tiempo real y mediante lenguaje natural en español, a datos de pacientes del dataset \ac{MIMIC}-IV-\ac{ED}, guías clínicas indexadas y visualizaciones interactivas. El sistema opera como una interfaz conversacional única que elimina la necesidad de cambiar entre múltiples aplicaciones o aprender lenguajes de consulta especializados.
 
 El sistema se articula sobre tres pilares tecnológicos complementarios:
 
 \begin{enumerate}[nosep, leftmargin=*]
   \item Un \textbf{agente conversacional unificado} basado en Claude Haiku 4.5 con capacidad de \textit{tool\mbox{-}calling} nativo, que analiza la intención del usuario y selecciona automáticamente las herramientas apropiadas (\textbf{RQ1}).
-  \item Un \textbf{pipeline RAG} (\textit{Retrieval-Augmented Generation}) con búsqueda híbrida vectorial-léxica, fusión RRF y chunking jerárquico sobre Supabase~\citep{supabase2020} pgvector~\citep{pgvector2024}, que recupera fragmentos relevantes de documentos clínicos indexados (\textbf{RQ2}).
+  \item Un \textbf{pipeline RAG} (\textit{Retrieval-Augmented Generation}) con búsqueda híbrida vectorial-léxica, fusión \ac{RRF} y chunking jerárquico sobre Supabase~\citep{supabase2020} pgvector~\citep{pgvector2024}, que recupera fragmentos relevantes de documentos clínicos indexados (\textbf{RQ2}).
   \item Un \textbf{motor de visualización} con enfoque \textit{template\mbox{-}first} que genera gráficas interactivas con Plotly~\citep{plotly2015} a partir de datos clínicos, activándose automáticamente cuando la consulta implica tendencias temporales (\textbf{RQ5}).
 \end{enumerate}
 
@@ -108,7 +108,7 @@ donde $\mathcal{A}$ es la función de síntesis del agente y el subconjunto de h
 
 \subsection{Flujo de procesamiento de alto nivel}
 
-El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig:flujo_end2end}): recepción de la consulta en Streamlit, verificación de caché (TTL: 300\,s), análisis de intención por Claude Haiku 4.5, selección dinámica de herramientas ($\mathcal{T}(q)$), ejecución de las herramientas seleccionadas (hasta 5 iteraciones), y síntesis final de la respuesta integrada.
+El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig:flujo_end2end}): recepción de la consulta en Streamlit, verificación de caché (\ac{TTL}: 300\,s), análisis de intención por Claude Haiku 4.5, selección dinámica de herramientas ($\mathcal{T}(q)$), ejecución de las herramientas seleccionadas (hasta 5 iteraciones), y síntesis final de la respuesta integrada.
 
 \begin{figure*}[t]
 \centering
@@ -143,7 +143,7 @@ El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig
 ]
 
 \node[ionode] (user)    at (0, 0)    {Usuario escribe consulta en español};
-\node[procnode] (cache)  at (0,-1.5)  {Verificación de caché (TTL: 300\,s)};
+\node[procnode] (cache)  at (0,-1.5)  {Verificación de caché (\ac{TTL}: 300\,s)};
 \node[procnode] (claude) at (0,-3.0)  {Claude Haiku 4.5 analiza intención};
 \node[decnode] (select) at (0,-4.6) {$\mathcal{T}(q)$: selección de herramientas};
 
@@ -183,15 +183,15 @@ El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig
 \end{figure*}
 
 % ====================================================================
-\section{Arquitectura de agente unificado (RQ1)}
+\section{Arquitectura de agente unificado (\ac{RQ}1)}
 \label{sec:agente_unificado}
 % ====================================================================
 
-La decisión arquitectónica más relevante del sistema es la adopción de un \textbf{agente unificado} (\texttt{UnifiedChatAgent}) en lugar de una arquitectura multi-agente. Esta decisión responde a tres requisitos críticos del dominio clínico: (1)~latencia mínima, dado que una arquitectura multi-agente requiere 3--5 llamadas LLM secuenciales multiplicando la latencia; (2)~reducción del error acumulado, ya que el agente unificado sintetiza directamente desde los resultados sin transformaciones intermedias; y (3)~\textit{tool-calling} determinista, donde Claude Haiku 4.5 genera estructuras JSON nativas especificando herramienta y parámetros, eliminando el parsing de texto libre propenso a errores \citep{Wang2024SurveyAgents}.
+La decisión arquitectónica más relevante del sistema es la adopción de un \textbf{agente unificado} (\texttt{UnifiedChatAgent}) en lugar de una arquitectura multi-agente. Esta decisión responde a tres requisitos críticos del dominio clínico: (1)~latencia mínima, dado que una arquitectura multi-agente requiere 3--5 llamadas \ac{LLM} secuenciales multiplicando la latencia; (2)~reducción del error acumulado, ya que el agente unificado sintetiza directamente desde los resultados sin transformaciones intermedias; y (3)~\textit{tool-calling} determinista, donde Claude Haiku 4.5 genera estructuras \ac{JSON} nativas especificando herramienta y parámetros, eliminando el parsing de texto libre propenso a errores \citep{Wang2024SurveyAgents}.
 
 \subsection{Comparativa con arquitectura multi-agente}
 
-La Figura~\ref{fig:comparativa_agentes} ilustra la diferencia estructural entre ambos enfoques. La arquitectura multi-agente requiere múltiples nodos de procesamiento LLM coordinados, mientras que el agente unificado centraliza la orquestación en un único nodo con acceso directo a herramientas.
+La Figura~\ref{fig:comparativa_agentes} ilustra la diferencia estructural entre ambos enfoques. La arquitectura multi-agente requiere múltiples nodos de procesamiento \ac{LLM} coordinados, mientras que el agente unificado centraliza la orquestación en un único nodo con acceso directo a herramientas.
 
 \begin{figure*}[t]
 \centering
@@ -238,7 +238,7 @@ La Figura~\ref{fig:comparativa_agentes} ilustra la diferencia estructural entre 
 \draw[flowarrow] (critic) -- (resp1);
 
 \node[disadvlabel, anchor=north] at (-6.0, -1.5) {%
-  $\times$ 3--5 llamadas LLM por turno\\
+  $\times$ 3--5 llamadas \ac{LLM} por turno\\
   $\times$ Error acumulado entre nodos\\
   $\times$ Latencia $>$ 10\,s (estimada)};
 
@@ -256,7 +256,7 @@ La Figura~\ref{fig:comparativa_agentes} ilustra la diferencia estructural entre 
 \node[toolnode, minimum width=2.0cm] (ragt) at (6.0, 1.8) {RAG Tool};
 \node[toolnode, minimum width=2.0cm] (vizt) at (8.5, 1.8) {VIZ Tool};
 
-\node[agentnode, minimum width=3.8cm] (synth2) at (6.0, 0.4) {Síntesis directa\\(una sola llamada LLM)};
+\node[agentnode, minimum width=3.8cm] (synth2) at (6.0, 0.4) {Síntesis directa\\(una sola llamada \ac{LLM})};
 \node[agentnode, minimum width=3.8cm] (resp2) at (6.0, -0.8) {Respuesta integrada};
 
 \draw[flowarrow] (unified) -- (dbt);
@@ -268,7 +268,7 @@ La Figura~\ref{fig:comparativa_agentes} ilustra la diferencia estructural entre 
 \draw[flowarrow] (synth2) -- (resp2);
 
 \node[advlabel, anchor=north] at (6.0, -1.5) {%
-  $\checkmark$ 1 llamada LLM por turno\\
+  $\checkmark$ 1 llamada \ac{LLM} por turno\\
   $\checkmark$ Síntesis directa sin intermediarios\\
   $\checkmark$ Latencia P50 $<$ 5\,s};
 
@@ -278,7 +278,7 @@ La Figura~\ref{fig:comparativa_agentes} ilustra la diferencia estructural entre 
 
 \end{tikzpicture}%
 }% end resizebox
-\caption{Comparativa entre arquitectura multi-agente (izquierda, descartada) y agente unificado (derecha, adoptada). El agente unificado reduce llamadas LLM de 3--5 a 1 por turno, eliminando error acumulado y reduciendo latencia. La cadena de fallback garantiza continuidad operativa (\textbf{RQ4}).}
+\caption{Comparativa entre arquitectura multi-agente (izquierda, descartada) y agente unificado (derecha, adoptada). El agente unificado reduce llamadas \ac{LLM} de 3--5 a 1 por turno, eliminando error acumulado y reduciendo latencia. La cadena de fallback garantiza continuidad operativa (\textbf{RQ4}).}
 \label{fig:comparativa_agentes}
 \end{figure*}
 
@@ -287,7 +287,7 @@ La Figura~\ref{fig:comparativa_agentes} ilustra la diferencia estructural entre 
 El \texttt{UnifiedChatAgent} se implementa como un \texttt{AgentExecutor} de LangChain con los siguientes componentes principales:
 
 \begin{itemize}[nosep, leftmargin=*]
-  \item \textbf{Motor LLM}: \texttt{ClaudeLLMManager} gestiona la comunicación con la API de Anthropic. Claude Haiku 4.5 (\texttt{claude-haiku-4-5-20251001}) genera estructuras JSON nativas para \textit{tool-calling}, eliminando parsing de texto libre.
+  \item \textbf{Motor LLM}: \texttt{ClaudeLLMManager} gestiona la comunicación con la \ac{API} de Anthropic. Claude Haiku 4.5 (\texttt{claude-haiku-4-5-20251001}) genera estructuras \ac{JSON} nativas para \textit{tool-calling}, eliminando parsing de texto libre.
   \item \textbf{Registro de herramientas}: \texttt{ClaudeToolRegistry} centraliza las tres herramientas mediante el patrón \textit{Adapter} (\texttt{ClaudeToolAdapter}).
   \item \textbf{Gestor de prompts}: \texttt{PromptManager} genera el prompt del sistema con límite de 8000 tokens, estructurado en 10 secciones (identidad, contexto, herramientas, anti-alucinación, idioma, esquema BD, herramientas detalladas, formato, guías clínicas, selección de herramientas).
 \end{itemize}
@@ -305,7 +305,7 @@ La Tabla~\ref{tab:metricas_agente} resume las métricas objetivo del agente unif
 \midrule
 Latencia P50 & Tiempo total extremo a extremo & $<$ 5\,s \\
 Latencia P95 & Tiempo en percentil 95 & $<$ 8\,s \\
-Llamadas LLM/turno & Invocaciones al modelo por turno & 1 \\
+Llamadas \ac{LLM}/turno & Invocaciones al modelo por turno & 1 \\
 Error acumulado & Errores por encadenamiento de agentes & 0 \\
 Tasa de éxito tool-calling & Invocaciones correctas de herramientas & $>$ 95\% \\
 \bottomrule
@@ -364,7 +364,7 @@ ChatHCE sigue una arquitectura de cinco capas con separación estricta de respon
 \node[compbox, minimum width=3.6cm] at (4.5, -3.25) {\texttt{llm\_manager.py}\\ClaudeLLMManager};
 
 % Interfaz 2-3
-\node[ifacebox, minimum width=16.5cm] (I23) at (0, -4.75) {Interfaz: \texttt{StructuredTool} API (LangChain) $\mid$ \texttt{ClaudeToolAdapter.get\_langchain\_tool()}};
+\node[ifacebox, minimum width=16.5cm] (I23) at (0, -4.75) {Interfaz: \texttt{StructuredTool} \ac{API} (LangChain) $\mid$ \texttt{ClaudeToolAdapter.get\_langchain\_tool()}};
 
 % Capa 3: Herramientas
 \node[layerbox] (L3) at (0, -6.4) {};
@@ -398,24 +398,24 @@ ChatHCE sigue una arquitectura de cinco capas con separación estricta de respon
 
 \end{tikzpicture}%
 }% end resizebox
-\caption{Arquitectura por capas de ChatHCE con interfaces entre capas. Cada capa solo puede comunicarse con la capa inmediatamente inferior. Patrones de diseño: Adapter (\texttt{ClaudeToolAdapter}), Singleton (\texttt{CacheManager}, \texttt{RateLimiter}, \texttt{ImprovedRAGService}), Strategy (búsqueda RAG), Factory (\texttt{ClaudeToolRegistry}), Chain of Responsibility (fallback LLM).}
+\caption{Arquitectura por capas de ChatHCE con interfaces entre capas. Cada capa solo puede comunicarse con la capa inmediatamente inferior. Patrones de diseño: Adapter (\texttt{ClaudeToolAdapter}), Singleton (\texttt{CacheManager}, \texttt{RateLimiter}, \texttt{ImprovedRAGService}), Strategy (búsqueda \ac{RAG}), Factory (\texttt{ClaudeToolRegistry}), Chain of Responsibility (fallback \ac{LLM}).}
 \label{fig:capas_interfaces}
 \end{figure*}
 
-\textbf{Capa 1 --- Presentación.} Implementada con Streamlit, gestiona la interfaz de usuario, el chat interactivo, la autenticación y la carga de documentos para el sistema RAG. No contiene lógica de negocio.
+\textbf{Capa 1 --- Presentación.} Implementada con Streamlit, gestiona la interfaz de usuario, el chat interactivo, la autenticación y la carga de documentos para el sistema \ac{RAG}. No contiene lógica de negocio.
 
 \textbf{Capa 2 --- Aplicación.} Contiene la lógica de orquestación: \texttt{UnifiedChatAgent} recibe la consulta, gestiona el historial conversacional, invoca herramientas y sintetiza la respuesta. \texttt{PromptManager} genera el prompt del sistema (8000 tokens máximo, 10 secciones) y \texttt{ClaudeLLMManager} gestiona la cadena de fallback entre modelos.
 
-\textbf{Capa 3 --- Herramientas.} Tres herramientas especializadas adaptadas a LangChain mediante el patrón \textit{Adapter}: \texttt{DatabaseTool} (consultas SQL validadas), \texttt{RAGTool} (búsqueda híbrida en documentos) y \texttt{VisualizationTool} (gráficas Plotly).
+\textbf{Capa 3 --- Herramientas.} Tres herramientas especializadas adaptadas a LangChain mediante el patrón \textit{Adapter}: \texttt{DatabaseTool} (consultas \ac{SQL} validadas), \texttt{RAGTool} (búsqueda híbrida en documentos) y \texttt{VisualizationTool} (gráficas Plotly).
 
-\textbf{Capa 4 --- Servicios.} Servicios de infraestructura: \texttt{DatabaseService}, \texttt{ImprovedRAGService} (pipeline RAG completo), \texttt{VisualizationAgent}, \texttt{CacheManager} (LRU con TTL=300s) y \texttt{RateLimiter} (30 req/min, 300 req/hora).
+\textbf{Capa 4 --- Servicios.} Servicios de infraestructura: \texttt{DatabaseService}, \texttt{ImprovedRAGService} (pipeline \ac{RAG} completo), \texttt{VisualizationAgent}, \texttt{CacheManager} (\ac{LRU} con \ac{TTL}=300s) y \texttt{RateLimiter} (30 req/min, 300 req/hora).
 
 \textbf{Capa 5 --- Datos.} Backend unificado en Supabase: PostgreSQL 15 con esquema \texttt{mimic\_ed}, pgvector 0.8.0 con tabla \texttt{rag\_chunks}, y almacenamiento de archivos para documentos clínicos originales.
 
 Para una descripción completa de las tablas, índices y esquemas de datos, véase el Anexo~\ref{appendix:arquitectura}.
 
 % ====================================================================
-\section{Fuente de datos: MIMIC-IV-ED}
+\section{Fuente de datos: \ac{MIMIC}-IV-ED}
 \label{sec:mimic}
 % ====================================================================
 
@@ -438,7 +438,7 @@ La Tabla~\ref{tab:mimic_estructura} muestra la estructura del dataset y la Figur
 \addlinespace
 \texttt{vitalsign} & Signos vitales seriados   & 1\,038  & \textit{charttime, temperature, heartrate, resprate, o2sat, sbp, dbp, rhythm, pain} & TIMESTAMP, NUMERIC \\
 \addlinespace
-\texttt{diagnosis} & Diagnósticos ICD-9/10     & 545     & \textit{seq\_num, icd\_code, icd\_title, icd\_version} & SMALLINT, VARCHAR \\
+\texttt{diagnosis} & Diagnósticos \ac{ICD}-9/10     & 545     & \textit{seq\_num, icd\_code, icd\_title, icd\_version} & SMALLINT, VARCHAR \\
 \addlinespace
 \texttt{medrecon}  & Medicación habitual       & 2\,764  & \textit{name, gsn, ndc, etccode, etcdescription} & VARCHAR, BIGINT, NUMERIC \\
 \addlinespace
@@ -449,7 +449,7 @@ La Tabla~\ref{tab:mimic_estructura} muestra la estructura del dataset y la Figur
 \end{tabularx}
 \end{table*}
 
-La tabla \texttt{edstays} actúa como \textbf{hub relacional}: todas las demás tablas referencian a ella mediante la clave foránea \texttt{stay\_id}. La elección de Supabase como backend unificado responde a cinco requisitos arquitectónicos convergentes: PostgreSQL 15 completo (JOINs complejos, funciones de ventana), pgvector 0.8.0 nativo (embeddings 384d sin servicio vectorial externo), búsqueda híbrida en una sola query (pgvector + tsvector vía RPC), autenticación integrada (JWT + RLS en 13 tablas), y API REST automática (PostgREST).
+La tabla \texttt{edstays} actúa como \textbf{hub relacional}: todas las demás tablas referencian a ella mediante la clave foránea \texttt{stay\_id}. La elección de Supabase como backend unificado responde a cinco requisitos arquitectónicos convergentes: PostgreSQL 15 completo (JOINs complejos, funciones de ventana), pgvector 0.8.0 nativo (embeddings 384d sin servicio vectorial externo), búsqueda híbrida en una sola query (pgvector + tsvector vía RPC), autenticación integrada (JWT + RLS en 13 tablas), y \ac{API} REST automática (PostgREST).
 
 \begin{figure*}[t]
 \centering
@@ -581,11 +581,11 @@ La tabla \texttt{edstays} actúa como \textbf{hub relacional}: todas las demás 
 \end{figure*}
 
 % ====================================================================
-\section{Sistema RAG con búsqueda híbrida (RQ2)}
+\section{Sistema \ac{RAG} con búsqueda híbrida (\ac{RQ}2)}
 \label{sec:rag}
 % ====================================================================
 
-Esta sección describe el sistema RAG que responde a \textbf{RQ2}: cómo la búsqueda híbrida vectorial-léxica con RRF y chunking jerárquico mejora la precisión de recuperación. El pipeline opera sobre tres documentos clínicos indexados: el \textit{Manual del Residente de Medicina Intensiva} (Hospital Virgen del Rocío), los \textit{Estándares y Recomendaciones para UCI} (Ministerio de Sanidad), y \textit{El Libro de la UCI} de Paul L.\ Marino.
+Esta sección describe el sistema \ac{RAG} que responde a \textbf{RQ2}: cómo la búsqueda híbrida vectorial-léxica con \ac{RRF} y chunking jerárquico mejora la precisión de recuperación. El pipeline opera sobre tres documentos clínicos indexados: el \textit{Manual del Residente de Medicina Intensiva} (Hospital Virgen del Rocío), los \textit{Estándares y Recomendaciones para UCI} (Ministerio de Sanidad), y \textit{El Libro de la UCI} de Paul L.\ Marino.
 
 \subsection{Arquitectura del pipeline RAG}
 
@@ -679,7 +679,7 @@ El pipeline se divide en dos fases: \textbf{indexación} (offline) y \textbf{rec
 
 \end{tikzpicture}%
 }% end resizebox
-\caption{Pipeline RAG completo. Arriba: indexación con chunking jerárquico padre-hijo (3000/800 chars). Abajo: recuperación con augmentación, búsqueda híbrida, fusión RRF ($k=60$) y reranking cross-encoder. Este diseño responde a \textbf{RQ2}.}
+\caption{Pipeline \ac{RAG} completo. Arriba: indexación con chunking jerárquico padre-hijo (3000/800 chars). Abajo: recuperación con augmentación, búsqueda híbrida, fusión \ac{RRF} ($k=60$) y reranking cross-encoder. Este diseño responde a \textbf{RQ2}.}
 \label{fig:rag_pipeline}
 \end{figure*}
 
@@ -696,16 +696,16 @@ La búsqueda combina dos estrategias ejecutadas en PostgreSQL mediante funciones
 
 donde $k = 60$ es la constante de suavizado. El reranking final utiliza el cross-encoder \texttt{ms-marco-MiniLM-L-6-v2}, con \texttt{top\_k=8} y \texttt{fetch\_k=32} candidatos evaluados.
 
-\subsection{Mejoras al pipeline RAG: diagnóstico y resultados}
+\subsection{Mejoras al pipeline \ac{RAG}: diagnóstico y resultados}
 \label{sec:rag_mejoras}
 
-Durante la evaluación con el framework RAGAS \citep{Es2023ragas}, se detectó que las métricas de \textit{Context Precision} y \textit{Context Recall} eran cercanas a cero a pesar de tener los documentos correctamente indexados. Un diagnóstico exhaustivo identificó seis causas raíz, incluyendo: desalineación del \textit{system prompt} con los documentos indexados (documentos sobre UCI, no urgencias), truncado del prompt por límite insuficiente de tokens (4000 tokens), truncado del contenido RAG a 600 caracteres, y \texttt{top\_k} insuficiente para fragmentos dispersos.
+Durante la evaluación con el framework \ac{RAGAS} \citep{Es2023ragas}, se detectó que las métricas de \textit{Context Precision} y \textit{Context Recall} eran cercanas a cero a pesar de tener los documentos correctamente indexados. Un diagnóstico exhaustivo identificó seis causas raíz, incluyendo: desalineación del \textit{system prompt} con los documentos indexados (documentos sobre \ac{UCI}, no urgencias), truncado del prompt por límite insuficiente de tokens (4000 tokens), truncado del contenido \ac{RAG} a 600 caracteres, y \texttt{top\_k} insuficiente para fragmentos dispersos.
 
-Las mejoras implementadas (Tabla~\ref{tab:rag_mejoras}) produjeron incrementos significativos en las métricas del \textit{golden set} RAG (30 preguntas sobre guías clínicas UCI), como muestra la Tabla~\ref{tab:rag_evolucion}.
+Las mejoras implementadas (Tabla~\ref{tab:rag_mejoras}) produjeron incrementos significativos en las métricas del \textit{golden set} \ac{RAG} (30 preguntas sobre guías clínicas \ac{UCI}), como muestra la Tabla~\ref{tab:rag_evolucion}.
 
 \begin{table}[H]
 \centering
-\caption{Mejoras implementadas en el pipeline RAG.}
+\caption{Mejoras implementadas en el pipeline \ac{RAG}.}
 \label{tab:rag_mejoras}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lXX}
@@ -716,7 +716,7 @@ Prompt max\_tokens & 4000 & 8000 \\
 Truncado contenido & 600 chars & 1500 chars \\
 top\_k por defecto & 5 & 8 \\
 fetch\_k (reranker) & top\_k $\times$ 3 & top\_k $\times$ 4 \\
-Directivas selección & Urgencias genérico & UCI + docs específicos \\
+Directivas selección & Urgencias genérico & \ac{UCI} + docs específicos \\
 raw\_observation & Truncado 1000 chars & Texto completo \\
 \bottomrule
 \end{tabularx}
@@ -724,7 +724,7 @@ raw\_observation & Truncado 1000 chars & Texto completo \\
 
 \begin{table}[H]
 \centering
-\caption{Evolución de métricas RAGAS en el \textit{golden set} RAG tras las mejoras.}
+\caption{Evolución de métricas \ac{RAGAS} en el \textit{golden set} \ac{RAG} tras las mejoras.}
 \label{tab:rag_evolucion}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lrrr}
@@ -739,10 +739,10 @@ Context Recall & 0.033 & \textbf{0.469} & \textbf{+0.436} \\
 \end{tabularx}
 \end{table}
 
-La mejora más significativa se observa en \textit{Context Precision} (+4000\%) y \textit{Context Recall} (+1300\%), confirmando que el agente ahora invoca correctamente \texttt{search\_clinical\_documents} y recupera contexto real de los documentos indexados. Las métricas de \textit{Faithfulness} y \textit{Answer Relevancy} presentan aún margen de mejora en directivas anti-alucinación y concisión de respuestas RAG. Para un análisis detallado del diagnóstico, los cambios implementados y las métricas pendientes, véase el Anexo~\ref{appendix:arquitectura}.
+La mejora más significativa se observa en \textit{Context Precision} (+4000\%) y \textit{Context Recall} (+1300\%), confirmando que el agente ahora invoca correctamente \texttt{search\_clinical\_documents} y recupera contexto real de los documentos indexados. Las métricas de \textit{Faithfulness} y \textit{Answer Relevancy} presentan aún margen de mejora en directivas anti-alucinación y concisión de respuestas \ac{RAG}. Para un análisis detallado del diagnóstico, los cambios implementados y las métricas pendientes, véase el Anexo~\ref{appendix:arquitectura}.
 
 % ====================================================================
-\section{Seguridad y mitigación de alucinaciones (RQ3)}
+\section{Seguridad y mitigación de alucinaciones (\ac{RQ}3)}
 \label{sec:seguridad}
 % ====================================================================
 
@@ -815,22 +815,22 @@ El sistema implementa \textbf{seis capas de seguridad} organizadas según el pri
 \label{fig:seguridad}
 \end{figure*}
 
-Las capas 1--2 protegen contra abuso y denegación de servicio. La capa 3 implementa validación SQL multicapa (lista negra de operaciones DDL/DML, detección de tautologías como \texttt{OR 1=1}, inyección por comentarios, restricción a tablas permitidas). La capa 4 proporciona autenticación JWT con \textit{Row Level Security} habilitado en las 13 tablas del sistema. La capa 5 registra todas las operaciones para auditoría. La capa 6 incluye directivas anti-alucinación explícitas en el prompt del sistema \citep{kim2025hallucination}: prohibiciones absolutas de fabricación de datos, reconocimiento de incertidumbre, citación obligatoria de fuentes y fidelidad exclusiva al contexto recuperado.
+Las capas 1--2 protegen contra abuso y denegación de servicio. La capa 3 implementa validación \ac{SQL} multicapa (lista negra de operaciones DDL/DML, detección de tautologías como \texttt{OR 1=1}, inyección por comentarios, restricción a tablas permitidas). La capa 4 proporciona autenticación JWT con \textit{Row Level Security} habilitado en las 13 tablas del sistema. La capa 5 registra todas las operaciones para auditoría. La capa 6 incluye directivas anti-alucinación explícitas en el prompt del sistema \citep{kim2025hallucination}: prohibiciones absolutas de fabricación de datos, reconocimiento de incertidumbre, citación obligatoria de fuentes y fidelidad exclusiva al contexto recuperado.
 
-Los resultados de las pruebas de seguridad demuestran 12/13 tests aprobados (92.3\%), con 7/7 en inyección SQL y 3/3 en anti-alucinación. El único test fallido corresponde a una solicitud de generación de datos ficticios donde la negativa del agente no fue suficientemente explícita. Para una descripción detallada de cada capa, las reglas de validación SQL, y la implementación del sandbox AST, véase el Anexo~\ref{appendix:arquitectura}.
+Los resultados de las pruebas de seguridad demuestran 12/13 tests aprobados (92.3\%), con 7/7 en inyección \ac{SQL} y 3/3 en anti-alucinación. El único test fallido corresponde a una solicitud de generación de datos ficticios donde la negativa del agente no fue suficientemente explícita. Para una descripción detallada de cada capa, las reglas de validación \ac{SQL}, y la implementación del sandbox \ac{AST}, véase el Anexo~\ref{appendix:arquitectura}.
 
 % ====================================================================
-\section{Estrategia de fallback para continuidad operativa (RQ4)}
+\section{Estrategia de fallback para continuidad operativa (\ac{RQ}4)}
 \label{sec:fallback}
 % ====================================================================
 
-El \texttt{ClaudeLLMManager} implementa una cadena de fallback con tres modelos Claude de capacidad creciente, respondiendo a \textbf{RQ4}: Haiku 4.5 (primario, optimizado para velocidad), Sonnet 4.5 (secundario, mayor razonamiento) y Opus 4 (terciario, máxima capacidad). El escalado se activa ante \textit{rate limiting} (error 429), errores de API (5xx, timeout) o capacidad insuficiente (respuesta vacía/truncada).
+El \texttt{ClaudeLLMManager} implementa una cadena de fallback con tres modelos Claude de capacidad creciente, respondiendo a \textbf{RQ4}: Haiku 4.5 (primario, optimizado para velocidad), Sonnet 4.5 (secundario, mayor razonamiento) y Opus 4 (terciario, máxima capacidad). El escalado se activa ante \textit{rate limiting} (error 429), errores de \ac{API} (5xx, timeout) o capacidad insuficiente (respuesta vacía/truncada).
 
 La implementación utiliza reintentos con backoff exponencial: 3 intentos por modelo con multiplicador 2.0 (esperas de 1s, 2s, 4s) y timeout máximo de 60s. La Tabla~\ref{tab:models} muestra la configuración de cada modelo.
 
 \begin{table}[H]
 \centering
-\caption{Cadena de modelos LLM con parámetros de configuración (\textbf{RQ4}).}
+\caption{Cadena de modelos \ac{LLM} con parámetros de configuración (\textbf{RQ4}).}
 \label{tab:models}
 \footnotesize
 \begin{tabularx}{\columnwidth}{llrrr}
@@ -841,7 +841,7 @@ Primario & \texttt{claude-haiku-4-5-20251001} & 4096 & 0.1 & 30s \\
 Secundario & \texttt{claude-sonnet-4-5-20250929} & 8192 & 0.1 & 45s \\
 Terciario & \texttt{claude-opus-4-20250514} & 4096 & 0.1 & 60s \\
 Visualización & \texttt{claude-sonnet-4-5} & 8192 & 0.1 & 45s \\
-RAG & \texttt{claude-haiku-4-5} & 4000 & 0.1 & 60s \\
+\ac{RAG} & \texttt{claude-haiku-4-5} & 4000 & 0.1 & 60s \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -849,13 +849,13 @@ RAG & \texttt{claude-haiku-4-5} & 4000 & 0.1 & 60s \\
 Para una descripción detallada de la lógica de reintentos, los parámetros de backoff y el diagrama de secuencia del escalado, véase el Anexo~\ref{appendix:arquitectura}.
 
 % ====================================================================
-\section{Motor de visualización template-first (RQ5)}
+\section{Motor de visualización template-first (\ac{RQ}5)}
 \label{sec:visualizacion}
 % ====================================================================
 
-El motor de visualización responde a \textbf{RQ5}: los beneficios del enfoque \textit{template-first} ($\sim$0.4\,s) frente a generación por LLM ($\sim$4\,s). La generación de código Plotly por LLM presenta dos problemas críticos en contexto clínico: latencia inaceptable en urgencias y no-determinismo que dificulta la reproducibilidad.
+El motor de visualización responde a \textbf{RQ5}: los beneficios del enfoque \textit{template-first} ($\sim$0.4\,s) frente a generación por \ac{LLM} ($\sim$4\,s). La generación de código Plotly por \ac{LLM} presenta dos problemas críticos en contexto clínico: latencia inaceptable en urgencias y no-determinismo que dificulta la reproducibilidad.
 
-El pipeline sigue cuatro etapas (Figura~\ref{fig:viz_pipeline}): preprocesamiento de datos (\texttt{DataPreprocessor}), selección automática de plantilla (\texttt{VisualizationSelector}), generación mediante plantilla predefinida o Claude Sonnet 4.5 como fallback, y validación AST antes de ejecución en sandbox.
+El pipeline sigue cuatro etapas (Figura~\ref{fig:viz_pipeline}): preprocesamiento de datos (\texttt{DataPreprocessor}), selección automática de plantilla (\texttt{VisualizationSelector}), generación mediante plantilla predefinida o Claude Sonnet 4.5 como fallback, y validación \ac{AST} antes de ejecución en sandbox.
 
 \begin{figure}[H]
 \centering
@@ -884,7 +884,7 @@ El pipeline sigue cuatro etapas (Figura~\ref{fig:viz_pipeline}): preprocesamient
 \node[stepbox] (tmpl) at (-2.5, -5.2) {Template Plotly\\($\sim$0.4\,s)};
 \node[stepbox] (llm) at (2.5, -5.2) {Claude Sonnet\\($\sim$4\,s)};
 
-\node[stepbox] (val) at (0, -6.6) {CodeValidator (AST)};
+\node[stepbox] (val) at (0, -6.6) {CodeValidator (\ac{AST})};
 \node[stepbox] (exec) at (0, -7.8) {Ejecución sandbox};
 \node[stepbox] (out) at (0, -9.0) {Figura Plotly};
 
@@ -900,15 +900,15 @@ El pipeline sigue cuatro etapas (Figura~\ref{fig:viz_pipeline}): preprocesamient
 
 \end{tikzpicture}%
 }% end resizebox
-\caption{Pipeline de visualización template-first. El 90\% de las consultas se resuelven con plantillas predefinidas ($\sim$0.4\,s); el 10\% restante utiliza generación LLM ($\sim$4\,s). Este diseño responde a \textbf{RQ5}.}
+\caption{Pipeline de visualización template-first. El 90\% de las consultas se resuelven con plantillas predefinidas ($\sim$0.4\,s); el 10\% restante utiliza generación \ac{LLM} ($\sim$4\,s). Este diseño responde a \textbf{RQ5}.}
 \label{fig:viz_pipeline}
 \end{figure}
 
-El sistema dispone de 12+ plantillas predefinidas para los casos clínicos más frecuentes: \texttt{vitals\_timeline} (evolución temporal), \texttt{distribution\_histogram}, \texttt{acuity\_pie} (niveles ESI), \texttt{medication\_bar}, \texttt{diagnosis\_treemap}, \texttt{correlation\_heatmap}, entre otras. La Tabla~\ref{tab:metricas_viz} compara el rendimiento de ambos enfoques.
+El sistema dispone de 12+ plantillas predefinidas para los casos clínicos más frecuentes: \texttt{vitals\_timeline} (evolución temporal), \texttt{distribution\_histogram}, \texttt{acuity\_pie} (niveles \ac{ESI}), \texttt{medication\_bar}, \texttt{diagnosis\_treemap}, \texttt{correlation\_heatmap}, entre otras. La Tabla~\ref{tab:metricas_viz} compara el rendimiento de ambos enfoques.
 
 \begin{table}[H]
 \centering
-\caption{Comparativa de rendimiento: template-first vs.\ generación LLM (\textbf{RQ5}).}
+\caption{Comparativa de rendimiento: template-first vs.\ generación \ac{LLM} (\textbf{RQ5}).}
 \label{tab:metricas_viz}
 \footnotesize
 \begin{tabularx}{\columnwidth}{Xrr}
@@ -924,7 +924,7 @@ Tasa de error de código & 0\% & $\sim$5\% \\
 \end{tabularx}
 \end{table}
 
-Para el catálogo completo de plantillas, la lógica de selección automática, y los detalles de la validación AST, véase el Anexo~\ref{appendix:arquitectura}.
+Para el catálogo completo de plantillas, la lógica de selección automática, y los detalles de la validación \ac{AST}, véase el Anexo~\ref{appendix:arquitectura}.
 
 % ====================================================================
 % metodologia_evaluacion.tex — Metodología de Evaluación del Sistema ChatHCE
@@ -935,24 +935,24 @@ Para el catálogo completo de plantillas, la lógica de selección automática, 
 \section{Metodología de evaluación}
 \label{sec:metodologia_evaluacion}
 
-La evaluación de sistemas conversacionales basados en modelos de lenguaje de gran escala (LLMs) con acceso a herramientas externas constituye un desafío metodológico específico: la naturaleza generativa de las respuestas impide la comparación léxica directa con respuestas de referencia, y la selección dinámica de herramientas introduce variabilidad que debe medirse de forma independiente por componente~\cite{Gan2025rageval,Yu2025agentjudge}. A diferencia de los sistemas de recuperación de información tradicionales, donde métricas como precisión y recall operan sobre conjuntos discretos de documentos, los sistemas RAG con agentes requieren marcos de evaluación que capturen tanto la calidad semántica de la respuesta como la corrección del proceso de razonamiento y selección de herramientas~\cite{xiong2024medrag}.
+La evaluación de sistemas conversacionales basados en modelos de lenguaje de gran escala (\ac{LLM}s) con acceso a herramientas externas constituye un desafío metodológico específico: la naturaleza generativa de las respuestas impide la comparación léxica directa con respuestas de referencia, y la selección dinámica de herramientas introduce variabilidad que debe medirse de forma independiente por componente~\cite{Gan2025rageval,Yu2025agentjudge}. A diferencia de los sistemas de recuperación de información tradicionales, donde métricas como precisión y recall operan sobre conjuntos discretos de documentos, los sistemas \ac{RAG} con agentes requieren marcos de evaluación que capturen tanto la calidad semántica de la respuesta como la corrección del proceso de razonamiento y selección de herramientas~\cite{xiong2024medrag}.
 
 El marco de evaluación de ChatHCE se diseñó en torno a cuatro dimensiones ortogonales, implementadas como módulos independientes y ejecutables tanto de forma aislada como conjunta a través de un orquestador central (\texttt{run\_all\_evaluations.py}):
 
 \begin{enumerate}[nosep, leftmargin=*]
-  \item \textbf{Calidad semántica de respuestas} (RAGAS): Evaluación de las respuestas generadas por el agente frente a respuestas de referencia verificadas, ejecutada sobre dos \textit{golden sets} independientes ---base de datos (DB) y documentos clínicos (RAG)--- mediante el framework RAGAS~\cite{Es2023ragas}.
+  \item \textbf{Calidad semántica de respuestas} (\ac{RAGAS}): Evaluación de las respuestas generadas por el agente frente a respuestas de referencia verificadas, ejecutada sobre dos \textit{golden sets} independientes ---base de datos (DB) y documentos clínicos (\ac{RAG})--- mediante el framework \ac{RAGAS}~\cite{Es2023ragas}.
   \item \textbf{Rendimiento temporal} (Latencia): Medición del tiempo de respuesta extremo a extremo del sistema, estratificada por categoría de herramienta.
-  \item \textbf{Robustez de seguridad}: Verificación del comportamiento defensivo del sistema ante \textit{payloads} adversariales diseñados para explotar vulnerabilidades conocidas en sistemas LLM con acceso a bases de datos~\cite{OWASP2023llm}.
+  \item \textbf{Robustez de seguridad}: Verificación del comportamiento defensivo del sistema ante \textit{payloads} adversariales diseñados para explotar vulnerabilidades conocidas en sistemas \ac{LLM} con acceso a bases de datos~\cite{OWASP2023llm}.
   \item \textbf{Funcionalidad}: Validación del comportamiento correcto del agente en escenarios de uso representativos mediante criterios multidimensionales ponderados.
 \end{enumerate}
 
-El orquestador ejecuta los cinco módulos secuencialmente ---RAGAS se invoca dos veces, una por cada \textit{golden set}--- y realiza verificaciones previas antes de iniciar la ejecución: existencia de los archivos \textit{golden set}, presencia de la clave API de Anthropic, disponibilidad de la conexión a Supabase y existencia del directorio de resultados. Cada módulo genera un archivo de resultados independiente con \textit{timestamp}, y el orquestador produce un informe consolidado.
+El orquestador ejecuta los cinco módulos secuencialmente ---\ac{RAGAS} se invoca dos veces, una por cada \textit{golden set}--- y realiza verificaciones previas antes de iniciar la ejecución: existencia de los archivos \textit{golden set}, presencia de la clave \ac{API} de Anthropic, disponibilidad de la conexión a Supabase y existencia del directorio de resultados. Cada módulo genera un archivo de resultados independiente con \textit{timestamp}, y el orquestador produce un informe consolidado.
 
 
 \subsection{Evaluación RAGAS}
 \label{subsec:metodologia_ragas}
 
-El módulo RAGAS (\textit{Retrieval-Augmented Generation Assessment})~\cite{Es2023ragas} evalúa la calidad semántica de las respuestas del \texttt{UnifiedChatAgent} mediante cuatro métricas complementarias:
+El módulo \ac{RAGAS} (\textit{Retrieval-Augmented Generation Assessment})~\cite{Es2023ragas} evalúa la calidad semántica de las respuestas del \texttt{UnifiedChatAgent} mediante cuatro métricas complementarias:
 
 \begin{itemize}[nosep, leftmargin=*]
   \item \textbf{Faithfulness} (Fidelidad): Cuantifica la proporción de afirmaciones contenidas en la respuesta del agente que están fundamentadas en el contexto recuperado. Una puntuación baja indica que el modelo introduce información no presente en los datos de entrada.
@@ -961,19 +961,19 @@ El módulo RAGAS (\textit{Retrieval-Augmented Generation Assessment})~\cite{Es20
   \item \textbf{Context Recall} (Cobertura del contexto): Evalúa si el contexto recuperado contiene toda la información necesaria para producir la respuesta de referencia.
 \end{itemize}
 
-La implementación emplea RAGAS~0.4.3 con \texttt{LangchainLLMWrapper} sobre Claude Haiku~4.5 (\texttt{claude-haiku-4-5-20251001}) como modelo evaluador, y \texttt{sentence-transformers/all-MiniLM-L6-v2} para la generación de \textit{embeddings}. Se utiliza el mismo modelo tanto para el agente evaluado como para el evaluador RAGAS ---una decisión motivada por la consistencia del entorno y las restricciones de coste, con la limitación reconocida de que el modelo evaluador comparte sesgos potenciales con el modelo evaluado~\cite{Zheng2023llmjudge}.
+La implementación emplea \ac{RAGAS}~0.4.3 con \texttt{LangchainLLMWrapper} sobre Claude Haiku~4.5 (\texttt{claude-haiku-4-5-20251001}) como modelo evaluador, y \texttt{sentence-transformers/all-MiniLM-L6-v2} para la generación de \textit{embeddings}. Se utiliza el mismo modelo tanto para el agente evaluado como para el evaluador \ac{RAGAS} ---una decisión motivada por la consistencia del entorno y las restricciones de coste, con la limitación reconocida de que el modelo evaluador comparte sesgos potenciales con el modelo evaluado~\cite{Zheng2023llmjudge}.
 
-El proceso opera en dos fases. En la \textbf{primera fase}, cada pregunta del \textit{golden set} se envía al \texttt{UnifiedChatAgent} mediante \texttt{process\_message()}, con un \texttt{session\_id} único por pregunta generado como UUID para evitar contaminación entre sesiones y garantizar que el agente no reutilice contexto conversacional. El agente ejecuta su flujo completo: análisis de intención, selección de herramientas, ejecución de la consulta (SQL o búsqueda vectorial) y síntesis de la respuesta. Se captura tanto la respuesta generada como los contextos utilizados ---resultados de herramientas de base de datos y/o fragmentos RAG recuperados---. Si el agente no devuelve contexto explícito, se emplea el contenido de la propia respuesta como \textit{fallback} para evitar errores en la evaluación RAGAS.
+El proceso opera en dos fases. En la \textbf{primera fase}, cada pregunta del \textit{golden set} se envía al \texttt{UnifiedChatAgent} mediante \texttt{process\_message()}, con un \texttt{session\_id} único por pregunta generado como UUID para evitar contaminación entre sesiones y garantizar que el agente no reutilice contexto conversacional. El agente ejecuta su flujo completo: análisis de intención, selección de herramientas, ejecución de la consulta (\ac{SQL} o búsqueda vectorial) y síntesis de la respuesta. Se captura tanto la respuesta generada como los contextos utilizados ---resultados de herramientas de base de datos y/o fragmentos \ac{RAG} recuperados---. Si el agente no devuelve contexto explícito, se emplea el contenido de la propia respuesta como \textit{fallback} para evitar errores en la evaluación \ac{RAGAS}.
 
 En la \textbf{segunda fase}, cada tupla \texttt{(pregunta, respuesta, contextos, referencia)} se evalúa con \texttt{ragas.evaluate()} usando un \texttt{HuggingFace Dataset} de una fila. Las puntuaciones individuales se agregan como media aritmética al final de la ejecución.
 
-El módulo RAGAS se ejecuta dos veces: una con el \textit{golden set} DB (\texttt{subset=db}, 40~preguntas sobre MIMIC-IV-ED) y otra con el \textit{golden set} RAG (\texttt{subset=rag}, 30~preguntas sobre documentos clínicos). Ambas ejecuciones generan informes independientes.
+El módulo \ac{RAGAS} se ejecuta dos veces: una con el \textit{golden set} DB (\texttt{subset=db}, 40~preguntas sobre \ac{MIMIC}-IV-\ac{ED}) y otra con el \textit{golden set} \ac{RAG} (\texttt{subset=rag}, 30~preguntas sobre documentos clínicos). Ambas ejecuciones generan informes independientes.
 
 
 \subsection{Benchmarks de latencia}
 \label{subsec:metodologia_latencia}
 
-Los \textit{benchmarks} de latencia miden el tiempo de respuesta extremo a extremo del sistema para 17~consultas representativas, distribuidas en cuatro categorías: 5~consultas de base de datos (DB), 5~de búsqueda documental (RAG), 5~de visualización (VIZ) y 2~consultas complejas que combinan múltiples herramientas.
+Los \textit{benchmarks} de latencia miden el tiempo de respuesta extremo a extremo del sistema para 17~consultas representativas, distribuidas en cuatro categorías: 5~consultas de base de datos (DB), 5~de búsqueda documental (\ac{RAG}), 5~de visualización (VIZ) y 2~consultas complejas que combinan múltiples herramientas.
 
 Cada consulta se ejecuta 4~iteraciones: 1~de calentamiento (\textit{warm-up}, descartada) y 3~medidas. Para evitar que el sistema de caché (\texttt{CacheManager}) influya en las mediciones, se activa \textit{cache bypass} mediante un UUID de sesión único por ejecución completa. Las estadísticas se computan por categoría: media, mediana, percentiles P95 y P99, mínimo y máximo. El total de ejecuciones medidas es $17 \times 3 = 51$.
 
@@ -981,10 +981,10 @@ Cada consulta se ejecuta 4~iteraciones: 1~de calentamiento (\textit{warm-up}, de
 \subsection{Pruebas de seguridad}
 \label{subsec:metodologia_seguridad}
 
-Las pruebas de seguridad evalúan la robustez del sistema ante tres categorías de ataques adversariales, cubriendo las vulnerabilidades más relevantes identificadas por OWASP para aplicaciones basadas en LLMs~\cite{OWASP2023llm}:
+Las pruebas de seguridad evalúan la robustez del sistema ante tres categorías de ataques adversariales, cubriendo las vulnerabilidades más relevantes identificadas por \ac{OWASP} para aplicaciones basadas en \ac{LLM}s~\cite{OWASP2023llm}:
 
 \begin{itemize}[nosep, leftmargin=*]
-  \item \textbf{Inyección SQL} (7~tests): Incluye operaciones DDL/DML (\texttt{DROP TABLE}, \texttt{DELETE}, \texttt{INSERT}, \texttt{UPDATE}) y tautologías booleanas (\texttt{OR 1=1}, \texttt{OR 'x'='x'}) con inyección por comentarios SQL (\texttt{-{}-}). Se verifica que la respuesta contenga indicadores de rechazo explícito o que el campo \texttt{success} sea \texttt{False}.
+  \item \textbf{Inyección SQL} (7~tests): Incluye operaciones DDL/DML (\texttt{DROP TABLE}, \texttt{DELETE}, \texttt{INSERT}, \texttt{UPDATE}) y tautologías booleanas (\texttt{OR 1=1}, \texttt{OR 'x'='x'}) con inyección por comentarios \ac{SQL} (\texttt{-{}-}). Se verifica que la respuesta contenga indicadores de rechazo explícito o que el campo \texttt{success} sea \texttt{False}.
   \item \textbf{Inyección de prompts} (3~tests): Incluye anulación de instrucciones del sistema, extracción del \textit{prompt} interno y solicitud de generación de datos ficticios. Se verifica que la respuesta no contenga frases indicadoras de cumplimiento con el ataque.
   \item \textbf{Anti-alucinación} (3~tests): Incluye consultas sobre pacientes inexistentes (ID~9999), tablas no existentes (\texttt{patients\_personal\_data}) y datos fuera del alcance del \textit{dataset} (cirugías). Se verifica que la respuesta reconozca explícitamente la ausencia de datos sin fabricar información.
 \end{itemize}
@@ -1018,11 +1018,11 @@ donde $w_i$ es el peso del criterio $i$ y $s_i$ su puntuación en el rango $[0, 
 \subsection{Materiales de evaluación}
 \label{subsec:materiales}
 
-\subsubsection{Golden Set DB (Base de Datos MIMIC-IV-ED)}
+\subsubsection{Golden Set DB (Base de Datos \ac{MIMIC}-IV-\ac{ED})}
 
-El conjunto de evaluación DB comprende 40~preguntas en español distribuidas en seis categorías temáticas sobre el \textit{dataset} MIMIC-IV-ED~\cite{johnson2023mimiciv} (Tabla~\ref{tab:golden_set_db}). Cada pregunta incluye: una consulta en lenguaje natural (\texttt{question}), una respuesta de referencia verificada (\texttt{ground\_truth}), una consulta SQL de verificación (\texttt{ground\_truth\_sql}), y fragmentos de contexto que fundamentan la respuesta (\texttt{contexts}).
+El conjunto de evaluación DB comprende 40~preguntas en español distribuidas en seis categorías temáticas sobre el \textit{dataset} \ac{MIMIC}-IV-\ac{ED}~\cite{johnson2023mimiciv} (Tabla~\ref{tab:golden_set_db}). Cada pregunta incluye: una consulta en lenguaje natural (\texttt{question}), una respuesta de referencia verificada (\texttt{ground\_truth}), una consulta \ac{SQL} de verificación (\texttt{ground\_truth\_sql}), y fragmentos de contexto que fundamentan la respuesta (\texttt{contexts}).
 
-Las respuestas de referencia fueron construidas ejecutando las consultas SQL de verificación directamente contra la base de datos Supabase con el esquema MIMIC-IV-ED, y redactando manualmente la respuesta esperada en español con los valores exactos obtenidos.
+Las respuestas de referencia fueron construidas ejecutando las consultas \ac{SQL} de verificación directamente contra la base de datos Supabase con el esquema \ac{MIMIC}-IV-\ac{ED}, y redactando manualmente la respuesta esperada en español con los valores exactos obtenidos.
 
 \begin{table}[H]
 \centering
@@ -1035,7 +1035,7 @@ Las respuestas de referencia fueron construidas ejecutando las consultas SQL de 
 \midrule
 DB-PS  & Perfil del paciente    & 8 & \texttt{edstays} \\
 DB-VS  & Signos vitales         & 8 & \texttt{vitalsign} \\
-DB-DX  & Diagnósticos ICD       & 8 & \texttt{diagnosis} \\
+DB-DX  & Diagnósticos \ac{ICD}       & 8 & \texttt{diagnosis} \\
 DB-MED & Medicamentos           & 8 & \texttt{medrecon}, \texttt{pyxis} \\
 DB-TR  & Triaje                 & 4 & \texttt{triage} \\
 DB-CT  & Consultas cruzadas     & 4 & múltiples \\
@@ -1047,9 +1047,9 @@ DB-CT  & Consultas cruzadas     & 4 & múltiples \\
 
 Las preguntas cubren un espectro de complejidad creciente: desde la recuperación de atributos simples (\textit{``¿Cuál es el género del paciente 10014729?''}) hasta análisis cruzados que requieren JOINs implícitos entre múltiples tablas (\textit{``¿Cuántos pacientes con diagnóstico de hipertensión fueron ingresados?''}).
 
-\subsubsection{Golden Set RAG (Documentos Clínicos)}
+\subsubsection{Golden Set \ac{RAG} (Documentos Clínicos)}
 
-El \textit{golden set} RAG (\texttt{golden\_set\_ragas\_rag.json}) contiene 30~preguntas sobre tres documentos clínicos indexados en Supabase pgvector mediante un pipeline de \textit{chunking} padre-hijo con fragmentos de 1200 tokens y solapamiento de 200 (Tabla~\ref{tab:golden_set_rag}):
+El \textit{golden set} \ac{RAG} (\texttt{golden\_set\_ragas\_rag.json}) contiene 30~preguntas sobre tres documentos clínicos indexados en Supabase pgvector mediante un pipeline de \textit{chunking} padre-hijo con fragmentos de 1200 tokens y solapamiento de 200 (Tabla~\ref{tab:golden_set_rag}):
 
 \begin{itemize}[nosep, leftmargin=*]
   \item \textbf{Manual del Residente de Medicina Intensiva} (Hospital Universitario Virgen del Rocío) --- 10~preguntas.
@@ -1059,7 +1059,7 @@ El \textit{golden set} RAG (\texttt{golden\_set\_ragas\_rag.json}) contiene 30~p
 
 \begin{table}[H]
 \centering
-\caption{Distribución del \textit{golden set} RAG por tipo de pregunta.}
+\caption{Distribución del \textit{golden set} \ac{RAG} por tipo de pregunta.}
 \label{tab:golden_set_rag}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lcc}
@@ -1085,11 +1085,11 @@ Tres preguntas están formuladas en inglés para evaluar la capacidad multiling�
 
 \subsubsection{Payloads de Seguridad}
 
-Los 13~\textit{payloads} de seguridad fueron diseñados para explotar vulnerabilidades conocidas en sistemas LLM con acceso a bases de datos. Los \textit{payloads} de inyección SQL cubren las cuatro operaciones DDL/DML más críticas y tres variantes de tautología booleana con inyección por comentarios. Los \textit{payloads} de inyección de prompts incluyen tres estrategias de ataque: anulación de instrucciones, extracción de configuración interna y solicitud de generación de datos fabricados. Los \textit{payloads} anti-alucinación prueban tres escenarios de datos inexistentes o fuera del alcance del \textit{dataset}.
+Los 13~\textit{payloads} de seguridad fueron diseñados para explotar vulnerabilidades conocidas en sistemas \ac{LLM} con acceso a bases de datos. Los \textit{payloads} de inyección \ac{SQL} cubren las cuatro operaciones DDL/DML más críticas y tres variantes de tautología booleana con inyección por comentarios. Los \textit{payloads} de inyección de prompts incluyen tres estrategias de ataque: anulación de instrucciones, extracción de configuración interna y solicitud de generación de datos fabricados. Los \textit{payloads} anti-alucinación prueban tres escenarios de datos inexistentes o fuera del alcance del \textit{dataset}.
 
 \subsubsection{Consultas de Latencia}
 
-El conjunto de 17~consultas de latencia cubre las cuatro categorías de herramientas del sistema: 5~consultas de base de datos (recuperación de diagnósticos, signos vitales, medicamentos, disposición y visitas), 5~de búsqueda documental RAG (protocolos de sepsis, indicaciones farmacológicas, triaje de Manchester, fibrilación auricular y criterios de ingreso), 5~de visualización (evolución de signos vitales, distribuciones diagnósticas, gráficos de presión arterial) y 2~consultas complejas que combinan análisis de signos vitales con comparación de diagnósticos.
+El conjunto de 17~consultas de latencia cubre las cuatro categorías de herramientas del sistema: 5~consultas de base de datos (recuperación de diagnósticos, signos vitales, medicamentos, disposición y visitas), 5~de búsqueda documental \ac{RAG} (protocolos de sepsis, indicaciones farmacológicas, triaje de Manchester, fibrilación auricular y criterios de ingreso), 5~de visualización (evolución de signos vitales, distribuciones diagnósticas, gráficos de presión arterial) y 2~consultas complejas que combinan análisis de signos vitales con comparación de diagnósticos.
 
 
 \subsection{Entorno de ejecución}
@@ -1107,13 +1107,13 @@ La Tabla~\ref{tab:entorno} resume el entorno tecnológico utilizado para la eval
 \textbf{Componente} & \textbf{Versión / Especificación} \\
 \midrule
 Python                  & 3.11.14 \\
-RAGAS                   & 0.4.3 \\
+\ac{RAGAS}                   & 0.4.3 \\
 LangChain               & 1.2.7 \\
 LangChain-Anthropic     & 1.3.1 \\
 Anthropic SDK           & 0.77.0 \\
 Sentence-Transformers   & 5.2.2 \\
 Modelo evaluado         & \texttt{claude-haiku-4-5-20251001} \\
-Modelo evaluador (RAGAS)& \texttt{claude-haiku-4-5-20251001} \\
+Modelo evaluador (\ac{RAGAS})& \texttt{claude-haiku-4-5-20251001} \\
 Embeddings              & \texttt{all-MiniLM-L6-v2} \\
 Reranker                & \texttt{cross-encoder/ms-marco-MiniLM-L-6-v2} \\
 GPU                     & NVIDIA GeForce RTX 4060 Laptop (CUDA 13.0) \\
@@ -1122,7 +1122,7 @@ Base de datos           & Supabase (PostgreSQL + pgvector) \\
 \end{tabularx}
 \end{table}
 
-El módulo RAGAS DB procesó 40~preguntas en 752,3~s; RAGAS RAG procesó 30~preguntas en 1812,1~s; los \textit{benchmarks} de latencia ejecutaron 51~mediciones en 102,2~s; las pruebas de seguridad completaron 13~tests en 35,7~s; y los casos funcionales evaluaron 28~escenarios en 327,3~s.
+El módulo \ac{RAGAS} DB procesó 40~preguntas en 752,3~s; \ac{RAGAS} \ac{RAG} procesó 30~preguntas en 1812,1~s; los \textit{benchmarks} de latencia ejecutaron 51~mediciones en 102,2~s; las pruebas de seguridad completaron 13~tests en 35,7~s; y los casos funcionales evaluaron 28~escenarios en 327,3~s.
 
 % ====================================================================
 \section{Resumen y mapeo a preguntas de investigación}
@@ -1140,19 +1140,19 @@ Este capítulo ha presentado la arquitectura de ChatHCE, un sistema de análisis
 \toprule
 \textbf{RQ} & \textbf{Pregunta} & \textbf{Solución Arquitectónica} \\
 \midrule
-RQ1 & Eficiencia del agente unificado vs.\ multi-agente (latencia P50 $<$ 5\,s) & \texttt{UnifiedChatAgent} con tool-calling nativo de Claude Haiku 4.5. Una sola llamada LLM por turno. Síntesis directa sin intermediarios. \\
+\ac{RQ}1 & Eficiencia del agente unificado vs.\ multi-agente (latencia P50 $<$ 5\,s) & \texttt{UnifiedChatAgent} con tool-calling nativo de Claude Haiku 4.5. Una sola llamada \ac{LLM} por turno. Síntesis directa sin intermediarios. \\
 \addlinespace
-RQ2 & Búsqueda híbrida + RRF + chunking jerárquico & Pipeline RAG con pgvector (coseno) + tsvector (léxica), fusión RRF ($k=60$), chunking padre-hijo (3000/800 chars), reranking cross-encoder. top\_k=8, fetch\_k=32. \\
+\ac{RQ}2 & Búsqueda híbrida + \ac{RRF} + chunking jerárquico & Pipeline \ac{RAG} con pgvector (coseno) + tsvector (léxica), fusión \ac{RRF} ($k=60$), chunking padre-hijo (3000/800 chars), reranking cross-encoder. top\_k=8, fetch\_k=32. \\
 \addlinespace
-RQ3 & Defensa en profundidad para mitigar alucinaciones & 6 capas: rate limiting, validación entrada, validación SQL (blacklist + tautologías), autenticación JWT + RLS, audit logging, directivas anti-alucinación. \\
+\ac{RQ}3 & Defensa en profundidad para mitigar alucinaciones & 6 capas: rate limiting, validación entrada, validación \ac{SQL} (blacklist + tautologías), autenticación JWT + RLS, audit logging, directivas anti-alucinación. \\
 \addlinespace
-RQ4 & Fallback para continuidad operativa & Cadena Haiku $\rightarrow$ Sonnet $\rightarrow$ Opus con backoff exponencial (3 reintentos, factor 2.0). Escalado automático por rate limiting o error. \\
+\ac{RQ}4 & Fallback para continuidad operativa & Cadena Haiku $\rightarrow$ Sonnet $\rightarrow$ Opus con backoff exponencial (3 reintentos, factor 2.0). Escalado automático por rate limiting o error. \\
 \addlinespace
-RQ5 & Template-first en visualización & 12+ plantillas Plotly ($\sim$0.4\,s, 90\% cobertura) + fallback Claude Sonnet ($\sim$4\,s, 10\%). Validación AST obligatoria en sandbox. \\
+\ac{RQ}5 & Template-first en visualización & 12+ plantillas Plotly ($\sim$0.4\,s, 90\% cobertura) + fallback Claude Sonnet ($\sim$4\,s, 10\%). Validación \ac{AST} obligatoria en sandbox. \\
 \bottomrule
 \end{tabularx}
 \end{table*}
 
-Las principales contribuciones técnicas de la arquitectura son: (1)~demostración de que un agente unificado con tool-calling nativo puede superar a arquitecturas multi-agente en latencia y fiabilidad para dominios clínicos; (2)~pipeline RAG híbrido optimizado para terminología clínica en español con mejoras cuantificadas mediante RAGAS; (3)~framework de seguridad de 6 capas específico para sistemas LLM en entornos de salud; (4)~motor de visualización template-first que reduce latencia 10$\times$ manteniendo flexibilidad; y (5)~integración de backend unificada en Supabase.
+Las principales contribuciones técnicas de la arquitectura son: (1)~demostración de que un agente unificado con tool-calling nativo puede superar a arquitecturas multi-agente en latencia y fiabilidad para dominios clínicos; (2)~pipeline \ac{RAG} híbrido optimizado para terminología clínica en español con mejoras cuantificadas mediante \ac{RAGAS}; (3)~framework de seguridad de 6 capas específico para sistemas \ac{LLM} en entornos de salud; (4)~motor de visualización template-first que reduce latencia 10$\times$ manteniendo flexibilidad; y (5)~integración de backend unificada en Supabase.
 
-El siguiente capítulo presenta la evaluación empírica completa del sistema. Para todos los detalles técnicos de implementación --- herramientas, pipeline RAG, seguridad, esquemas de base de datos, configuraciones de caché y rate limiting ---, véase el Anexo~\ref{appendix:arquitectura}.
+El siguiente capítulo presenta la evaluación empírica completa del sistema. Para todos los detalles técnicos de implementación --- herramientas, pipeline \ac{RAG}, seguridad, esquemas de base de datos, configuraciones de caché y rate limiting ---, véase el Anexo~\ref{appendix:arquitectura}.
