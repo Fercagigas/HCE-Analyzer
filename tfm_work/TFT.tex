@@ -72,6 +72,7 @@
 \usepackage{listings}
 \usepackage{fontawesome5}
 \usepackage{caption}
+\usepackage[printonlyused]{acronym}
 
 
 % Colores adicionales para chapter3
@@ -160,61 +161,56 @@
 \addcontentsline{toc}{chapter}{Lista de acrónimos y abreviaturas}
 \label{cap:acronimos}
 
-\begin{longtable}{@{}l p{12cm}@{}}
-\toprule
-\textbf{Acrónimo} & \textbf{Significado} \\
-\midrule
-\endhead
-API     & \textit{Application Programming Interface} (interfaz de programación de aplicaciones) \\
-AST     & \textit{Abstract Syntax Tree} (árbol de sintaxis abstracta) \\
-BERT    & \textit{Bidirectional Encoder Representations from Transformers} \\
-BM25    & \textit{Best Match 25} (función de ranking para recuperación de información) \\
-CAI     & \textit{Constitutional AI} (IA constitucional) \\
-CDSS    & \textit{Clinical Decision Support System} (sistema de soporte a la decisión clínica) \\
-CIE-10  & Clasificación Internacional de Enfermedades, 10.ª edición \\
-DSR     & \textit{Design Science Research} (investigación en ciencias del diseño) \\
-ECG     & Electrocardiograma \\
-ED      & \textit{Emergency Department} (servicio de urgencias) \\
-EHR     & \textit{Electronic Health Record} (historia clínica electrónica) \\
-ESI     & \textit{Emergency Severity Index} (índice de severidad en urgencias) \\
-FHIR    & \textit{Fast Healthcare Interoperability Resources} \\
-FK      & \textit{Foreign Key} (clave foránea) \\
-GIN     & \textit{Generalized Inverted Index} (índice invertido generalizado) \\
-GPT     & \textit{Generative Pre-trained Transformer} \\
-HCE     & Historia Clínica Electrónica \\
-HIPAA   & \textit{Health Insurance Portability and Accountability Act} \\
-HNSW    & \textit{Hierarchical Navigable Small World} (grafo navegable jerárquico) \\
-HyDE    & \textit{Hypothetical Document Embeddings} \\
-IA      & Inteligencia Artificial \\
-ICD     & \textit{International Classification of Diseases} \\
-JSON    & \textit{JavaScript Object Notation} \\
-LLM     & \textit{Large Language Model} (modelo de lenguaje de gran escala) \\
-LRU     & \textit{Least Recently Used} (menos recientemente usado) \\
-MIMIC   & \textit{Medical Information Mart for Intensive Care} \\
-NLP     & \textit{Natural Language Processing} (procesamiento de lenguaje natural) \\
-OWASP   & \textit{Open Worldwide Application Security Project} \\
-PK      & \textit{Primary Key} (clave primaria) \\
-RAG     & \textit{Retrieval-Augmented Generation} (generación aumentada por recuperación) \\
-RAGAS   & \textit{Retrieval-Augmented Generation Assessment} \\
-ReAct   & \textit{Reasoning + Acting} \\
-RGPD    & Reglamento General de Protección de Datos \\
-RLAIF   & \textit{Reinforcement Learning from AI Feedback} \\
-RLHF    & \textit{Reinforcement Learning from Human Feedback} \\
-RQ      & \textit{Research Question} (pregunta de investigación) \\
-RRF     & \textit{Reciprocal Rank Fusion} (fusión por rango recíproco) \\
-SNOMED CT & \textit{Systematized Nomenclature of Medicine -- Clinical Terms} \\
-SQL     & \textit{Structured Query Language} (lenguaje de consulta estructurado) \\
-TFM     & Trabajo Fin de Máster \\
-TTL     & \textit{Time To Live} (tiempo de vida) \\
-UCI     & Unidad de Cuidados Intensivos \\
-UMLS    & \textit{Unified Medical Language System} \\
-USMLE   & \textit{United States Medical Licensing Examination} \\
-\bottomrule
-\end{longtable}
+\begin{acronym}[SNOMED CT]
+\acro{API}{\textit{Application Programming Interface} (interfaz de programación de aplicaciones)}
+\acro{AST}{\textit{Abstract Syntax Tree} (árbol de sintaxis abstracta)}
+\acro{BERT}{\textit{Bidirectional Encoder Representations from Transformers}}
+\acro{BM25}{\textit{Best Match 25} (función de ranking para recuperación de información)}
+\acro{CAI}{\textit{Constitutional AI} (IA constitucional)}
+\acro{CDSS}{\textit{Clinical Decision Support System} (sistema de soporte a la decisión clínica)}
+\acro{CIE10}[CIE-10]{Clasificación Internacional de Enfermedades, 10.ª edición}
+\acro{DSR}{\textit{Design Science Research} (investigación en ciencias del diseño)}
+\acro{ECG}{Electrocardiograma}
+\acro{ED}{\textit{Emergency Department} (servicio de urgencias)}
+\acro{EHR}{\textit{Electronic Health Record} (historia clínica electrónica)}
+\acro{ESI}{\textit{Emergency Severity Index} (índice de severidad en urgencias)}
+\acro{FHIR}{\textit{Fast Healthcare Interoperability Resources}}
+\acro{FK}{\textit{Foreign Key} (clave foránea)}
+\acro{GIN}{\textit{Generalized Inverted Index} (índice invertido generalizado)}
+\acro{GPT}{\textit{Generative Pre-trained Transformer}}
+\acro{HCE}{Historia Clínica Electrónica}
+\acro{HIPAA}{\textit{Health Insurance Portability and Accountability Act}}
+\acro{HNSW}{\textit{Hierarchical Navigable Small World} (grafo navegable jerárquico)}
+\acro{HyDE}{\textit{Hypothetical Document Embeddings}}
+\acro{IA}{Inteligencia Artificial}
+\acro{ICD}{\textit{International Classification of Diseases}}
+\acro{JSON}{\textit{JavaScript Object Notation}}
+\acro{LLM}{\textit{Large Language Model} (modelo de lenguaje de gran escala)}
+\acro{LRU}{\textit{Least Recently Used} (menos recientemente usado)}
+\acro{MIMIC}{\textit{Medical Information Mart for Intensive Care}}
+\acro{NLP}{\textit{Natural Language Processing} (procesamiento de lenguaje natural)}
+\acro{OWASP}{\textit{Open Worldwide Application Security Project}}
+\acro{PK}{\textit{Primary Key} (clave primaria)}
+\acro{RAG}{\textit{Retrieval-Augmented Generation} (generación aumentada por recuperación)}
+\acro{RAGAS}{\textit{Retrieval-Augmented Generation Assessment}}
+\acro{ReAct}{\textit{Reasoning + Acting}}
+\acro{RGPD}{Reglamento General de Protección de Datos}
+\acro{RLAIF}{\textit{Reinforcement Learning from AI Feedback}}
+\acro{RLHF}{\textit{Reinforcement Learning from Human Feedback}}
+\acro{RQ}{\textit{Research Question} (pregunta de investigación)}
+\acro{RRF}{\textit{Reciprocal Rank Fusion} (fusión por rango recíproco)}
+\acro{SNOMEDCT}[SNOMED CT]{\textit{Systematized Nomenclature of Medicine -- Clinical Terms}}
+\acro{SQL}{\textit{Structured Query Language} (lenguaje de consulta estructurado)}
+\acro{TFM}{Trabajo Fin de Máster}
+\acro{TTL}{\textit{Time To Live} (tiempo de vida)}
+\acro{UCI}{Unidad de Cuidados Intensivos}
+\acro{UMLS}{\textit{Unified Medical Language System}}
+\acro{USMLE}{\textit{United States Medical Licensing Examination}}
+\end{acronym}
 
 
 \begin{abstract}
-Los modelos de lenguaje de gran escala (LLMs) han demostrado capacidades significativas en el ámbito médico, pero su aplicación en entornos clínicos reales sigue presentando desafíos como las alucinaciones, la latencia y la integración con fuentes de datos heterogéneas. Este trabajo presenta ChatHCE, un sistema de análisis clínico inteligente para el servicio de urgencias que integra consulta de datos estructurados, recuperación de documentos clínicos y generación de visualizaciones mediante una interfaz conversacional unificada en lenguaje natural. El sistema emplea una arquitectura de agente unificado basada en Claude Haiku~4.5 con \textit{tool-calling} nativo, un pipeline RAG (\textit{Retrieval-Augmented Generation}) con búsqueda híbrida vectorial-léxica y fusión RRF sobre Supabase pgvector, y un motor de visualización \textit{template-first} con Plotly. La evaluación empírica sobre el dataset MIMIC-IV-ED demuestra una tasa cero de alucinación en todos los escenarios evaluados, latencias P50 inferiores a 5~segundos para consultas cacheadas y robustez ante ataques de inyección SQL y de prompts. Los resultados validan la viabilidad de sistemas LLM para asistencia clínica cuando se implementan mecanismos de defensa en profundidad adecuados.
+Los modelos de lenguaje de gran escala (\ac{LLM}s) han demostrado capacidades significativas en el ámbito médico, pero su aplicación en entornos clínicos reales sigue presentando desafíos como las alucinaciones, la latencia y la integración con fuentes de datos heterogéneas. Este trabajo presenta ChatHCE, un sistema de análisis clínico inteligente para el servicio de urgencias que integra consulta de datos estructurados, recuperación de documentos clínicos y generación de visualizaciones mediante una interfaz conversacional unificada en lenguaje natural. El sistema emplea una arquitectura de agente unificado basada en Claude Haiku~4.5 con \textit{tool-calling} nativo, un pipeline \ac{RAG} (\textit{Retrieval-Augmented Generation}) con búsqueda híbrida vectorial-léxica y fusión \ac{RRF} sobre Supabase pgvector, y un motor de visualización \textit{template-first} con Plotly. La evaluación empírica sobre el dataset \ac{MIMIC}-IV-ED demuestra una tasa cero de alucinación en todos los escenarios evaluados, latencias P50 inferiores a 5~segundos para consultas cacheadas y robustez ante ataques de inyección \ac{SQL} y de prompts. Los resultados validan la viabilidad de sistemas \ac{LLM} para asistencia clínica cuando se implementan mecanismos de defensa en profundidad adecuados.
 \vspace{0.5cm}
 
 \keywords{sistemas multiagente, modelos de lenguaje, inteligencia artificial clínica, RAG, urgencias, historia clínica electrónica}
