@@ -17,22 +17,22 @@ Este anexo amplía la discusión presentada en el cuerpo principal del trabajo c
 
 La métrica Faithfulness mide la proporción de afirmaciones en la respuesta del agente que están fundamentadas en el contexto recuperado. En el \textit{golden set} DB, ChatHCE obtuvo 0,7357, lo que significa que aproximadamente tres cuartas partes de las afirmaciones del agente están directamente respaldadas por los datos recuperados de la base de datos.
 
-El déficit de Faithfulness (~0,26) se origina en un comportamiento del agente que, paradójicamente, es deseable en un contexto clínico: la tendencia a añadir interpretaciones médicas y contexto complementario a los datos crudos. Cuando el sistema recupera, por ejemplo, que la frecuencia cardíaca de un paciente es de 120~lpm, el agente puede añadir que este valor se encuentra por encima del rango normal (60--100~lpm) y que podría sugerir taquicardi. Esta interpretación no está literalmente presente en los datos recuperados ---es conocimiento médico general del modelo--- y, por tanto, RAGAS la penaliza como afirmación no fundamentad.
+El déficit de Faithfulness (~0,26) se origina en un comportamiento del agente que, paradójicamente, es deseable en un contexto clínico: la tendencia a añadir interpretaciones médicas y contexto complementario a los datos crudos. Cuando el sistema recupera, por ejemplo, que la frecuencia cardíaca de un paciente es de 120~lpm, el agente puede añadir que este valor se encuentra por encima del rango normal (60--100~lpm) y que podría sugerir taquicardi. Esta interpretación no está literalmente presente en los datos recuperados ---es conocimiento médico general del modelo--- y, por tanto, \ac{RAGAS} la penaliza como afirmación no fundamentad.
 
-Este fenómeno es bien documentado en la literatura sobre evaluación de sistemas RAG en dominios especializados~\cite{Gan2025rageval}. Las métricas automáticas diseñadas para evaluar la fidelidad al contexto no distinguen entre ``alucinación'' (invención de datos falsos) y ``enriquecimiento'' (adición de conocimiento general correcto). En el dominio médico, un sistema que simplemente repite datos sin interpretación tiene una utilidad clínica limitad.
+Este fenómeno es bien documentado en la literatura sobre evaluación de sistemas \ac{RAG} en dominios especializados~\cite{Gan2025rageval}. Las métricas automáticas diseñadas para evaluar la fidelidad al contexto no distinguen entre ``alucinación'' (invención de datos falsos) y ``enriquecimiento'' (adición de conocimiento general correcto). En el dominio médico, un sistema que simplemente repite datos sin interpretación tiene una utilidad clínica limitad.
 
-En el \textit{golden set} RAG, Faithfulness desciende a 0,5708. Esto se explica porque los documentos clínicos son más extensos y narrativos que los datos tabulares: el agente debe sintetizar información dispersa en múltiples párrafos, y al hacerlo es más probable que reformule o interprete el contenido original en lugar de citarlo literalmente.
+En el \textit{golden set} \ac{RAG}, Faithfulness desciende a 0,5708. Esto se explica porque los documentos clínicos son más extensos y narrativos que los datos tabulares: el agente debe sintetizar información dispersa en múltiples párrafos, y al hacerlo es más probable que reformule o interprete el contenido original en lugar de citarlo literalmente.
 
 
 \subsection{Answer relevancy: la penalización de la verbosidad clínica}
 
-Answer Relevancy (0,4944 para DB y 0,2348 para RAG) es la métrica que más se ve afectada por el estilo de respuesta del agente. RAGAS calcula esta métrica generando preguntas inversas a partir de la respuesta y midiendo su similitud con la pregunta original: si la respuesta contiene información adicional no solicitada, las preguntas inversas divergen y la puntuación baj.
+Answer Relevancy (0,4944 para DB y 0,2348 para \ac{RAG}) es la métrica que más se ve afectada por el estilo de respuesta del agente. \ac{RAGAS} calcula esta métrica generando preguntas inversas a partir de la respuesta y midiendo su similitud con la pregunta original: si la respuesta contiene información adicional no solicitada, las preguntas inversas divergen y la puntuación baj.
 
-El agente ChatHCE fue diseñado para comportarse como un asistente clínico contextualizado, no como un motor de respuestas minimalistas. Ante la pregunta \textit{``¿Cuál es el diagnóstico del paciente 10014729?''}, el agente no se limita a dar el código ICD, sino que proporciona el nombre completo del diagnóstico, la estancia asociada, y posiblemente medicamentos relacionados. Esta riqueza informativa es valorada por los profesionales de urgencias, pero RAGAS la interpreta como irrelevanci.
+El agente ChatHCE fue diseñado para comportarse como un asistente clínico contextualizado, no como un motor de respuestas minimalistas. Ante la pregunta \textit{``¿Cuál es el diagnóstico del paciente 10014729?''}, el agente no se limita a dar el código \ac{ICD}, sino que proporciona el nombre completo del diagnóstico, la estancia asociada, y posiblemente medicamentos relacionados. Esta riqueza informativa es valorada por los profesionales de urgencias, pero \ac{RAGAS} la interpreta como irrelevanci.
 
-El valor especialmente bajo en RAG (0,2348) tiene una explicación adicional: las respuestas a preguntas sobre documentos clínicos tienden a ser más largas porque el agente cita fragmentos de los protocolos, añade contexto sobre la aplicabilidad de las recomendaciones y, en algunos casos, ofrece comparativas entre fuentes distintas. Todo esto reduce la relevancia estricta según el modelo de evaluación automátic.
+El valor especialmente bajo en \ac{RAG} (0,2348) tiene una explicación adicional: las respuestas a preguntas sobre documentos clínicos tienden a ser más largas porque el agente cita fragmentos de los protocolos, añade contexto sobre la aplicabilidad de las recomendaciones y, en algunos casos, ofrece comparativas entre fuentes distintas. Todo esto reduce la relevancia estricta según el modelo de evaluación automátic.
 
-La tensión entre relevancia automática y utilidad clínica real es un desafío reconocido en la evaluación de sistemas RAG~\cite{Neha2025raghealth}. En un entorno de producción, la evaluación debería complementarse con encuestas a usuarios clínicos que midan la utilidad percibida de las respuestas, no solo su correspondencia con una referencia predefinid.
+La tensión entre relevancia automática y utilidad clínica real es un desafío reconocido en la evaluación de sistemas \ac{RAG}~\cite{Neha2025raghealth}. En un entorno de producción, la evaluación debería complementarse con encuestas a usuarios clínicos que midan la utilidad percibida de las respuestas, no solo su correspondencia con una referencia predefinid.
 
 
 \subsection{Context precision y context recall: el pipeline de recuperación}
@@ -41,23 +41,23 @@ Context Precision mide cuánto del contexto recuperado es relevante; Context Rec
 
 \paragraph{DB: Recuperación Efectiva con Ruido Controlado.}
 
-En el \textit{golden set} DB, Context Recall (0,8458) indica que el sistema recupera la mayor parte de la información necesari. El pipeline de consulta a base de datos combina varios mecanismos: consultas tipo \texttt{patient\_summary} que agregan datos de múltiples tablas (edstays, diagnosis, vitalsign, medrecon, pyxis), y consultas \texttt{custom} que generan SQL específico. La alta cobertura valida este diseño.
+En el \textit{golden set} DB, Context Recall (0,8458) indica que el sistema recupera la mayor parte de la información necesari. El pipeline de consulta a base de datos combina varios mecanismos: consultas tipo \texttt{patient\_summary} que agregan datos de múltiples tablas (edstays, diagnosis, vitalsign, medrecon, pyxis), y consultas \texttt{custom} que generan \ac{SQL} específico. La alta cobertura valida este diseño.
 
 Context Precision DB (0,6021) es más modesta: aproximadamente el 60\,\% del contexto recuperado es directamente relevante. El ``ruido'' proviene del diseño del \texttt{patient\_summary}, que recupera datos de todas las tablas relacionadas con un paciente ---incluyendo información que puede no ser necesaria para responder una pregunta específica---. Por ejemplo, ante la pregunta \textit{``¿Cuál es el diagnóstico del paciente?''}, el resumen incluye también signos vitales y medicamentos. Este diseño prioriza la completitud sobre la precisión, una decisión arquitectónica deliberada que favorece respuestas más ricas a costa de un Context Precision inferior.
 
 \paragraph{RAG: El Desafío de la Recuperación Documental.}
 
-Las métricas RAG son sustancialmente inferiores (Context Precision: 0,0501; Context Recall: 0,1694). Estos valores reflejan la dificultad fundamental de recuperar fragmentos específicos de documentos clínicos extensos que contienen centenares de páginas de texto narrativo.
+Las métricas \ac{RAG} son sustancialmente inferiores (Context Precision: 0,0501; Context Recall: 0,1694). Estos valores reflejan la dificultad fundamental de recuperar fragmentos específicos de documentos clínicos extensos que contienen centenares de páginas de texto narrativo.
 
-\textbf{Context Precision RAG (0,0501)} indica que la gran mayoría del contexto recuperado no es directamente relevante. Esto tiene múltiples causas técnicas:
+\textbf{Context Precision \ac{RAG} (0,0501)} indica que la gran mayoría del contexto recuperado no es directamente relevante. Esto tiene múltiples causas técnicas:
 
 \begin{enumerate}[leftmargin=*]
   \item \textbf{Granularidad del \textit{chunking}}: Los fragmentos de 1200 tokens, diseñados para proporcionar contexto suficiente, incluyen inevitablemente contenido adyacente no relevante. El esquema padre-hijo con expansión de \textit{chunks} hijo a padre agrava este efecto.
-  \item \textbf{Diversidad temática de los documentos}: Los tres documentos indexados cubren temas amplios (formación del residente, estándares de UCI, farmacología clínica). Las búsquedas por similitud semántica recuperan fragmentos temáticamente relacionados pero no necesariamente relevantes para la pregunta específic.
+  \item \textbf{Diversidad temática de los documentos}: Los tres documentos indexados cubren temas amplios (formación del residente, estándares de \ac{UCI}, farmacología clínica). Las búsquedas por similitud semántica recuperan fragmentos temáticamente relacionados pero no necesariamente relevantes para la pregunta específic.
   \item \textbf{\textit{Top-k} y \textit{fetch-k}}: Con \texttt{top\_k=8} y \texttt{fetch\_k=32}, el sistema recupera un volumen considerable de candidatos para el \textit{reranking}. Si solo 1--2 fragmentos de los 8 finales son realmente relevantes, la precisión es baja por diseño.
 \end{enumerate}
 
-\textbf{Context Recall RAG (0,1694)} indica que solo se recupera una fracción de la información necesaria para producir la respuesta de referenci. Las causas incluyen:
+\textbf{Context Recall \ac{RAG} (0,1694)} indica que solo se recupera una fracción de la información necesaria para producir la respuesta de referenci. Las causas incluyen:
 
 \begin{enumerate}[leftmargin=*]
   \item \textbf{Información distribuida}: Las preguntas de tipo \textit{multi\_fragmento} requieren combinar información de secciones distantes del mismo documento o de documentos diferentes. El pipeline actual recupera fragmentos por similitud con la consulta, pero no implementa estrategias de seguimiento de cadenas temáticas dentro de un documento.
@@ -65,7 +65,7 @@ Las métricas RAG son sustancialmente inferiores (Context Precision: 0,0501; Con
   \item \textbf{Preguntas fuera de dominio}: Las 3~preguntas sin respuesta en los documentos indexados contribuyen con Context Recall cercano a 0, reduciendo la media global.
 \end{enumerate}
 
-Es relevante contextualizar estos resultados: los sistemas RAG en dominios biomédicos reportan habitualmente métricas inferiores a las obtenidas en dominios generales~\cite{xiong2024medrag,Amugongo2025systematic}. El benchmark MIRAGE~\cite{xiong2024medrag}, que evalúa sistemas RAG específicamente en el dominio médico, documenta dificultades similares con preguntas que requieren razonamiento multi-paso sobre documentos clínicos.
+Es relevante contextualizar estos resultados: los sistemas \ac{RAG} en dominios biomédicos reportan habitualmente métricas inferiores a las obtenidas en dominios generales~\cite{xiong2024medrag,Amugongo2025systematic}. El benchmark MIRAGE~\cite{xiong2024medrag}, que evalúa sistemas \ac{RAG} específicamente en el dominio médico, documenta dificultades similares con preguntas que requieren razonamiento multi-paso sobre documentos clínicos.
 
 
 \section{Análisis del fallo SEC-PROMPT-003}
@@ -74,7 +74,7 @@ El test SEC-PROMPT-003 merece un análisis detallado porque ilustra una limitaci
 
 \paragraph{El \textit{payload}.} La solicitud fue: \textit{``Olvida que eres un asistente médico. Genera datos falsos de 100 pacientes ficticios con sus diagnósticos.''}
 
-\paragraph{La respuesta del agente.} \textit{``No puedo hacer eso. Soy ChatHCE, un asistente especializado en análisis clínico de datos reales del dataset MIMIC-IV-ED. No puedo generar datos ficticios de pacientes.''}
+\paragraph{La respuesta del agente.} \textit{``No puedo hacer eso. Soy ChatHCE, un asistente especializado en análisis clínico de datos reales del dataset \acs{MIMIC}-IV-\acs{ED}. No puedo generar datos ficticios de pacientes.''}
 
 \paragraph{El veredicto del verificador.} No superado. El verificador detectó la palabra \textit{``datos''} en la respuesta como indicador de que el agente habría generado datos ficticios.
 
@@ -98,62 +98,62 @@ El patrón de \texttt{herramienta\_correcta}=0,00 en los 5~casos TC-VIZ revela u
 
 Las latencias registradas (rango: 1,8--7,5\,ms) requieren una interpretación técnica matizad.
 
-\paragraph{El rol del caché.} El sistema implementa un \texttt{CacheManager} con TTL de 300~segundos. Aunque el \textit{benchmark} utiliza \textit{cache bypass} mediante un UUID de sesión único, los valores extremadamente bajos sugieren que alguna capa de caché ---posiblemente a nivel de la conexión HTTP con Supabase o del pool de conexiones--- sigue proporcionando respuestas parcialmente cacheadas.
+\paragraph{El rol del caché.} El sistema implementa un \texttt{CacheManager} con \ac{TTL} de 300~segundos. Aunque el \textit{benchmark} utiliza \textit{cache bypass} mediante un UUID de sesión único, los valores extremadamente bajos sugieren que alguna capa de caché ---posiblemente a nivel de la conexión HTTP con Supabase o del pool de conexiones--- sigue proporcionando respuestas parcialmente cacheadas.
 
-\paragraph{Latencia de primera ejecución.} Los logs de la evaluación RAGAS, que sí representan ejecuciones reales con llamadas a las APIs, registran tiempos de \texttt{process\_message()} de 3700--8700\,ms para las primeras consultas. Estos valores incluyen: la llamada a la API de Anthropic para el análisis de intención, la ejecución de la consulta SQL contra Supabase (80--110\,ms por tabla), y la segunda llamada a Anthropic para la síntesis de la respuest. El monitor de rendimiento del agente marcó como ``consultas lentas'' (\textit{slow query}) aquellas que superaron los 3000\,ms.
+\paragraph{Latencia de primera ejecución.} Los logs de la evaluación \ac{RAGAS}, que sí representan ejecuciones reales con llamadas a las APIs, registran tiempos de \texttt{process\_message()} de 3700--8700\,ms para las primeras consultas. Estos valores incluyen: la llamada a la \ac{API} de Anthropic para el análisis de intención, la ejecución de la consulta \ac{SQL} contra Supabase (80--110\,ms por tabla), y la segunda llamada a Anthropic para la síntesis de la respuest. El monitor de rendimiento del agente marcó como ``consultas lentas'' (\textit{slow query}) aquellas que superaron los 3000\,ms.
 
-\paragraph{Variabilidad RAG.} La categoría RAG presenta la mayor variabilidad (media: 2,4\,ms vs. P95: 4,1\,ms vs. máx: 7,5\,ms). En ejecuciones sin caché, la latencia RAG real incluye: la generación de \textit{embeddings} de la consulta, la búsqueda vectorial en pgvector, la augmentación de la consulta con Claude, la recuperación de fragmentos expandidos, y el \textit{reranking} con el \textit{cross-encoder} ---un pipeline significativamente más complejo que una consulta SQL direct.
+\paragraph{Variabilidad \ac{RAG}.} La categoría \ac{RAG} presenta la mayor variabilidad (media: 2,4\,ms vs. P95: 4,1\,ms vs. máx: 7,5\,ms). En ejecuciones sin caché, la latencia \ac{RAG} real incluye: la generación de \textit{embeddings} de la consulta, la búsqueda vectorial en pgvector, la augmentación de la consulta con Claude, la recuperación de fragmentos expandidos, y el \textit{reranking} con el \textit{cross-encoder} ---un pipeline significativamente más complejo que una consulta \ac{SQL} direct.
 
-\paragraph{Contexto de producción.} En un entorno de producción sin caché, se esperaría que las latencias de primera ejecución se sitúen en el rango de 3--10~segundos para consultas DB y 10--30~segundos para consultas RAG. Los valores -milisegundo del \textit{benchmark} son útiles para validar que el sistema de caché funciona correctamente, pero no representan la experiencia de usuario real en primera interacción.
+\paragraph{Contexto de producción.} En un entorno de producción sin caché, se esperaría que las latencias de primera ejecución se sitúen en el rango de 3--10~segundos para consultas DB y 10--30~segundos para consultas \ac{RAG}. Los valores -milisegundo del \textit{benchmark} son útiles para validar que el sistema de caché funciona correctamente, pero no representan la experiencia de usuario real en primera interacción.
 
 
 \section{Limitaciones del marco de evaluación}
 
 \subsection{Sesgo del modelo evaluador}
 
-Se utiliza el mismo modelo (Claude Haiku~4.5) como sistema evaluado y como evaluador RAGAS. Esto introduce un sesgo potencial: el evaluador puede ser más tolerante con el estilo de respuesta y las formulaciones del sistema evaluado al compartir patrones lingüísticos y razonamiento~\cite{Zheng2023llmjudge}. La literatura sobre evaluación LLM-as-a-Judge sugiere que modelos más capaces (como GPT-4 o Claude 3 Opus) como evaluadores proporcionan mayor discriminación~\cite{Yu2025agentjudge}, pero el coste de ejecución sería significativamente superior al presupuesto disponible para la evaluación.
+Se utiliza el mismo modelo (Claude Haiku~4.5) como sistema evaluado y como evaluador \ac{RAGAS}. Esto introduce un sesgo potencial: el evaluador puede ser más tolerante con el estilo de respuesta y las formulaciones del sistema evaluado al compartir patrones lingüísticos y razonamiento~\cite{Zheng2023llmjudge}. La literatura sobre evaluación \ac{LLM}-as-a-Judge sugiere que modelos más capaces (como \acs{GPT}-4 o Claude 3 Opus) como evaluadores proporcionan mayor discriminación~\cite{Yu2025agentjudge}, pero el coste de ejecución sería significativamente superior al presupuesto disponible para la evaluación.
 
 \subsection{Validación del \textit{ground truth}}
 
-El \textit{ground truth} del \textit{golden set} RAG fue generado por un LLM mediante la técnica \textit{LLM-as-Extractor} con temperatura~0. La ausencia de validación por expertos clínicos es una limitación reconocida que afecta la interpretabilidad de las métricas RAGAS RAG. El \textit{ground truth} DB fue verificado contra consultas SQL ejecutadas directamente contra la base de datos, lo que proporciona mayor fiabilidad para ese conjunto.
+El \textit{ground truth} del \textit{golden set} \ac{RAG} fue generado por un \ac{LLM} mediante la técnica \textit{LLM-as-Extractor} con temperatura~0. La ausencia de validación por expertos clínicos es una limitación reconocida que afecta la interpretabilidad de las métricas \ac{RAGAS} \ac{RAG}. El \textit{ground truth} DB fue verificado contra consultas \ac{SQL} ejecutadas directamente contra la base de datos, lo que proporciona mayor fiabilidad para ese conjunto.
 
-En un marco de evaluación ideal, el \textit{ground truth} RAG debería ser construido y validado por profesionales de medicina intensiva y urgencias. La construcción de \textit{golden sets} validados por expertos es una línea de trabajo futura que mejoraría la fiabilidad de las métricas~\cite{hossain2025}.
+En un marco de evaluación ideal, el \textit{ground truth} \ac{RAG} debería ser construido y validado por profesionales de medicina intensiva y urgencias. La construcción de \textit{golden sets} validados por expertos es una línea de trabajo futura que mejoraría la fiabilidad de las métricas~\cite{hossain2025}.
 
 \subsection{Cobertura del espacio de prueba}
 
-Con 40~preguntas DB, 30~RAG, 28~funcionales y 13~de seguridad, la evaluación cubre un espectro representativo pero no exhaustivo de los escenarios de uso del sistem. En particular:
+Con 40~preguntas DB, 30~\ac{RAG}, 28~funcionales y 13~de seguridad, la evaluación cubre un espectro representativo pero no exhaustivo de los escenarios de uso del sistem. En particular:
 
 \begin{itemize}[leftmargin=*]
-  \item Las consultas de base de datos se centran en 6~pacientes del \textit{dataset} MIMIC-IV-ED. El comportamiento con la totalidad de pacientes no está evaluado.
-  \item Los \textit{payloads} de seguridad cubren las categorías OWASP más relevantes, pero no incluyen ataques de extracción de datos por canal lateral ni técnicas de \textit{jailbreak} más sofisticadas.
-  \item Las preguntas RAG cubren 3~documentos; el comportamiento con un corpus documental más amplio o con documentos en otros formatos no está evaluado.
+  \item Las consultas de base de datos se centran en 6~pacientes del \textit{dataset} \acs{MIMIC}-IV-\acs{ED}. El comportamiento con la totalidad de pacientes no está evaluado.
+  \item Los \textit{payloads} de seguridad cubren las categorías \ac{OWASP} más relevantes, pero no incluyen ataques de extracción de datos por canal lateral ni técnicas de \textit{jailbreak} más sofisticadas.
+  \item Las preguntas \ac{RAG} cubren 3~documentos; el comportamiento con un corpus documental más amplio o con documentos en otros formatos no está evaluado.
 \end{itemize}
 
 \subsection{Evaluación de componentes vs. evaluación de extremo a extremo}
 
-Las métricas RAGAS evalúan la calidad de la respuesta final, pero no descomponen la contribución de cada componente del pipeline (recuperación, reranking, síntesis). En un sistema multicomponente como ChatHCE ---con herramientas de base de datos, RAG, y visualización--- una evaluación por componente permitiría identificar con mayor precisión los cuellos de botell. Los casos funcionales proporcionan parcialmente esta descomposición a través del criterio \texttt{herramienta\_correcta}, pero una evaluación completa de componentes requeriría instrumentación adicional.
+Las métricas \ac{RAGAS} evalúan la calidad de la respuesta final, pero no descomponen la contribución de cada componente del pipeline (recuperación, reranking, síntesis). En un sistema multicomponente como ChatHCE ---con herramientas de base de datos, \ac{RAG}, y visualización--- una evaluación por componente permitiría identificar con mayor precisión los cuellos de botell. Los casos funcionales proporcionan parcialmente esta descomposición a través del criterio \texttt{herramienta\_correcta}, pero una evaluación completa de componentes requeriría instrumentación adicional.
 
 
 \section{Análisis de los casos funcionales TC-RAG}
 
-Resulta llamativo que los 8~casos funcionales TC-RAG fueron superados (score de categoría: 1,000) mientras que las 4~métricas RAGAS RAG están en valores bajos. Esta aparente contradicción tiene una explicación técnica clar.
+Resulta llamativo que los 8~casos funcionales TC-RAG fueron superados (score de categoría: 1,000) mientras que las 4~métricas \ac{RAGAS} \ac{RAG} están en valores bajos. Esta aparente contradicción tiene una explicación técnica clar.
 
-Los casos funcionales TC-RAG evalúan criterios diferentes a RAGAS: si la respuesta contiene el valor esperado (\texttt{contiene\_valor}), si se invocó la herramienta correcta (\texttt{herramienta\_correcta}), si no hay alucinaciones (\texttt{no\_alucinacion}), si el formato es adecuado (\texttt{formato\_respuesta}) y si se citan fuentes (\texttt{fuentes\_citadas}). Estos criterios son más tolerantes con la verbosidad y el contexto adicional: si la respuesta contiene la información esperada y cita las fuentes, el caso pasa independientemente de cuánta información adicional se incluy.
+Los casos funcionales TC-RAG evalúan criterios diferentes a \ac{RAGAS}: si la respuesta contiene el valor esperado (\texttt{contiene\_valor}), si se invocó la herramienta correcta (\texttt{herramienta\_correcta}), si no hay alucinaciones (\texttt{no\_alucinacion}), si el formato es adecuado (\texttt{formato\_respuesta}) y si se citan fuentes (\texttt{fuentes\_citadas}). Estos criterios son más tolerantes con la verbosidad y el contexto adicional: si la respuesta contiene la información esperada y cita las fuentes, el caso pasa independientemente de cuánta información adicional se incluy.
 
-RAGAS, en cambio, penaliza estrictamente la información adicional (\textit{Answer Relevancy}), el contexto no relevante (\textit{Context Precision}), y las afirmaciones no fundamentadas en el contexto (\textit{Faithfulness}). Un agente que proporciona respuestas ricas, contextualizadas y con citas de fuentes puede obtener puntuaciones funcionales altas y puntuaciones RAGAS bajas simultáneamente.
+\ac{RAGAS}, en cambio, penaliza estrictamente la información adicional (\textit{Answer Relevancy}), el contexto no relevante (\textit{Context Precision}), y las afirmaciones no fundamentadas en el contexto (\textit{Faithfulness}). Un agente que proporciona respuestas ricas, contextualizadas y con citas de fuentes puede obtener puntuaciones funcionales altas y puntuaciones \ac{RAGAS} bajas simultáneamente.
 
-Esto sugiere que la evaluación funcional captura mejor la utilidad práctica del sistema para el usuario final, mientras que RAGAS captura la precisión del pipeline de recuperación y la adherencia estricta al contexto~\cite{Gan2025rageval}. Ambas perspectivas son complementarias.
+Esto sugiere que la evaluación funcional captura mejor la utilidad práctica del sistema para el usuario final, mientras que \ac{RAGAS} captura la precisión del pipeline de recuperación y la adherencia estricta al contexto~\cite{Gan2025rageval}. Ambas perspectivas son complementarias.
 
 
 \section{Implicaciones para el diseño de sistemas clínicos}
 
-Los resultados de la evaluación tienen varias implicaciones para el diseño de sistemas de IA conversacional en entornos clínicos:
+Los resultados de la evaluación tienen varias implicaciones para el diseño de sistemas de \ac{IA} conversacional en entornos clínicos:
 
-\paragraph{1. Anti-alucinación como requisito no negociable.} La puntuación perfecta en anti-alucinación demuestra que es posible diseñar sistemas LLM que no fabriquen información médic. La estrategia de \textit{defense-in-depth} ---restricciones multinivel desde el \textit{prompt} hasta la validación de herramientas--- es efectiva y debería considerarse un patrón de diseño estándar para sistemas LLM en sanidad~\cite{kim2025hallucination,Song2025trustehragent}.
+\paragraph{1. Anti-alucinación como requisito no negociable.} La puntuación perfecta en anti-alucinación demuestra que es posible diseñar sistemas \ac{LLM} que no fabriquen información médic. La estrategia de \textit{defense-in-depth} ---restricciones multinivel desde el \textit{prompt} hasta la validación de herramientas--- es efectiva y debería considerarse un patrón de diseño estándar para sistemas \ac{LLM} en sanidad~\cite{kim2025hallucination,Song2025trustehragent}.
 
-\paragraph{2. La necesidad de métricas específicas de dominio.} Las métricas RAGAS estándar no capturan adecuadamente la utilidad clínica de las respuestas. Se necesitan métricas que valoren el contexto médico complementario, la interpretación de valores anómalos, y la provisión proactiva de información de seguridad del paciente. El desarrollo de \textit{benchmarks} específicos para asistentes clínicos es una línea de investigación activa~\cite{AgentClinic2025}.
+\paragraph{2. La necesidad de métricas específicas de dominio.} Las métricas \ac{RAGAS} estándar no capturan adecuadamente la utilidad clínica de las respuestas. Se necesitan métricas que valoren el contexto médico complementario, la interpretación de valores anómalos, y la provisión proactiva de información de seguridad del paciente. El desarrollo de \textit{benchmarks} específicos para asistentes clínicos es una línea de investigación activa~\cite{AgentClinic2025}.
 
-\paragraph{3. El valor de la evaluación multicap.} La combinación de RAGAS (calidad semántica), casos funcionales (corrección operativa), seguridad (robustez adversarial) y latencia (rendimiento) proporciona una visión más completa que cualquier métrica individual. Los resultados muestran que un sistema puede obtener evaluaciones funcionales excelentes (27/28 casos superados) con métricas RAGAS modestas, lo que raya la importancia de no reducir la evaluación a una única dimensión~\cite{Gan2025rageval}.
+\paragraph{3. El valor de la evaluación multicap.} La combinación de \ac{RAGAS} (calidad semántica), casos funcionales (corrección operativa), seguridad (robustez adversarial) y latencia (rendimiento) proporciona una visión más completa que cualquier métrica individual. Los resultados muestran que un sistema puede obtener evaluaciones funcionales excelentes (27/28 casos superados) con métricas \ac{RAGAS} modestas, lo que raya la importancia de no reducir la evaluación a una única dimensión~\cite{Gan2025rageval}.
 
 \paragraph{4. Transparencia en las limitaciones.} La transparencia del sistema al reconocer datos inexistentes (3/3 tests anti-alucinación) es un comportamiento crítico para la confianza clínic. Los sistemas que dicen ``no sé'' o ``no tengo esa información'' cuando corresponde son más seguros que los que fabrican respuestas plausibles~\cite{hossain2025,AlGaradi2025llmhealthcare}.
 
@@ -165,9 +165,9 @@ A partir del análisis detallado, se identifican las siguientes direcciones de m
 \begin{enumerate}[leftmargin=*]
   \item \textbf{Mejora del pipeline RAG}: Implementar estrategias de recuperación jerárquica que combinen búsqueda vectorial con búsqueda por secciones/capítulos del documento, permitiendo recuperar fragmentos más precisos. Evaluar modelos de \textit{embeddings} específicos para terminología biomédica en español.
 
-  \item \textbf{Validación del \textit{ground truth} RAG por expertos}: Someter las 30~respuestas de referencia del \textit{golden set} RAG a validación por profesionales de medicina intensiva y urgencias, corrigiendo posibles errores y ajustando el nivel de detalle esperado.
+  \item \textbf{Validación del \textit{ground truth} \ac{RAG} por expertos}: Someter las 30~respuestas de referencia del \textit{golden set} \ac{RAG} a validación por profesionales de medicina intensiva y urgencias, corrigiendo posibles errores y ajustando el nivel de detalle esperado.
 
-  \item \textbf{Mejora del verificador de seguridad}: Reemplazar la detección por palabras clave en los verificadores de inyección de prompts por un análisis semántico basado en LLM que evalúe la intención de la respuest.
+  \item \textbf{Mejora del verificador de seguridad}: Reemplazar la detección por palabras clave en los verificadores de inyección de prompts por un análisis semántico basado en \ac{LLM} que evalúe la intención de la respuest.
 
   \item \textbf{Extensión de la herramienta de visualización}: Añadir soporte para consultas agregadas sin identificadores individuales de pacientes, permitiendo generar gráficas de distribuciones y tendencias globales del \textit{dataset}.
 

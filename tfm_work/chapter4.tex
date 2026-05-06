@@ -17,14 +17,14 @@
 Se presentan a continuación los resultados obtenidos en la evaluación del sistema ChatHCE, ejecutada el 28 de abril de 2026. El tiempo total de ejecución fue de 3075,8~segundos (~51~minutos). Los cinco módulos completaron su ejecución sin errores de proceso.
 
 
-\section{Calidad de respuestas: RAGAS DB}
+\section{Calidad de respuestas: \acs{RAGAS} DB}
 \label{sec:res_ragas_db}
 
-Las 40~preguntas del \textit{golden set} DB fueron procesadas sin errores (tasa de error: 0\,\%) en 752,3~segundos. La Tabla~\ref{tab:res_ragas_db} presenta las cuatro métricas RAGAS obtenidas.
+Las 40~preguntas del \textit{golden set} DB fueron procesadas sin errores (tasa de error: 0\,\%) en 752,3~segundos. La Tabla~\ref{tab:res_ragas_db} presenta las cuatro métricas \ac{RAGAS} obtenidas.
 
 \begin{table}[H]
 \centering
-\caption{Métricas RAGAS --- \textit{Golden Set} DB (40~preguntas, 0~errores, 752,3\,s).}
+\caption{Métricas \acs{RAGAS} --- \textit{Golden Set} DB (40~preguntas, 0~errores, 752,3\,s).}
 \label{tab:res_ragas_db}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lc}
@@ -71,21 +71,21 @@ Context Recall     & 0,8458 \\
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Métricas RAGAS del \textit{golden set} DB. Context Recall obtiene la puntuación más alta (0,85); Answer Relevancy la más baja (0,49).}
+\caption{Métricas \acs{RAGAS} del \textit{golden set} DB. Context Recall obtiene la puntuación más alta (0,85); Answer Relevancy la más baja (0,49).}
 \label{fig:res_ragas_db_barras}
 \end{figure}
 
 Context Recall (0,8458) fue la métrica con mayor puntuación. Answer Relevancy (0,4944) registró la puntuación más baja del conjunto. Faithfulness se situó en 0,7357 y Context Precision en 0,6021.
 
 
-\section{Calidad de respuestas: RAGAS RAG}
+\section{Calidad de respuestas: \acs{RAGAS} RAG}
 \label{sec:res_ragas_rag}
 
-Las 30~preguntas del \textit{golden set} RAG fueron procesadas sin errores en 1812,1~segundos. La Tabla~\ref{tab:res_ragas_rag} presenta los resultados.
+Las 30~preguntas del \textit{golden set} \ac{RAG} fueron procesadas sin errores en 1812,1~segundos. La Tabla~\ref{tab:res_ragas_rag} presenta los resultados.
 
 \begin{table}[H]
 \centering
-\caption{Métricas RAGAS --- \textit{Golden Set} RAG (30~preguntas, 0~errores, 1812,1\,s).}
+\caption{Métricas \acs{RAGAS} --- \textit{Golden Set} \acs{RAG} (30~preguntas, 0~errores, 1812,1\,s).}
 \label{tab:res_ragas_rag}
 \footnotesize
 \begin{tabularx}{\columnwidth}{lc}
@@ -132,11 +132,11 @@ Context Recall     & 0,4894 \\
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Métricas RAGAS del \textit{golden set} RAG. Faithfulness obtiene la puntuación más alta (0,57); las restantes métricas se sitúan en el rango 0,48--0,55.}
+\caption{Métricas \acs{RAGAS} del \textit{golden set} \acs{RAG}. Faithfulness obtiene la puntuación más alta (0,57); las restantes métricas se sitúan en el rango 0,48--0,55.}
 \label{fig:res_ragas_rag_barras}
 \end{figure}
 
-Las cuatro métricas RAG fueron inferiores a las obtenidas en el \textit{golden set} DB. Faithfulness (0,5708) fue la métrica más alta del conjunto RAG. Context Precision registró 0,5501 y Context Recall 0,4894.
+Las cuatro métricas \ac{RAG} fueron inferiores a las obtenidas en el \textit{golden set} DB. Faithfulness (0,5708) fue la métrica más alta del conjunto \ac{RAG}. Context Precision registró 0,5501 y Context Recall 0,4894.
 
 La Figura~\ref{fig:res_comparativa_ragas} muestra la comparativa entre ambos \textit{golden sets}.
 
@@ -177,11 +177,11 @@ La Figura~\ref{fig:res_comparativa_ragas} muestra la comparativa entre ambos \te
   ({Ctx.\,Prec.},0.5501) [0.55]
   ({Ctx.\,Rec.},0.4894) [0.49]
 };
-\legend{DB (40 preg.), RAG (30 preg.)}
+\legend{DB (40 preg.), \ac{RAG} (30 preg.)}
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Comparativa de métricas RAGAS entre los \textit{golden sets} DB y RAG.}
+\caption{Comparativa de métricas \acs{RAGAS} entre los \textit{golden sets} DB y \acs{RAG}.}
 \label{fig:res_comparativa_ragas}
 \end{figure}
 
@@ -201,7 +201,7 @@ Se ejecutaron 51~mediciones (17~consultas $\times$ 3~ejecuciones) sin fallos en 
 \textbf{Categoría} & \textbf{Media} & \textbf{Mediana} & \textbf{P95} & \textbf{Mín} & \textbf{Máx} \\
 \midrule
 DB      & 2,1 & 2,0 & 2,5 & 1,8 & 2,5 \\
-RAG     & 2,4 & 2,1 & 4,1 & 1,8 & 7,5 \\
+\ac{RAG}     & 2,4 & 2,1 & 4,1 & 1,8 & 7,5 \\
 VIZ     & 2,0 & 1,9 & 2,2 & 1,8 & 2,2 \\
 Complex & 2,0 & 2,0 & 2,3 & 1,8 & 2,3 \\
 \bottomrule
@@ -241,11 +241,11 @@ Complex & 2,0 & 2,0 & 2,3 & 1,8 & 2,3 \\
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Latencias por categoría: media, P95 y máximo. La categoría RAG presenta la mayor variabilidad (máx: 7,5\,ms).}
+\caption{Latencias por categoría: media, P95 y máximo. La categoría \acs{RAG} presenta la mayor variabilidad (máx: 7,5\,ms).}
 \label{fig:res_latencia_barras}
 \end{figure}
 
-La latencia media de todas las categorías se situó entre 2,0 y 2,4~ms. La categoría RAG registró la mayor variabilidad, con un máximo de 7,5~ms y un P95 de 4,1~ms. Las categorías VIZ y Complex presentaron las latencias más estables. Ninguna ejecución individual superó los 8~ms. Las 51~ejecuciones completaron con estado OK (0~fallos).
+La latencia media de todas las categorías se situó entre 2,0 y 2,4~ms. La categoría \ac{RAG} registró la mayor variabilidad, con un máximo de 7,5~ms y un P95 de 4,1~ms. Las categorías VIZ y Complex presentaron las latencias más estables. Ninguna ejecución individual superó los 8~ms. Las 51~ejecuciones completaron con estado OK (0~fallos).
 
 
 \section{Seguridad}
@@ -262,7 +262,7 @@ Los 13~tests de seguridad se ejecutaron en 35,7~segundos. La Tabla~\ref{tab:res_
 \toprule
 \textbf{Categoría} & \textbf{Tests} & \textbf{Superados} & \textbf{Resultado} \\
 \midrule
-Inyección SQL         & 7 & 7/7 & Superado \\
+Inyección \ac{SQL}         & 7 & 7/7 & Superado \\
 Inyección de prompts  & 3 & 2/3 & No superado \\
 Anti-alucinación      & 3 & 3/3 & Superado \\
 \midrule
@@ -304,7 +304,7 @@ SEC-ANTI-003 & Bloqueado & Datos fuera del alcance (cirugías) \\
 \end{tabularx}
 \end{table}
 
-En el test SEC-PROMPT-003, el agente respondió: \textit{``No puedo hacer eso. Soy ChatHCE, un asistente especializado en análisis clínico de datos reales del dataset MIMIC-IV-ED. No puedo generar datos ficticios de pacientes.''}. El verificador automático marcó este test como no superado al detectar la palabra \textit{``datos''} en la respuesta de rechazo.
+En el test SEC-PROMPT-003, el agente respondió: \textit{``No puedo hacer eso. Soy ChatHCE, un asistente especializado en análisis clínico de datos reales del dataset \acs{MIMIC}-IV-\acs{ED}. No puedo generar datos ficticios de pacientes.''}. El verificador automático marcó este test como no superado al detectar la palabra \textit{``datos''} en la respuesta de rechazo.
 
 
 \section{Funcionalidad}
@@ -362,7 +362,7 @@ Seis casos obtuvieron puntuación perfecta (1,000). El criterio \texttt{no\_aluc
 
 \section{TC-RAG: Búsqueda en documentos clínicos}
 
-Los 8~casos RAG obtuvieron un score de categoría de 1,000. La Tabla~\ref{tab:res_tc_rag} detalla las puntuaciones individuales.
+Los 8~casos \ac{RAG} obtuvieron un score de categoría de 1,000. La Tabla~\ref{tab:res_tc_rag} detalla las puntuaciones individuales.
 
 \begin{table}[H]
 \centering
@@ -385,7 +385,7 @@ TC-RAG-008 & 1,000 & Todos los criterios: 1,00 \\
 \end{tabularx}
 \end{table}
 
-Seis casos alcanzaron puntuación perfecta con citación correcta de fuentes. TC-RAG-007 registró \texttt{herramienta\_correcta}=0,00: el agente respondió sin invocar explícitamente la herramienta RAG.
+Seis casos alcanzaron puntuación perfecta con citación correcta de fuentes. TC-RAG-007 registró \texttt{herramienta\_correcta}=0,00: el agente respondió sin invocar explícitamente la herramienta \ac{RAG}.
 
 \section{TC-VIZ: Generación de visualizaciones}
 
@@ -425,7 +425,7 @@ Los 5~casos del agente obtuvieron un score de categoría de 1,000. La Tabla~\ref
 \textbf{Test} & \textbf{Score} & \textbf{Descripción} \\
 \midrule
 TC-AGENT-001 & 0,905 & \texttt{contiene\_valor}=0,70; \texttt{formato}=0,80 \\
-TC-AGENT-002 & 1,000 & Selección multi-herramienta (DB + RAG) \\
+TC-AGENT-002 & 1,000 & Selección multi-herramienta (DB + \ac{RAG}) \\
 TC-AGENT-003 & 0,940 & Mantenimiento de contexto conversacional \\
 TC-AGENT-004 & 0,940 & Manejo de pacientes inexistentes \\
 TC-AGENT-005 & 1,000 & Consistencia lingüística (consulta en inglés) \\
@@ -448,7 +448,7 @@ La Tabla~\ref{tab:res_criterios} agrega los criterios de evaluación a nivel de 
 \textbf{Criterio} & \textbf{Descripción} & \textbf{Media} \\
 \midrule
 \texttt{no\_alucinacion}       & Sin datos fabricados       & 1,000 \\
-\texttt{fuentes\_citadas}      & Citación de fuentes RAG    & 1,000 \\
+\texttt{fuentes\_citadas}      & Citación de fuentes \ac{RAG}    & 1,000 \\
 \texttt{formato\_respuesta}    & Formato y estructura       & $\approx$0,930 \\
 \texttt{contiene\_valor}       & Valor factual esperado     & $\approx$0,861 \\
 \texttt{herramienta\_correcta} & Selección de herramienta   & $\approx$0,786 \\
@@ -507,8 +507,8 @@ La Tabla~\ref{tab:res_resumen} presenta el resumen consolidado de los cinco mód
 \toprule
 \textbf{Módulo} & \textbf{Alcance} & \textbf{Duración} & \textbf{Resultado} \\
 \midrule
-RAGAS DB       & 40 preguntas, 4 métricas   & 752,3\,s  & 1/4 métricas altas \\
-RAGAS RAG      & 30 preguntas, 4 métricas   & 1812,1\,s & 4 métricas evaluadas \\
+\ac{RAGAS} DB       & 40 preguntas, 4 métricas   & 752,3\,s  & 1/4 métricas altas \\
+\ac{RAGAS} \ac{RAG}      & 30 preguntas, 4 métricas   & 1812,1\,s & 4 métricas evaluadas \\
 Latencia       & 17 consultas, 51 ejecuciones & 102,2\,s & 4/4 categorías correctas \\
 Seguridad      & 13 tests, 3 categorías     & 35,7\,s   & 12/13 tests superados \\
 Funcionalidad  & 28 casos, 4 categorías     & 327,3\,s  & 27/28 casos superados \\

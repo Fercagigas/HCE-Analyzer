@@ -11,40 +11,40 @@
 
 El resultado más significativo de la evaluación para un sistema de análisis clínico es la puntuación perfecta (1,000) del criterio \texttt{no\_alucinacion} en los 28~casos funcionales y en los 3~tests de seguridad específicos de anti-alucinación. El sistema nunca fabricó identificadores de pacientes, valores de signos vitales, diagnósticos ni medicamentos. En un dominio donde la generación de información médica falsa puede tener consecuencias directas sobre decisiones clínicas, este resultado valida la efectividad del diseño de las directivas anti-alucinación implementadas en el \texttt{PromptManager}~\cite{kim2025hallucination,Ji2023hallucination}.
 
-Este hallazgo es especialmente relevante dado que las alucinaciones constituyen una de las principales barreras para la adopción de LLMs en entornos sanitarios~\cite{AlGaradi2025llmhealthcare}. La estrategia de \textit{defense-in-depth} adoptada ---restricciones a nivel de \textit{prompt}, de herramienta y de servicio--- demuestra ser efectiva para contener la tendencia generativa del modelo.
+Este hallazgo es especialmente relevante dado que las alucinaciones constituyen una de las principales barreras para la adopción de \ac{LLM}s en entornos sanitarios~\cite{AlGaradi2025llmhealthcare}. La estrategia de \textit{defense-in-depth} adoptada ---restricciones a nivel de \textit{prompt}, de herramienta y de servicio--- demuestra ser efectiva para contener la tendencia generativa del modelo.
 
 
 \section{Consultas a base de datos}
 
-El sistema muestra alta precisión en la recuperación y presentación de datos estructurados del \textit{dataset} MIMIC-IV-ED. Los 10~casos funcionales TC-DB fueron superados, con 6~de ellos obteniendo puntuación perfecta. La métrica Context Recall DB (0,85) confirma que el pipeline recupera la mayor parte de la información necesaria. Los 7~tests de inyección SQL fueron rechazados, validando el modelo de seguridad de la herramienta de base de datos.
+El sistema muestra alta precisión en la recuperación y presentación de datos estructurados del \textit{dataset} \acs{MIMIC}-IV-\acs{ED}. Los 10~casos funcionales TC-DB fueron superados, con 6~de ellos obteniendo puntuación perfecta. La métrica Context Recall DB (0,85) confirma que el pipeline recupera la mayor parte de la información necesaria. Los 7~tests de inyección \ac{SQL} fueron rechazados, validando el modelo de seguridad de la herramienta de base de datos.
 
 Los casos con menor puntuación (TC-DB-007, TC-DB-008, TC-DB-009) reflejan diferencias de formato entre la respuesta generada y el \textit{ground truth}, no errores de contenido. El agente ofrece respuestas factualmente correctas pero con una presentación que difiere de la esperada por el evaluador automático.
 
 
-\section{Métricas RAGAS: interpretación en contexto}
+\section{Métricas \acs{RAGAS}: interpretación en contexto}
 
-Las métricas RAGAS deben interpretarse teniendo en cuenta dos factores determinantes: la complejidad intrínseca del problema evaluado y el rigor del marco de evaluación aplicado.
+Las métricas \ac{RAGAS} deben interpretarse teniendo en cuenta dos factores determinantes: la complejidad intrínseca del problema evaluado y el rigor del marco de evaluación aplicado.
 
 \subsection{Complejidad del problema}
 
-El \textit{golden set} RAG evalúa la capacidad del sistema para recuperar y sintetizar información de documentos clínicos extensos ---manuales de formación, guías ministeriales, libros de referencia--- que contienen terminología especializada, estructuras narrativas complejas y relaciones conceptuales implícitas. Este escenario es sustancialmente más difícil que la recuperación de datos estructurados en SQL, como confirma la diferencia sistemática entre las métricas DB y RAG~\cite{xiong2024medrag}.
+El \textit{golden set} \ac{RAG} evalúa la capacidad del sistema para recuperar y sintetizar información de documentos clínicos extensos ---manuales de formación, guías ministeriales, libros de referencia--- que contienen terminología especializada, estructuras narrativas complejas y relaciones conceptuales implícitas. Este escenario es sustancialmente más difícil que la recuperación de datos estructurados en \ac{SQL}, como confirma la diferencia sistemática entre las métricas DB y \ac{RAG}~\cite{xiong2024medrag}.
 
-Las preguntas de tipo \textit{multi\_fragmento} (6 de 30) y \textit{razonamiento\_aplicado} (6 de 30) exigen combinar información dispersa en múltiples secciones de documentos diferentes o aplicar razonamiento clínico sobre la información recuperada ---capacidades que están en la frontera de los sistemas RAG actuales~\cite{Neha2025raghealth,Amugongo2025systematic}. Las preguntas \textit{fuera\_de\_dominio} (3 de 30) añaden dificultad al requerir que el sistema reconozca los límites de su conocimiento documental.
+Las preguntas de tipo \textit{multi\_fragmento} (6 de 30) y \textit{razonamiento\_aplicado} (6 de 30) exigen combinar información dispersa en múltiples secciones de documentos diferentes o aplicar razonamiento clínico sobre la información recuperada ---capacidades que están en la frontera de los sistemas \ac{RAG} actuales~\cite{Neha2025raghealth,Amugongo2025systematic}. Las preguntas \textit{fuera\_de\_dominio} (3 de 30) añaden dificultad al requerir que el sistema reconozca los límites de su conocimiento documental.
 
 \subsection{Rigor de la evaluación}
 
-El marco RAGAS aplica criterios estrictos. \textit{Answer Relevancy} penaliza cualquier información adicional más allá de lo estrictamente preguntado ---un comportamiento habitual en asistentes clínicos que proporcionan contexto médico complementario---. \textit{Context Precision} exige que todos los fragmentos recuperados sean directamente relevantes, penalizando los \textit{chunks} padre que, al expandirse desde los \textit{chunks} hijo por similitud, incluyen información adyacente. \textit{Faithfulness} requiere que cada afirmación esté fundamentada en el contexto, penalizando las interpretaciones clínicas del modelo.
+El marco \ac{RAGAS} aplica criterios estrictos. \textit{Answer Relevancy} penaliza cualquier información adicional más allá de lo estrictamente preguntado ---un comportamiento habitual en asistentes clínicos que proporcionan contexto médico complementario---. \textit{Context Precision} exige que todos los fragmentos recuperados sean directamente relevantes, penalizando los \textit{chunks} padre que, al expandirse desde los \textit{chunks} hijo por similitud, incluyen información adyacente. \textit{Faithfulness} requiere que cada afirmación esté fundamentada en el contexto, penalizando las interpretaciones clínicas del modelo.
 
-Adicionalmente, el \textit{ground truth} del \textit{golden set} RAG fue generado por un LLM sin validación de expertos clínicos, lo que introduce un sesgo potencial al ser evaluado por el mismo tipo de modelo~\cite{Zheng2023llmjudge,Yu2025agentjudge}. Esta limitación metodológica afecta particularmente a las métricas que comparan respuesta con referencia (\textit{Answer Relevancy}) y contexto con referencia (\textit{Context Recall}).
+Adicionalmente, el \textit{ground truth} del \textit{golden set} \ac{RAG} fue generado por un \ac{LLM} sin validación de expertos clínicos, lo que introduce un sesgo potencial al ser evaluado por el mismo tipo de modelo~\cite{Zheng2023llmjudge,Yu2025agentjudge}. Esta limitación metodológica afecta particularmente a las métricas que comparan respuesta con referencia (\textit{Answer Relevancy}) y contexto con referencia (\textit{Context Recall}).
 
 \subsection{Métricas DB vs. RAG}
 
-La diferencia entre métricas DB y RAG (Faithfulness: 0,74 vs. 0,57; Context Recall: 0,85 vs. 0,49) refleja la dificultad fundamental de recuperar información de texto no estructurado frente a datos tabulares. En las consultas DB, la herramienta genera consultas SQL deterministas que producen resultados exactos; en las consultas RAG, la recuperación depende de la similitud semántica entre \textit{embeddings}, la calidad del \textit{chunking} y la efectividad del \textit{reranking} ---cada paso introduce variabilidad.
+La diferencia entre métricas DB y \ac{RAG} (Faithfulness: 0,74 vs. 0,57; Context Recall: 0,85 vs. 0,49) refleja la dificultad fundamental de recuperar información de texto no estructurado frente a datos tabulares. En las consultas DB, la herramienta genera consultas \ac{SQL} deterministas que producen resultados exactos; en las consultas \ac{RAG}, la recuperación depende de la similitud semántica entre \textit{embeddings}, la calidad del \textit{chunking} y la efectividad del \textit{reranking} ---cada paso introduce variabilidad.
 
 
 \section{Seguridad}
 
-El sistema demuestra protección completa contra inyección SQL (7/7) y alucinación inducida (3/3). El único test no superado (SEC-PROMPT-003) es un falso negativo del verificador automático: el agente rechazó correctamente la solicitud de generar datos ficticios, pero el verificador detectó la palabra \textit{``datos''} en la respuesta de rechazo e interpretó erróneamente que se habían generado datos. El comportamiento real del agente fue correcto.
+El sistema demuestra protección completa contra inyección \ac{SQL} (7/7) y alucinación inducida (3/3). El único test no superado (SEC-PROMPT-003) es un falso negativo del verificador automático: el agente rechazó correctamente la solicitud de generar datos ficticios, pero el verificador detectó la palabra \textit{``datos''} en la respuesta de rechazo e interpretó erróneamente que se habían generado datos. El comportamiento real del agente fue correcto.
 
 
 \section{Visualización}
@@ -54,9 +54,9 @@ La categoría TC-VIZ presenta un patrón consistente: \texttt{herramienta\_corre
 
 \section{Rendimiento temporal}
 
-Las latencias registradas (media: 2,0--2,4\,ms, P95: 2,2--4,1\,ms) corresponden a respuestas servidas desde el sistema de caché (\texttt{CacheManager}). La categoría RAG presenta la mayor variabilidad debido a la augmentación de consultas con el LLM. Estos valores confirman que el sistema de caché es efectivo para consultas repetidas, aunque no representan la latencia de primera ejecución con llamadas reales a las APIs de Anthropic y Supabase.
+Las latencias registradas (media: 2,0--2,4\,ms, P95: 2,2--4,1\,ms) corresponden a respuestas servidas desde el sistema de caché (\texttt{CacheManager}). La categoría \ac{RAG} presenta la mayor variabilidad debido a la augmentación de consultas con el \ac{LLM}. Estos valores confirman que el sistema de caché es efectivo para consultas repetidas, aunque no representan la latencia de primera ejecución con llamadas reales a las APIs de Anthropic y Supabase.
 
 
 \section{Funcionalidad general}
 
-Con 27 de 28~casos funcionales superados y las 4~categorías funcionales completadas satisfactoriamente, el sistema demuestra un comportamiento funcional robusto en sus componentes principales. Los criterios \texttt{no\_alucinacion} (1,000) y \texttt{fuentes\_citadas} (1,000) alcanzan puntuaciones perfectas, lo que indica fiabilidad en la generación de respuestas y en la trazabilidad documental. El criterio \texttt{herramienta\_correcta} (0,786) presenta la mayor variabilidad, explicada por los fallos en TC-VIZ y el caso TC-RAG-007 donde el agente respondió desde su conocimiento interno sin invocar la herramienta RAG.
+Con 27 de 28~casos funcionales superados y las 4~categorías funcionales completadas satisfactoriamente, el sistema demuestra un comportamiento funcional robusto en sus componentes principales. Los criterios \texttt{no\_alucinacion} (1,000) y \texttt{fuentes\_citadas} (1,000) alcanzan puntuaciones perfectas, lo que indica fiabilidad en la generación de respuestas y en la trazabilidad documental. El criterio \texttt{herramienta\_correcta} (0,786) presenta la mayor variabilidad, explicada por los fallos en TC-VIZ y el caso TC-RAG-007 donde el agente respondió desde su conocimiento interno sin invocar la herramienta \ac{RAG}.
