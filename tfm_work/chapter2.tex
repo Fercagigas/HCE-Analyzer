@@ -18,36 +18,36 @@ La inteligencia artificial (\acs{IA}) lleva más de medio siglo intentando asist
 
 \subsubsection*{De los sistemas expertos al aprendizaje profundo}
 
-Los primeros intentos de aplicar \ac{IA} a la medicina se materializaron en los \textit{sistemas expertos} de las décadas de 1970 y 1980. MYCIN \cite{shortliffe1976}, desarrollado en Stanford, fue pionero en el diagnóstico de infecciones bacterianas mediante reglas de producción con factores de certeza. Poco después, INTERNIST-I \cite{miller1982} abordó el diagnóstico diferencial en medicina interna con una base de conocimiento de más de 500 enfermedades, evolucionando posteriormente a QMR (\textit{Quick Medical Reference}). Estos sistemas demostraron un rendimiento comparable al de especialistas en entornos controlados, pero su adopción clínica fue limitada: las bases de reglas eran frágiles, difíciles de mantener y carecían de la flexibilidad necesaria para manejar la variabilidad del lenguaje natural clínico \cite{park2024}.
+Los primeros intentos de aplicar \ac{IA} a la medicina se materializaron en los \textit{sistemas expertos} de las décadas de 1970 y 1980. MYCIN \parencite{shortliffe1976}, desarrollado en Stanford, fue pionero en el diagnóstico de infecciones bacterianas mediante reglas de producción con factores de certeza. Poco después, INTERNIST-I \parencite{miller1982} abordó el diagnóstico diferencial en medicina interna con una base de conocimiento de más de 500 enfermedades, evolucionando posteriormente a QMR (\textit{Quick Medical Reference}). Estos sistemas demostraron un rendimiento comparable al de especialistas en entornos controlados, pero su adopción clínica fue limitada: las bases de reglas eran frágiles, difíciles de mantener y carecían de la flexibilidad necesaria para manejar la variabilidad del lenguaje natural clínico \parencite{park2024}.
 
-La transición al aprendizaje automático estadístico, y posteriormente al aprendizaje profundo (\textit{deep learning}), permitió superar algunas de estas limitaciones. Las redes neuronales convolucionales alcanzaron rendimiento de nivel experto en tareas como la clasificación de imágenes dermatológicas \cite{esteva2017} o la detección de retinopatía diabética \cite{gulshan2016}. No obstante, estos modelos operan sobre datos estructurados o imágenes, sin la capacidad de razonar sobre texto clínico libre.
+La transición al aprendizaje automático estadístico, y posteriormente al aprendizaje profundo (\textit{deep learning}), permitió superar algunas de estas limitaciones. Las redes neuronales convolucionales alcanzaron rendimiento de nivel experto en tareas como la clasificación de imágenes dermatológicas \parencite{esteva2017} o la detección de retinopatía diabética \parencite{gulshan2016}. No obstante, estos modelos operan sobre datos estructurados o imágenes, sin la capacidad de razonar sobre texto clínico libre.
 
 \subsubsection*{\ac{LLM}s como nuevo paradigma}
 
-La arquitectura Transformer \cite{vaswani2017attention} supuso un punto de inflexión al posibilitar el entrenamiento de modelos de lenguaje a escala masiva. \acs{GPT}-4 \cite{openai2023} demostró la capacidad de aprobar el examen \ac{USMLE} con puntuaciones superiores al umbral de aprobación, mientras que Med-PaLM~2 \cite{singhal2023medpalm} logró un rendimiento de nivel experto en preguntas médicas abiertas.
+La arquitectura Transformer \parencite{vaswani2017attention} supuso un punto de inflexión al posibilitar el entrenamiento de modelos de lenguaje a escala masiva. \acs{GPT}-4 \parencite{openai2023} demostró la capacidad de aprobar el examen \ac{USMLE} con puntuaciones superiores al umbral de aprobación, mientras que Med-PaLM~2 \parencite{singhal2023medpalm} logró un rendimiento de nivel experto en preguntas médicas abiertas.
 
-Estas capacidades han motivado la exploración de múltiples casos de uso clínicos: diagnóstico asistido, triaje automatizado, generación de resúmenes de historias clínicas electrónicas (\ac{HCE}), soporte a la decisión terapéutica y educación médica \cite{he2025,wang2024llm}. En particular, la integración de \ac{LLM}s con registros clínicos electrónicos ha mostrado resultados prometedores en la detección automatizada de enfermedades cardiovasculares a partir de notas clínicas no estructuradas \cite{pan2025}.
+Estas capacidades han motivado la exploración de múltiples casos de uso clínicos: diagnóstico asistido, triaje automatizado, generación de resúmenes de historias clínicas electrónicas (\ac{HCE}), soporte a la decisión terapéutica y educación médica \parencite{he2025,wang2024llm}. En particular, la integración de \ac{LLM}s con registros clínicos electrónicos ha mostrado resultados prometedores en la detección automatizada de enfermedades cardiovasculares a partir de notas clínicas no estructuradas \parencite{pan2025}.
 
-La combinación de \ac{LLM}s con técnicas de Recuperación Aumentada por Generación (\textit{Retrieval-Augmented Generation}, \acs{RAG}) representa otro avance significativo, permitiendo anclar las respuestas del modelo a fuentes de conocimiento médico verificadas \cite{diteodoro2025,li2026}. Esta arquitectura reduce las alucinaciones y mejora la trazabilidad de la información generada.
+La combinación de \ac{LLM}s con técnicas de Recuperación Aumentada por Generación (\textit{Retrieval-Augmented Generation}, \acs{RAG}) representa otro avance significativo, permitiendo anclar las respuestas del modelo a fuentes de conocimiento médico verificadas \parencite{diteodoro2025,li2026}. Esta arquitectura reduce las alucinaciones y mejora la trazabilidad de la información generada.
 
 \subsubsection*{Brecha entre benchmarks y práctica clínica}
 
-A pesar de los resultados destacados en benchmarks estandarizados, múltiples revisiones sistemáticas señalan una brecha considerable entre el rendimiento en evaluaciones controladas y la aplicabilidad clínica real \cite{park2024,wang2024chatgpt,jung2025}. Los modelos pueden generar respuestas que parecen correctas pero contienen errores factuales sutiles ---un fenómeno conocido como \textit{alucinación}--- con consecuencias potencialmente graves en contextos médicos \cite{gorle2024,pennydimri2025}. Además, la mayoría de las evaluaciones se realizan en inglés y sobre preguntas de examen, lo que limita su extrapolabilidad a entornos clínicos multilingües y a tareas complejas de razonamiento diagnóstico.
+A pesar de los resultados destacados en benchmarks estandarizados, múltiples revisiones sistemáticas señalan una brecha considerable entre el rendimiento en evaluaciones controladas y la aplicabilidad clínica real \parencite{park2024,wang2024chatgpt,jung2025}. Los modelos pueden generar respuestas que parecen correctas pero contienen errores factuales sutiles ---un fenómeno conocido como \textit{alucinación}--- con consecuencias potencialmente graves en contextos médicos \parencite{gorle2024,pennydimri2025}. Además, la mayoría de las evaluaciones se realizan en inglés y sobre preguntas de examen, lo que limita su extrapolabilidad a entornos clínicos multilingües y a tareas complejas de razonamiento diagnóstico.
 
 \subsection{Retos específicos del dominio médico}
 \label{subsec:retos}
 
 \subsubsection*{Terminología, precisión factual y trazabilidad}
 
-El lenguaje médico es altamente especializado y ambiguo: un mismo término puede referirse a entidades clínicas distintas según el contexto. Los \ac{LLM}s deben manejar terminologías normalizadas (\ac{CIE10}, \ac{SNOMEDCT}) y, al mismo tiempo, interpretar correctamente el texto libre de las notas clínicas. La necesidad de precisión factual es crítica: una recomendación errónea puede traducirse en un daño directo al paciente \cite{haltaufderheide2024}.
+El lenguaje médico es altamente especializado y ambiguo: un mismo término puede referirse a entidades clínicas distintas según el contexto. Los \ac{LLM}s deben manejar terminologías normalizadas (\ac{CIE10}, \ac{SNOMEDCT}) y, al mismo tiempo, interpretar correctamente el texto libre de las notas clínicas. La necesidad de precisión factual es crítica: una recomendación errónea puede traducirse en un daño directo al paciente \parencite{haltaufderheide2024}.
 
-La trazabilidad constituye otro requisito esencial. A diferencia de otros dominios donde una respuesta aproximada es aceptable, en medicina el profesional necesita verificar el origen de cada afirmación. Las técnicas de \ac{RAG} y la cuantificación de incertidumbre ---como la entropía semántica propuesta por \cite{pennydimri2025} o los enfoques bayesianos de \cite{hossain2025}--- abordan parcialmente este problema, pero no lo resuelven por completo.
+La trazabilidad constituye otro requisito esencial. A diferencia de otros dominios donde una respuesta aproximada es aceptable, en medicina el profesional necesita verificar el origen de cada afirmación. Las técnicas de \ac{RAG} y la cuantificación de incertidumbre ---como la entropía semántica propuesta por \textcite{pennydimri2025} o los enfoques bayesianos de \textcite{hossain2025}--- abordan parcialmente este problema, pero no lo resuelven por completo.
 
 \subsubsection*{Escasez de datos y barreras de adopción}
 
-Los datos clínicos etiquetados son escasos y costosos de obtener debido a la necesidad de anotación experta y a las restricciones de privacidad (\ac{RGPD}, \ac{HIPAA}). Las estrategias de \textit{zero-shot} y \textit{few-shot prompting} ofrecen una alternativa viable, como demuestra el trabajo de \cite{sivarajkumar2024}, que evalúa diversas estrategias de \textit{prompting} para tareas de procesamiento de lenguaje natural clínico sin datos de entrenamiento.
+Los datos clínicos etiquetados son escasos y costosos de obtener debido a la necesidad de anotación experta y a las restricciones de privacidad (\ac{RGPD}, \ac{HIPAA}). Las estrategias de \textit{zero-shot} y \textit{few-shot prompting} ofrecen una alternativa viable, como demuestra el trabajo de \textcite{sivarajkumar2024}, que evalúa diversas estrategias de \textit{prompting} para tareas de procesamiento de lenguaje natural clínico sin datos de entrenamiento.
 
-Desde la perspectiva profesional, la adopción se ve frenada por la falta de explicabilidad de los modelos, la ausencia de marcos regulatorios claros y una cultura clínica que privilegia ---con razón--- la evidencia validada. Las preocupaciones éticas en torno al sesgo, la privacidad y la responsabilidad legal han sido ampliamente documentadas \cite{haltaufderheide2024,he2025}.
+Desde la perspectiva profesional, la adopción se ve frenada por la falta de explicabilidad de los modelos, la ausencia de marcos regulatorios claros y una cultura clínica que privilegia ---con razón--- la evidencia validada. Las preocupaciones éticas en torno al sesgo, la privacidad y la responsabilidad legal han sido ampliamente documentadas \parencite{haltaufderheide2024,he2025}.
 
 \subsubsection*{Motivación para ChatHCE}
 
@@ -66,7 +66,7 @@ Los modelos de lenguaje de gran escala constituyen el núcleo de razonamiento de
 
 \paragraph{Mecanismo de atención y arquitectura base.}
 
-La arquitectura Transformer, introducida por \cite{vaswani2017attention}, reemplazó las redes recurrentes mediante un mecanismo de \textit{self-attention} que permite a cada token de la secuencia atender simultáneamente a todos los demás. La función de atención escalada por producto punto se define como:
+La arquitectura Transformer, introducida por \textcite{vaswani2017attention}, reemplazó las redes recurrentes mediante un mecanismo de \textit{self-attention} que permite a cada token de la secuencia atender simultáneamente a todos los demás. La función de atención escalada por producto punto se define como:
 
 \begin{equation}
 \text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
@@ -75,11 +75,11 @@ La arquitectura Transformer, introducida por \cite{vaswani2017attention}, reempl
 
 \noindent donde $Q$, $K$ y $V$ son las matrices de consultas, claves y valores respectivamente, y $d_k$ es la dimensión de las claves. El mecanismo de \textit{multi-head attention} extiende esta operación ejecutando $h$ funciones de atención en paralelo sobre proyecciones lineales distintas, permitiendo al modelo capturar relaciones en múltiples subespacios de representación simultáneamente.
 
-Dos propiedades del Transformer resultan fundamentales para los \ac{LLM}s actuales: (1) la paralelización completa durante el entrenamiento, que permite escalar a corpus de billones de tokens, y (2) la capacidad de modelar dependencias a largo plazo sin degradación secuencial, eliminando el cuello de botella de las arquitecturas recurrentes \cite{vaswani2017attention}.
+Dos propiedades del Transformer resultan fundamentales para los \ac{LLM}s actuales: (1) la paralelización completa durante el entrenamiento, que permite escalar a corpus de billones de tokens, y (2) la capacidad de modelar dependencias a largo plazo sin degradación secuencial, eliminando el cuello de botella de las arquitecturas recurrentes \parencite{vaswani2017attention}.
 
 \paragraph{Leyes de escalado y ventana de contexto.}
 
-\cite{kaplan2020scaling} demostraron que la pérdida de entropía cruzada de los modelos de lenguaje sigue una ley de potencias con respecto al número de parámetros ($N$), el tamaño del dataset ($D$) y el presupuesto de cómputo ($C$). Esta relación predecible ha guiado el escalado de los \ac{LLM}s desde los cientos de millones hasta los billones de parámetros. Paralelamente, la ventana de contexto ---el número máximo de tokens que el modelo procesa en una única inferencia--- ha crecido desde 512 tokens en \ac{BERT} \cite{devlin2019bert} hasta más de un millón en Gemini 1.5 \cite{geminiteam2023gemini}, habilitando el procesamiento de documentos clínicos extensos sin fragmentación.
+\textcite{kaplan2020scaling} demostraron que la pérdida de entropía cruzada de los modelos de lenguaje sigue una ley de potencias con respecto al número de parámetros ($N$), el tamaño del dataset ($D$) y el presupuesto de cómputo ($C$). Esta relación predecible ha guiado el escalado de los \ac{LLM}s desde los cientos de millones hasta los billones de parámetros. Paralelamente, la ventana de contexto ---el número máximo de tokens que el modelo procesa en una única inferencia--- ha crecido desde 512 tokens en \ac{BERT} \parencite{devlin2019bert} hasta más de un millón en Gemini 1.5 \parencite{geminiteam2023gemini}, habilitando el procesamiento de documentos clínicos extensos sin fragmentación.
 
 \paragraph{Evolución de los modelos principales.}
 
@@ -94,36 +94,38 @@ La Tabla~\ref{tab:llm-evolution} resume la evolución de las familias de modelos
 \toprule
 \textbf{Modelo} & \textbf{Params.} & \textbf{Licencia} & \textbf{Características clave} \\
 \midrule
-\acs{GPT}-3 & 175B & Cerrada & Aprendizaje \textit{few-shot} emergente; \ac{API} comercial \cite{brown2020language} \\
+\acs{GPT}-3 & 175B & Cerrada & Aprendizaje \textit{few-shot} emergente; \ac{API} comercial \parencite{brown2020language} \\
 \addlinespace
-\acs{GPT}-4 & $\sim$1.8T\textsuperscript{*} & Cerrada & Multimodal (texto+imagen); rendimiento nivel experto en exámenes profesionales \cite{openai2023} \\
+\acs{GPT}-4 & $\sim$1.8T\textsuperscript{*} & Cerrada & Multimodal (texto+imagen); rendimiento nivel experto en exámenes profesionales \parencite{openai2023} \\
 \addlinespace
-LLaMA & 7--65B & Abierta & Entrenado solo con datos públicos; LLaMA-13B supera a \acs{GPT}-3 en la mayoría de benchmarks \cite{touvron2023llama} \\
+LLaMA & 7--65B & Abierta & Entrenado solo con datos públicos; LLaMA-13B supera a \acs{GPT}-3 en la mayoría de benchmarks \parencite{touvron2023llama} \\
 \addlinespace
-Gemini & --- & Cerrada & Nativo multimodal; contexto de 1M+ tokens; búsqueda híbrida integrada \cite{geminiteam2023gemini} \\
+Gemini & --- & Cerrada & Nativo multimodal; contexto de 1M+ tokens; búsqueda híbrida integrada \parencite{geminiteam2023gemini} \\
 \addlinespace
-Claude 3 & --- & Cerrada & Constitutional AI; 200K tokens de contexto; énfasis en seguridad y veracidad \cite{anthropic2024claude3} \\
+Claude 3 & --- & Cerrada & Constitutional AI; 200K tokens de contexto; énfasis en seguridad y veracidad \parencite{anthropic2024claude3} \\
 \bottomrule
 \multicolumn{4}{l}{\textsuperscript{*}\textit{Estimación no oficial; OpenAI no publica el número exacto de parámetros de \acs{GPT}-4.}}
 \end{tabularx}
+\vspace{0.5em}
+{\footnotesize\raggedright\textit{Nota.} Elaboración propia a partir de \textcite{brown2020language}, \textcite{openai2023}, \textcite{touvron2023llama}, \textcite{geminiteam2023gemini} y \textcite{anthropic2024claude3}.\par}
 \end{table}
 
-La serie \ac{GPT} (\textit{Generative Pre-trained Transformer}) de OpenAI demostró que el preentrenamiento autoregresivo a escala produce capacidades emergentes: \acs{GPT}-3 \cite{brown2020language} mostró aprendizaje \textit{few-shot} sin ajuste fino, y \acs{GPT}-4 \cite{openai2023} alcanzó rendimiento de nivel experto humano en exámenes como el \ac{USMLE} y el bar exam.
+La serie \ac{GPT} (\textit{Generative Pre-trained Transformer}) de OpenAI demostró que el preentrenamiento autoregresivo a escala produce capacidades emergentes: \acs{GPT}-3 \parencite{brown2020language} mostró aprendizaje \textit{few-shot} sin ajuste fino, y \acs{GPT}-4 \parencite{openai2023} alcanzó rendimiento de nivel experto humano en exámenes como el \ac{USMLE} y el bar exam.
 
-La familia LLaMA de Meta \cite{touvron2023llama} demostró que modelos más pequeños entrenados con datos curados de alta calidad pueden igualar o superar a modelos propietarios mucho mayores, catalizando el ecosistema de modelos abiertos y su adaptación a dominios específicos mediante \textit{fine-tuning}.
+La familia LLaMA de Meta \parencite{touvron2023llama} demostró que modelos más pequeños entrenados con datos curados de alta calidad pueden igualar o superar a modelos propietarios mucho mayores, catalizando el ecosistema de modelos abiertos y su adaptación a dominios específicos mediante \textit{fine-tuning}.
 
-Gemini de Google DeepMind \cite{geminiteam2023gemini} introdujo capacidades multimodales nativas (texto, imagen, audio, vídeo) y ventanas de contexto superiores al millón de tokens, ampliando las posibilidades de procesamiento documental en el ámbito clínico.
+Gemini de Google DeepMind \parencite{geminiteam2023gemini} introdujo capacidades multimodales nativas (texto, imagen, audio, vídeo) y ventanas de contexto superiores al millón de tokens, ampliando las posibilidades de procesamiento documental en el ámbito clínico.
 
 \paragraph{Constitutional AI y la familia Claude.}
 
-Claude, desarrollado por Anthropic, se distingue por su alineación basada en \textit{Constitutional AI} (\ac{CAI}) \cite{bai2022constitutional}. A diferencia del \ac{RLHF} (\textit{Reinforcement Learning from Human Feedback}) estándar, donde evaluadores humanos etiquetan respuestas como dañinas o seguras, \ac{CAI} implementa un ciclo de auto-mejora en dos fases:
+Claude, desarrollado por Anthropic, se distingue por su alineación basada en \textit{Constitutional AI} (\ac{CAI}) \parencite{bai2022constitutional}. A diferencia del \ac{RLHF} (\textit{Reinforcement Learning from Human Feedback}) estándar, donde evaluadores humanos etiquetan respuestas como dañinas o seguras, \ac{CAI} implementa un ciclo de auto-mejora en dos fases:
 
 \begin{enumerate}[nosep, leftmargin=*]
   \item \textbf{Aprendizaje supervisado}: el modelo genera respuestas, las critica según un conjunto de principios constitucionales (reglas en lenguaje natural) y produce versiones revisadas.
   \item \textbf{Aprendizaje por refuerzo con retroalimentación de IA} (\ac{RLAIF}): un modelo evaluador compara pares de respuestas según los principios constitucionales, generando un modelo de preferencia que guía el entrenamiento posterior.
 \end{enumerate}
 
-Este enfoque reduce la dependencia de etiquetado humano para contenido sensible y produce modelos que tienden a explicar sus objeciones en lugar de negarse evasivamente, una propiedad relevante en el dominio clínico donde las respuestas deben ser informativas incluso ante consultas delicadas \cite{bai2022constitutional}.
+Este enfoque reduce la dependencia de etiquetado humano para contenido sensible y produce modelos que tienden a explicar sus objeciones en lugar de negarse evasivamente, una propiedad relevante en el dominio clínico donde las respuestas deben ser informativas incluso ante consultas delicadas \parencite{bai2022constitutional}.
 
 \paragraph{Justificación de Claude en ChatHCE.}
 
@@ -144,12 +146,12 @@ La selección de Claude como modelo principal del sistema \textbf{ChatHCE} (Secc
 La evaluación de \ac{LLM}s en el dominio médico se sustenta en tres benchmarks de referencia que evalúan distintas dimensiones del razonamiento clínico:
 
 \begin{itemize}[nosep, leftmargin=*]
-  \item \textbf{MedQA} \cite{jin2021medqa}: dataset de preguntas de opción múltiple derivadas del \ac{USMLE}, con 1.273 preguntas en el conjunto de test. \acs{GPT}-4 alcanzó un 86,1\% de precisión, superando el umbral de aprobación humano \cite{nori2023capabilities}.
-  \item \textbf{PubMedQA} \cite{jin2019pubmedqa}: 1.000 preguntas con respuesta sí/no/quizás derivadas de abstracts de PubMed. El rendimiento humano experto se sitúa en el 78,0\%.
-  \item \textbf{MedMCQA} \cite{pal2022medmcqa}: más de 194.000 preguntas de exámenes médicos indios que cubren 21 especialidades y 2.400 temas.
+  \item \textbf{MedQA} \parencite{jin2021medqa}: dataset de preguntas de opción múltiple derivadas del \ac{USMLE}, con 1.273 preguntas en el conjunto de test. \acs{GPT}-4 alcanzó un 86,1\% de precisión, superando el umbral de aprobación humano \parencite{nori2023capabilities}.
+  \item \textbf{PubMedQA} \parencite{jin2019pubmedqa}: 1.000 preguntas con respuesta sí/no/quizás derivadas de abstracts de PubMed. El rendimiento humano experto se sitúa en el 78,0\%.
+  \item \textbf{MedMCQA} \parencite{pal2022medmcqa}: más de 194.000 preguntas de exámenes médicos indios que cubren 21 especialidades y 2.400 temas.
 \end{itemize}
 
-Estos benchmarks comparten una limitación relevante: evalúan capacidad de clasificación sobre opciones cerradas, sin medir la calidad de las explicaciones generadas ni la calibración de la incertidumbre del modelo \cite{nori2023capabilities}. Para sistemas como \textbf{ChatHCE}, donde las respuestas son generativas y abiertas, esta evaluación resulta necesaria pero insuficiente.
+Estos benchmarks comparten una limitación relevante: evalúan capacidad de clasificación sobre opciones cerradas, sin medir la calidad de las explicaciones generadas ni la calibración de la incertidumbre del modelo \parencite{nori2023capabilities}. Para sistemas como \textbf{ChatHCE}, donde las respuestas son generativas y abiertas, esta evaluación resulta necesaria pero insuficiente.
 
 \paragraph{Fine-tuning vs. prompt engineering en el dominio médico.}
 
@@ -170,14 +172,16 @@ Coste computacional & Alto (re-entrenamiento parcial o completo) & Bajo (solo in
 \addlinespace
 Actualización & Requiere re-entrenamiento ante nuevas guías & Modificación inmediata del prompt \\
 \addlinespace
-Ejemplo médico & Med-PaLM 2 \cite{singhal2023} & ChatHCE (este trabajo) \\
+Ejemplo médico & Med-PaLM 2 \parencite{singhal2023} & ChatHCE (este trabajo) \\
 \bottomrule
 \end{tabularx}
+\vspace{0.5em}
+{\footnotesize\raggedright\textit{Nota.} Elaboración propia a partir de la comparación entre ajuste fino y estrategias de \textit{prompt engineering} descrita en \textcite{singhal2023} y la arquitectura desarrollada en este trabajo.\par}
 \end{table}
 
 \textbf{ChatHCE} adopta una estrategia de \textit{prompt engineering} estructurado, complementada con \ac{RAG} para inyectar conocimiento clínico actualizado. El \texttt{PromptManager} del sistema construye un prompt optimizado de hasta 4.000 tokens que incluye identidad del asistente, esquema de base de datos, directivas anti-alucinación y guías clínicas de referencia. Esta arquitectura permite actualizar el conocimiento del sistema mediante la indexación de nuevos documentos en el pipeline \ac{RAG} sin modificar el modelo base.
 
-\cite{jeon2025cot} evaluaron técnicas de \textit{prompt engineering} basadas en cadena de pensamiento (\textit{chain-of-thought}) para respuesta de preguntas médicas, demostrando que estrategias como \textit{few-shot CoT} mejoran significativamente el rendimiento en benchmarks clínicos sin necesidad de \textit{fine-tuning}. \cite{staple2025surgical} confirmaron que el \textit{prompt engineering} específico de dominio permite a \ac{LLM}s generalistas alcanzar concordancia clínicamente relevante con guías quirúrgicas establecidas.
+\textcite{jeon2025cot} evaluaron técnicas de \textit{prompt engineering} basadas en cadena de pensamiento (\textit{chain-of-thought}) para respuesta de preguntas médicas, demostrando que estrategias como \textit{few-shot CoT} mejoran significativamente el rendimiento en benchmarks clínicos sin necesidad de \textit{fine-tuning}. \textcite{staple2025surgical} confirmaron que el \textit{prompt engineering} específico de dominio permite a \ac{LLM}s generalistas alcanzar concordancia clínicamente relevante con guías quirúrgicas establecidas.
 
 \paragraph{Limitaciones estructurales de los \ac{LLM}s.}
 
@@ -186,12 +190,12 @@ A pesar de su capacidad, los \ac{LLM}s presentan tres limitaciones fundamentales
 \begin{enumerate}[nosep, leftmargin=*]
   \item \textbf{Fecha de corte del conocimiento}: los \ac{LLM}s solo poseen información hasta su fecha de entrenamiento. \textbf{ChatHCE} mitiga esta limitación mediante el pipeline \ac{RAG}, que permite indexar documentos actualizados y recuperar fragmentos relevantes en tiempo de inferencia.
 
-  \item \textbf{Alucinaciones}: los \ac{LLM}s pueden generar información plausible pero factualmente incorrecta con alta confianza aparente. \cite{kim2025hallucination} clasificaron las alucinaciones médicas en categorías que incluyen fabricación de referencias bibliográficas, invención de fármacos inexistentes y razonamiento diagnóstico falso. \cite{farquhar2024semantic} propusieron detectar alucinaciones mediante entropía semántica. \textbf{ChatHCE} implementa directivas anti-alucinación en el prompt del sistema y restringe las respuestas a datos verificables de la base de datos \acs{MIMIC}-IV-\acs{ED} o documentos recuperados por \ac{RAG}. La Sección~\ref{sec:alucinaciones} profundiza en este problema.
+  \item \textbf{Alucinaciones}: los \ac{LLM}s pueden generar información plausible pero factualmente incorrecta con alta confianza aparente. \textcite{kim2025hallucination} clasificaron las alucinaciones médicas en categorías que incluyen fabricación de referencias bibliográficas, invención de fármacos inexistentes y razonamiento diagnóstico falso. \textcite{farquhar2024semantic} propusieron detectar alucinaciones mediante entropía semántica. \textbf{ChatHCE} implementa directivas anti-alucinación en el prompt del sistema y restringe las respuestas a datos verificables de la base de datos \acs{MIMIC}-IV-\acs{ED} o documentos recuperados por \ac{RAG}. La Sección~\ref{sec:alucinaciones} profundiza en este problema.
 
   \item \textbf{Ausencia de datos privados}: los \ac{LLM}s preentrenados no tienen acceso a historiales clínicos electrónicos. \textbf{ChatHCE} resuelve esta limitación mediante la herramienta de base de datos (\texttt{DatabaseTool}), que ejecuta consultas \ac{SQL} validadas sobre el dataset \acs{MIMIC}-IV-\acs{ED} en Supabase.
 \end{enumerate}
 
-\cite{ji2025calibrating} propusieron reducir las alucinaciones sobreconfiadas calibrando la incertidumbre verbal del modelo como una característica lineal. \cite{naveed2024comprehensive} ofrecen una revisión exhaustiva de las capacidades y limitaciones de los \ac{LLM}s actuales, incluyendo un análisis detallado de los desafíos de alineación y seguridad.
+\textcite{ji2025calibrating} propusieron reducir las alucinaciones sobreconfiadas calibrando la incertidumbre verbal del modelo como una característica lineal. \textcite{naveed2024comprehensive} ofrecen una revisión exhaustiva de las capacidades y limitaciones de los \ac{LLM}s actuales, incluyendo un análisis detallado de los desafíos de alineación y seguridad.
 
 % ============================================================
 % 2.3 — Retrieval-Augmented Generation (RAG) en el Dominio Clínico
@@ -199,24 +203,24 @@ A pesar de su capacidad, los \ac{LLM}s presentan tres limitaciones fundamentales
 \section{Retrieval-Augmented Generation (\acs{RAG}) en el dominio clínico}
 \label{sec:rag_clinico}
 
-Los \ac{LLM}s presentan limitaciones críticas en el dominio clínico: tendencia a generar información plausible pero incorrecta (alucinaciones), conocimiento desactualizado fijado en el momento del entrenamiento, y dificultad para actualizar información sin costosos procesos de re-entrenamiento \cite{lewis2020rag}. \textit{Retrieval-Augmented Generation} (\ac{RAG}) emerge como solución a estas limitaciones, combinando la capacidad generativa de los \ac{LLM}s con sistemas de recuperación de información externa.
+Los \ac{LLM}s presentan limitaciones críticas en el dominio clínico: tendencia a generar información plausible pero incorrecta (alucinaciones), conocimiento desactualizado fijado en el momento del entrenamiento, y dificultad para actualizar información sin costosos procesos de re-entrenamiento \parencite{lewis2020rag}. \textit{Retrieval-Augmented Generation} (\ac{RAG}) emerge como solución a estas limitaciones, combinando la capacidad generativa de los \ac{LLM}s con sistemas de recuperación de información externa.
 
 \subsection{Fundamentos del paradigma RAG}
 \label{subsec:fundamentos_rag}
 
 \subsubsection{Limitaciones de los \ac{LLM}s y ventajas de \ac{RAG} frente al fine-tuning}
 
-Los \ac{LLM}s codifican conocimiento de forma paramétrica durante el entrenamiento, lo que genera tres problemas fundamentales: (1) el conocimiento queda congelado en el momento del entrenamiento, (2) la actualización requiere re-entrenamiento costoso, y (3) las alucinaciones son difíciles de detectar y corregir \cite{xiong2024medrag}.
+Los \ac{LLM}s codifican conocimiento de forma paramétrica durante el entrenamiento, lo que genera tres problemas fundamentales: (1) el conocimiento queda congelado en el momento del entrenamiento, (2) la actualización requiere re-entrenamiento costoso, y (3) las alucinaciones son difíciles de detectar y corregir \parencite{xiong2024medrag}.
 
-El \textit{fine-tuning} específico de dominio, aunque efectivo, presenta desventajas significativas: alto coste computacional, riesgo de olvido catastrófico, y necesidad de datos etiquetados de calidad. \ac{RAG} ofrece una alternativa más flexible: el conocimiento se almacena de forma no paramétrica en bases de datos externas, permitiendo actualizaciones sin modificar los pesos del modelo \cite{gao2023rag_survey}.
+El \textit{fine-tuning} específico de dominio, aunque efectivo, presenta desventajas significativas: alto coste computacional, riesgo de olvido catastrófico, y necesidad de datos etiquetados de calidad. \ac{RAG} ofrece una alternativa más flexible: el conocimiento se almacena de forma no paramétrica en bases de datos externas, permitiendo actualizaciones sin modificar los pesos del modelo \parencite{gao2023rag_survey}.
 
 \subsubsection{Pipeline completo de RAG}
 
 El pipeline \ac{RAG} consta de cuatro etapas principales:
 
-\paragraph{Chunking (Segmentación).} Los documentos se dividen en fragmentos manejables. El tamaño óptimo del chunk representa un compromiso: fragmentos muy pequeños pierden contexto, mientras que fragmentos grandes diluyen la relevancia. En el dominio clínico, se recomienda un tamaño de 500--1000 tokens con solapamiento del 10--20\% \cite{manathunga2023rag_medical}.
+\paragraph{Chunking (Segmentación).} Los documentos se dividen en fragmentos manejables. El tamaño óptimo del chunk representa un compromiso: fragmentos muy pequeños pierden contexto, mientras que fragmentos grandes diluyen la relevancia. En el dominio clínico, se recomienda un tamaño de 500--1000 tokens con solapamiento del 10--20\% \parencite{manathunga2023rag_medical}.
 
-\paragraph{Embeddings (Vectorización).} Cada fragmento se transforma en un vector denso mediante modelos de embeddings. Para el dominio biomédico, modelos especializados como MedCPT \cite{jin2023medcpt} superan a embeddings genéricos, al haber sido entrenados con logs de búsqueda de PubMed.
+\paragraph{Embeddings (Vectorización).} Cada fragmento se transforma en un vector denso mediante modelos de embeddings. Para el dominio biomédico, modelos especializados como MedCPT \parencite{jin2023medcpt} superan a embeddings genéricos, al haber sido entrenados con logs de búsqueda de PubMed.
 
 \paragraph{Búsqueda vectorial.} Dado un query $q$, se recuperan los $k$ documentos más similares. La similitud coseno es la métrica estándar:
 
@@ -231,9 +235,9 @@ El pipeline \ac{RAG} consta de cuatro etapas principales:
 
 \subsubsection{Modelos de embeddings y bases de datos vectoriales}
 
-Los embeddings biomédicos especializados mejoran significativamente la recuperación. MedCPT \cite{jin2023medcpt}, entrenado con transformers contrastivos sobre logs de PubMed, logra recuperación \textit{zero-shot} superior en tareas biomédicas.
+Los embeddings biomédicos especializados mejoran significativamente la recuperación. MedCPT \parencite{jin2023medcpt}, entrenado con transformers contrastivos sobre logs de PubMed, logra recuperación \textit{zero-shot} superior en tareas biomédicas.
 
-Las bases de datos vectoriales permiten búsqueda eficiente a escala. \textbf{ChromaDB} ofrece simplicidad y es ideal para prototipos. \textbf{pgvector} extiende PostgreSQL con capacidades vectoriales, facilitando la integración con sistemas existentes. \textbf{Pinecone} proporciona escalabilidad cloud con indexación optimizada. \textbf{FAISS} (\textit{Facebook AI Similarity Search}) permite búsqueda de alta velocidad en miles de millones de vectores \cite{johnson2019faiss}.
+Las bases de datos vectoriales permiten búsqueda eficiente a escala. \textbf{ChromaDB} ofrece simplicidad y es ideal para prototipos. \textbf{pgvector} extiende PostgreSQL con capacidades vectoriales, facilitando la integración con sistemas existentes. \textbf{Pinecone} proporciona escalabilidad cloud con indexación optimizada. \textbf{FAISS} (\textit{Facebook AI Similarity Search}) permite búsqueda de alta velocidad en miles de millones de vectores \parencite{johnson2019faiss}.
 
 \subsection{Técnicas avanzadas: búsqueda híbrida y re-ranking}
 \label{subsec:tecnicas_avanzadas}
@@ -256,7 +260,7 @@ La fusión de resultados se realiza mediante \textit{Reciprocal Rank Fusion} (\a
 \label{eq:rrf}
 \end{equation}
 
-\noindent donde $r(d)$ es el ranking del documento $d$ en cada sistema de recuperación $r$, y $k$ es una constante (típicamente 60). Estudios demuestran que \ac{RRF}-2 (fusión de \ac{BM25} y MedCPT) mejora consistentemente sobre recuperadores individuales \cite{xiong2024medrag}.
+\noindent donde $r(d)$ es el ranking del documento $d$ en cada sistema de recuperación $r$, y $k$ es una constante (típicamente 60). Estudios demuestran que \ac{RRF}-2 (fusión de \ac{BM25} y MedCPT) mejora consistentemente sobre recuperadores individuales \parencite{xiong2024medrag}.
 
 \subsubsection{Query augmentation}
 
@@ -265,7 +269,7 @@ Las técnicas de aumentación de queries mejoran la recuperación mediante:
 \begin{itemize}[nosep, leftmargin=*]
     \item \textbf{Query2Doc}: el \ac{LLM} genera un pseudo-documento que expande el query original con términos relacionados.
     \item \textbf{HyDE} (\textit{Hypothetical Document Embeddings}): se genera una respuesta hipotética y se usa su embedding para la búsqueda.
-    \item \textbf{i-MedRAG}: generación iterativa de queries de seguimiento, donde el \ac{LLM} formula preguntas adicionales basándose en información recuperada previamente \cite{xiong2024imedrag}.
+    \item \textbf{i-MedRAG}: generación iterativa de queries de seguimiento, donde el \ac{LLM} formula preguntas adicionales basándose en información recuperada previamente \parencite{xiong2024imedrag}.
 \end{itemize}
 
 \subsubsection{Re-ranking semántico con cross-encoders}
@@ -290,24 +294,24 @@ La evaluación de sistemas \ac{RAG} requiere métricas específicas:
     \item \textbf{Answer relevance}: pertinencia de la respuesta respecto a la pregunta original.
 \end{itemize}
 
-El benchmark MIRAGE \cite{xiong2024medrag} proporciona evaluación sistemática con 7.663 preguntas de cinco datasets médicos, estableciendo configuraciones óptimas para \ac{RAG} clínico.
+El benchmark MIRAGE \parencite{xiong2024medrag} proporciona evaluación sistemática con 7.663 preguntas de cinco datasets médicos, estableciendo configuraciones óptimas para \ac{RAG} clínico.
 
 \subsection{Aplicaciones de \acs{RAG} en medicina}
 \label{subsec:aplicaciones_rag}
 
 \subsubsection{Consulta de guías clínicas y protocolos}
 
-\ac{RAG} permite consultar guías clínicas actualizadas en tiempo real. Sistemas como Almanac \cite{zakka2024almanac} integran guías de práctica clínica con \ac{LLM}s, logrando 91\% de precisión factual en cardiología frente al 69\% de ChatGPT sin \ac{RAG}. LiVersa, especializado en hepatología, alcanza 99\% de precisión en interpretación de guías mediante \ac{RAG} con \textit{prompt engineering} optimizado \cite{kresevic2024liversa}.
+\ac{RAG} permite consultar guías clínicas actualizadas en tiempo real. Sistemas como Almanac \parencite{zakka2024almanac} integran guías de práctica clínica con \ac{LLM}s, logrando 91\% de precisión factual en cardiología frente al 69\% de ChatGPT sin \ac{RAG}. LiVersa, especializado en hepatología, alcanza 99\% de precisión en interpretación de guías mediante \ac{RAG} con \textit{prompt engineering} optimizado \parencite{kresevic2024liversa}.
 
-La integración con bases de conocimiento médico como \ac{UMLS}, PrimeKG y DrugBank enriquece las respuestas con definiciones estandarizadas, relaciones entre conceptos y información farmacológica estructurada \cite{zhu2024emerge}.
+La integración con bases de conocimiento médico como \ac{UMLS}, PrimeKG y DrugBank enriquece las respuestas con definiciones estandarizadas, relaciones entre conceptos y información farmacológica estructurada \parencite{zhu2024emerge}.
 
 \subsubsection{Trabajos previos relevantes}
 
-\paragraph{EMERGE.} Framework \ac{RAG} multimodal para registros electrónicos de salud (\ac{EHR}) que integra notas clínicas, series temporales y grafos de conocimiento. Utiliza \ac{LLM}s para extraer entidades de datos multimodales y las alinea con PrimeKG, generando resúmenes del estado de salud del paciente. Evaluado en \ac{MIMIC}-III y \ac{MIMIC}-IV, supera a baselines en predicción de mortalidad intrahospitalaria y readmisión a 30 días \cite{zhu2024emerge}.
+\paragraph{EMERGE.} Framework \ac{RAG} multimodal para registros electrónicos de salud (\ac{EHR}) que integra notas clínicas, series temporales y grafos de conocimiento. Utiliza \ac{LLM}s para extraer entidades de datos multimodales y las alinea con PrimeKG, generando resúmenes del estado de salud del paciente. Evaluado en \ac{MIMIC}-III y \ac{MIMIC}-IV, supera a baselines en predicción de mortalidad intrahospitalaria y readmisión a 30 días \parencite{zhu2024emerge}.
 
-\paragraph{MedRAG.} Toolkit de referencia que evalúa sistemáticamente combinaciones de corpora (PubMed, StatPearls, libros de texto, Wikipedia), recuperadores (\ac{BM25}, Contriever, SPECTER, MedCPT) y \ac{LLM}s. Demuestra que \ac{RAG} mejora la precisión de \acs{GPT}-3.5 hasta igualar \acs{GPT}-4 en preguntas médicas, con mejoras de hasta 18\% sobre \textit{chain-of-thought prompting} \cite{xiong2024medrag}.
+\paragraph{MedRAG.} Toolkit de referencia que evalúa sistemáticamente combinaciones de corpora (PubMed, StatPearls, libros de texto, Wikipedia), recuperadores (\ac{BM25}, Contriever, SPECTER, MedCPT) y \ac{LLM}s. Demuestra que \ac{RAG} mejora la precisión de \acs{GPT}-3.5 hasta igualar \acs{GPT}-4 en preguntas médicas, con mejoras de hasta 18\% sobre \textit{chain-of-thought prompting} \parencite{xiong2024medrag}.
 
-\paragraph{i-MedRAG.} Extiende \ac{RAG} con queries iterativos de seguimiento. El \ac{LLM} genera preguntas adicionales basándose en información recuperada, formando cadenas de razonamiento. Alcanza 69,68\% en MedQA con \acs{GPT}-3.5, superando todos los métodos previos de \textit{prompt engineering} y \textit{fine-tuning} \cite{xiong2024imedrag}.
+\paragraph{i-MedRAG.} Extiende \ac{RAG} con queries iterativos de seguimiento. El \ac{LLM} genera preguntas adicionales basándose en información recuperada, formando cadenas de razonamiento. Alcanza 69,68\% en MedQA con \acs{GPT}-3.5, superando todos los métodos previos de \textit{prompt engineering} y \textit{fine-tuning} \parencite{xiong2024imedrag}.
 
 \subsubsection{Limitaciones actuales y gaps de investigación}
 
@@ -315,8 +319,8 @@ A pesar de los avances, persisten limitaciones significativas:
 
 \begin{enumerate}[nosep, leftmargin=*]
     \item \textbf{Dependencia de la calidad del corpus}: \ac{RAG} hereda sesgos y errores de las fuentes externas. La curación de corpora médicos confiables y actualizados es crítica.
-    \item \textbf{Fenómeno ``lost in the middle''}: los \ac{LLM}s tienden a ignorar información en posiciones intermedias del contexto, asignando mayor peso al inicio y final \cite{liu2024lost_middle}.
-    \item \textbf{Planificación de fuentes}: la selección óptima de qué fuentes consultar para cada pregunta permanece como problema abierto \cite{chen2025omnirag}.
+    \item \textbf{Fenómeno ``lost in the middle''}: los \ac{LLM}s tienden a ignorar información en posiciones intermedias del contexto, asignando mayor peso al inicio y final \parencite{liu2024lost_middle}.
+    \item \textbf{Planificación de fuentes}: la selección óptima de qué fuentes consultar para cada pregunta permanece como problema abierto \parencite{chen2025omnirag}.
     \item \textbf{Evaluación de faithfulness}: determinar automáticamente si una respuesta está fundamentada en la evidencia recuperada sigue siendo desafiante.
     \item \textbf{Integración con flujos clínicos}: la adopción práctica requiere integración con sistemas \ac{EHR} existentes, consideraciones de privacidad (\ac{HIPAA}), y validación clínica rigurosa.
 \end{enumerate}
@@ -329,26 +333,26 @@ Estos gaps motivan el presente trabajo, que busca desarrollar un sistema \ac{RAG
 \section{Sistemas multi-agente y arquitecturas agénticas}
 \label{sec:agentes}
 
-Las secciones anteriores han descrito los modelos de lenguaje de gran escala y las técnicas de generación aumentada por recuperación que constituyen los componentes individuales del sistema propuesto. En esta sección se aborda cómo dichos componentes se integran mediante el paradigma \emph{agéntico}: un \ac{LLM} deja de ser un generador pasivo de texto para convertirse en un agente autónomo capaz de razonar, planificar y actuar sobre un entorno mediante la invocación de herramientas externas \cite{Wang2024SurveyAgents}.
+Las secciones anteriores han descrito los modelos de lenguaje de gran escala y las técnicas de generación aumentada por recuperación que constituyen los componentes individuales del sistema propuesto. En esta sección se aborda cómo dichos componentes se integran mediante el paradigma \emph{agéntico}: un \ac{LLM} deja de ser un generador pasivo de texto para convertirse en un agente autónomo capaz de razonar, planificar y actuar sobre un entorno mediante la invocación de herramientas externas \parencite{Wang2024SurveyAgents}.
 
 \subsection{Del \acs{LLM} al agente: \acs{ReAct} y tool calling}
 \label{subsec:react}
 
 \subsubsection{Ciclo \ac{ReAct}: razonamiento encadenado con invocación de herramientas}
 
-El marco \acs{ReAct} (\emph{Reasoning + Acting}) propuesto por \cite{Yao2023ReAct} unifica dos capacidades que previamente se trataban por separado: la generación de trazas de razonamiento (al estilo \emph{chain-of-thought}) y la ejecución de acciones sobre un entorno externo. En cada paso, el modelo produce un \emph{pensamiento} que explicita su plan, una \emph{acción} que interactúa con una herramienta o \ac{API}, y recibe una \emph{observación} con el resultado. Este ciclo \texttt{Thought $\rightarrow$ Action $\rightarrow$ Observation} se repite hasta que el agente alcanza una respuesta final.
+El marco \acs{ReAct} (\emph{Reasoning + Acting}) propuesto por \textcite{Yao2023ReAct} unifica dos capacidades que previamente se trataban por separado: la generación de trazas de razonamiento (al estilo \emph{chain-of-thought}) y la ejecución de acciones sobre un entorno externo. En cada paso, el modelo produce un \emph{pensamiento} que explicita su plan, una \emph{acción} que interactúa con una herramienta o \ac{API}, y recibe una \emph{observación} con el resultado. Este ciclo \texttt{Thought $\rightarrow$ Action $\rightarrow$ Observation} se repite hasta que el agente alcanza una respuesta final.
 
-La principal ventaja de \ac{ReAct} frente al razonamiento puramente interno radica en que el modelo puede verificar sus hipótesis contra fuentes externas, lo que reduce la alucinación y mejora la trazabilidad de las decisiones \cite{Yao2023ReAct}. En el contexto clínico, donde la precisión factual es crítica, esta propiedad resulta especialmente relevante.
+La principal ventaja de \ac{ReAct} frente al razonamiento puramente interno radica en que el modelo puede verificar sus hipótesis contra fuentes externas, lo que reduce la alucinación y mejora la trazabilidad de las decisiones \parencite{Yao2023ReAct}. En el contexto clínico, donde la precisión factual es crítica, esta propiedad resulta especialmente relevante.
 
 \subsubsection{Function calling estructurado y selección dinámica de herramientas}
 
 La implementación práctica del paradigma agéntico se apoya en el mecanismo de \emph{function calling} que ofrecen los \ac{LLM}s actuales. El modelo recibe una especificación en formato \ac{JSON} de las funciones disponibles ---nombre, descripción y esquema de parámetros--- y genera, como parte de su respuesta, una llamada estructurada a la función apropiada. Este diseño permite la selección dinámica de herramientas: ante una consulta del usuario, el agente decide autónomamente si necesita recuperar documentos, ejecutar una consulta \ac{SQL}, invocar un modelo de visualización u otra acción, y construye la llamada con los argumentos correctos.
 
-Dicho mecanismo transforma al \ac{LLM} en un \emph{orquestador} cuyo espacio de acciones es extensible: añadir una nueva capacidad al sistema equivale a registrar una nueva función, sin necesidad de reentrenar el modelo \cite{Plaat2025AgenticSurvey}.
+Dicho mecanismo transforma al \ac{LLM} en un \emph{orquestador} cuyo espacio de acciones es extensible: añadir una nueva capacidad al sistema equivale a registrar una nueva función, sin necesidad de reentrenar el modelo \parencite{Plaat2025AgenticSurvey}.
 
 \subsubsection{Frameworks: LangChain y LangGraph como base del sistema}
 
-LangChain~\citep{chase2022langchain} es la biblioteca de referencia para la construcción de aplicaciones basadas en \ac{LLM}s. Proporciona abstracciones para cadenas de procesamiento (\emph{chains}), recuperación (\emph{retrievers}), memoria conversacional y, de forma crucial, agentes con \emph{tool calling}. Su diseño modular permite intercambiar el modelo subyacente, el almacén vectorial o las herramientas sin modificar la lógica de orquestación.
+LangChain~\parencite{chase2022langchain} es la biblioteca de referencia para la construcción de aplicaciones basadas en \ac{LLM}s. Proporciona abstracciones para cadenas de procesamiento (\emph{chains}), recuperación (\emph{retrievers}), memoria conversacional y, de forma crucial, agentes con \emph{tool calling}. Su diseño modular permite intercambiar el modelo subyacente, el almacén vectorial o las herramientas sin modificar la lógica de orquestación.
 
 Para flujos de trabajo más complejos, LangGraph\footnote{\url{https://github.com/langchain-ai/langgraph}} extiende LangChain representando la lógica del agente como un \emph{grafo dirigido con estado}. Cada nodo del grafo encapsula una unidad de procesamiento ---un \ac{LLM}, una herramienta, una función de decisión--- y las aristas definen las transiciones posibles, que pueden ser condicionales. Esta representación ofrece tres ventajas sobre las cadenas lineales:
 
@@ -365,12 +369,12 @@ En el sistema desarrollado en este trabajo, LangGraph constituye la columna vert
 
 \subsubsection{Patrones de coordinación}
 
-La literatura reciente identifica tres patrones principales de coordinación multi-agente \cite{Plaat2025AgenticSurvey,Wang2024SurveyAgents}:
+La literatura reciente identifica tres patrones principales de coordinación multi-agente \parencite{Plaat2025AgenticSurvey,Wang2024SurveyAgents}:
 
 \begin{description}[nosep]
-    \item[Supervisor centralizado.] Un agente director recibe la consulta, determina qué agentes especializados invocar y sintetiza sus respuestas. KG4Diagnosis \cite{Zuo2025KG4Diagnosis} implementa esta idea con un agente de medicina general que coordina agentes de distintas especialidades médicas.
-    \item[Pipeline secuencial.] Los agentes se encadenan en una línea de procesamiento donde la salida de uno es la entrada del siguiente. MedAgent-Pro \cite{Wang2025MedAgentPro} sigue este esquema: un agente planifica los pasos diagnósticos, otro ejecuta herramientas de análisis cuantitativo y un tercero verifica la evidencia antes de emitir un diagnóstico.
-    \item[Especialización colaborativa.] Varios agentes con roles diferenciados interactúan en paralelo o mediante debate hasta alcanzar consenso. MedCoAct \cite{Zheng2025MedCoAct} introduce un mecanismo de confianza calibrada donde cada agente pondera la certeza de sus respuestas antes de integrarlas.
+    \item[Supervisor centralizado.] Un agente director recibe la consulta, determina qué agentes especializados invocar y sintetiza sus respuestas. KG4Diagnosis \parencite{Zuo2025KG4Diagnosis} implementa esta idea con un agente de medicina general que coordina agentes de distintas especialidades médicas.
+    \item[Pipeline secuencial.] Los agentes se encadenan en una línea de procesamiento donde la salida de uno es la entrada del siguiente. MedAgent-Pro \parencite{Wang2025MedAgentPro} sigue este esquema: un agente planifica los pasos diagnósticos, otro ejecuta herramientas de análisis cuantitativo y un tercero verifica la evidencia antes de emitir un diagnóstico.
+    \item[Especialización colaborativa.] Varios agentes con roles diferenciados interactúan en paralelo o mediante debate hasta alcanzar consenso. MedCoAct \parencite{Zheng2025MedCoAct} introduce un mecanismo de confianza calibrada donde cada agente pondera la certeza de sus respuestas antes de integrarlas.
 \end{description}
 
 \subsubsection{Casos de uso clínicos}
@@ -394,22 +398,24 @@ MedGen & Colaborativo & Fusión de conocimiento \\
 Deep-DxSearch & Pipeline & \ac{RAG} agéntico entrenado con RL \\
 \bottomrule
 \end{tabularx}
+\vspace{0.5em}
+{\footnotesize\raggedright\textit{Nota.} Adaptado de \textcite{Zuo2025KG4Diagnosis}, \textcite{Wang2025MedAgentPro}, \textcite{Zheng2025MedCoAct}, \textcite{Hong2024ArgMed}, \textcite{Liu2024MedGen} y \textcite{Zheng2025DeepDxSearch}.\par}
 \end{table}
 
 Las funcionalidades más frecuentes incluyen:
 
 \begin{itemize}[nosep, leftmargin=*]
-    \item \textbf{Recuperación y fusión de conocimiento}: agentes que consultan bases de datos biomédicas, guías clínicas o historiales electrónicos para fundamentar sus respuestas. MedGen \cite{Liu2024MedGen} fusiona múltiples fuentes de conocimiento mediante agentes especializados para generar explicaciones clínicas trazables.
+    \item \textbf{Recuperación y fusión de conocimiento}: agentes que consultan bases de datos biomédicas, guías clínicas o historiales electrónicos para fundamentar sus respuestas. MedGen \parencite{Liu2024MedGen} fusiona múltiples fuentes de conocimiento mediante agentes especializados para generar explicaciones clínicas trazables.
     \item \textbf{Text-to-\ac{SQL} clínico}: agentes que traducen preguntas en lenguaje natural a consultas \ac{SQL} sobre bases de datos hospitalarias, permitiendo extraer estadísticas o filtrar cohortes de pacientes.
-    \item \textbf{Razonamiento argumentativo}: ArgMed-Agents \cite{Hong2024ArgMed} emplea esquemas de argumentación formal para que múltiples agentes debatan hipótesis diagnósticas, mejorando la explicabilidad del proceso.
-    \item \textbf{Diagnóstico con \ac{RAG} agéntico}: Deep-DxSearch \cite{Zheng2025DeepDxSearch} entrena de extremo a extremo un sistema agéntico de \ac{RAG} con aprendizaje por refuerzo, logrando razonamiento diagnóstico trazable con recuperación adaptativa.
+    \item \textbf{Razonamiento argumentativo}: ArgMed-Agents \parencite{Hong2024ArgMed} emplea esquemas de argumentación formal para que múltiples agentes debatan hipótesis diagnósticas, mejorando la explicabilidad del proceso.
+    \item \textbf{Diagnóstico con \ac{RAG} agéntico}: Deep-DxSearch \parencite{Zheng2025DeepDxSearch} entrena de extremo a extremo un sistema agéntico de \ac{RAG} con aprendizaje por refuerzo, logrando razonamiento diagnóstico trazable con recuperación adaptativa.
 \end{itemize}
 
 \subsubsection{Benchmarks de evaluación agéntica: AgentClinic}
 
-La evaluación de sistemas agénticos en medicina requiere ir más allá de los benchmarks estáticos de pregunta-respuesta. AgentClinic \cite{AgentClinic2025} propone un entorno de simulación multimodal donde agentes \ac{LLM} interactúan secuencialmente con pacientes simulados, recogen información incompleta y utilizan herramientas, evaluando nueve especialidades médicas en siete idiomas. Sus resultados muestran que la precisión diagnóstica puede caer por debajo de una décima parte respecto a formatos estáticos, evidenciando la brecha entre resolver preguntas de examen y operar en un flujo clínico realista.
+La evaluación de sistemas agénticos en medicina requiere ir más allá de los benchmarks estáticos de pregunta-respuesta. AgentClinic \parencite{AgentClinic2025} propone un entorno de simulación multimodal donde agentes \ac{LLM} interactúan secuencialmente con pacientes simulados, recogen información incompleta y utilizan herramientas, evaluando nueve especialidades médicas en siete idiomas. Sus resultados muestran que la precisión diagnóstica puede caer por debajo de una décima parte respecto a formatos estáticos, evidenciando la brecha entre resolver preguntas de examen y operar en un flujo clínico realista.
 
-Complementariamente, \cite{Vatsal2026AgenticTaxonomy} proponen una taxonomía de siete dimensiones para evaluar empíricamente agentes \ac{LLM} en medicina, cubriendo aspectos como planificación, uso de herramientas, colaboración y cumplimiento normativo.
+Complementariamente, \textcite{Vatsal2026AgenticTaxonomy} proponen una taxonomía de siete dimensiones para evaluar empíricamente agentes \ac{LLM} en medicina, cubriendo aspectos como planificación, uso de herramientas, colaboración y cumplimiento normativo.
 
 \subsubsection{Desafíos de latencia, coste y calidad de razonamiento}
 
@@ -418,8 +424,8 @@ A pesar de los avances, los sistemas multi-agente clínicos enfrentan limitacion
 \begin{itemize}[nosep, leftmargin=*]
     \item \textbf{Latencia}: cada turno agéntico implica una o varias llamadas al \ac{LLM} más las herramientas asociadas. En un pipeline de tres agentes con recuperación, los tiempos de respuesta pueden superar los 15--20 segundos, lo cual resulta aceptable para consultas asíncronas pero no para interacción en tiempo real.
     \item \textbf{Coste computacional}: la invocación repetida de modelos propietarios escala linealmente con el número de agentes y turnos. Estrategias de mitigación incluyen el uso de modelos más pequeños para agentes auxiliares y la caché de respuestas intermedias.
-    \item \textbf{Fallos en el razonamiento}: \cite{Wu2025CoTFails} demuestran que el razonamiento \emph{chain-of-thought} puede degradar el rendimiento en un 86,3\% de los modelos evaluados sobre tareas clínicas reales, especialmente con textos \ac{EHR} largos, fragmentados y ruidosos. Esto subraya que las técnicas de razonamiento deben adaptarse al dominio y no aplicarse de forma indiscriminada.
-    \item \textbf{Cumplimiento normativo}: en entornos sanitarios, los agentes que manejan información clínica protegida deben cumplir regulaciones como \ac{HIPAA}, lo que impone restricciones adicionales sobre el flujo de datos entre agentes \cite{Neupane2025HIPAA}.
+    \item \textbf{Fallos en el razonamiento}: \textcite{Wu2025CoTFails} demuestran que el razonamiento \emph{chain-of-thought} puede degradar el rendimiento en un 86,3\% de los modelos evaluados sobre tareas clínicas reales, especialmente con textos \ac{EHR} largos, fragmentados y ruidosos. Esto subraya que las técnicas de razonamiento deben adaptarse al dominio y no aplicarse de forma indiscriminada.
+    \item \textbf{Cumplimiento normativo}: en entornos sanitarios, los agentes que manejan información clínica protegida deben cumplir regulaciones como \ac{HIPAA}, lo que impone restricciones adicionales sobre el flujo de datos entre agentes \parencite{Neupane2025HIPAA}.
 \end{itemize}
 
 Estos desafíos motivan las decisiones arquitectónicas del sistema presentado en este trabajo, donde se prioriza un número reducido de agentes especializados con herramientas bien definidas sobre arquitecturas más complejas pero menos controlables.
@@ -430,12 +436,12 @@ Estos desafíos motivan las decisiones arquitectónicas del sistema presentado e
 \section{El dataset \acs{MIMIC}-IV-ED}
 \label{sec:mimic-iv-ed}
 
-El \textit{Medical Information Mart for Intensive Care IV -- Emergency Department} (\acs{MIMIC}-IV-\acs{ED}) constituye uno de los recursos más completos para investigación en medicina de urgencias. Este módulo, desarrollado como extensión del proyecto \ac{MIMIC}-IV, proporciona acceso a registros clínicos desidentificados del departamento de urgencias del Beth Israel Deaconess Medical Center (BIDMC) entre 2011 y 2019~\cite{johnson2023mimiciv}.
+El \textit{Medical Information Mart for Intensive Care IV -- Emergency Department} (\acs{MIMIC}-IV-\acs{ED}) constituye uno de los recursos más completos para investigación en medicina de urgencias. Este módulo, desarrollado como extensión del proyecto \ac{MIMIC}-IV, proporciona acceso a registros clínicos desidentificados del departamento de urgencias del Beth Israel Deaconess Medical Center (BIDMC) entre 2011 y 2019~\parencite{johnson2023mimiciv}.
 
 \subsection{El proyecto \acs{MIMIC} y estructura del módulo de urgencias}
 \label{subsec:mimic-estructura}
 
-\acs{MIMIC}-IV-\acs{ED} se distribuye a través de PhysioNet~\cite{goldberger2000physionet}, repositorio de referencia para datos fisiológicos y clínicos de acceso abierto. El acceso requiere completar el curso \textit{CITI Data or Specimens Only Research}, que cubre aspectos de privacidad, confidencialidad y cumplimiento \ac{HIPAA}, junto con la firma de un \textit{Data Use Agreement} (DUA) que prohíbe explícitamente intentos de reidentificación~\cite{johnson2023mimiciv}.
+\acs{MIMIC}-IV-\acs{ED} se distribuye a través de PhysioNet~\parencite{goldberger2000physionet}, repositorio de referencia para datos fisiológicos y clínicos de acceso abierto. El acceso requiere completar el curso \textit{CITI Data or Specimens Only Research}, que cubre aspectos de privacidad, confidencialidad y cumplimiento \ac{HIPAA}, junto con la firma de un \textit{Data Use Agreement} (DUA) que prohíbe explícitamente intentos de reidentificación~\parencite{johnson2023mimiciv}.
 
 El dataset adopta un esquema relacional desnormalizado centrado en la tabla \texttt{edstays}, que registra cada estancia en urgencias con identificadores únicos (\texttt{subject\_id}, \texttt{stay\_id}, \texttt{hadm\_id}), tiempos de admisión y alta, datos demográficos y disposición final del paciente. Cinco tablas complementarias proporcionan información clínica detallada:
 
@@ -447,22 +453,22 @@ El dataset adopta un esquema relacional desnormalizado centrado en la tabla \tex
     \item \textbf{\texttt{diagnosis}}: códigos diagnósticos \ac{ICD}-9/\ac{ICD}-10 asignados tras el alta para facturación.
 \end{itemize}
 
-La versión 2.2 del dataset comprende aproximadamente 425.000 estancias de urgencias, representando una población diversa de un centro médico académico urbano~\cite{johnson2023mimiciv}. Una diferencia fundamental respecto al módulo principal \ac{MIMIC}-IV radica en el ámbito temporal y de cuidados: mientras \ac{MIMIC}-IV se centra en estancias en \ac{UCI} con datos de alta frecuencia y resolución temporal fina, \acs{MIMIC}-IV-\acs{ED} captura la fase inicial de evaluación en urgencias, con información más limitada pero crítica para decisiones de triaje y disposición.
+La versión 2.2 del dataset comprende aproximadamente 425.000 estancias de urgencias, representando una población diversa de un centro médico académico urbano~\parencite{johnson2023mimiciv}. Una diferencia fundamental respecto al módulo principal \ac{MIMIC}-IV radica en el ámbito temporal y de cuidados: mientras \ac{MIMIC}-IV se centra en estancias en \ac{UCI} con datos de alta frecuencia y resolución temporal fina, \acs{MIMIC}-IV-\acs{ED} captura la fase inicial de evaluación en urgencias, con información más limitada pero crítica para decisiones de triaje y disposición.
 
-Los identificadores compartidos (\texttt{subject\_id}, \texttt{hadm\_id}) permiten vincular ambos módulos, posibilitando estudios longitudinales que abarcan desde la llegada a urgencias hasta el alta hospitalaria o de \ac{UCI}. Esta interoperabilidad se extiende también a \ac{MIMIC}-IV-Note~\cite{johnson2023mimicivnote}, que proporciona notas clínicas desidentificadas de urgencias y hospitalización.
+Los identificadores compartidos (\texttt{subject\_id}, \texttt{hadm\_id}) permiten vincular ambos módulos, posibilitando estudios longitudinales que abarcan desde la llegada a urgencias hasta el alta hospitalaria o de \ac{UCI}. Esta interoperabilidad se extiende también a \ac{MIMIC}-IV-Note~\parencite{johnson2023mimicivnote}, que proporciona notas clínicas desidentificadas de urgencias y hospitalización.
 
 \subsection{Trabajos previos y consideraciones éticas}
 \label{subsec:mimic-trabajos-etica}
 
-\acs{MIMIC}-IV-\acs{ED} ha catalizado investigación en múltiples direcciones. En predicción de triaje, diversos trabajos han empleado técnicas de aprendizaje automático para estimar el nivel de gravedad a partir de constantes vitales y motivo de consulta~\cite{park2024}. La predicción de mortalidad intrahospitalaria y reingreso a 30 días constituye otro foco activo, con arquitecturas que integran series temporales de signos vitales con notas clínicas mediante redes neuronales recurrentes y mecanismos de atención~\cite{zhu2024emerge}.
+\acs{MIMIC}-IV-\acs{ED} ha catalizado investigación en múltiples direcciones. En predicción de triaje, diversos trabajos han empleado técnicas de aprendizaje automático para estimar el nivel de gravedad a partir de constantes vitales y motivo de consulta~\parencite{park2024}. La predicción de mortalidad intrahospitalaria y reingreso a 30 días constituye otro foco activo, con arquitecturas que integran series temporales de signos vitales con notas clínicas mediante redes neuronales recurrentes y mecanismos de atención~\parencite{zhu2024emerge}.
 
-La aplicación de \ac{LLM}s sobre datos de urgencias representa una línea emergente. Trabajos recientes exploran la generación aumentada por recuperación (\ac{RAG}) para enriquecer predicciones clínicas con conocimiento médico externo, utilizando grafos de conocimiento como PrimeKG para contextualizar entidades extraídas de notas clínicas~\cite{zhu2024emerge}. Sistemas multiagente basados en \ac{LLM}s también han sido evaluados para tareas de diagnóstico y soporte a la decisión clínica en escenarios simulados de urgencias.
+La aplicación de \ac{LLM}s sobre datos de urgencias representa una línea emergente. Trabajos recientes exploran la generación aumentada por recuperación (\ac{RAG}) para enriquecer predicciones clínicas con conocimiento médico externo, utilizando grafos de conocimiento como PrimeKG para contextualizar entidades extraídas de notas clínicas~\parencite{zhu2024emerge}. Sistemas multiagente basados en \ac{LLM}s también han sido evaluados para tareas de diagnóstico y soporte a la decisión clínica en escenarios simulados de urgencias.
 
 \paragraph{Consideraciones éticas y limitaciones.}
 
-El proceso de desidentificación de \acs{MIMIC}-IV-\acs{ED} cumple con la provisión \textit{Safe Harbor} de \ac{HIPAA} mediante: (i) sustitución de identificadores por cifrados aleatorios, (ii) desplazamiento temporal de fechas hacia el futuro (típicamente 2100--2200) con offset único por paciente, (iii) truncamiento de edad a 91 años para pacientes mayores de 89, y (iv) aplicación de algoritmos híbridos (reglas + redes neuronales) sobre texto libre, con sensibilidad reportada del 99,9\% en informes de radiología~\cite{johnson2023mimiciv,johnson2023mimicivnote}.
+El proceso de desidentificación de \acs{MIMIC}-IV-\acs{ED} cumple con la provisión \textit{Safe Harbor} de \ac{HIPAA} mediante: (i) sustitución de identificadores por cifrados aleatorios, (ii) desplazamiento temporal de fechas hacia el futuro (típicamente 2100--2200) con offset único por paciente, (iii) truncamiento de edad a 91 años para pacientes mayores de 89, y (iv) aplicación de algoritmos híbridos (reglas + redes neuronales) sobre texto libre, con sensibilidad reportada del 99,9\% en informes de radiología~\parencite{johnson2023mimiciv,johnson2023mimicivnote}.
 
-No obstante, el dataset presenta limitaciones inherentes para la generalización. Al proceder de un único centro académico urbano estadounidense, los patrones demográficos, protocolos de triaje y umbrales de admisión pueden diferir significativamente de otros contextos sanitarios. Los sesgos presentes en los datos ---incluyendo disparidades raciales y socioeconómicas en el acceso y tratamiento--- pueden perpetuarse o amplificarse en modelos predictivos~\cite{park2024}.
+No obstante, el dataset presenta limitaciones inherentes para la generalización. Al proceder de un único centro académico urbano estadounidense, los patrones demográficos, protocolos de triaje y umbrales de admisión pueden diferir significativamente de otros contextos sanitarios. Los sesgos presentes en los datos ---incluyendo disparidades raciales y socioeconómicas en el acceso y tratamiento--- pueden perpetuarse o amplificarse en modelos predictivos~\parencite{park2024}.
 
 El uso responsable de \acs{MIMIC}-IV-\acs{ED} en investigación exige transparencia sobre estas limitaciones, validación externa en poblaciones diversas antes de cualquier despliegue clínico, e integración de salvaguardas contra la generación de recomendaciones sesgadas o alucinaciones en sistemas basados en \ac{LLM}s.
 
@@ -472,74 +478,74 @@ El uso responsable de \acs{MIMIC}-IV-\acs{ED} en investigación exige transparen
 \section{Alucinaciones, calibración de incertidumbre y seguridad clínica}
 \label{sec:alucinaciones}
 
-La adopción de \ac{LLM}s en entornos clínicos está condicionada por un riesgo transversal: la generación de contenido plausible pero factualmente incorrecto, fenómeno conocido como \emph{alucinación} \cite{Ji2023hallucination}. En medicina, una alucinación puede traducirse en una dosis farmacológica inexistente, un diagnóstico diferencial fabricado o la cita de evidencia clínica ficticia, con consecuencias directas sobre la seguridad del paciente \cite{kim2025hallucination,Ahmad2023}. Esta sección examina la taxonomía del problema, las estrategias de mitigación más relevantes y los enfoques de calibración de incertidumbre que permiten trasladar estos modelos hacia un uso clínico más seguro.
+La adopción de \ac{LLM}s en entornos clínicos está condicionada por un riesgo transversal: la generación de contenido plausible pero factualmente incorrecto, fenómeno conocido como \emph{alucinación} \parencite{Ji2023hallucination}. En medicina, una alucinación puede traducirse en una dosis farmacológica inexistente, un diagnóstico diferencial fabricado o la cita de evidencia clínica ficticia, con consecuencias directas sobre la seguridad del paciente \parencite{kim2025hallucination,Ahmad2023}. Esta sección examina la taxonomía del problema, las estrategias de mitigación más relevantes y los enfoques de calibración de incertidumbre que permiten trasladar estos modelos hacia un uso clínico más seguro.
 
 \subsection{El problema de las alucinaciones en \acs{LLM}s médicos}
 \label{subsec:problema_alucinaciones}
 
 \subsubsection{Taxonomía de las alucinaciones}
 
-\cite{Huang2025survey} proponen una taxonomía ampliamente adoptada que distingue dos ejes principales. Según la \emph{relación con la fuente}, las alucinaciones se clasifican en \textbf{intrínsecas} ---cuando el modelo contradice la información proporcionada en el contexto de entrada--- y \textbf{extrínsecas} ---cuando genera afirmaciones inverificables o ausentes en dicho contexto---. Según la \emph{naturaleza del error}, se diferencian las alucinaciones \textbf{factuales}, que contradicen el conocimiento del mundo real, y las de \textbf{atribución}, donde el modelo fabrica o asigna incorrectamente una fuente bibliográfica \cite{Ji2023hallucination}.
+\textcite{Huang2025survey} proponen una taxonomía ampliamente adoptada que distingue dos ejes principales. Según la \emph{relación con la fuente}, las alucinaciones se clasifican en \textbf{intrínsecas} ---cuando el modelo contradice la información proporcionada en el contexto de entrada--- y \textbf{extrínsecas} ---cuando genera afirmaciones inverificables o ausentes en dicho contexto---. Según la \emph{naturaleza del error}, se diferencian las alucinaciones \textbf{factuales}, que contradicen el conocimiento del mundo real, y las de \textbf{atribución}, donde el modelo fabrica o asigna incorrectamente una fuente bibliográfica \parencite{Ji2023hallucination}.
 
-En el dominio biomédico esta tipología adquiere matices propios. \cite{kim2025hallucination} introducen la categoría de \emph{alucinación médica}, definida como cualquier salida del modelo que es factualmente incorrecta, lógicamente inconsistente o carente de respaldo en evidencia clínica autorizada. Los autores identifican subtipos específicos: fabricación de medicamentos, recomendaciones farmacológicas contraindicadas e interpretaciones falsas de pruebas de imagen, todos ellos con riesgo directo para el paciente.
+En el dominio biomédico esta tipología adquiere matices propios. \textcite{kim2025hallucination} introducen la categoría de \emph{alucinación médica}, definida como cualquier salida del modelo que es factualmente incorrecta, lógicamente inconsistente o carente de respaldo en evidencia clínica autorizada. Los autores identifican subtipos específicos: fabricación de medicamentos, recomendaciones farmacológicas contraindicadas e interpretaciones falsas de pruebas de imagen, todos ellos con riesgo directo para el paciente.
 
 \subsubsection{Prevalencia en tareas médicas y riesgo clínico}
 
-La prevalencia de alucinaciones varía según la tarea y el modelo. \cite{Asgari2025framework} reportan, en un estudio con 12.999 oraciones anotadas por clínicos para generación de notas clínicas, una tasa de alucinación del 1,47\% y una tasa de omisión del 3,45\%. Aunque estas cifras parecen moderadas, los autores señalan que incluso errores infrecuentes pueden tener consecuencias graves si afectan a información crítica (alergias, dosis, diagnósticos principales).
+La prevalencia de alucinaciones varía según la tarea y el modelo. \textcite{Asgari2025framework} reportan, en un estudio con 12.999 oraciones anotadas por clínicos para generación de notas clínicas, una tasa de alucinación del 1,47\% y una tasa de omisión del 3,45\%. Aunque estas cifras parecen moderadas, los autores señalan que incluso errores infrecuentes pueden tener consecuencias graves si afectan a información crítica (alergias, dosis, diagnósticos principales).
 
-En tareas de extracción de información de historias clínicas electrónicas no estructuradas, \cite{Vithanage2025} evidencian que los \ac{LLM}s presentan inconsistencias significativas, especialmente en registros de atención geriátrica con documentación ambigua. \cite{Goodell2025tools} demuestran que ChatGPT produce respuestas incorrectas en un tercio de las pruebas de cálculo clínico ($n = 212$), lo que refuerza la necesidad de herramientas complementarias para mitigar estos errores.
+En tareas de extracción de información de historias clínicas electrónicas no estructuradas, \textcite{Vithanage2025} evidencian que los \ac{LLM}s presentan inconsistencias significativas, especialmente en registros de atención geriátrica con documentación ambigua. \textcite{Goodell2025tools} demuestran que ChatGPT produce respuestas incorrectas en un tercio de las pruebas de cálculo clínico ($n = 212$), lo que refuerza la necesidad de herramientas complementarias para mitigar estos errores.
 
 \subsubsection{Alucinaciones adversariales en soporte a la decisión clínica}
 
-Un riesgo particularmente crítico es la vulnerabilidad a ataques adversariales. \cite{Omar2025adversarial} diseñaron 300 viñetas clínicas validadas por médicos, cada una con un detalle clínico fabricado. Las tasas de alucinación oscilaron entre el 50\% y el 82\% según el modelo y la configuración de \emph{prompting}. Para el modelo con mejor desempeño (\acs{GPT}-4o), la tasa se redujo del 53\% al 23\% mediante un \emph{prompt} de mitigación, pero los ajustes de temperatura no ofrecieron mejora significativa. Estos resultados demuestran que los \ac{LLM}s son altamente susceptibles a elaborar información falsa cuando esta se introduce en el contexto clínico.
+Un riesgo particularmente crítico es la vulnerabilidad a ataques adversariales. \textcite{Omar2025adversarial} diseñaron 300 viñetas clínicas validadas por médicos, cada una con un detalle clínico fabricado. Las tasas de alucinación oscilaron entre el 50\% y el 82\% según el modelo y la configuración de \emph{prompting}. Para el modelo con mejor desempeño (\acs{GPT}-4o), la tasa se redujo del 53\% al 23\% mediante un \emph{prompt} de mitigación, pero los ajustes de temperatura no ofrecieron mejora significativa. Estos resultados demuestran que los \ac{LLM}s son altamente susceptibles a elaborar información falsa cuando esta se introduce en el contexto clínico.
 
 \subsection{Técnicas de mitigación}
 \label{subsec:mitigacion}
 
 \subsubsection{Grounding mediante \ac{RAG} y citación automática}
 
-La generación aumentada por recuperación (\ac{RAG}) constituye la estrategia predominante para anclar las respuestas de los \ac{LLM}s a fuentes verificables \cite{lewis2020rag}. En el ámbito biomédico, \cite{xiong2024medrag} presentan MIRAGE, el primer benchmark sistemático para \ac{RAG} médico, evaluando 41 combinaciones de corpus, recuperadores y \ac{LLM}s sobre 7.663 preguntas. Su herramienta MedRAG mejora la precisión de seis \ac{LLM}s hasta en un 18\% respecto al \emph{prompting} con cadena de pensamiento, elevando el rendimiento de \acs{GPT}-3.5 y Mixtral al nivel de \acs{GPT}-4.
+La generación aumentada por recuperación (\ac{RAG}) constituye la estrategia predominante para anclar las respuestas de los \ac{LLM}s a fuentes verificables \parencite{lewis2020rag}. En el ámbito biomédico, \textcite{xiong2024medrag} presentan MIRAGE, el primer benchmark sistemático para \ac{RAG} médico, evaluando 41 combinaciones de corpus, recuperadores y \ac{LLM}s sobre 7.663 preguntas. Su herramienta MedRAG mejora la precisión de seis \ac{LLM}s hasta en un 18\% respecto al \emph{prompting} con cadena de pensamiento, elevando el rendimiento de \acs{GPT}-3.5 y Mixtral al nivel de \acs{GPT}-4.
 
-La evolución del paradigma incluye enfoques iterativos. \cite{xiong2024imedrag} proponen i-MedRAG, donde el modelo formula preguntas de seguimiento sucesivas para resolver casos complejos. \cite{Kumari2026} introducen CARE-RAG, un marco con estrategias de recuperación adaptativas según el tipo de consulta, que ajusta dinámicamente parámetros de búsqueda y profundidad de recorrido en grafos de conocimiento biomédico.
+La evolución del paradigma incluye enfoques iterativos. \textcite{xiong2024imedrag} proponen i-MedRAG, donde el modelo formula preguntas de seguimiento sucesivas para resolver casos complejos. \textcite{Kumari2026} introducen CARE-RAG, un marco con estrategias de recuperación adaptativas según el tipo de consulta, que ajusta dinámicamente parámetros de búsqueda y profundidad de recorrido en grafos de conocimiento biomédico.
 
-A nivel de revisiones sistemáticas, \cite{Liu2025ragsystematic} realizan un meta-análisis sobre \ac{RAG} en biomedicina con directrices de desarrollo clínico, mientras que \cite{Amugongo2025systematic} y \cite{gargari2025rag_medical_review} confirman que \ac{RAG} mejora consistentemente la precisión diagnóstica y reduce las alucinaciones, aunque subrayan limitaciones en la calidad de los documentos recuperados y la latencia del sistema.
+A nivel de revisiones sistemáticas, \textcite{Liu2025ragsystematic} realizan un meta-análisis sobre \ac{RAG} en biomedicina con directrices de desarrollo clínico, mientras que \textcite{Amugongo2025systematic,gargari2025rag_medical_review} confirman que \ac{RAG} mejora consistentemente la precisión diagnóstica y reduce las alucinaciones, aunque subrayan limitaciones en la calidad de los documentos recuperados y la latencia del sistema.
 
-Los sistemas multi-agente representan la frontera actual. \cite{Ogdu2025adaptive} diseñan un \ac{CDSS} adaptativo que combina una base vectorial BioBERT, acceso web en tiempo real y un bucle de optimización que se activa ante situaciones de baja confianza. \cite{Zuo2025KG4Diagnosis} presentan KG4Diagnosis, una arquitectura jerárquica con un agente de medicina general que deriva a agentes especializados, apoyados por grafos de conocimiento generados automáticamente para 362 enfermedades. En el dominio quirúrgico, \cite{staple2025surgical} demuestran que un \ac{LLM} específico de dominio con \ac{RAG} y \emph{prompting} enriquecido reduce significativamente las alucinaciones respecto al \emph{prompting} de disparo cero. \cite{Li2025garmleg} proponen GARMLE-G, un marco de recuperación aumentada por generación que elimina alucinaciones al recuperar directamente contenido autorizado de guías de práctica clínica.
+Los sistemas multi-agente representan la frontera actual. \textcite{Ogdu2025adaptive} diseñan un \ac{CDSS} adaptativo que combina una base vectorial BioBERT, acceso web en tiempo real y un bucle de optimización que se activa ante situaciones de baja confianza. \textcite{Zuo2025KG4Diagnosis} presentan KG4Diagnosis, una arquitectura jerárquica con un agente de medicina general que deriva a agentes especializados, apoyados por grafos de conocimiento generados automáticamente para 362 enfermedades. En el dominio quirúrgico, \textcite{staple2025surgical} demuestran que un \ac{LLM} específico de dominio con \ac{RAG} y \emph{prompting} enriquecido reduce significativamente las alucinaciones respecto al \emph{prompting} de disparo cero. \textcite{Li2025garmleg} proponen GARMLE-G, un marco de recuperación aumentada por generación que elimina alucinaciones al recuperar directamente contenido autorizado de guías de práctica clínica.
 
 \subsubsection{Chain-of-Thought y su impacto en la precisión factual}
 
-El razonamiento paso a paso (\emph{Chain-of-Thought}, CoT) ha mostrado beneficios notables en tareas de razonamiento general \cite{Wei2022cot}. Sin embargo, su eficacia en contextos clínicos es controvertida. \cite{Wu2025CoTFails} presentan el primer estudio a gran escala de CoT para comprensión de texto clínico, evaluando 95 \ac{LLM}s en 87 tareas clínicas reales en 9 idiomas. Sus hallazgos revelan una paradoja: el 86,3\% de los modelos experimenta una degradación consistente del rendimiento con CoT. Los modelos más capaces mantienen robustez relativa, mientras que los menos potentes sufren caídas sustanciales. Los autores concluyen que CoT mejora la interpretabilidad pero puede socavar la fiabilidad en tareas de texto clínico, donde la documentación es ruidosa, fragmentada y no gramatical.
+El razonamiento paso a paso (\emph{Chain-of-Thought}, CoT) ha mostrado beneficios notables en tareas de razonamiento general \parencite{Wei2022cot}. Sin embargo, su eficacia en contextos clínicos es controvertida. \textcite{Wu2025CoTFails} presentan el primer estudio a gran escala de CoT para comprensión de texto clínico, evaluando 95 \ac{LLM}s en 87 tareas clínicas reales en 9 idiomas. Sus hallazgos revelan una paradoja: el 86,3\% de los modelos experimenta una degradación consistente del rendimiento con CoT. Los modelos más capaces mantienen robustez relativa, mientras que los menos potentes sufren caídas sustanciales. Los autores concluyen que CoT mejora la interpretabilidad pero puede socavar la fiabilidad en tareas de texto clínico, donde la documentación es ruidosa, fragmentada y no gramatical.
 
 \subsubsection{Métricas de evaluación}
 
-La evaluación de alucinaciones requiere métricas especializadas. La \emph{faithfulness} (fidelidad) mide la proporción de afirmaciones en la salida que son verificables respecto al contexto de entrada, mientras que la \emph{factual consistency} evalúa la coherencia con el conocimiento del mundo real \cite{Huang2025survey}. \cite{gorle2024} proponen un marco basado en aprendizaje por refuerzo que integra verificación automatizada de hechos, estimación de incertidumbre y retroalimentación de expertos clínicos para penalizar respuestas no fundamentadas.
+La evaluación de alucinaciones requiere métricas especializadas. La \emph{faithfulness} (fidelidad) mide la proporción de afirmaciones en la salida que son verificables respecto al contexto de entrada, mientras que la \emph{factual consistency} evalúa la coherencia con el conocimiento del mundo real \parencite{Huang2025survey}. \textcite{gorle2024} proponen un marco basado en aprendizaje por refuerzo que integra verificación automatizada de hechos, estimación de incertidumbre y retroalimentación de expertos clínicos para penalizar respuestas no fundamentadas.
 
-El \emph{Expected Calibration Error} (ECE) \cite{Naeini2015ece,Guo2017calibration} cuantifica la discrepancia entre la confianza predicha y la precisión real del modelo, constituyendo una métrica puente entre la evaluación de alucinaciones y la calibración de incertidumbre que se aborda a continuación.
+El \emph{Expected Calibration Error} (ECE) \parencite{Naeini2015ece,Guo2017calibration} cuantifica la discrepancia entre la confianza predicha y la precisión real del modelo, constituyendo una métrica puente entre la evaluación de alucinaciones y la calibración de incertidumbre que se aborda a continuación.
 
 \subsection{Calibración de incertidumbre en agentes clínicos}
 \label{subsec:calibracion}
 
 \subsubsection{ECE y enfoques bayesianos ligeros}
 
-La calibración de incertidumbre busca que la confianza expresada por un modelo refleje fielmente su probabilidad real de acierto. \cite{Guo2017calibration} demostraron que las redes neuronales modernas tienden a la sobreconfianza, un problema que se amplifica en \ac{LLM}s aplicados a medicina \cite{Atf2025uncertainty}. \cite{Atf2025uncertainty} proponen un marco integral que diferencia incertidumbre \emph{epistémica} (derivada de limitaciones del conocimiento del modelo) y \emph{aleatoria} (inherente a la ambigüedad de los datos), integrando inferencia bayesiana, \emph{deep ensembles} y Monte Carlo dropout con análisis de entropía semántica y predictiva.
+La calibración de incertidumbre busca que la confianza expresada por un modelo refleje fielmente su probabilidad real de acierto. \textcite{Guo2017calibration} demostraron que las redes neuronales modernas tienden a la sobreconfianza, un problema que se amplifica en \ac{LLM}s aplicados a medicina \parencite{Atf2025uncertainty}. \textcite{Atf2025uncertainty} proponen un marco integral que diferencia incertidumbre \emph{epistémica} (derivada de limitaciones del conocimiento del modelo) y \emph{aleatoria} (inherente a la ambigüedad de los datos), integrando inferencia bayesiana, \emph{deep ensembles} y Monte Carlo dropout con análisis de entropía semántica y predictiva.
 
-\cite{Ye2025conformal} abordan el problema desde la predicción conformal inductiva (\emph{Split Conformal Prediction}), un marco agnóstico al modelo que construye conjuntos de predicción con garantías estadísticas bajo niveles de riesgo definidos por el usuario ($\alpha$). Su método controla rigurosamente la cobertura marginal y ajusta dinámicamente el tamaño de los conjuntos de predicción, filtrando salidas de baja confianza sin requerir suposiciones sobre distribuciones previas ni reentrenamiento.
+\textcite{Ye2025conformal} abordan el problema desde la predicción conformal inductiva (\emph{Split Conformal Prediction}), un marco agnóstico al modelo que construye conjuntos de predicción con garantías estadísticas bajo niveles de riesgo definidos por el usuario ($\alpha$). Su método controla rigurosamente la cobertura marginal y ajusta dinámicamente el tamaño de los conjuntos de predicción, filtrando salidas de baja confianza sin requerir suposiciones sobre distribuciones previas ni reentrenamiento.
 
-\cite{Naderi2025prompt} evalúan cómo distintas técnicas de ingeniería de \emph{prompts} afectan simultáneamente a la precisión y a la elicitación de confianza en \ac{LLM}s médicos, proporcionando evidencia empírica sobre qué estrategias de \emph{prompting} mejoran la calibración sin comprometer el rendimiento diagnóstico.
+\textcite{Naderi2025prompt} evalúan cómo distintas técnicas de ingeniería de \emph{prompts} afectan simultáneamente a la precisión y a la elicitación de confianza en \ac{LLM}s médicos, proporcionando evidencia empírica sobre qué estrategias de \emph{prompting} mejoran la calibración sin comprometer el rendimiento diagnóstico.
 
 \subsubsection{MedBayes-Lite: reducción de sobreconfianza y abstención inteligente}
 
-\cite{hossain2025} proponen MedBayes-Lite, un marco bayesiano ligero que se integra en \emph{pipelines} de transformadores clínicos sin reentrenamiento ni modificación arquitectónica, manteniendo el sobrecoste paramétrico por debajo del 3\%. El sistema combina tres componentes: (i)~calibración bayesiana de \emph{embeddings} mediante MC dropout para capturar incertidumbre epistémica, (ii)~atención ponderada por incertidumbre que reduce el peso de \emph{tokens} poco fiables, y (iii)~conformación de decisiones guiada por confianza inspirada en la minimización de riesgo clínico. En benchmarks de QA biomédico y predicción clínica (MedQA, PubMedQA, \ac{MIMIC}-III), MedBayes-Lite reduce la sobreconfianza entre un 32\% y un 48\%, y en simulaciones clínicas previene hasta un 41\% de errores diagnósticos al derivar predicciones inciertas a revisión humana.
+\textcite{hossain2025} proponen MedBayes-Lite, un marco bayesiano ligero que se integra en \emph{pipelines} de transformadores clínicos sin reentrenamiento ni modificación arquitectónica, manteniendo el sobrecoste paramétrico por debajo del 3\%. El sistema combina tres componentes: (i)~calibración bayesiana de \emph{embeddings} mediante MC dropout para capturar incertidumbre epistémica, (ii)~atención ponderada por incertidumbre que reduce el peso de \emph{tokens} poco fiables, y (iii)~conformación de decisiones guiada por confianza inspirada en la minimización de riesgo clínico. En benchmarks de QA biomédico y predicción clínica (MedQA, PubMedQA, \ac{MIMIC}-III), MedBayes-Lite reduce la sobreconfianza entre un 32\% y un 48\%, y en simulaciones clínicas previene hasta un 41\% de errores diagnósticos al derivar predicciones inciertas a revisión humana.
 
-Este enfoque de \emph{abstención inteligente} ---donde el modelo reconoce sus limitaciones y delega al clínico--- representa un cambio de paradigma frente a sistemas que priorizan la cobertura total sobre la fiabilidad. \cite{Song2025trustehragent} formalizan esta idea con TrustEHRAgent, un agente con estimación de confianza paso a paso, e introducen la métrica HCAcc@k\%, que cuantifica la precisión bajo umbrales estrictos de fiabilidad.
+Este enfoque de \emph{abstención inteligente} ---donde el modelo reconoce sus limitaciones y delega al clínico--- representa un cambio de paradigma frente a sistemas que priorizan la cobertura total sobre la fiabilidad. \textcite{Song2025trustehragent} formalizan esta idea con TrustEHRAgent, un agente con estimación de confianza paso a paso, e introducen la métrica HCAcc@k\%, que cuantifica la precisión bajo umbrales estrictos de fiabilidad.
 
 \subsubsection{Calibración, alucinaciones y seguridad en urgencias}
 
-La relación entre calibración de incertidumbre y reducción de alucinaciones es directa: un modelo bien calibrado que expresa baja confianza ante una pregunta ambigua tiene menos probabilidades de generar contenido fabricado con apariencia de certeza. \cite{pennydimri2025} validan esta premisa en salud materna, donde evalúan la entropía semántica (SE) como métrica de incertidumbre a nivel de significado. SE alcanza un AUROC de 0,76 frente al 0,62 de la perplejidad convencional, y en validación por expertos clínicos logra un AUROC de 0,97, demostrando capacidad casi perfecta para discriminar respuestas inciertas.
+La relación entre calibración de incertidumbre y reducción de alucinaciones es directa: un modelo bien calibrado que expresa baja confianza ante una pregunta ambigua tiene menos probabilidades de generar contenido fabricado con apariencia de certeza. \textcite{pennydimri2025} validan esta premisa en salud materna, donde evalúan la entropía semántica (SE) como métrica de incertidumbre a nivel de significado. SE alcanza un AUROC de 0,76 frente al 0,62 de la perplejidad convencional, y en validación por expertos clínicos logra un AUROC de 0,97, demostrando capacidad casi perfecta para discriminar respuestas inciertas.
 
-\cite{Feng2025arrhythmia} ilustran cómo la ingeniería de \emph{prompts} combinada con estrategias de recuperación puede mejorar la identificación de recurrencia de arritmias a partir de registros clínicos electrónicos no estructurados, un escenario de urgencia donde la precisión factual y la calibración de la confianza son determinantes para la toma de decisiones en tiempo real. \cite{singhal2023} demuestran que los \ac{LLM}s pueden codificar conocimiento clínico a nivel experto, pero subrayan que esta capacidad debe complementarse con mecanismos de calibración para evitar que la fluidez lingüística del modelo se confunda con precisión factual.
+\textcite{Feng2025arrhythmia} ilustran cómo la ingeniería de \emph{prompts} combinada con estrategias de recuperación puede mejorar la identificación de recurrencia de arritmias a partir de registros clínicos electrónicos no estructurados, un escenario de urgencia donde la precisión factual y la calibración de la confianza son determinantes para la toma de decisiones en tiempo real. \textcite{singhal2023} demuestran que los \ac{LLM}s pueden codificar conocimiento clínico a nivel experto, pero subrayan que esta capacidad debe complementarse con mecanismos de calibración para evitar que la fluidez lingüística del modelo se confunda con precisión factual.
 
-En conjunto, la evidencia revisada establece que la mitigación de alucinaciones y la calibración de incertidumbre no son problemas independientes sino componentes complementarios de un mismo objetivo: garantizar que los agentes basados en \ac{LLM}s operen dentro de márgenes de seguridad aceptables para la práctica clínica \cite{kim2025hallucination,Atf2025uncertainty,hossain2025}. La arquitectura Transformer \cite{vaswani2017attention}, que subyace a todos los modelos discutidos, no incorpora mecanismos nativos de cuantificación de incertidumbre, lo que convierte esta línea de investigación en un requisito ineludible para la traslación clínica responsable.
+En conjunto, la evidencia revisada establece que la mitigación de alucinaciones y la calibración de incertidumbre no son problemas independientes sino componentes complementarios de un mismo objetivo: garantizar que los agentes basados en \ac{LLM}s operen dentro de márgenes de seguridad aceptables para la práctica clínica \parencite{kim2025hallucination,Atf2025uncertainty,hossain2025}. La arquitectura Transformer \parencite{vaswani2017attention}, que subyace a todos los modelos discutidos, no incorpora mecanismos nativos de cuantificación de incertidumbre, lo que convierte esta línea de investigación en un requisito ineludible para la traslación clínica responsable.
 
 % ============================================================
 % 2.7 — Seguridad, Privacidad y Marco Ético en IA Clínica
@@ -554,15 +560,15 @@ El despliegue de sistemas de inteligencia artificial en entornos clínicos intro
 
 \subsubsection{RGPD e \ac{HIPAA} aplicados a sistemas de \ac{IA} en salud}
 
-Los marcos regulatorios más influyentes en la protección de datos sanitarios son el Reglamento General de Protección de Datos (\ac{RGPD}) de la Unión Europea y la \textit{Health Insurance Portability and Accountability Act} (\ac{HIPAA}) de Estados Unidos \cite{jonnagaddala2025privacy}. Ambos establecen principios fundamentales para el tratamiento de información sanitaria sensible, aunque difieren en aspectos específicos como la definición de datos identificables y los requisitos de consentimiento.
+Los marcos regulatorios más influyentes en la protección de datos sanitarios son el Reglamento General de Protección de Datos (\ac{RGPD}) de la Unión Europea y la \textit{Health Insurance Portability and Accountability Act} (\ac{HIPAA}) de Estados Unidos \parencite{jonnagaddala2025privacy}. Ambos establecen principios fundamentales para el tratamiento de información sanitaria sensible, aunque difieren en aspectos específicos como la definición de datos identificables y los requisitos de consentimiento.
 
-El \ac{RGPD} establece principios de minimización de datos, transparencia y derecho al olvido que resultan particularmente relevantes para sistemas de \ac{IA} clínica \cite{arun2025ethical}. Los chatbots sanitarios basados en \ac{LLM}s deben implementar mecanismos de \textit{privacy-by-design} que eviten el almacenamiento de historiales de conversación y garanticen el procesamiento en tiempo real sin retención de datos identificables. \ac{HIPAA}, por su parte, exige salvaguardas técnicas específicas para prevenir el acceso no autorizado a información de salud protegida (PHI), incluyendo auditorías de actividad y controles de acceso basados en roles.
+El \ac{RGPD} establece principios de minimización de datos, transparencia y derecho al olvido que resultan particularmente relevantes para sistemas de \ac{IA} clínica \parencite{arun2025ethical}. Los chatbots sanitarios basados en \ac{LLM}s deben implementar mecanismos de \textit{privacy-by-design} que eviten el almacenamiento de historiales de conversación y garanticen el procesamiento en tiempo real sin retención de datos identificables. \ac{HIPAA}, por su parte, exige salvaguardas técnicas específicas para prevenir el acceso no autorizado a información de salud protegida (PHI), incluyendo auditorías de actividad y controles de acceso basados en roles.
 
 \subsubsection{Anonimización, validación de consultas \ac{SQL}, sandboxing y auditoría}
 
-La protección técnica de datos en sistemas agénticos requiere múltiples capas de seguridad. \cite{demaio2024multiagent} proponen una arquitectura multi-agente que preserva la privacidad mediante la separación entre \ac{LLM}s públicos para la construcción de consultas \ac{FHIR} y \ac{LLM}s locales para la interpretación de datos sensibles. Este enfoque de \textit{dual-layered LLM} garantiza que la información identificable del paciente nunca abandone el entorno seguro local.
+La protección técnica de datos en sistemas agénticos requiere múltiples capas de seguridad. \textcite{demaio2024multiagent} proponen una arquitectura multi-agente que preserva la privacidad mediante la separación entre \ac{LLM}s públicos para la construcción de consultas \ac{FHIR} y \ac{LLM}s locales para la interpretación de datos sensibles. Este enfoque de \textit{dual-layered LLM} garantiza que la información identificable del paciente nunca abandone el entorno seguro local.
 
-Las estrategias de preservación de privacidad incluyen \cite{jonnagaddala2025privacy}:
+Las estrategias de preservación de privacidad incluyen las siguientes dimensiones \parencite{jonnagaddala2025privacy}:
 
 \begin{itemize}[nosep, leftmargin=*]
     \item \textbf{Privacidad diferencial (DP)}: introduce ruido calibrado en los resultados de consultas para imposibilitar la identificación individual.
@@ -573,9 +579,9 @@ Las estrategias de preservación de privacidad incluyen \cite{jonnagaddala2025pr
 
 \subsubsection{Frameworks de cumplimiento para sistemas agénticos}
 
-Los sistemas multi-agente para decisión clínica requieren mecanismos específicos de gobernanza ética. \cite{chen2025enhancing} proponen una arquitectura donde agentes especializados procesan diferentes tipos de información clínica ---resultados de laboratorio, signos vitales, contexto clínico--- con un agente de transparencia que evalúa la explicabilidad, interpretabilidad y trazabilidad de las predicciones.
+Los sistemas multi-agente para decisión clínica requieren mecanismos específicos de gobernanza ética. \textcite{chen2025enhancing} proponen una arquitectura donde agentes especializados procesan diferentes tipos de información clínica ---resultados de laboratorio, signos vitales, contexto clínico--- con un agente de transparencia que evalúa la explicabilidad, interpretabilidad y trazabilidad de las predicciones.
 
-El framework LangChain-NeMo Guardrails \cite{arun2025ethical} implementa barreras éticas mediante:
+El framework LangChain-NeMo Guardrails \parencite{arun2025ethical} implementa barreras éticas mediante:
 \begin{enumerate}[nosep, leftmargin=*]
     \item Detección de intenciones para identificar contenido potencialmente peligroso.
     \item Filtrado basado en reglas que impide respuestas sobre temas sensibles como eutanasia o automedicación.
@@ -589,26 +595,26 @@ Este enfoque híbrido ---combinando restricciones basadas en reglas con aprendiz
 
 \subsubsection{Sesgos en datasets anglosajones aplicados a contextos hispanohablantes}
 
-Los datasets clínicos predominantes en la investigación de \ac{IA} médica, como \ac{MIMIC}-IV, presentan sesgos inherentes derivados de poblaciones específicas del sistema sanitario estadounidense \cite{fan2024aihospital}. Cuando estos modelos se aplican a contextos hispanohablantes, emergen problemas de generalización que afectan tanto a la representatividad demográfica como a la terminología médica empleada.
+Los datasets clínicos predominantes en la investigación de \ac{IA} médica, como \ac{MIMIC}-IV, presentan sesgos inherentes derivados de poblaciones específicas del sistema sanitario estadounidense \parencite{fan2024aihospital}. Cuando estos modelos se aplican a contextos hispanohablantes, emergen problemas de generalización que afectan tanto a la representatividad demográfica como a la terminología médica empleada.
 
-\cite{arun2025ethical} documentan mediante evaluaciones de sesgo que los modelos pueden proporcionar diagnósticos o recomendaciones de tratamiento diferentes basándose en factores como género, raza o estatus socioeconómico, replicando sesgos presentes en los datos de entrenamiento. En el contexto específico de viñetas clínicas, se observaron disparidades en la probabilidad asignada a enfermedad coronaria según raza del paciente, recomendaciones de trombólisis con variaciones por género, y sugerencias de tratamiento para insuficiencia cardíaca avanzada.
+\textcite{arun2025ethical} documentan mediante evaluaciones de sesgo que los modelos pueden proporcionar diagnósticos o recomendaciones de tratamiento diferentes basándose en factores como género, raza o estatus socioeconómico, replicando sesgos presentes en los datos de entrenamiento. En el contexto específico de viñetas clínicas, se observaron disparidades en la probabilidad asignada a enfermedad coronaria según raza del paciente, recomendaciones de trombólisis con variaciones por género, y sugerencias de tratamiento para insuficiencia cardíaca avanzada.
 
 \subsubsection{Terminología médica regional en español y desafíos de generalización}
 
 La variabilidad terminológica del español médico entre regiones hispanohablantes introduce desafíos adicionales para sistemas de \ac{IA} clínica. Los modelos entrenados predominantemente en inglés médico pueden fallar en el reconocimiento de términos coloquiales, regionalismos o variantes léxicas empleadas por pacientes hispanohablantes para describir sus síntomas.
 
-\cite{fan2024aihospital} demuestran que incluso modelos avanzados como \acs{GPT}-4 alcanzan menos del 50\% del rendimiento óptimo en tareas de diagnóstico interactivo, con dificultades particulares para formular preguntas relevantes y recomendar exámenes apropiados. Esta brecha se amplifica cuando el sistema debe operar en idiomas distintos al inglés, donde la comprensión de matices lingüísticos y culturales resulta crítica para una anamnesis efectiva.
+\textcite{fan2024aihospital} demuestran que incluso modelos avanzados como \acs{GPT}-4 alcanzan menos del 50\% del rendimiento óptimo en tareas de diagnóstico interactivo, con dificultades particulares para formular preguntas relevantes y recomendar exámenes apropiados. Esta brecha se amplifica cuando el sistema debe operar en idiomas distintos al inglés, donde la comprensión de matices lingüísticos y culturales resulta crítica para una anamnesis efectiva.
 
 \subsubsection{AI Act europeo, explicabilidad, supervisión humana y validación clínica}
 
 El Reglamento de Inteligencia Artificial de la Unión Europea (AI Act) clasifica los sistemas de \ac{IA} sanitaria como aplicaciones de alto riesgo, imponiendo requisitos estrictos de:
 
 \begin{itemize}[nosep, leftmargin=*]
-    \item \textbf{Explicabilidad}: los sistemas deben proporcionar justificaciones comprensibles de sus decisiones. \cite{chen2025enhancing} implementan un agente de transparencia que genera puntuaciones de explicabilidad (85--86\%) evaluando la identificación de factores influyentes y la claridad del razonamiento.
-    \item \textbf{Supervisión humana}: el AI Act exige la capacidad de intervención humana en decisiones críticas. Los sistemas multi-agente deben incorporar mecanismos de escalado a profesionales sanitarios cuando se detectan consultas sensibles o situaciones de emergencia \cite{arun2025ethical}.
-    \item \textbf{Validación clínica}: la evaluación de sistemas de \ac{IA} médica debe incluir validación por expertos del dominio. \cite{arun2025ethical} reportan colaboración con profesionales médicos para verificar respuestas a consultas éticamente sensibles.
+    \item \textbf{Explicabilidad}: los sistemas deben proporcionar justificaciones comprensibles de sus decisiones. \textcite{chen2025enhancing} implementan un agente de transparencia que genera puntuaciones de explicabilidad (85--86\%) evaluando la identificación de factores influyentes y la claridad del razonamiento.
+    \item \textbf{Supervisión humana}: el AI Act exige la capacidad de intervención humana en decisiones críticas. Los sistemas multi-agente deben incorporar mecanismos de escalado a profesionales sanitarios cuando se detectan consultas sensibles o situaciones de emergencia \parencite{arun2025ethical}.
+    \item \textbf{Validación clínica}: la evaluación de sistemas de \ac{IA} médica debe incluir validación por expertos del dominio. \textcite{arun2025ethical} reportan colaboración con profesionales médicos para verificar respuestas a consultas éticamente sensibles.
 \end{itemize}
 
-La Organización Mundial de la Salud ha establecido directrices éticas para \ac{IA} en salud que enfatizan principios de autonomía humana, bienestar del paciente y transparencia del sistema \cite{chen2025enhancing}. Estos marcos normativos convergen en la necesidad de desarrollar sistemas de \ac{IA} clínica que equilibren la innovación tecnológica con la protección de derechos fundamentales de los pacientes.
+La Organización Mundial de la Salud ha establecido directrices éticas para \ac{IA} en salud que enfatizan principios de autonomía humana, bienestar del paciente y transparencia del sistema \parencite{chen2025enhancing}. Estos marcos normativos convergen en la necesidad de desarrollar sistemas de \ac{IA} clínica que equilibren la innovación tecnológica con la protección de derechos fundamentales de los pacientes.
 
-El desafío pendiente consiste en cerrar la brecha entre el rendimiento de los \ac{LLM}s en benchmarks estáticos y su aplicación efectiva en interacciones clínicas dinámicas, donde la recopilación activa de síntomas y la toma de decisiones bajo incertidumbre requieren capacidades que los modelos actuales aún no han desarrollado completamente \cite{fan2024aihospital}.
+El desafío pendiente consiste en cerrar la brecha entre el rendimiento de los \ac{LLM}s en benchmarks estáticos y su aplicación efectiva en interacciones clínicas dinámicas, donde la recopilación activa de síntomas y la toma de decisiones bajo incertidumbre requieren capacidades que los modelos actuales aún no han desarrollado completamente \parencite{fan2024aihospital}.
