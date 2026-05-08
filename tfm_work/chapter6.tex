@@ -13,7 +13,7 @@ Este capítulo sintetiza las contribuciones del presente Trabajo Fin de Máster,
 
 El presente trabajo ha abordado el diseño, implementación y evaluación de \textbf{ChatHCE}, un sistema de análisis clínico inteligente para el servicio de urgencias. El sistema integra tres capacidades fundamentales ---consulta de datos estructurados, recuperación de documentos clínicos y generación de visualizaciones--- mediante una interfaz conversacional unificada en lenguaje natural.
 
-El desarrollo ha seguido la metodología \textit{Design Science Research} \cite{Hevner2004,Peffers2007dsrm}, con ciclos iterativos de diseño, construcción y evaluación. El artefacto resultante opera sobre el dataset \acs{MIMIC}-IV-\acs{ED} \cite{johnson2023mimiciv} desplegado en Supabase, y utiliza Claude Haiku 4.5 como motor de inferencia principal con capacidad de \textit{tool-calling} nativo.
+El desarrollo ha seguido la metodología \textit{Design Science Research} \parencite{Hevner2004,Peffers2007dsrm}, con ciclos iterativos de diseño, construcción y evaluación. El artefacto resultante opera sobre el dataset \acs{MIMIC}-IV-\acs{ED} \parencite{johnson2023mimiciv} desplegado en Supabase, y utiliza Claude Haiku 4.5 como motor de inferencia principal con capacidad de \textit{tool-calling} nativo.
 
 La evaluación empírica se ha estructurado en cuatro dimensiones: calidad semántica de respuestas (métricas \ac{RAGAS}), rendimiento temporal, robustez de seguridad y funcionalidad operativa. Los resultados obtenidos permiten responder a las cinco preguntas de investigación planteadas en el capítulo introductorio.
 
@@ -124,7 +124,7 @@ Los resultados de la evaluación y las limitaciones identificadas abren múltipl
 \begin{description}
     \item[Visualización de datos agregados:] Extensión de la herramienta \texttt{VisualizationTool} para aceptar datos pre-obtenidos no vinculados a identificadores de paciente, habilitando gráficos de distribución poblacional, comparativas entre cohortes y dashboards epidemiológicos.
     
-    \item[Integración multimodal:] Incorporación de capacidades de procesamiento de imágenes médicas (radiografías, ECGs) aprovechando las capacidades multimodales de los modelos Claude, siguiendo la línea de trabajos como EMERGE \cite{zhu2024emerge}.
+    \item[Integración multimodal:] Incorporación de capacidades de procesamiento de imágenes médicas (radiografías, ECGs) aprovechando las capacidades multimodales de los modelos Claude, siguiendo la línea de trabajos como EMERGE \parencite{zhu2024emerge}.
     
     \item[Generación de informes clínicos:] Desarrollo de funcionalidad para generar resúmenes estructurados de estancias en urgencias, integrando datos de múltiples tablas en formatos estandarizados.
 \end{description}
@@ -132,9 +132,9 @@ Los resultados de la evaluación y las limitaciones identificadas abren múltipl
 \subsection{Optimización del pipeline RAG}
 
 \begin{description}
-    \item[Reranking con cross-encoders biomédicos:] Implementación de modelos de reranking especializados como MedCPT-Cross-Encoder \cite{jin2023medcpt} para mejorar la precisión de los fragmentos recuperados.
+    \item[Reranking con cross-encoders biomédicos:] Implementación de modelos de reranking especializados como MedCPT-Cross-Encoder \parencite{jin2023medcpt} para mejorar la precisión de los fragmentos recuperados.
     
-    \item[\ac{RAG} iterativo:] Exploración de técnicas de \ac{RAG} con queries de seguimiento \cite{xiong2024imedrag}, donde el sistema formula preguntas adicionales basándose en información recuperada previamente para resolver consultas complejas.
+    \item[\ac{RAG} iterativo:] Exploración de técnicas de \ac{RAG} con queries de seguimiento \parencite{xiong2024imedrag}, donde el sistema formula preguntas adicionales basándose en información recuperada previamente para resolver consultas complejas.
     
     \item[Integración con grafos de conocimiento:] Enriquecimiento del contexto recuperado mediante conexión con bases de conocimiento biomédico estructurado (\ac{UMLS}, \ac{SNOMEDCT}, DrugBank).
 \end{description}
@@ -142,7 +142,7 @@ Los resultados de la evaluación y las limitaciones identificadas abren múltipl
 \subsection{Mejoras en seguridad y confiabilidad}
 
 \begin{description}
-    \item[Calibración de incertidumbre:] Implementación de técnicas de cuantificación de incertidumbre como entropía semántica \cite{farquhar2024semantic} para detectar respuestas de baja confianza y activar mecanismos de verificación adicional.
+    \item[Calibración de incertidumbre:] Implementación de técnicas de cuantificación de incertidumbre como entropía semántica \parencite{farquhar2024semantic} para detectar respuestas de baja confianza y activar mecanismos de verificación adicional.
     
     \item[Defensa contra inyección indirecta:] Desarrollo de protecciones contra ataques de inyección de prompts a través de datos de contexto manipulados, un vector de amenaza emergente en sistemas \ac{RAG}.
     

@@ -19,7 +19,7 @@ La métrica Faithfulness mide la proporción de afirmaciones en la respuesta del
 
 El déficit de Faithfulness (~0,26) se origina en un comportamiento del agente que, paradójicamente, es deseable en un contexto clínico: la tendencia a añadir interpretaciones médicas y contexto complementario a los datos crudos. Cuando el sistema recupera, por ejemplo, que la frecuencia cardíaca de un paciente es de 120~lpm, el agente puede añadir que este valor se encuentra por encima del rango normal (60--100~lpm) y que podría sugerir taquicardi. Esta interpretación no está literalmente presente en los datos recuperados ---es conocimiento médico general del modelo--- y, por tanto, \ac{RAGAS} la penaliza como afirmación no fundamentad.
 
-Este fenómeno es bien documentado en la literatura sobre evaluación de sistemas \ac{RAG} en dominios especializados~\cite{Gan2025rageval}. Las métricas automáticas diseñadas para evaluar la fidelidad al contexto no distinguen entre ``alucinación'' (invención de datos falsos) y ``enriquecimiento'' (adición de conocimiento general correcto). En el dominio médico, un sistema que simplemente repite datos sin interpretación tiene una utilidad clínica limitad.
+Este fenómeno es bien documentado en la literatura sobre evaluación de sistemas \ac{RAG} en dominios especializados~\parencite{Gan2025rageval}. Las métricas automáticas diseñadas para evaluar la fidelidad al contexto no distinguen entre ``alucinación'' (invención de datos falsos) y ``enriquecimiento'' (adición de conocimiento general correcto). En el dominio médico, un sistema que simplemente repite datos sin interpretación tiene una utilidad clínica limitada.
 
 En el \textit{golden set} \ac{RAG}, Faithfulness desciende a 0,5708. Esto se explica porque los documentos clínicos son más extensos y narrativos que los datos tabulares: el agente debe sintetizar información dispersa en múltiples párrafos, y al hacerlo es más probable que reformule o interprete el contenido original en lugar de citarlo literalmente.
 
@@ -32,7 +32,7 @@ El agente ChatHCE fue diseñado para comportarse como un asistente clínico cont
 
 El valor especialmente bajo en \ac{RAG} (0,2348) tiene una explicación adicional: las respuestas a preguntas sobre documentos clínicos tienden a ser más largas porque el agente cita fragmentos de los protocolos, añade contexto sobre la aplicabilidad de las recomendaciones y, en algunos casos, ofrece comparativas entre fuentes distintas. Todo esto reduce la relevancia estricta según el modelo de evaluación automátic.
 
-La tensión entre relevancia automática y utilidad clínica real es un desafío reconocido en la evaluación de sistemas \ac{RAG}~\cite{Neha2025raghealth}. En un entorno de producción, la evaluación debería complementarse con encuestas a usuarios clínicos que midan la utilidad percibida de las respuestas, no solo su correspondencia con una referencia predefinid.
+La tensión entre relevancia automática y utilidad clínica real es un desafío reconocido en la evaluación de sistemas \ac{RAG}~\parencite{Neha2025raghealth}. En un entorno de producción, la evaluación debería complementarse con encuestas a usuarios clínicos que midan la utilidad percibida de las respuestas, no solo su correspondencia con una referencia predefinida.
 
 
 \subsection{Context precision y context recall: el pipeline de recuperación}
@@ -65,7 +65,7 @@ Las métricas \ac{RAG} son sustancialmente inferiores (Context Precision: 0,0501
   \item \textbf{Preguntas fuera de dominio}: Las 3~preguntas sin respuesta en los documentos indexados contribuyen con Context Recall cercano a 0, reduciendo la media global.
 \end{enumerate}
 
-Es relevante contextualizar estos resultados: los sistemas \ac{RAG} en dominios biomédicos reportan habitualmente métricas inferiores a las obtenidas en dominios generales~\cite{xiong2024medrag,Amugongo2025systematic}. El benchmark MIRAGE~\cite{xiong2024medrag}, que evalúa sistemas \ac{RAG} específicamente en el dominio médico, documenta dificultades similares con preguntas que requieren razonamiento multi-paso sobre documentos clínicos.
+Es relevante contextualizar estos resultados: los sistemas \ac{RAG} en dominios biomédicos reportan habitualmente métricas inferiores a las obtenidas en dominios generales~\parencite{xiong2024medrag,Amugongo2025systematic}. El benchmark MIRAGE~\parencite{xiong2024medrag}, que evalúa sistemas \ac{RAG} específicamente en el dominio médico, documenta dificultades similares con preguntas que requieren razonamiento multi-paso sobre documentos clínicos.
 
 
 \section{Análisis del fallo SEC-PROMPT-003}
@@ -80,7 +80,7 @@ El test SEC-PROMPT-003 merece un análisis detallado porque ilustra una limitaci
 
 \paragraph{El análisis.} El agente se comportó exactamente como se esperaba: mantuvo su identidad (``Soy ChatHCE''), rechazó explícitamente la solicitud (``No puedo hacer eso''), y explicó la razón (``No puedo generar datos ficticios''). El fallo es exclusivamente del verificador automático, cuya lógica de detección basada en palabras clave no distingue entre la mención de ``datos'' en un contexto de rechazo y la generación efectiva de datos.
 
-Este caso ilustra la dificultad de evaluar automáticamente el comportamiento de seguridad de sistemas conversacionales: los verificadores basados en patrones léxicos son propensos a falsos positivos y falsos negativos cuando las respuestas de rechazo comparten vocabulario con las acciones rechazadas~\cite{OWASP2023llm}. Una mejora necesaria es la implementación de verificadores semánticos que analicen la intención de la respuesta, no solo su contenido léxico.
+Este caso ilustra la dificultad de evaluar automáticamente el comportamiento de seguridad de sistemas conversacionales: los verificadores basados en patrones léxicos son propensos a falsos positivos y falsos negativos cuando las respuestas de rechazo comparten vocabulario con las acciones rechazadas~\parencite{OWASP2023llm}. Una mejora necesaria es la implementación de verificadores semánticos que analicen la intención de la respuesta, no solo su contenido léxico.
 
 
 \section{El problema de la herramienta de visualización}
@@ -111,13 +111,13 @@ Las latencias registradas (rango: 1,8--7,5\,ms) requieren una interpretación t�
 
 \subsection{Sesgo del modelo evaluador}
 
-Se utiliza el mismo modelo (Claude Haiku~4.5) como sistema evaluado y como evaluador \ac{RAGAS}. Esto introduce un sesgo potencial: el evaluador puede ser más tolerante con el estilo de respuesta y las formulaciones del sistema evaluado al compartir patrones lingüísticos y razonamiento~\cite{Zheng2023llmjudge}. La literatura sobre evaluación \ac{LLM}-as-a-Judge sugiere que modelos más capaces (como \acs{GPT}-4 o Claude 3 Opus) como evaluadores proporcionan mayor discriminación~\cite{Yu2025agentjudge}, pero el coste de ejecución sería significativamente superior al presupuesto disponible para la evaluación.
+Se utiliza el mismo modelo (Claude Haiku~4.5) como sistema evaluado y como evaluador \ac{RAGAS}. Esto introduce un sesgo potencial: el evaluador puede ser más tolerante con el estilo de respuesta y las formulaciones del sistema evaluado al compartir patrones lingüísticos y razonamiento~\parencite{Zheng2023llmjudge}. La literatura sobre evaluación \ac{LLM}-as-a-Judge sugiere que modelos más capaces (como \acs{GPT}-4 o Claude 3 Opus) como evaluadores proporcionan mayor discriminación~\parencite{Yu2025agentjudge}, pero el coste de ejecución sería significativamente superior al presupuesto disponible para la evaluación.
 
 \subsection{Validación del \textit{ground truth}}
 
 El \textit{ground truth} del \textit{golden set} \ac{RAG} fue generado por un \ac{LLM} mediante la técnica \textit{LLM-as-Extractor} con temperatura~0. La ausencia de validación por expertos clínicos es una limitación reconocida que afecta la interpretabilidad de las métricas \ac{RAGAS} \ac{RAG}. El \textit{ground truth} DB fue verificado contra consultas \ac{SQL} ejecutadas directamente contra la base de datos, lo que proporciona mayor fiabilidad para ese conjunto.
 
-En un marco de evaluación ideal, el \textit{ground truth} \ac{RAG} debería ser construido y validado por profesionales de medicina intensiva y urgencias. La construcción de \textit{golden sets} validados por expertos es una línea de trabajo futura que mejoraría la fiabilidad de las métricas~\cite{hossain2025}.
+En un marco de evaluación ideal, el \textit{ground truth} \ac{RAG} debería ser construido y validado por profesionales de medicina intensiva y urgencias. La construcción de \textit{golden sets} validados por expertos es una línea de trabajo futura que mejoraría la fiabilidad de las métricas~\parencite{hossain2025}.
 
 \subsection{Cobertura del espacio de prueba}
 
@@ -142,20 +142,20 @@ Los casos funcionales TC-RAG evalúan criterios diferentes a \ac{RAGAS}: si la r
 
 \ac{RAGAS}, en cambio, penaliza estrictamente la información adicional (\textit{Answer Relevancy}), el contexto no relevante (\textit{Context Precision}), y las afirmaciones no fundamentadas en el contexto (\textit{Faithfulness}). Un agente que proporciona respuestas ricas, contextualizadas y con citas de fuentes puede obtener puntuaciones funcionales altas y puntuaciones \ac{RAGAS} bajas simultáneamente.
 
-Esto sugiere que la evaluación funcional captura mejor la utilidad práctica del sistema para el usuario final, mientras que \ac{RAGAS} captura la precisión del pipeline de recuperación y la adherencia estricta al contexto~\cite{Gan2025rageval}. Ambas perspectivas son complementarias.
+Esto sugiere que la evaluación funcional captura mejor la utilidad práctica del sistema para el usuario final, mientras que \ac{RAGAS} captura la precisión del pipeline de recuperación y la adherencia estricta al contexto~\parencite{Gan2025rageval}. Ambas perspectivas son complementarias.
 
 
 \section{Implicaciones para el diseño de sistemas clínicos}
 
 Los resultados de la evaluación tienen varias implicaciones para el diseño de sistemas de \ac{IA} conversacional en entornos clínicos:
 
-\paragraph{1. Anti-alucinación como requisito no negociable.} La puntuación perfecta en anti-alucinación demuestra que es posible diseñar sistemas \ac{LLM} que no fabriquen información médic. La estrategia de \textit{defense-in-depth} ---restricciones multinivel desde el \textit{prompt} hasta la validación de herramientas--- es efectiva y debería considerarse un patrón de diseño estándar para sistemas \ac{LLM} en sanidad~\cite{kim2025hallucination,Song2025trustehragent}.
+\paragraph{1. Anti-alucinación como requisito no negociable.} La puntuación perfecta en anti-alucinación demuestra que es posible diseñar sistemas \ac{LLM} que no fabriquen información médica. La estrategia de \textit{defense-in-depth} ---restricciones multinivel desde el \textit{prompt} hasta la validación de herramientas--- es efectiva y debería considerarse un patrón de diseño estándar para sistemas \ac{LLM} en sanidad~\parencite{kim2025hallucination,Song2025trustehragent}.
 
-\paragraph{2. La necesidad de métricas específicas de dominio.} Las métricas \ac{RAGAS} estándar no capturan adecuadamente la utilidad clínica de las respuestas. Se necesitan métricas que valoren el contexto médico complementario, la interpretación de valores anómalos, y la provisión proactiva de información de seguridad del paciente. El desarrollo de \textit{benchmarks} específicos para asistentes clínicos es una línea de investigación activa~\cite{AgentClinic2025}.
+\paragraph{2. La necesidad de métricas específicas de dominio.} Las métricas \ac{RAGAS} estándar no capturan adecuadamente la utilidad clínica de las respuestas. Se necesitan métricas que valoren el contexto médico complementario, la interpretación de valores anómalos, y la provisión proactiva de información de seguridad del paciente. El desarrollo de \textit{benchmarks} específicos para asistentes clínicos es una línea de investigación activa~\parencite{AgentClinic2025}.
 
-\paragraph{3. El valor de la evaluación multicap.} La combinación de \ac{RAGAS} (calidad semántica), casos funcionales (corrección operativa), seguridad (robustez adversarial) y latencia (rendimiento) proporciona una visión más completa que cualquier métrica individual. Los resultados muestran que un sistema puede obtener evaluaciones funcionales excelentes (27/28 casos superados) con métricas \ac{RAGAS} modestas, lo que raya la importancia de no reducir la evaluación a una única dimensión~\cite{Gan2025rageval}.
+\paragraph{3. El valor de la evaluación multicapa.} La combinación de \ac{RAGAS} (calidad semántica), casos funcionales (corrección operativa), seguridad (robustez adversarial) y latencia (rendimiento) proporciona una visión más completa que cualquier métrica individual. Los resultados muestran que un sistema puede obtener evaluaciones funcionales excelentes (27/28 casos superados) con métricas \ac{RAGAS} modestas, lo que subraya la importancia de no reducir la evaluación a una única dimensión~\parencite{Gan2025rageval}.
 
-\paragraph{4. Transparencia en las limitaciones.} La transparencia del sistema al reconocer datos inexistentes (3/3 tests anti-alucinación) es un comportamiento crítico para la confianza clínic. Los sistemas que dicen ``no sé'' o ``no tengo esa información'' cuando corresponde son más seguros que los que fabrican respuestas plausibles~\cite{hossain2025,AlGaradi2025llmhealthcare}.
+\paragraph{4. Transparencia en las limitaciones.} La transparencia del sistema al reconocer datos inexistentes (3/3 tests anti-alucinación) es un comportamiento crítico para la confianza clínica. Los sistemas que dicen ``no sé'' o ``no tengo esa información'' cuando corresponde son más seguros que los que fabrican respuestas plausibles~\parencite{hossain2025,AlGaradi2025llmhealthcare}.
 
 
 \section{Direcciones de mejora}

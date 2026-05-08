@@ -9,9 +9,9 @@
 
 \section{Robustez anti-alucinación}
 
-El resultado más significativo de la evaluación para un sistema de análisis clínico es la puntuación perfecta (1,000) del criterio \texttt{no\_alucinacion} en los 28~casos funcionales y en los 3~tests de seguridad específicos de anti-alucinación. El sistema nunca fabricó identificadores de pacientes, valores de signos vitales, diagnósticos ni medicamentos. En un dominio donde la generación de información médica falsa puede tener consecuencias directas sobre decisiones clínicas, este resultado valida la efectividad del diseño de las directivas anti-alucinación implementadas en el \texttt{PromptManager}~\cite{kim2025hallucination,Ji2023hallucination}.
+El resultado más significativo de la evaluación para un sistema de análisis clínico es la puntuación perfecta (1,000) del criterio \texttt{no\_alucinacion} en los 28~casos funcionales y en los 3~tests de seguridad específicos de anti-alucinación. El sistema nunca fabricó identificadores de pacientes, valores de signos vitales, diagnósticos ni medicamentos. En un dominio donde la generación de información médica falsa puede tener consecuencias directas sobre decisiones clínicas, este resultado valida la efectividad del diseño de las directivas anti-alucinación implementadas en el \texttt{PromptManager}~\parencite{kim2025hallucination,Ji2023hallucination}.
 
-Este hallazgo es especialmente relevante dado que las alucinaciones constituyen una de las principales barreras para la adopción de \ac{LLM}s en entornos sanitarios~\cite{AlGaradi2025llmhealthcare}. La estrategia de \textit{defense-in-depth} adoptada ---restricciones a nivel de \textit{prompt}, de herramienta y de servicio--- demuestra ser efectiva para contener la tendencia generativa del modelo.
+Este hallazgo es especialmente relevante dado que las alucinaciones constituyen una de las principales barreras para la adopción de \ac{LLM}s en entornos sanitarios~\parencite{AlGaradi2025llmhealthcare}. La estrategia de \textit{defense-in-depth} adoptada ---restricciones a nivel de \textit{prompt}, de herramienta y de servicio--- demuestra ser efectiva para contener la tendencia generativa del modelo.
 
 
 \section{Consultas a base de datos}
@@ -27,15 +27,15 @@ Las métricas \ac{RAGAS} deben interpretarse teniendo en cuenta dos factores det
 
 \subsection{Complejidad del problema}
 
-El \textit{golden set} \ac{RAG} evalúa la capacidad del sistema para recuperar y sintetizar información de documentos clínicos extensos ---manuales de formación, guías ministeriales, libros de referencia--- que contienen terminología especializada, estructuras narrativas complejas y relaciones conceptuales implícitas. Este escenario es sustancialmente más difícil que la recuperación de datos estructurados en \ac{SQL}, como confirma la diferencia sistemática entre las métricas DB y \ac{RAG}~\cite{xiong2024medrag}.
+El \textit{golden set} \ac{RAG} evalúa la capacidad del sistema para recuperar y sintetizar información de documentos clínicos extensos ---manuales de formación, guías ministeriales, libros de referencia--- que contienen terminología especializada, estructuras narrativas complejas y relaciones conceptuales implícitas. Este escenario es sustancialmente más difícil que la recuperación de datos estructurados en \ac{SQL}, como confirma la diferencia sistemática entre las métricas DB y \ac{RAG}~\parencite{xiong2024medrag}.
 
-Las preguntas de tipo \textit{multi\_fragmento} (6 de 30) y \textit{razonamiento\_aplicado} (6 de 30) exigen combinar información dispersa en múltiples secciones de documentos diferentes o aplicar razonamiento clínico sobre la información recuperada ---capacidades que están en la frontera de los sistemas \ac{RAG} actuales~\cite{Neha2025raghealth,Amugongo2025systematic}. Las preguntas \textit{fuera\_de\_dominio} (3 de 30) añaden dificultad al requerir que el sistema reconozca los límites de su conocimiento documental.
+Las preguntas de tipo \textit{multi\_fragmento} (6 de 30) y \textit{razonamiento\_aplicado} (6 de 30) exigen combinar información dispersa en múltiples secciones de documentos diferentes o aplicar razonamiento clínico sobre la información recuperada ---capacidades que están en la frontera de los sistemas \ac{RAG} actuales~\parencite{Neha2025raghealth,Amugongo2025systematic}. Las preguntas \textit{fuera\_de\_dominio} (3 de 30) añaden dificultad al requerir que el sistema reconozca los límites de su conocimiento documental.
 
 \subsection{Rigor de la evaluación}
 
 El marco \ac{RAGAS} aplica criterios estrictos. \textit{Answer Relevancy} penaliza cualquier información adicional más allá de lo estrictamente preguntado ---un comportamiento habitual en asistentes clínicos que proporcionan contexto médico complementario---. \textit{Context Precision} exige que todos los fragmentos recuperados sean directamente relevantes, penalizando los \textit{chunks} padre que, al expandirse desde los \textit{chunks} hijo por similitud, incluyen información adyacente. \textit{Faithfulness} requiere que cada afirmación esté fundamentada en el contexto, penalizando las interpretaciones clínicas del modelo.
 
-Adicionalmente, el \textit{ground truth} del \textit{golden set} \ac{RAG} fue generado por un \ac{LLM} sin validación de expertos clínicos, lo que introduce un sesgo potencial al ser evaluado por el mismo tipo de modelo~\cite{Zheng2023llmjudge,Yu2025agentjudge}. Esta limitación metodológica afecta particularmente a las métricas que comparan respuesta con referencia (\textit{Answer Relevancy}) y contexto con referencia (\textit{Context Recall}).
+Adicionalmente, el \textit{ground truth} del \textit{golden set} \ac{RAG} fue generado por un \ac{LLM} sin validación de expertos clínicos, lo que introduce un sesgo potencial al ser evaluado por el mismo tipo de modelo~\parencite{Zheng2023llmjudge,Yu2025agentjudge}. Esta limitación metodológica afecta particularmente a las métricas que comparan respuesta con referencia (\textit{Answer Relevancy}) y contexto con referencia (\textit{Context Recall}).
 
 \subsection{Métricas DB vs. RAG}
 

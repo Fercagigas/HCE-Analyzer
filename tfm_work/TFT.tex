@@ -14,6 +14,10 @@
 \usepackage{csquotes}
 \usepackage[backend=biber,style=apa,natbib=true,sorting=nyt,language=spanish]{biblatex}
 \DeclareLanguageMapping{spanish}{spanish-apa}
+\DefineBibliographyStrings{spanish}{and={y}, andothers={et\addabbrvspace al\adddot}}
+\DeclareDelimFormat{finalnamedelim}{\ifnumgreater{\value{liststop}}{2}{\finalandcomma}{}\addspace y\space}
+\DeclareDelimFormat[bib,biblist]{finalnamedelim}{\ifnumgreater{\value{liststop}}{2}{\finalandcomma}{}\addspace y\space}
+\DeclareFieldFormat{doi}{\href{https://doi.org/#1}{\nolinkurl{https://doi.org/#1}}}
 \addbibresource{Bibliografia_TFT.bib}
 
 % Comando de palabras clave
@@ -72,6 +76,17 @@
 \usepackage{listings}
 \usepackage{fontawesome5}
 \usepackage{caption}
+\captionsetup[table]{labelfont=bf,labelsep=newline,textfont=it,justification=raggedright,singlelinecheck=false}
+\usepackage{chngcntr}
+\counterwithout{table}{chapter}
+\counterwithout{figure}{chapter}
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}\renewcommand{\listtablename}{Índice de tablas}}
+\newcommand{\apaappendixnumbering}{%
+  \counterwithin{table}{chapter}%
+  \counterwithin{figure}{chapter}%
+  \renewcommand{\thetable}{\Alph{chapter}\arabic{table}}%
+  \renewcommand{\thefigure}{\Alph{chapter}\arabic{figure}}%
+}
 \usepackage{acronym}
 
 
@@ -140,7 +155,7 @@
  & Alumno/a: Cagigas Villar, Fernando 
  & Convocatoria: \\
  Curso Académico\\ 2025-2026
-  & Director/a del TFT: Marco Hernández Pérez   
+  & Director/a del TFM: Marco Hernández Pérez
   & Abril 2026  \\
 \end{tabularx}
  }
@@ -209,13 +224,14 @@
 \end{acronym}
 
 
+\clearpage
 \begin{abstract}
 Los modelos de lenguaje de gran escala (\acs{LLM}s) han demostrado capacidades significativas en el ámbito médico, pero su aplicación en entornos clínicos reales sigue presentando desafíos como las alucinaciones, la latencia y la integración con fuentes de datos heterogéneas. Este trabajo presenta ChatHCE, un sistema de análisis clínico inteligente para el servicio de urgencias que integra consulta de datos estructurados, recuperación de documentos clínicos y generación de visualizaciones mediante una interfaz conversacional unificada en lenguaje natural. El sistema emplea una arquitectura de agente unificado basada en Claude Haiku~4.5 con \textit{tool-calling} nativo, un pipeline \acs{RAG} (\textit{Retrieval-Augmented Generation}) con búsqueda híbrida vectorial-léxica y fusión \acs{RRF} sobre Supabase pgvector, y un motor de visualización \textit{template-first} con Plotly. La evaluación empírica sobre el dataset \acs{MIMIC}-IV-ED demuestra una tasa cero de alucinación en todos los escenarios evaluados, latencias P50 inferiores a 5~segundos para consultas cacheadas y robustez ante ataques de inyección \acs{SQL} y de prompts. Los resultados validan la viabilidad de sistemas \acs{LLM} para asistencia clínica cuando se implementan mecanismos de defensa en profundidad adecuados.
 \vspace{0.5cm}
 
 \keywords{sistemas multiagente, modelos de lenguaje, inteligencia artificial clínica, RAG, urgencias, historia clínica electrónica}
 \end{abstract}
-\newpage
+\clearpage
 \section*{Agradecimientos}\label{sec:agradecimientos}
 Gracias a todos.
 
@@ -258,6 +274,7 @@ Gracias a todos.
 \input{chapter6}
 
 \appendix
+\apaappendixnumbering
 \input{anexo1}
 \input{anexo2}
 

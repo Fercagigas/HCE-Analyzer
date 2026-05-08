@@ -335,7 +335,7 @@ La fusión \ac{RRF} combina los rankings sin requerir calibración de pesos:
 \text{RRF}(d) = \sum_{r \in R} \frac{1}{k + \text{rank}_r(d)}
 \end{equation}
 
-donde $R = \{\text{vectorial}, \text{léxica}\}$ y $k = 60$ es la constante de suavizado que balancea la influencia de las primeras posiciones. El valor $k=60$ es el estándar recomendado en la literatura \citep{cormack2009rrf} y fue adoptado sin necesidad de ajuste adicional.
+donde $R = \{\text{vectorial}, \text{léxica}\}$ y $k = 60$ es la constante de suavizado que balancea la influencia de las primeras posiciones. El valor $k=60$ es el estándar recomendado en la literatura \parencite{cormack2009rrf} y fue adoptado sin necesidad de ajuste adicional.
 
 \subsection{Reranking por cross-encoder}
 
@@ -926,21 +926,21 @@ Chain of Resp. & Fallback \ac{LLM} & Cadena Haiku 4.5 $\to$ Sonnet 4.5 $\to$ Opu
 \textbf{Componente} & \textbf{Tecnología} & \textbf{Uso} \\
 \midrule
 Lenguaje & Python 3.11.14 & Lenguaje principal \\
-Interfaz & Streamlit~\citep{streamlit2019} & Chat interactivo \\
-Agente & LangChain 1.2.7~\citep{chase2022langchain} & Orquestación y herramientas \\
+Interfaz & Streamlit~\parencite{streamlit2019} & Chat interactivo \\
+Agente & LangChain 1.2.7~\parencite{chase2022langchain} & Orquestación y herramientas \\
 \ac{LLM} principal & Claude Haiku 4.5 & Agente conversacional \\
 \ac{LLM} viz. & Claude Sonnet 4.5 & Generación de código \\
 SDK Anthropic & anthropic 0.77.0 & Cliente \ac{API} de Claude \\
-Base de datos & Supabase PostgreSQL 15~\citep{supabase2020,postgresql2024} & \acs{MIMIC}-IV-\acs{ED} + aplicación \\
-Vector store & pgvector 0.8.0~\citep{pgvector2024} & Embeddings \ac{RAG} \\
+Base de datos & Supabase PostgreSQL 15~\parencite{supabase2020,postgresql2024} & \acs{MIMIC}-IV-\acs{ED} + aplicación \\
+Vector store & pgvector 0.8.0~\parencite{pgvector2024} & Embeddings \ac{RAG} \\
 Cliente BD & supabase-py & Acceso desde Python \\
-Embeddings & sentence-transformers 5.2.2~\citep{reimers2019sentencebert} & all-MiniLM-L6-v2 (384d) \\
+Embeddings & sentence-transformers 5.2.2~\parencite{reimers2019sentencebert} & all-MiniLM-L6-v2 (384d) \\
 Evaluación & \ac{RAGAS} 0.4.3 & Evaluación pipeline \ac{RAG} \\
-Visualización & Plotly~\citep{plotly2015} & Gráficas interactivas \\
+Visualización & Plotly~\parencite{plotly2015} & Gráficas interactivas \\
 Datos & pandas / numpy & Procesamiento de datos \\
 PDF & Docling / PyPDF2 & Extracción de texto \\
 DOCX & python-docx & Procesamiento Word \\
-Validación & Pydantic~\citep{pydantic2023} & Validación de entradas \\
+Validación & Pydantic~\parencite{pydantic2023} & Validación de entradas \\
 Logging & structlog & Logging estructurado \\
 Testing & pytest & Framework de pruebas \\
 \bottomrule
