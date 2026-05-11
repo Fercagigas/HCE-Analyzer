@@ -110,9 +110,10 @@ donde $\mathcal{A}$ es la función de síntesis del agente y el subconjunto de h
 
 El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig:flujo_end2end}): recepción de la consulta en Streamlit, verificación de caché (\ac{TTL}: 300\,s), análisis de intención por Claude Haiku 4.5, selección dinámica de herramientas ($\mathcal{T}(q)$), ejecución de las herramientas seleccionadas (hasta 5 iteraciones), y síntesis final de la respuesta integrada.
 
-\begin{figure*}[t]
+\begin{figure*}[htbp]
 \centering
-\resizebox{\textwidth}{!}{%
+\captionsetup{skip=0.9\baselineskip}
+\resizebox{0.92\textwidth}{!}{%
 \begin{tikzpicture}[
   ionode/.style={
     draw=black!70, fill=gray!8, rounded corners=4pt,
@@ -147,9 +148,9 @@ El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig
 \node[procnode] (claude) at (0,-3.0)  {Claude Haiku 4.5 analiza intención};
 \node[decnode] (select) at (0,-4.6) {$\mathcal{T}(q)$: selección de herramientas};
 
-\node[toolnode]  (db)  at (-4.5,-6.5) {Database Tool\\$f_\text{DB}$};
+\node[toolnode]  (db)  at (-4.2,-6.5) {Database Tool\\$f_\text{DB}$};
 \node[toolnode]  (rag) at ( 0.0,-6.5) {RAG Tool\\$f_\text{RAG}$};
-\node[toolnode]  (viz) at ( 4.5,-6.5) {Visualization Tool\\$f_\text{VIZ}$};
+\node[toolnode]  (viz) at ( 4.2,-6.5) {Visualization Tool\\$f_\text{VIZ}$};
 
 \node[procnode, minimum width=5.5cm] (synth) at (0,-8.5) {Claude sintetiza respuesta integrada $\mathcal{A}(\cdot)$};
 \node[ionode]   (out)   at (0,-10.0) {Respuesta + Gráficas interactivas + Fuentes};
@@ -170,11 +171,11 @@ El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig
 
 \draw[flowarrow] (synth) -- (out);
 
-\node[latency] at (7.5, -1.5)  {$\sim$5\,ms (hit)};
-\node[latency] at (7.5, -3.0)  {P50: $\sim$800\,ms};
-\node[latency] at (7.5, -6.5)  {P50: $\sim$1.5\,s / $\sim$2\,s / $\sim$3\,s};
-\node[latency] at (7.5, -8.5)  {P50: $\sim$1\,s};
-\node[latency] at (7.5, -10.0) {Total P50: $<$5\,s};
+\node[latency] at (6.35, -1.5)  {$\sim$5\,ms (hit)};
+\node[latency] at (6.35, -3.0)  {P50: $\sim$800\,ms};
+\node[latency] at (6.35, -6.5)  {P50: $\sim$1.5\,s / $\sim$2\,s / $\sim$3\,s};
+\node[latency] at (6.35, -8.5)  {P50: $\sim$1\,s};
+\node[latency] at (6.35, -10.0) {Total P50: $<$5\,s};
 
 \end{tikzpicture}%
 }% end resizebox
@@ -321,13 +322,14 @@ Para una descripción detallada de la configuración del \texttt{AgentExecutor},
 
 ChatHCE sigue una arquitectura de cinco capas con separación estricta de responsabilidades, inspirada en el patrón \textit{Layered Architecture} \parencite{Fowler2002}. El principio rector es que cada capa solo puede comunicarse con la capa inmediatamente inferior. La Figura~\ref{fig:capas_interfaces} presenta la arquitectura completa con interfaces entre capas.
 
-\begin{figure*}[t]
+\begin{figure*}[p]
 \centering
+\captionsetup{skip=0.9\baselineskip}
 \resizebox{0.95\textwidth}{!}{%
 \begin{tikzpicture}[
   layerbox/.style={
     draw=black!50, fill=gray!5, rounded corners=4pt,
-    minimum width=17cm, minimum height=2.2cm, inner sep=10pt,
+    minimum width=17cm, minimum height=2.45cm, inner sep=10pt,
     font=\small\sffamily
   },
   compbox/.style={
@@ -347,54 +349,54 @@ ChatHCE sigue una arquitectura de cinco capas con separación estricta de respon
 
 % Capa 1: Presentación
 \node[layerbox] (L1) at (0, 0) {};
-\node[layerlabel, anchor=west] at ([xshift=8pt, yshift=4pt]L1.north west) {Capa 1 --- Presentación};
+\node[layerlabel, anchor=north west] at ([xshift=8pt, yshift=-6pt]L1.north west) {Capa 1 --- Presentación};
 \node[compbox, minimum width=3.2cm] at (-5.2, -0.05) {\texttt{main.py}\\StreamlitApp};
 \node[compbox, minimum width=3.8cm] at (-1.2, -0.05) {\texttt{unified\_chat\_interface.py}\\Chat UI};
 \node[compbox, minimum width=3.0cm] at (2.8, -0.05) {\texttt{components/}\\Sidebar \& Auth};
 \node[compbox, minimum width=3.2cm] at (6.2, -0.05) {\texttt{document\_manager.py}\\Doc Upload};
 
 % Interfaz 1-2
-\node[ifacebox, minimum width=16.5cm] (I12) at (0, -1.55) {Interfaz: \texttt{UnifiedChatAgent.process\_message(message, context)} $\rightarrow$ \texttt{Dict[str, Any]}};
+\node[ifacebox, minimum width=16.5cm] (I12) at (0, -1.75) {Interfaz: \texttt{UnifiedChatAgent.process\_message(message, context)} $\rightarrow$ \texttt{Dict[str, Any]}};
 
 % Capa 2: Aplicación
-\node[layerbox] (L2) at (0, -3.2) {};
-\node[layerlabel, anchor=west] at ([xshift=8pt, yshift=4pt]L2.north west) {Capa 2 --- Aplicación};
-\node[compbox, minimum width=3.8cm] at (-4.5, -3.25) {\texttt{unified\_agent.py}\\UnifiedChatAgent};
-\node[compbox, minimum width=3.6cm] at (0.0, -3.25) {\texttt{prompt\_manager.py}\\PromptManager};
-\node[compbox, minimum width=3.6cm] at (4.5, -3.25) {\texttt{llm\_manager.py}\\ClaudeLLMManager};
+\node[layerbox] (L2) at (0, -3.65) {};
+\node[layerlabel, anchor=north west] at ([xshift=8pt, yshift=-6pt]L2.north west) {Capa 2 --- Aplicación};
+\node[compbox, minimum width=3.8cm] at (-4.5, -3.70) {\texttt{unified\_agent.py}\\UnifiedChatAgent};
+\node[compbox, minimum width=3.6cm] at (0.0, -3.70) {\texttt{prompt\_manager.py}\\PromptManager};
+\node[compbox, minimum width=3.6cm] at (4.5, -3.70) {\texttt{llm\_manager.py}\\ClaudeLLMManager};
 
 % Interfaz 2-3
-\node[ifacebox, minimum width=16.5cm] (I23) at (0, -4.75) {Interfaz: \texttt{StructuredTool} \ac{API} (LangChain) $\mid$ \texttt{ClaudeToolAdapter.get\_langchain\_tool()}};
+\node[ifacebox, minimum width=16.5cm] (I23) at (0, -5.40) {Interfaz: \texttt{StructuredTool} \ac{API} (LangChain) $\mid$ \texttt{ClaudeToolAdapter.get\_langchain\_tool()}};
 
 % Capa 3: Herramientas
-\node[layerbox] (L3) at (0, -6.4) {};
-\node[layerlabel, anchor=west] at ([xshift=8pt, yshift=4pt]L3.north west) {Capa 3 --- Herramientas};
-\node[compbox, minimum width=3.2cm] at (-5.2, -6.45) {\texttt{database\_tool.py}\\DatabaseTool};
-\node[compbox, minimum width=3.0cm] at (-1.5, -6.45) {\texttt{rag\_tool.py}\\RAGTool};
-\node[compbox, minimum width=3.4cm] at (2.2, -6.45) {\texttt{viz\_collaboration.py}\\VisualizationTool};
-\node[compbox, minimum width=3.2cm] at (6.0, -6.45) {\texttt{claude\_adapter.py}\\ClaudeToolAdapter};
+\node[layerbox] (L3) at (0, -7.30) {};
+\node[layerlabel, anchor=north west] at ([xshift=8pt, yshift=-6pt]L3.north west) {Capa 3 --- Herramientas};
+\node[compbox, minimum width=3.2cm] at (-5.2, -7.35) {\texttt{database\_tool.py}\\DatabaseTool};
+\node[compbox, minimum width=3.0cm] at (-1.5, -7.35) {\texttt{rag\_tool.py}\\RAGTool};
+\node[compbox, minimum width=3.4cm] at (2.2, -7.35) {\texttt{viz\_collaboration.py}\\VisualizationTool};
+\node[compbox, minimum width=3.2cm] at (6.0, -7.35) {\texttt{claude\_adapter.py}\\ClaudeToolAdapter};
 
 % Interfaz 3-4
-\node[ifacebox, minimum width=16.5cm] (I34) at (0, -7.95) {Interfaz: \texttt{DatabaseService.execute()}, \texttt{ImprovedRAGService.search()}, \texttt{VisualizationAgent.generate()}};
+\node[ifacebox, minimum width=16.5cm] (I34) at (0, -9.05) {Interfaz: \texttt{DatabaseService.execute()}, \texttt{ImprovedRAGService.search()}, \texttt{VisualizationAgent.generate()}};
 
 % Capa 4: Servicios
-\node[layerbox] (L4) at (0, -9.6) {};
-\node[layerlabel, anchor=west] at ([xshift=8pt, yshift=4pt]L4.north west) {Capa 4 --- Servicios};
-\node[compbox, minimum width=3.0cm] at (-6.0, -9.65) {\texttt{database\_service.py}\\DatabaseService};
-\node[compbox, minimum width=3.4cm] at (-2.6, -9.65) {\texttt{improved\_rag\_service.py}\\ImprovedRAGService};
-\node[compbox, minimum width=3.2cm] at (1.0, -9.65) {\texttt{visualization\_agent.py}\\VisualizationAgent};
-\node[compbox, minimum width=2.8cm] at (4.2, -9.65) {\texttt{cache\_manager.py}\\CacheManager};
-\node[compbox, minimum width=2.8cm] at (7.2, -9.65) {\texttt{rate\_limiter.py}\\RateLimiter};
+\node[layerbox] (L4) at (0, -10.95) {};
+\node[layerlabel, anchor=north west] at ([xshift=8pt, yshift=-6pt]L4.north west) {Capa 4 --- Servicios};
+\node[compbox, minimum width=2.9cm] at (-6.1, -11.00) {\texttt{database\_service.py}\\DatabaseService};
+\node[compbox, minimum width=3.3cm] at (-2.7, -11.00) {\texttt{improved\_rag\_service.py}\\ImprovedRAGService};
+\node[compbox, minimum width=3.1cm] at (0.9, -11.00) {\texttt{visualization\_agent.py}\\VisualizationAgent};
+\node[compbox, minimum width=2.7cm] at (4.0, -11.00) {\texttt{cache\_manager.py}\\CacheManager};
+\node[compbox, minimum width=2.7cm] at (7.0, -11.00) {\texttt{rate\_limiter.py}\\RateLimiter};
 
 % Interfaz 4-5
-\node[ifacebox, minimum width=16.5cm] (I45) at (0, -11.15) {Interfaz: \texttt{supabase-py} client $\mid$ \texttt{pgvector} RPC $\mid$ File I/O};
+\node[ifacebox, minimum width=16.5cm] (I45) at (0, -12.70) {Interfaz: \texttt{supabase-py} client $\mid$ \texttt{pgvector} RPC $\mid$ File I/O};
 
 % Capa 5: Datos
-\node[layerbox] (L5) at (0, -12.8) {};
-\node[layerlabel, anchor=west] at ([xshift=8pt, yshift=4pt]L5.north west) {Capa 5 --- Datos};
-\node[compbox, minimum width=4.0cm] at (-4.5, -12.85) {Supabase PostgreSQL\\esquema \texttt{mimic\_ed}};
-\node[compbox, minimum width=4.0cm] at (0.5, -12.85) {Supabase pgvector\\tabla \texttt{rag\_chunks}};
-\node[compbox, minimum width=3.5cm] at (5.2, -12.85) {File Storage\\Documentos clínicos};
+\node[layerbox] (L5) at (0, -14.60) {};
+\node[layerlabel, anchor=north west] at ([xshift=8pt, yshift=-6pt]L5.north west) {Capa 5 --- Datos};
+\node[compbox, minimum width=4.0cm] at (-4.5, -14.65) {Supabase PostgreSQL\\esquema \texttt{mimic\_ed}};
+\node[compbox, minimum width=4.0cm] at (0.5, -14.65) {Supabase pgvector\\tabla \texttt{rag\_chunks}};
+\node[compbox, minimum width=3.5cm] at (5.2, -14.65) {File Storage\\Documentos clínicos};
 
 \end{tikzpicture}%
 }% end resizebox
