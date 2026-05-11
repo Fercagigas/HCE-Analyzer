@@ -189,7 +189,7 @@ La Figura~\ref{fig:res_comparativa_ragas} muestra la comparativa entre ambos \te
 \section{Rendimiento: latencia}
 \label{sec:res_latencia}
 
-Se ejecutaron 51~mediciones (17~consultas $\times$ 3~ejecuciones) sin fallos en 102,2~segundos. La Tabla~\ref{tab:res_latencia} presenta las estadísticas por categoría.
+Se ejecutaron 51~mediciones (17~consultas $\times$ 3~ejecuciones) sin fallos en 102,2~segundos. Las mediciones corresponden a ejecuciones repetidas y respuestas servidas desde caché; no deben interpretarse como la latencia de una primera interacción en frío con llamadas reales a APIs externas. La Tabla~\ref{tab:res_latencia} presenta las estadísticas por categoría.
 
 \begin{table}[H]
 \centering
@@ -245,7 +245,7 @@ Complex & 2,0 & 2,0 & 2,3 & 1,8 & 2,3 \\
 \label{fig:res_latencia_barras}
 \end{figure}
 
-La latencia media de todas las categorías se situó entre 2,0 y 2,4~ms. La categoría \ac{RAG} registró la mayor variabilidad, con un máximo de 7,5~ms y un P95 de 4,1~ms. Las categorías VIZ y Complex presentaron las latencias más estables. Ninguna ejecución individual superó los 8~ms. Las 51~ejecuciones completaron con estado OK (0~fallos).
+La latencia media de todas las categorías se situó entre 2,0 y 2,4~ms. La categoría \ac{RAG} registró la mayor variabilidad, con un máximo de 7,5~ms y un P95 de 4,1~ms. Las categorías VIZ y Complex presentaron las latencias más estables. Ninguna ejecución individual superó los 8~ms en este escenario cacheado. En producción y sin caché, especialmente en la primera interacción con Anthropic y Supabase, son esperables latencias sustancialmente mayores. Las 51~ejecuciones completaron con estado OK (0~fallos).
 
 
 \section{Seguridad}
@@ -409,7 +409,7 @@ TC-VIZ-005 & 0,420 & \texttt{herramienta\_correcta}=0,00; \texttt{formato\_respu
 \end{tabularx}
 \end{table}
 
-El criterio \texttt{herramienta\_correcta} registró 0,00 en los 5~casos de visualización. TC-VIZ-005 fue el único caso funcional que no superó su puntuación mínima individual.
+El criterio \texttt{herramienta\_correcta} registró 0,00 en los 5~casos de visualización. La categoría conserva un score global de 0,800 porque las respuestas incluyeron información factual útil, pero la herramienta de visualización no se invocó en estos casos. TC-VIZ-005 fue el único caso funcional que no superó su puntuación mínima individual.
 
 \section{TC-AGENT: Comportamiento del agente}
 

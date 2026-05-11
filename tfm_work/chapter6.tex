@@ -26,7 +26,7 @@ La evaluación empírica se ha estructurado en cuatro dimensiones: calidad semá
 \textit{¿En qué medida un Agente Unificado con capacidad de tool-calling nativo supera a las arquitecturas multi-agente tradicionales en términos de latencia y reducción del error acumulado?}
 \end{quote}
 
-\textbf{Conclusión:} La arquitectura de agente unificado implementada en ChatHCE demuestra ventajas significativas sobre las alternativas multi-agente evaluadas conceptualmente. El sistema alcanza latencias P50 inferiores a 5 segundos para consultas con caché habilitado, con tiempos de respuesta de milisegundos para respuestas cacheadas y entre 4--22 segundos para consultas nuevas que requieren invocación del \ac{LLM}.
+\textbf{Conclusión:} La arquitectura de agente unificado implementada en ChatHCE demuestra ventajas significativas sobre las alternativas multi-agente evaluadas conceptualmente. El sistema alcanza latencias P50 inferiores a 5 segundos para consultas con caché habilitado, con tiempos de respuesta de milisegundos para respuestas cacheadas y entre 4--22 segundos para consultas nuevas que requieren invocación del \ac{LLM}. Estas cifras deben interpretarse distinguiendo claramente entre camino cacheado y primera ejecución en frío con APIs externas.
 
 La reducción a una única llamada \ac{LLM} por turno ---frente a las 3--5 llamadas típicas de arquitecturas multi-agente--- elimina el error acumulado entre nodos de procesamiento. El mecanismo de \textit{tool-calling} nativo de Claude Haiku 4.5 genera estructuras \ac{JSON} tipadas que especifican herramienta y parámetros, eliminando el \textit{parsing} de texto libre propenso a errores. La tasa de éxito en selección de herramientas alcanza el 78,6\% en la evaluación funcional, con los fallos concentrados en casos específicos de visualización de datos agregados.
 
@@ -52,7 +52,7 @@ La métrica de \textit{Context Precision} de 0,55 indica que aproximadamente el 
 
 \textbf{Conclusión:} El modelo de defensa en profundidad implementado demuestra alta efectividad en la prevención de alucinaciones y amenazas de seguridad. De los 13 tests de seguridad, 12 fueron superados: 7 de inyección \ac{SQL}, 2 de inyección de prompts y 3 de anti-alucinación.
 
-El criterio \texttt{no\_alucinacion} obtuvo puntuación perfecta (1,0) en los 28 casos de prueba funcionales, constituyendo el resultado más significativo para un sistema de asistencia clínica. El sistema reconoce explícitamente la ausencia de datos sin fabricar información, respondiendo con mensajes como ``El paciente con subject\_id 9999 no existe en el dataset \acs{MIMIC}-IV-\acs{ED}''.
+El criterio \texttt{no\_alucinacion} obtuvo puntuación perfecta (1,0) en los 28 casos de prueba funcionales. En esos escenarios no se observaron datos fabricados: el sistema reconoce explícitamente la ausencia de datos, respondiendo con mensajes como ``El paciente con subject\_id 9999 no existe en el dataset \acs{MIMIC}-IV-\acs{ED}''. Este resultado es favorable, pero queda acotado al tamaño y diseño del conjunto evaluado.
 
 La defensa opera en múltiples niveles: (1) directivas anti-alucinación en el prompt del sistema que instruyen al modelo a fundamentar sus respuestas únicamente en datos verificables; (2) validación \ac{SQL} con lista negra de 18 \textit{keywords} peligrosos y detección de tautologías mediante 11 patrones regex; (3) sandbox \ac{AST} para ejecución segura de código de visualización.
 
@@ -80,7 +80,7 @@ El diseño de la cadena (Haiku $\rightarrow$ Sonnet $\rightarrow$ Opus) optimiza
 
 El sistema define seis plantillas especializadas para signos vitales clínicos (frecuencia cardíaca, temperatura, presión arterial, saturación de oxígeno, frecuencia respiratoria, dolor), cada una con configuración óptima de colores, rangos de referencia y etiquetas. El \ac{LLM} selecciona la plantilla apropiada y proporciona los parámetros necesarios (principalmente \texttt{stay\_id}), eliminando la variabilidad asociada a la generación de código.
 
-Sin embargo, la evaluación funcional reveló una limitación: la categoría TC-VIZ obtuvo la puntuación más baja (0,548), con el criterio \texttt{herramienta\_correcta} en 0,0 para los 5 casos. El análisis de causa raíz identificó que la herramienta \texttt{request\_visualization} requiere identificadores de paciente, lo que impide generar visualizaciones de datos agregados poblacionales. Esta limitación arquitectónica representa la principal área de mejora identificada.
+Sin embargo, la evaluación funcional reveló una limitación: la categoría TC-VIZ obtuvo un score global de 0,800, pero con el criterio \texttt{herramienta\_correcta} en 0,0 para los 5 casos. El análisis de causa raíz identificó que la herramienta \texttt{request\_visualization} requiere identificadores de paciente, lo que impide generar visualizaciones de datos agregados poblacionales. La categoría mantiene un resultado global aceptable porque devuelve información factual correcta, pero no valida plenamente la invocación de la herramienta de visualización en estos casos. Esta limitación arquitectónica representa la principal área de mejora identificada.
 
 \section{Contribuciones principales}
 \label{sec:contribuciones}
@@ -92,7 +92,7 @@ El presente trabajo realiza las siguientes contribuciones al campo de los sistem
     
     \item \textbf{Pipeline \ac{RAG} clínico con búsqueda híbrida}: Implementación y evaluación de un pipeline \ac{RAG} que combina búsqueda vectorial y léxica con fusión \ac{RRF} y chunking jerárquico, alcanzando cobertura del 80\% en recuperación de información clínica.
     
-    \item \textbf{Modelo de defensa en profundidad anti-alucinación}: Diseño y validación de un esquema de seguridad multicapa que logra tasa cero de alucinación en los escenarios evaluados, crítico para la aplicación en entornos de decisión clínica.
+    \item \textbf{Modelo de defensa en profundidad anti-alucinación}: Diseño y validación de un esquema de seguridad multicapa en el que no se observaron alucinaciones en los escenarios evaluados, aspecto crítico para la aplicación en entornos de decisión clínica.
     
     \item \textbf{Sistema conversacional clínico integrado}: Desarrollo de una plataforma funcional que unifica consulta de datos estructurados, recuperación documental y visualización bajo una interfaz conversacional en español, desplegable sobre infraestructura cloud.
 \end{enumerate}
@@ -108,6 +108,10 @@ El presente trabajo presenta las siguientes limitaciones que deben considerarse 
     \item \textbf{Evaluación monolingüe}: El sistema y su evaluación se han centrado exclusivamente en español médico; la generalización a otros idiomas requiere validación adicional.
     
     \item \textbf{Ausencia de evaluación clínica}: Los tests de seguridad y funcionalidad emplean payloads y casos de prueba diseñados; la validación por profesionales sanitarios en entornos reales constituye un paso necesario previo al despliegue.
+    
+    \item \textbf{Evaluación automática con \ac{LLM}}: Parte del marco de evaluación utiliza Claude como evaluador mientras el sistema evaluado también se apoya en Claude, lo que puede introducir sesgos de juez y requiere contrastación independiente.
+    
+    \item \textbf{Ground truth \ac{RAG} no validado clínicamente}: Las respuestas de referencia del \textit{golden set} documental no han sido validadas por expertos clínicos, por lo que las métricas \ac{RAGAS} deben interpretarse como una aproximación técnica y no como validación clínica.
     
     \item \textbf{Visualizaciones limitadas a pacientes individuales}: El sistema actual no soporta visualizaciones de datos agregados poblacionales, restringiendo casos de uso epidemiológicos.
     
@@ -166,8 +170,8 @@ Los resultados de la evaluación y las limitaciones identificadas abren múltipl
 
 El desarrollo de sistemas de \ac{IA} para asistencia clínica representa uno de los desafíos más exigentes del campo: la combinación de requisitos de precisión factual absoluta, latencia reducida, trazabilidad de información y seguridad ante amenazas adversariales configura un espacio de diseño altamente restringido.
 
-ChatHCE demuestra que es posible construir sistemas funcionales que aborden estos requisitos mediante decisiones arquitectónicas fundamentadas: un agente unificado que minimiza latencia y errores acumulados, un pipeline \ac{RAG} híbrido que balancea cobertura y precisión, un modelo de defensa en profundidad que previene alucinaciones, y un enfoque \textit{template-first} que garantiza determinismo en visualizaciones.
+ChatHCE demuestra que es posible construir sistemas funcionales que aborden estos requisitos mediante decisiones arquitectónicas fundamentadas: un agente unificado que minimiza latencia y errores acumulados, un pipeline \ac{RAG} híbrido que balancea cobertura y precisión, un modelo de defensa en profundidad que reduce el riesgo de alucinaciones, y un enfoque \textit{template-first} que garantiza determinismo en visualizaciones.
 
-Los resultados obtenidos ---particularmente la tasa cero de alucinación en todos los escenarios evaluados--- sugieren que los \ac{LLM}s, adecuadamente configurados y restringidos, pueden constituir herramientas valiosas de asistencia clínica. Sin embargo, el camino hacia el despliegue clínico real requiere validación adicional, evaluación con profesionales sanitarios y cumplimiento de marcos regulatorios específicos del dominio médico.
+Los resultados obtenidos ---particularmente la ausencia de alucinaciones observadas en los escenarios evaluados--- sugieren que los \ac{LLM}s, adecuadamente configurados y restringidos, pueden constituir herramientas valiosas de asistencia clínica. Sin embargo, el camino hacia el despliegue clínico real requiere validación adicional, evaluación con profesionales sanitarios, revisión independiente del marco de evaluación y cumplimiento de marcos regulatorios específicos del dominio médico.
 
 La convergencia de inteligencia artificial y medicina representa, en palabras de \citet{Topol2019deepmedicine}, una de las transformaciones más significativas de la práctica médica contemporánea. Este trabajo contribuye a ese objetivo con un sistema diseñado desde su concepción para priorizar la seguridad del paciente, la trazabilidad de la información y la integración fluida con los flujos de trabajo clínicos.

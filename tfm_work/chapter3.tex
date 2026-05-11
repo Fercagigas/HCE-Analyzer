@@ -132,6 +132,7 @@ El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig
   },
   decnode/.style={
     draw=black!60, fill=gray!8, diamond, aspect=2.8,
+    minimum width=5.0cm, minimum height=1.05cm,
     font=\small\sffamily, align=center,
     inner sep=2pt
   },
@@ -148,18 +149,18 @@ El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig
 \node[procnode] (claude) at (0,-3.0)  {Claude Haiku 4.5 analiza intención};
 \node[decnode] (select) at (0,-4.6) {$\mathcal{T}(q)$: selección de herramientas};
 
-\node[toolnode]  (db)  at (-4.2,-6.5) {Database Tool\\$f_\text{DB}$};
-\node[toolnode]  (rag) at ( 0.0,-6.5) {RAG Tool\\$f_\text{RAG}$};
-\node[toolnode]  (viz) at ( 4.2,-6.5) {Visualization Tool\\$f_\text{VIZ}$};
+\node[toolnode]  (db)  at (-4.2,-7.1) {Database Tool\\$f_\text{DB}$};
+\node[toolnode]  (rag) at ( 0.0,-7.1) {RAG Tool\\$f_\text{RAG}$};
+\node[toolnode]  (viz) at ( 4.2,-7.1) {Visualization Tool\\$f_\text{VIZ}$};
 
-\node[procnode, minimum width=5.5cm] (synth) at (0,-8.5) {Claude sintetiza respuesta integrada $\mathcal{A}(\cdot)$};
-\node[ionode]   (out)   at (0,-10.0) {Respuesta + Gráficas interactivas + Fuentes};
+\node[procnode, minimum width=5.5cm] (synth) at (0,-9.15) {Claude sintetiza respuesta integrada $\mathcal{A}(\cdot)$};
+\node[ionode]   (out)   at (0,-10.75) {Respuesta + Gráficas interactivas + Fuentes};
 
 \draw[flowarrow] (user)   -- (cache);
 \draw[flowarrow] (cache)  -- (claude);
 \draw[flowarrow] (claude) -- (select);
 
-\coordinate (junc) at (0,-5.4);
+\coordinate (junc) at (0,-5.95);
 \draw[flowarrow] (select.south) -- (junc);
 \draw[flowarrow] (junc) -- (rag.north);
 \draw[flowarrow] (junc) -| (db.north);
@@ -173,9 +174,9 @@ El procesamiento de una consulta sigue ocho etapas secuenciales (Figura~\ref{fig
 
 \node[latency] at (6.35, -1.5)  {$\sim$5\,ms (hit)};
 \node[latency] at (6.35, -3.0)  {P50: $\sim$800\,ms};
-\node[latency] at (6.35, -6.5)  {P50: $\sim$1.5\,s / $\sim$2\,s / $\sim$3\,s};
-\node[latency] at (6.35, -8.5)  {P50: $\sim$1\,s};
-\node[latency] at (6.35, -10.0) {Total P50: $<$5\,s};
+\node[latency] at (6.35, -7.1)  {P50: $\sim$1.5\,s / $\sim$2\,s / $\sim$3\,s};
+\node[latency] at (6.35, -9.15) {P50: $\sim$1\,s};
+\node[latency] at (6.35, -10.75) {Total P50: $<$5\,s};
 
 \end{tikzpicture}%
 }% end resizebox
