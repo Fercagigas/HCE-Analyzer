@@ -9,9 +9,9 @@
 
 \section{Robustez anti-alucinación}
 
-El resultado más significativo de la evaluación para un sistema de análisis clínico es la puntuación perfecta (1,000) del criterio \texttt{no\_alucinacion} en los 28~casos funcionales y en los 3~tests de seguridad específicos de anti-alucinación. El sistema nunca fabricó identificadores de pacientes, valores de signos vitales, diagnósticos ni medicamentos. En un dominio donde la generación de información médica falsa puede tener consecuencias directas sobre decisiones clínicas, este resultado valida la efectividad del diseño de las directivas anti-alucinación implementadas en el \texttt{PromptManager}~\parencite{kim2025hallucination,Ji2023hallucination}.
+El resultado más significativo de la evaluación para un sistema de análisis clínico es la puntuación perfecta (1,000) del criterio \texttt{no\_alucinacion} en los 28~casos funcionales y en los 3~tests de seguridad específicos de anti-alucinación. En estos escenarios no se observaron identificadores de pacientes, valores de signos vitales, diagnósticos ni medicamentos fabricados. En un dominio donde la generación de información médica falsa puede tener consecuencias directas sobre decisiones clínicas, este resultado aporta evidencia a favor de las directivas anti-alucinación implementadas en el \texttt{PromptManager}, sin implicar ausencia general de riesgo fuera del marco evaluado~\parencite{kim2025hallucination,Ji2023hallucination}.
 
-Este hallazgo es especialmente relevante dado que las alucinaciones constituyen una de las principales barreras para la adopción de \ac{LLM}s en entornos sanitarios~\parencite{AlGaradi2025llmhealthcare}. La estrategia de \textit{defense-in-depth} adoptada ---restricciones a nivel de \textit{prompt}, de herramienta y de servicio--- demuestra ser efectiva para contener la tendencia generativa del modelo.
+Este hallazgo es especialmente relevante dado que las alucinaciones constituyen una de las principales barreras para la adopción de \ac{LLM}s en entornos sanitarios~\parencite{AlGaradi2025llmhealthcare}. La estrategia de \textit{defense-in-depth} adoptada ---restricciones a nivel de \textit{prompt}, de herramienta y de servicio--- resultó efectiva en el conjunto de pruebas analizado para contener la tendencia generativa del modelo.
 
 
 \section{Consultas a base de datos}
@@ -44,19 +44,19 @@ La diferencia entre métricas DB y \ac{RAG} (Faithfulness: 0,74 vs. 0,57; Contex
 
 \section{Seguridad}
 
-El sistema demuestra protección completa contra inyección \ac{SQL} (7/7) y alucinación inducida (3/3). El único test no superado (SEC-PROMPT-003) es un falso negativo del verificador automático: el agente rechazó correctamente la solicitud de generar datos ficticios, pero el verificador detectó la palabra \textit{``datos''} en la respuesta de rechazo e interpretó erróneamente que se habían generado datos. El comportamiento real del agente fue correcto.
+El sistema superó los tests de inyección \ac{SQL} (7/7) y alucinación inducida (3/3). El único test no superado (SEC-PROMPT-003) es un falso negativo del verificador automático: el agente rechazó correctamente la solicitud de generar datos ficticios, pero el verificador detectó la palabra \textit{``datos''} en la respuesta de rechazo e interpretó erróneamente que se habían generado datos. El comportamiento real del agente fue correcto.
 
 
 \section{Visualización}
 
-La categoría TC-VIZ presenta un patrón consistente: \texttt{herramienta\_correcta}=0,00 en los 5~casos, lo que indica que el agente no invocó la herramienta \texttt{request\_visualization} a pesar de que las consultas solicitaban gráficas. Esto se debe a una limitación arquitectónica: la herramienta de visualización requiere \texttt{stay\_id} o \texttt{ject\_id} como parámetro, lo que impide generar visualizaciones de datos agregados. El score de categoría (0,800) refleja que, a pesar de esta limitación, el agente proporciona respuestas con contenido factual relevante.
+La categoría TC-VIZ presenta un patrón consistente: \texttt{herramienta\_correcta}=0,00 en los 5~casos, lo que indica que el agente no invocó la herramienta \texttt{request\_visualization} a pesar de que las consultas solicitaban gráficas. Esto se debe a una limitación arquitectónica: la herramienta de visualización requiere \texttt{stay\_id} o \texttt{subject\_id} como parámetro, lo que impide generar visualizaciones de datos agregados. El score de categoría (0,800) refleja que, a pesar de esta limitación, el agente proporciona respuestas con contenido factual relevante; por tanto, la puntuación global de la categoría debe interpretarse separando corrección factual e invocación efectiva de la herramienta.
 
 
 \section{Rendimiento temporal}
 
-Las latencias registradas (media: 2,0--2,4\,ms, P95: 2,2--4,1\,ms) corresponden a respuestas servidas desde el sistema de caché (\texttt{CacheManager}). La categoría \ac{RAG} presenta la mayor variabilidad debido a la augmentación de consultas con el \ac{LLM}. Estos valores confirman que el sistema de caché es efectivo para consultas repetidas, aunque no representan la latencia de primera ejecución con llamadas reales a las APIs de Anthropic y Supabase.
+Las latencias registradas (media: 2,0--2,4\,ms, P95: 2,2--4,1\,ms) corresponden a respuestas servidas desde el sistema de caché (\texttt{CacheManager}). La categoría \ac{RAG} presenta la mayor variabilidad debido a la augmentación de consultas con el \ac{LLM}. Estos valores confirman que el sistema de caché es efectivo para consultas repetidas, aunque no representan la latencia de primera ejecución con llamadas reales a las APIs de Anthropic y Supabase. Por ello, las cifras en milisegundos deben leerse como rendimiento de camino cacheado, no como latencia end-to-end en producción sin caché.
 
 
 \section{Funcionalidad general}
 
-Con 27 de 28~casos funcionales superados y las 4~categorías funcionales completadas satisfactoriamente, el sistema demuestra un comportamiento funcional robusto en sus componentes principales. Los criterios \texttt{no\_alucinacion} (1,000) y \texttt{fuentes\_citadas} (1,000) alcanzan puntuaciones perfectas, lo que indica fiabilidad en la generación de respuestas y en la trazabilidad documental. El criterio \texttt{herramienta\_correcta} (0,786) presenta la mayor variabilidad, explicada por los fallos en TC-VIZ y el caso TC-RAG-007 donde el agente respondió desde su conocimiento interno sin invocar la herramienta \ac{RAG}.
+Con 27 de 28~casos funcionales superados y las 4~categorías funcionales completadas satisfactoriamente, el sistema demuestra un comportamiento funcional robusto en sus componentes principales. Los criterios \texttt{no\_alucinacion} (1,000) y \texttt{fuentes\_citadas} (1,000) alcanzan puntuaciones perfectas en los casos evaluados, lo que indica buen comportamiento observado en generación de respuestas y trazabilidad documental. El criterio \texttt{herramienta\_correcta} (0,786) presenta la mayor variabilidad, explicada por los fallos en TC-VIZ y el caso TC-RAG-007 donde el agente respondió desde su conocimiento interno sin invocar la herramienta \ac{RAG}.
