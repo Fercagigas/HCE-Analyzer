@@ -120,23 +120,6 @@ def show_welcome_screen(imports):
                 st.error("Error al crear la sesión")
 
 
-def show_chat_history():
-    """Muestra el historial de chat de la sesión actual"""
-    if not st.session_state.get('current_session'):
-        return
-        
-    success, messages = st.session_state.auth_service.get_session_messages(
-        st.session_state.current_session['id']
-    )
-    
-    if success and messages:
-        for msg in messages:
-            if msg['role'] == 'user':
-                with st.chat_message("user"):
-                    st.write(msg['content'])
-            elif msg['role'] == 'assistant':
-                with st.chat_message("assistant"):
-                    st.write(msg['content'])
 
 def _show_user_greeting():
     """Muestra saludo personalizado al usuario"""

@@ -936,16 +936,4 @@ def create_visualization_agent() -> VisualizationAgent:
     return _visualization_agent_instance
 
 
-def get_visualization_performance_stats() -> Dict[str, Any]:
-    """
-    Get performance statistics from the visualization agent singleton.
-    
-    Returns:
-        Dict with performance statistics or empty dict if not initialized
-    """
-    global _visualization_agent_instance
-    
-    if _visualization_agent_instance is not None:
-        return _visualization_agent_instance.get_performance_stats()
-    
-    return {'status': 'not_initialized'}
+

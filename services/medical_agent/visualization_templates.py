@@ -714,16 +714,4 @@ def create_visualization_templates() -> VisualizationTemplates:
     return _template_manager_instance
 
 
-def get_template_cache_stats() -> Dict[str, Any]:
-    """
-    Get cache statistics from the template manager singleton.
-    
-    Returns:
-        Dict with cache statistics or empty dict if not initialized
-    """
-    global _template_manager_instance
-    
-    if _template_manager_instance is not None:
-        return _template_manager_instance.get_cache_stats()
-    
-    return {'status': 'not_initialized'}
+
