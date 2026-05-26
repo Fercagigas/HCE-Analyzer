@@ -12,20 +12,18 @@ import json
 
 logger = logging.getLogger(__name__)
 
-# Note: ui_cache_manager and ui_performance_monitor were removed
-# These decorators are now no-ops for compatibility
 def cached_ui_component(func):
-    """Compatibility decorator - caching removed"""
+    """Decorator placeholder for UI component caching."""
     return func
 
 def monitor_ui_component(component_name, operation_name):
-    """Compatibility decorator - monitoring removed"""
+    """Decorator placeholder for UI performance monitoring."""
     def decorator(func):
         return func
     return decorator
 
 def track_user_interaction(interaction_type, metadata=None):
-    """Compatibility function - tracking removed"""
+    """Placeholder for user interaction tracking."""
     pass
 
 @dataclass

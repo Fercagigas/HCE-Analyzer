@@ -1,5 +1,4 @@
 {
-    "kiroAgent.configureMCP": "Enabled",
     "python.defaultInterpreterPath": "C:\\Users\\ferna\\anaconda3\\envs\\HCE\\python.exe",
     "python.terminal.activateEnvironment": true,
     "python.terminal.activateEnvInCurrentTerminal": true,
