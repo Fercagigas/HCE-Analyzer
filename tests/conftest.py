@@ -35,10 +35,7 @@ def pytest_configure(config):
     os.environ.setdefault("TESTING", "true")
     os.environ.setdefault("LOG_LEVEL", "ERROR")
 
-def pytest_collection_modifyitems(config, items):
-    """Modify test collection to add markers."""
-    # Markers are now registered in pytest.ini, so we don't need to add them dynamically
-    pass
+
 
 @pytest.fixture(scope="session", autouse=True)
 def suppress_warnings():

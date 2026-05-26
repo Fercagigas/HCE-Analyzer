@@ -415,6 +415,5 @@ La implementación de memoria conversacional mejora significativamente la experi
 
 ---
 
-**Autor**: Kiro AI Assistant  
 **Fecha**: 2 de Diciembre, 2025  
 **Versión del documento**: 1.0
