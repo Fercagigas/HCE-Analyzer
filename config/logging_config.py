@@ -175,7 +175,6 @@ def configure_specific_loggers(log_level: int) -> None:
         'services.unified_chat',
         'services.unified_chat.unified_agent',
         'services.unified_chat.tools',
-        'ui.components.message_handler',
         'services.medical_agent',
         'services.rag_service',
     ]

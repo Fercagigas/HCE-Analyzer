@@ -15,7 +15,7 @@ import json
 import os
 from typing import List, Dict, Any, Optional
 from pathlib import Path
-from dataclasses import dataclass, field
+
 
 from langchain_huggingface import HuggingFaceEmbeddings
 
@@ -42,18 +42,6 @@ def get_rag_service(**kwargs) -> "ImprovedRAGService":
     if _rag_service_instance is None:
         _rag_service_instance = ImprovedRAGService(**kwargs)
     return _rag_service_instance
-
-
-@dataclass
-class SearchResult:
-    """
-    Search result with parent context.
-    """
-    content: str
-    score: float
-    metadata: Dict[str, Any]
-    source: str
-    child_content: Optional[str] = None
 
 
 class ImprovedRAGService:

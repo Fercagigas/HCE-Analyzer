@@ -305,8 +305,3 @@ class VisualizationStore:
 
 # Global instance
 visualization_store = VisualizationStore()
-
-
-def get_visualization_store() -> VisualizationStore:
-    """Get the global visualization store instance."""
-    return visualization_store
