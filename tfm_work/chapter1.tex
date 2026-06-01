@@ -24,6 +24,72 @@ Paralelamente, el paradigma de los \emph{agentes} basados en \ac{LLM}s ha emergi
 
 Este trabajo se sitúa en la intersección de estas tres líneas de investigación, \ac{LLM}s clínicos, \ac{RAG} biomédico y sistemas agénticos, con el objetivo de desarrollar un sistema de análisis clínico inteligente que supere las limitaciones actuales mediante innovaciones arquitectónicas específicas.
 
+% ──────────────────────────────────────────────────────────────
+% Figura: Convergencia de las tres líneas de investigación
+% ──────────────────────────────────────────────────────────────
+\begin{figure}[H]
+\centering
+\resizebox{0.88\textwidth}{!}{%
+\begin{tikzpicture}[
+  pillar/.style={
+    draw=none, rounded corners=8pt, minimum width=4.6cm,
+    minimum height=2.6cm, font=\sffamily\bfseries\large,
+    align=center, text=white, drop shadow={shadow xshift=1.5pt,
+    shadow yshift=-1.5pt, opacity=0.35}
+  },
+  lbl/.style={font=\sffamily\small, align=center, text width=4.2cm},
+  arr/.style={-{Stealth[length=5pt,width=4pt]}, line width=1pt,
+              color=primary!70},
+  corenode/.style={
+    draw=primary, line width=1.6pt, fill=white,
+    rounded corners=10pt, minimum width=5.4cm, minimum height=1.6cm,
+    font=\sffamily\bfseries\Large, align=center, text=primary,
+    drop shadow={shadow xshift=2pt, shadow yshift=-2pt, opacity=0.25}
+  }
+]
+
+% --- Three pillars ---
+\node[pillar, fill=secondary]               (p1) at (-5.8, 2.4) {\faDatabase\\[3pt]LLMs Clínicos};
+\node[pillar, fill=success]                  (p2) at ( 0.0, 2.4) {\faSearch\\[3pt]RAG Biomédico};
+\node[pillar, fill=accent]                   (p3) at ( 5.8, 2.4) {\faCogs\\[3pt]Sistemas Agénticos};
+
+% --- Pillar descriptions ---
+\node[lbl, below=2pt of p1] {GPT-4, Med-PaLM~2\\Rendimiento en USMLE};
+\node[lbl, below=2pt of p2] {Búsqueda híbrida\\Vectorial + Léxica};
+\node[lbl, below=2pt of p3] {ReAct, tool-calling\\Orquestación autónoma};
+
+% --- Central core node ---
+\node[corenode] (core) at (0,-1.8) {\faStar\quad ChatHCE\quad \faStar};
+
+% --- Arrows from pillars to core ---
+\draw[arr] (p1.south) -- ++(0,-0.5) -| (core.north west);
+\draw[arr] (p2.south) -- (core.north);
+\draw[arr] (p3.south) -- ++(0,-0.5) -| (core.north east);
+
+% --- Output boxes ---
+\node[draw=secondary, fill=secondary!8, rounded corners=5pt,
+      minimum width=3cm, minimum height=0.9cm,
+      font=\sffamily\small\bfseries, align=center]
+      (o1) at (-5.2,-3.8) {\faTable\ Datos\\estructurados};
+\node[draw=success, fill=success!8, rounded corners=5pt,
+      minimum width=3cm, minimum height=0.9cm,
+      font=\sffamily\small\bfseries, align=center]
+      (o2) at (0,-3.8) {\faFileMedical\ Documentos\\clínicos};
+\node[draw=accent, fill=accent!8, rounded corners=5pt,
+      minimum width=3cm, minimum height=0.9cm,
+      font=\sffamily\small\bfseries, align=center]
+      (o3) at (5.2,-3.8) {\faChartBar\ Visualizaciones\\interactivas};
+
+\draw[arr, secondary] (core.south) -- ++(0,-0.4) -| (o1.north);
+\draw[arr, success]   (core.south) -- (o2.north);
+\draw[arr, accent]    (core.south) -- ++(0,-0.4) -| (o3.north);
+
+\end{tikzpicture}
+}%
+\caption{Convergencia de las tres líneas de investigación en el sistema ChatHCE y sus capacidades de salida.}
+\label{fig:convergencia}
+\end{figure}
+
 \section{Objetivos y preguntas de investigación}
 \label{sec:objetivos}
 
@@ -71,6 +137,79 @@ La dependencia de APIs externas introduce puntos de fallo potenciales en sistema
 
 La generación de visualizaciones mediante \ac{LLM}s presenta variabilidad y latencias elevadas. Esta \ac{RQ} compara un enfoque basado en plantillas predefinidas ---donde el LLM selecciona y parametriza plantillas Plotly--- con la generación completa de código por el modelo.
 
+% ──────────────────────────────────────────────────────────────
+% Figura: Mapa de preguntas de investigación → componentes
+% ──────────────────────────────────────────────────────────────
+\begin{figure}[H]
+\centering
+\resizebox{0.94\textwidth}{!}{%
+\begin{tikzpicture}[
+  rqbox/.style={
+    draw=none, rounded corners=5pt, minimum width=2.5cm,
+    minimum height=1.1cm, font=\sffamily\bfseries\small,
+    align=center, text=white
+  },
+  compbox/.style={
+    draw=#1, line width=1.2pt, fill=#1!6, rounded corners=5pt,
+    minimum width=3.6cm, minimum height=1.0cm,
+    font=\sffamily\small\bfseries, align=center, text=#1!90!black
+  },
+  evalbox/.style={
+    draw=primary!50, fill=primary!4, rounded corners=4pt,
+    minimum width=3.0cm, minimum height=0.8cm,
+    font=\sffamily\scriptsize, align=center
+  },
+  link/.style={-{Stealth[length=4pt,width=3pt]}, line width=0.9pt,
+               color=#1!60},
+  brace/.style={decorate, decoration={brace, amplitude=6pt, mirror},
+                line width=0.8pt, color=primary!50}
+]
+
+% --- RQ nodes (left column) ---
+\node[rqbox, fill=secondary]       (rq1) at (0, 4.0) {RQ1\\Agente unificado};
+\node[rqbox, fill=success]         (rq2) at (0, 2.4) {RQ2\\RAG híbrido};
+\node[rqbox, fill=accent]          (rq3) at (0, 0.8) {RQ3\\Anti-alucinación};
+\node[rqbox, fill=warning!85!black](rq4) at (0,-0.8) {RQ4\\Fallback};
+\node[rqbox, fill=vizcolor]        (rq5) at (0,-2.4) {RQ5\\Visualización};
+
+% --- Component nodes (center column) ---
+\node[compbox=secondary] (c1) at (5.8, 4.0) {\faRobot\ Claude Haiku 4.5\\tool-calling nativo};
+\node[compbox=success]   (c2) at (5.8, 2.4) {\faSearch\ pgvector + tsvector\\RRF $k{=}60$};
+\node[compbox=accent]    (c3) at (5.8, 0.8) {\faLock\ Sandbox AST\\+ SQL Validator};
+\node[compbox=warning]   (c4) at (5.8,-0.8) {\faLayerGroup\ Haiku $\to$ Sonnet\\$\to$ Opus};
+\node[compbox=vizcolor]  (c5) at (5.8,-2.4) {\faChartArea\ Plotly\\template-first};
+
+% --- Links RQ → Component ---
+\draw[link=secondary] (rq1.east) -- (c1.west);
+\draw[link=success]   (rq2.east) -- (c2.west);
+\draw[link=accent]    (rq3.east) -- (c3.west);
+\draw[link=warning]   (rq4.east) -- (c4.west);
+\draw[link=vizcolor]  (rq5.east) -- (c5.west);
+
+% --- Evaluation nodes (right column) ---
+\node[evalbox] (e1) at (11.2, 3.2) {\faClock\ Latencia P50\\$<$ 5\,s};
+\node[evalbox] (e2) at (11.2, 1.6) {\faClipboardCheck\ RAGAS\\Context Recall};
+\node[evalbox] (e3) at (11.2, 0.0) {\faBug\ Tests de\\seguridad};
+\node[evalbox] (e4) at (11.2,-1.6) {\faTasks\ Funcionalidad\\operativa};
+
+% --- Links Component → Evaluation ---
+\draw[link=primary] (c1.east) -- ++(0.4,0) |- (e1.west);
+\draw[link=primary] (c2.east) -- ++(0.4,0) |- (e2.west);
+\draw[link=primary] (c3.east) -- ++(0.4,0) |- (e3.west);
+\draw[link=primary] (c4.east) -- ++(0.4,0) |- (e3.west);
+\draw[link=primary] (c5.east) -- ++(0.4,0) |- (e4.west);
+
+% --- Column labels ---
+\node[font=\sffamily\bfseries\small, text=primary!80] at (0, 5.2) {Preguntas de investigación};
+\node[font=\sffamily\bfseries\small, text=primary!80] at (5.8, 5.2) {Componentes del sistema};
+\node[font=\sffamily\bfseries\small, text=primary!80] at (11.2, 5.2) {Marco de evaluación};
+
+\end{tikzpicture}
+}%
+\caption{Mapa de trazabilidad: cada pregunta de investigación se vincula con el componente arquitectónico que la aborda y la dimensión de evaluación que la valida.}
+\label{fig:rq_roadmap}
+\end{figure}
+
 \section{Objetivos complementarios}
 \label{sec:objetivos_complementarios}
 
@@ -98,6 +237,55 @@ El sistema se materializa como una aplicación web interactiva desarrollada con 
 El presente trabajo adopta la metodología \textit{Design Science Research} (\acs{DSR}) \parencite{Hevner2004,Peffers2007dsrm}, un paradigma de investigación orientado a la resolución de problemas mediante la creación y evaluación de artefactos tecnológicos innovadores. La investigación se articula en torno al desarrollo del sistema ChatHCE, estructurándose en las fases fundamentales de diseño, construcción, demostración y validación.
 
 El artefacto resultante se somete a un marco de evaluación multidimensional que permite verificar su utilidad y rendimiento técnico: (1) calidad semántica de las respuestas mediante métricas \ac{RAGAS} \parencite{Es2023ragas}; (2) rendimiento temporal a través de la medición de latencias por categoría; (3) robustez de seguridad mediante una batería de pruebas adversariales; y (4) funcionalidad operativa mediante casos de prueba que validan la integración de todos los componentes del sistema.
+
+% ──────────────────────────────────────────────────────────────
+% Figura: Fases de la metodología DSR aplicadas a ChatHCE
+% ──────────────────────────────────────────────────────────────
+\begin{figure}[H]
+\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[
+  phase/.style={
+    draw=none, rounded corners=6pt, minimum width=2.8cm,
+    minimum height=2.2cm, font=\sffamily\bfseries,
+    align=center, text=white, drop shadow={shadow xshift=1pt,
+    shadow yshift=-1pt, opacity=0.3}
+  },
+  desc/.style={font=\sffamily\scriptsize, align=center, text width=2.6cm},
+  conn/.style={-{Stealth[length=5pt,width=4pt]}, line width=1.2pt,
+               color=primary!60},
+  feedback/.style={-{Stealth[length=4pt,width=3pt]}, line width=0.8pt,
+                   color=warning, dashed}
+]
+
+% --- Phase nodes ---
+\node[phase, fill=secondary]  (ph1) at (0,0)    {\faLightbulb\\[2pt]Identificación\\del problema};
+\node[phase, fill=primary]    (ph2) at (3.8,0)   {\faDraftingCompass\\[2pt]Diseño};
+\node[phase, fill=success]    (ph3) at (7.6,0)   {\faCode\\[2pt]Construcción};
+\node[phase, fill=warning!90!black] (ph4) at (11.4,0) {\faFlask\\[2pt]Demostración};
+\node[phase, fill=accent]     (ph5) at (15.2,0)  {\faCheckCircle\\[2pt]Evaluación};
+
+% --- Descriptions ---
+\node[desc, below=6pt of ph1] {Fragmentación\\de la información\\clínica};
+\node[desc, below=6pt of ph2] {Arquitectura\\agente unificado\\+ RAG + VIZ};
+\node[desc, below=6pt of ph3] {Implementación\\con LangChain,\\Supabase, Plotly};
+\node[desc, below=6pt of ph4] {Casos de prueba\\sobre MIMIC-IV-ED\\y golden sets};
+\node[desc, below=6pt of ph5] {RAGAS, latencias,\\seguridad,\\funcionalidad};
+
+% --- Forward arrows ---
+\draw[conn] (ph1.east) -- (ph2.west);
+\draw[conn] (ph2.east) -- (ph3.west);
+\draw[conn] (ph3.east) -- (ph4.west);
+\draw[conn] (ph4.east) -- (ph5.west);
+
+% --- Feedback loop ---
+\draw[feedback] (ph5.north) -- ++(0,1.0) -| node[pos=0.25, above, font=\sffamily\scriptsize\itshape, text=warning!80!black] {Iteración} (ph2.north);
+
+\end{tikzpicture}
+}%
+\caption{Fases de la metodología \textit{Design Science Research} aplicadas al desarrollo de ChatHCE, con ciclo iterativo de refinamiento.}
+\label{fig:dsr_fases}
+\end{figure}
 
 \section{Estructura del documento}
 \label{sec:estructura}
