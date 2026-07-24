@@ -1,8 +1,8 @@
-# 🏥 ChatHCE - Sistema de Análisis Clínico Inteligente
+# ChatHCE - Sistema de Análisis Clínico Inteligente
 
 <div align="center">
 
-## 🎯 Chat Unificado - Una Interfaz para Todo
+## Chat Unificado - Una Interfaz para Todo
 
 **Sistema inteligente con acceso automático a datos MIMIC-IV-ED y documentos clínicos**
 
@@ -14,30 +14,30 @@
 
 ---
 
-## 📋 Descripción
+## Descripción
 
 ChatHCE es un sistema avanzado de análisis de datos de urgencias hospitalarias que combina inteligencia artificial con capacidades RAG (Retrieval-Augmented Generation). El sistema está especializado en el análisis de datos del **Servicio de Urgencias** utilizando el dataset MIMIC-IV-ED (Emergency Department). Utiliza un **Chat Unificado** como interfaz principal, que automáticamente selecciona las herramientas correctas (base de datos MIMIC-IV-ED, documentos clínicos de urgencias, o visualizaciones) según tu consulta.
 
-### 💡 ¿Qué hace especial al Chat Unificado?
+### ¿Qué hace especial al Chat Unificado?
 
 En lugar de tener interfaces separadas para diferentes tipos de consultas, el Chat Unificado especializado en urgencias:
-- 🚨 **Especializado en Urgencias**: Enfocado en datos del Servicio de Urgencias (MIMIC-IV-ED)
-- 🤖 **Entiende tu consulta** y decide automáticamente qué herramientas usar
-- � ***Combina información** de múltiples fuentes en una sola respuesta
-- � ***Genera visualizaciones** cuando son útiles para entender los datos de urgencias
-- 💬 **Mantiene contexto** entre preguntas para conversaciones naturales
-- ⚡ **Orientado a decisiones rápidas** en el contexto de urgencias
+- **Especializado en Urgencias**: Enfocado en datos del Servicio de Urgencias (MIMIC-IV-ED)
+- **Entiende tu consulta** y decide automáticamente qué herramientas usar
+- **Combina información** de múltiples fuentes en una sola respuesta
+- **Genera visualizaciones** cuando son útiles para entender los datos de urgencias
+- **Mantiene contexto** entre preguntas para conversaciones naturales
+- **Orientado a decisiones rápidas** en el contexto de urgencias
 
-### ✨ Características Principales
+### Características Principales
 
-#### 🎯 Chat Unificado - Interfaz Principal
+#### Chat Unificado - Interfaz Principal
 La forma principal de interactuar con ChatHCE. Un solo chat inteligente que:
 - **Selección Automática de Herramientas**: El agente decide automáticamente si consultar base de datos, documentos, o ambos
 - **Sin Cambio de Modos**: Una sola interfaz para todas tus consultas médicas
 - **Respuestas Integradas**: Combina información de MIMIC-IV-ED con guías clínicas en respuestas coherentes
 - **Visualizaciones Automáticas**: Genera gráficas cuando son útiles para entender los datos
 
-#### 🏥 Capacidades del Sistema
+#### Capacidades del Sistema
 - **Acceso a Base de Datos MIMIC-IV-ED**: Consultas en lenguaje natural sobre datos de urgencias - pacientes, triaje, signos vitales, diagnósticos de urgencias y medicamentos
 - **Especialización en Urgencias**: Sistema enfocado en el Servicio de Urgencias y atención de emergencias
 - **Sistema RAG Integrado**: Búsqueda semántica en guías clínicas y protocolos de urgencias
@@ -47,7 +47,7 @@ La forma principal de interactuar con ChatHCE. Un solo chat inteligente que:
 - **Autenticación Segura**: Sistema completo de usuarios con Supabase
 - **Interfaz Intuitiva**: Aplicación web moderna desarrollada con Streamlit
 
-#### 🛡️ Sistema Anti-Alucinación
+#### Sistema Anti-Alucinación
 El sistema incluye directivas avanzadas para prevenir la generación de información falsa:
 - **Grounding en Datos Reales**: Todas las respuestas se basan exclusivamente en datos del dataset MIMIC-IV-ED
 - **Citación de Fuentes**: El sistema siempre indica qué herramienta y tabla usó para obtener los datos
@@ -55,7 +55,7 @@ El sistema incluye directivas avanzadas para prevenir la generación de informac
 - **Manejo de Datos Faltantes**: Indica explícitamente cuando no encuentra información en lugar de inventarla
 - **Prohibiciones Explícitas**: El modelo tiene instrucciones claras de nunca inventar IDs de pacientes, valores de signos vitales, diagnósticos o medicamentos
 
-## 🏗️ Arquitectura del Sistema Unificado
+## Arquitectura del Sistema Unificado
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -63,7 +63,7 @@ El sistema incluye directivas avanzadas para prevenir la generación de informac
 │              Sistema de Chat Unificado                          │
 ├─────────────────────────────────────────────────────────────────┤
 │  Frontend (Streamlit)                                           │
-│  └── 🎯 Unified Chat Interface                                 │
+│  └──  Unified Chat Interface                                 │
 │      ├── Single input for all queries                          │
 │      ├── Automatic tool selection                              │
 │      └── Integrated responses                                  │
@@ -74,9 +74,9 @@ El sistema incluye directivas avanzadas para prevenir la generación de informac
 │  └── Response Synthesis                                        │
 │                                                                 │
 │  Available Tools:                                              │
-│  ├── 🗄️  Database Tool (MIMIC-IV-ED queries)                  │
-│  ├── 📚 RAG Tool (Document search)                            │
-│  └── 📊 Visualization Tool (Chart generation)                 │
+│  ├──   Database Tool (MIMIC-IV-ED queries)                  │
+│  ├──  RAG Tool (Document search)                            │
+│  └──  Visualization Tool (Chart generation)                 │
 ├─────────────────────────────────────────────────────────────────┤
 │  Data Layer                                                    │
 │  ├── Supabase (MIMIC-IV-ED + Users/Sessions + pgvector RAG)    │
@@ -84,11 +84,11 @@ El sistema incluye directivas avanzadas para prevenir la generación de informac
 └─────────────────────────────────────────────────────────────────┘
 
 Flujo de Consulta:
-Usuario → Chat Unificado → Agente analiza → Selecciona herramientas
-         → Ejecuta (DB/RAG/Viz) → Sintetiza respuesta → Usuario
+Usuario  Chat Unificado  Agente analiza  Selecciona herramientas
+          Ejecuta (DB/RAG/Viz)  Sintetiza respuesta  Usuario
 ```
 
-## 🚀 Instalación y Configuración
+## Instalación y Configuración
 
 ### Prerrequisitos
 
@@ -119,17 +119,17 @@ pip install -r requirements.txt
 
 ### 4. Configurar Variables de Entorno
 
-#### ⭐ Método Recomendado (Configuración Automática)
+#### Método Recomendado (Configuración Automática)
 
 ```bash
 python setup_env.py
 ```
 
 Este script interactivo te guiará para:
-- ✅ Configurar Claude API (Anthropic) para el agente médico y RAG
-- ✅ Configurar Supabase (opcional)
-- ✅ Crear archivo .env automáticamente
-- ✅ Validar configuración
+- Configurar Claude API (Anthropic) para el agente médico y RAG
+- Configurar Supabase (opcional)
+- Crear archivo .env automáticamente
+- Validar configuración
 
 #### Método Manual
 
@@ -159,7 +159,7 @@ DEBUG=True
 LOG_LEVEL=INFO
 ```
 
-#### 🔑 Obtener API Keys
+#### Obtener API Keys
 
 **Claude API (Anthropic)**:
 1. Ve a [console.anthropic.com](https://console.anthropic.com)
@@ -174,9 +174,9 @@ python check_config.py
 ```
 
 Este script verifica:
-- ✅ Claude API key válida
-- ✅ Conexión a Supabase (si configurado)
-- ✅ Modelos Claude disponibles
+- Claude API key válida
+- Conexión a Supabase (si configurado)
+- Modelos Claude disponibles
 
 ### 5. Configurar Base de Datos (Supabase)
 
@@ -229,7 +229,7 @@ CREATE TABLE clinical_documents (
 
 El sistema incluye índices optimizados para máximo rendimiento. Los siguientes índices están implementados:
 
-#### 📊 Índices de Aplicación (Chat y Usuarios)
+#### Índices de Aplicación (Chat y Usuarios)
 ```sql
 -- Índices para chat y usuarios
 CREATE INDEX idx_chat_messages_created_at ON public.chat_messages USING btree (created_at);
@@ -244,7 +244,7 @@ CREATE INDEX idx_users_created_at ON public.users USING btree (created_at);
 CREATE INDEX idx_users_id ON public.users USING btree (id);
 ```
 
-#### 🏥 Índices MIMIC-IV-ED (Datos Médicos)
+#### Índices MIMIC-IV-ED (Datos Médicos)
 ```sql
 -- Índices para tabla diagnosis (diagnósticos)
 CREATE INDEX idx_diagnosis_icd_code ON public.diagnosis USING btree (icd_code);
@@ -280,7 +280,7 @@ CREATE INDEX idx_vitalsign_subject_charttime ON public.vitalsign USING btree (su
 CREATE INDEX idx_vitalsign_subject_id ON public.vitalsign USING btree (subject_id);
 ```
 
-#### ⚡ Beneficios de Rendimiento
+#### Beneficios de Rendimiento
 - **Consultas por Paciente**: 70-90% más rápidas con índices en `subject_id`
 - **Búsquedas Temporales**: 60-80% más rápidas con índices en `charttime`
 - **Consultas de Estancias**: 50-70% más rápidas con índices en `stay_id`
@@ -289,19 +289,19 @@ CREATE INDEX idx_vitalsign_subject_id ON public.vitalsign USING btree (subject_i
 
 ### 7. Ejecutar la Aplicación
 
-#### ⭐ Método Recomendado (con verificaciones automáticas)
+#### Método Recomendado (con verificaciones automáticas)
 
 ```bash
 python start_app.py
 ```
 
 Este script ejecutará:
-- ✅ Verificación de versión de Python
-- ✅ Verificación de dependencias
-- ✅ Verificación de variables de entorno
-- ✅ Creación de directorios necesarios
-- ✅ Diagnóstico completo del sistema
-- 🚀 Inicio de la aplicación
+- Verificación de versión de Python
+- Verificación de dependencias
+- Verificación de variables de entorno
+- Creación de directorios necesarios
+- Diagnóstico completo del sistema
+- Inicio de la aplicación
 
 #### Opciones Avanzadas
 
@@ -327,9 +327,9 @@ streamlit run main.py
 
 La aplicación estará disponible en `http://localhost:8501`
 
-## 📖 Guía de Uso
+## Guía de Uso
 
-### 🔐 Autenticación
+### Autenticación
 
 1. **Registro**: Crea una cuenta nueva proporcionando:
 
@@ -341,16 +341,16 @@ La aplicación estará disponible en `http://localhost:8501`
 
 2. **Inicio de Sesión**: Accede con tu email y contraseña
 
-### 🎯 Chat Unificado - Interfaz Principal
+### Chat Unificado - Interfaz Principal
 
 **El Chat Unificado es la forma recomendada de usar ChatHCE.** Reemplaza las interfaces separadas anteriores con un sistema inteligente que automáticamente accede a las fuentes de datos correctas.
 
 #### ¿Por qué usar el Chat Unificado?
 
-✅ **Simplicidad**: Una sola interfaz para todo  
-✅ **Inteligencia**: El agente decide qué herramientas usar  
-✅ **Integración**: Combina datos de múltiples fuentes automáticamente  
-✅ **Eficiencia**: Sin necesidad de cambiar entre modos  
+ **Simplicidad**: Una sola interfaz para todo
+ **Inteligencia**: El agente decide qué herramientas usar
+ **Integración**: Combina datos de múltiples fuentes automáticamente
+ **Eficiencia**: Sin necesidad de cambiar entre modos
 
 #### Características Principales
 
@@ -417,15 +417,15 @@ La aplicación estará disponible en `http://localhost:8501`
 1. **Escribes tu consulta** en lenguaje natural (español)
 2. **El agente analiza** tu consulta para entender qué necesitas
 3. **Selecciona herramientas** automáticamente:
-   - 🗄️ Database Tool para datos de pacientes
-   - 📚 RAG Tool para guías clínicas
-   - 📊 Visualization Tool para gráficas
+   - Database Tool para datos de pacientes
+   - RAG Tool para guías clínicas
+   - Visualization Tool para gráficas
    - O una combinación de ellas
 4. **Ejecuta las herramientas** y obtiene los datos
 5. **Sintetiza la respuesta** integrando toda la información
 6. **Te muestra el resultado** con fuentes claras y visualizaciones
 
-### 📚 Documentación Adicional
+### Documentación Adicional
 
 Para más información sobre el Chat Unificado, consulta:
 - [Guía de Usuario](docs/UNIFIED_CHAT_USER_GUIDE.md) - Guía completa de uso
@@ -433,26 +433,26 @@ Para más información sobre el Chat Unificado, consulta:
 - [Arquitectura](docs/UNIFIED_CHAT_ARCHITECTURE.md) - Detalles técnicos
 - [Solución de Problemas](docs/UNIFIED_CHAT_TROUBLESHOOTING.md) - Guía de troubleshooting
 
-## ⚡ Optimización de Base de Datos
+## Optimización de Base de Datos
 
 ### Sistema de Optimización de Consultas
 
 El HCE Analyzer incluye un sistema avanzado de optimización de consultas implementado en la **Tarea 4**:
 
-#### 🔍 QueryOptimizer Service
+#### QueryOptimizer Service
 - **Análisis automático de consultas** con detección de patrones
 - **Recomendaciones de índices** basadas en frecuencia de uso
 - **Detección de consultas lentas** con logging automático
 - **Monitoreo de rendimiento** en tiempo real
 - **Optimización automática** de LIMIT y selección de columnas
 
-#### 💾 Query Cache System
+#### Query Cache System
 - **Cache LRU** con gestión de memoria inteligente
 - **TTL configurable** por tipo de consulta
 - **Cache warming** para consultas frecuentes
 - **Estadísticas de hit/miss** para monitoreo
 
-#### 📊 Métricas de Rendimiento Implementadas
+#### Métricas de Rendimiento Implementadas
 
 | Tabla | Índices | Mejora Estimada | Consultas Optimizadas |
 |-------|---------|-----------------|----------------------|
@@ -463,7 +463,7 @@ El HCE Analyzer incluye un sistema avanzado de optimización de consultas implem
 | `pyxis` | 4 índices | 60-80% | Dispensación de medicamentos |
 | `triage` | 2 índices | 40-60% | Datos de triaje |
 
-#### 🛠️ Servicios de Optimización
+#### Servicios de Optimización
 
 ```python
 # OptimizedDatabaseService - Servicio de base de datos optimizado
@@ -476,7 +476,7 @@ from services.query_optimizer import QueryOptimizer, monitor_database_query
 from services.query_cache import QueryCache, cached_query
 ```
 
-#### 📈 Monitoreo de Rendimiento
+#### Monitoreo de Rendimiento
 
 El sistema incluye monitoreo automático de:
 - Tiempo de ejecución de consultas
@@ -485,7 +485,7 @@ El sistema incluye monitoreo automático de:
 - Recomendaciones de optimización automáticas
 - Estadísticas de caché y hit rates
 
-## 🔧 Configuración Avanzada
+## Configuración Avanzada
 
 ### Modelos de IA
 
@@ -500,10 +500,10 @@ Cadena de fallback con modelos Claude:
 3. **Terciario**: `claude-opus-4-0` (máxima capacidad)
 
 **Características**:
-- ✅ Mejor manejo de herramientas (tool calling)
-- ✅ Límites de rate más generosos
-- ✅ Prompts optimizados (~3000 tokens vs ~6500)
-- ✅ Mayor confiabilidad y disponibilidad
+- Mejor manejo de herramientas (tool calling)
+- Límites de rate más generosos
+- Prompts optimizados (~3000 tokens vs ~6500)
+- Mayor confiabilidad y disponibilidad
 
 #### Sistema RAG (Claude API)
 
@@ -540,7 +540,7 @@ RATE_LIMITS = {
 }
 ```
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 hce-analyzer-pro/
@@ -555,7 +555,7 @@ hce-analyzer-pro/
 │   └── logging_config.py             # Configuración de logging
 │
 ├── services/                         # Capa de servicios
-│   ├── unified_chat/                 # 🎯 Sistema de Chat Unificado
+│   ├── unified_chat/                 #  Sistema de Chat Unificado
 │   │   ├── unified_agent.py          # Agente unificado (Claude)
 │   │   ├── document_manager.py       # Gestión de documentos
 │   │   ├── config.py                 # Configuración del chat
@@ -586,7 +586,7 @@ hce-analyzer-pro/
 │       └── session_manager.py
 │
 ├── ui/                               # Interfaz de usuario
-│   ├── unified_chat_interface.py     # 🎯 Interfaz de Chat Unificado (PRIMARY)
+│   ├── unified_chat_interface.py     #  Interfaz de Chat Unificado (PRIMARY)
 │   └── components/                   # Componentes UI
 │       ├── sidebar.py                # Barra lateral
 │       ├── document_manager.py       # Gestor de documentos
@@ -615,26 +615,26 @@ hce-analyzer-pro/
 
 ### Componentes Clave
 
-#### 🎯 Sistema de Chat Unificado
+#### Sistema de Chat Unificado
 - **`services/unified_chat/`**: Núcleo del sistema unificado
 - **`ui/unified_chat_interface.py`**: Interfaz principal de usuario
 - **Herramientas**: Database Tool, RAG Tool, Visualization Tool
 
-#### 🔧 Servicios Esenciales
+#### Servicios Esenciales
 - **Cache Manager**: Caché de respuestas LLM y embeddings
 - **Connection Pool Manager**: Gestión eficiente de conexiones DB
 - **LLM Optimizer**: Optimización de llamadas a API
 
-#### 📚 Componentes Legacy
+#### Componentes Legacy
 
 **Note**: Todos los componentes legacy han sido eliminados:
-- ✅ `ClaudeHCEAgent` - Eliminado 2025-11-25
-- ✅ `HCEChatInterface` - Eliminado 2025-11-25  
-- ✅ `RAGChatInterface` - Eliminado 2025-11-25
+- `ClaudeHCEAgent` - Eliminado 2025-11-25
+- `HCEChatInterface` - Eliminado 2025-11-25
+- `RAGChatInterface` - Eliminado 2025-11-25
 
 El sistema ahora usa exclusivamente el **Unified Chat** para todas las interacciones.
 
-## 🔒 Seguridad y Privacidad
+## Seguridad y Privacidad
 
 ### Medidas de Seguridad
 
@@ -647,7 +647,7 @@ El sistema ahora usa exclusivamente el **Unified Chat** para todas las interacci
 
 Este proyecto fue desarrollado con fines académicos como Trabajo de Fin de Máster. El dataset MIMIC-IV-ED utilizado contiene datos médicos completamente anonimizados y está diseñado para investigación y educación.
 
-## 🧪 Testing
+## Testing
 
 ### Ejecutar Tests
 
@@ -669,7 +669,7 @@ Para pruebas, puedes usar estos usuarios:
 - **Email**: `demo@hospital.com` | **Password**: `demo123`
 - **Email**: `admin@hce.com` | **Password**: `admin123`
 
-## 📊 Monitoreo y Analytics
+## Monitoreo y Analytics
 
 ### Métricas Disponibles
 
@@ -684,53 +684,53 @@ Para pruebas, puedes usar estos usuarios:
 
 Los logs se almacenan en `./data/logs/hce_analyzer.log` con rotación automática.
 
-## ✅ Estado de Implementación
+## Estado de Implementación
 
-### 🎯 Tarea 4: Optimización de Base de Datos - COMPLETADA
+### Tarea 4: Optimización de Base de Datos - COMPLETADA
 
-**Fecha de finalización**: 30 de septiembre de 2025  
-**Estado**: ✅ COMPLETADO EXITOSAMENTE
+**Fecha de finalización**: 30 de septiembre de 2025
+**Estado**:  COMPLETADO EXITOSAMENTE
 
 #### Implementaciones Realizadas:
 
-**4.1 QueryOptimizer Service** ✅
+**4.1 QueryOptimizer Service**
 - Servicio de análisis y optimización de consultas
 - Detección automática de consultas lentas
 - Recomendaciones de índices basadas en patrones
 - Monitoreo de rendimiento integrado
 - Sistema de métricas y estadísticas
 
-**4.2 Optimización MIMIC-IV-ED** ✅
+**4.2 Optimización MIMIC-IV-ED**
 - 31 índices optimizados implementados
 - Servicio de base de datos optimizado
 - Sistema de caché de consultas con LRU
 - Mejoras de rendimiento del 50-95%
 - Scripts de optimización automatizados
 
-### 🆕 Sistema de Visualización Mejorado
+### Sistema de Visualización Mejorado
 
-**Fecha de implementación**: 14 de enero de 2026  
-**Estado**: ✅ COMPLETADO EXITOSAMENTE
+**Fecha de implementación**: 14 de enero de 2026
+**Estado**:  COMPLETADO EXITOSAMENTE
 
-#### ✅ Selector Automático de Visualizaciones
+#### Selector Automático de Visualizaciones
 - **Selección inteligente** basada en características de datos
 - **Reglas deterministas** que garantizan la visualización correcta
 - **12 tipos de visualización** disponibles (expandido de 4)
 - **Auto-detección** de tipo óptimo según datos temporales, categóricos o numéricos
 
-#### ✅ Sistema de Templates con Lazy Loading
+#### Sistema de Templates con Lazy Loading
 - **Carga perezosa**: Templates solo se cargan cuando se necesitan
 - **Reducción de memoria**: 90% menos uso de memoria inicial
 - **12 templates optimizados**: timeline, comparison, bar, scatter, histogram, box, violin, heatmap, pie, sunburst, table, indicator
 - **Cache inteligente**: Reutilización de templates ya cargados
 
-#### ✅ Flujo Template-First
+#### Flujo Template-First
 - **Templates como principal**: Generación rápida y predecible
 - **LLM como fallback**: Claude solo se usa si los templates fallan
 - **10x más rápido**: ~200-500ms vs ~3-5s anteriormente
 - **90% menos llamadas LLM**: Reducción significativa de costos
 
-#### ✅ Arquitectura Simplificada
+#### Arquitectura Simplificada
 - **Código más simple**: Menos complejidad, más mantenible
 - **Fácil de testear**: Reglas claras y deterministas
 - **Fácil de extender**: Agregar nuevos templates es trivial
@@ -749,36 +749,36 @@ Los logs se almacenan en `./data/logs/hce_analyzer.log` con rotación automátic
 - **Costos**: 90% menos llamadas a API de Claude
 - **Simplicidad**: Código más claro y mantenible para proyecto académico
 
-### 🆕 Mejoras Recientes - Chat Clínico y Diagnóstico
+### Mejoras Recientes - Chat Clínico y Diagnóstico
 
-**Fecha de implementación**: 13 de octubre de 2025  
-**Estado**: ✅ COMPLETADO EXITOSAMENTE
+**Fecha de implementación**: 13 de octubre de 2025
+**Estado**:  COMPLETADO EXITOSAMENTE
 
-#### ✅ Sistema de Logging Completo
+#### Sistema de Logging Completo
 - Logging detallado en todos los componentes del chat clínico
 - Logs rotativos con compresión automática (10MB por archivo)
 - Múltiples niveles y formatos de log (JSON estructurado)
 - Separación por componentes y funcionalidades
 
-#### ✅ Diagnóstico Automático del Sistema
+#### Diagnóstico Automático del Sistema
 - Script completo de verificación del sistema (`scripts/diagnose_system.py`)
 - Detección automática de problemas de configuración
 - Reporte detallado con recomendaciones específicas
 - Verificación de dependencias, APIs, base de datos y agentes
 
-#### ✅ Feedback al Usuario Mejorado
+#### Feedback al Usuario Mejorado
 - Indicadores de progreso en tiempo real durante consultas
 - Mensajes de estado detallados durante procesamiento
 - Información de rendimiento visible (tiempo de respuesta, modelo usado)
 - Estado del sistema visible en la interfaz
 
-#### ✅ Manejo de Errores Robusto
+#### Manejo de Errores Robusto
 - Captura y logging de todas las excepciones con trazas completas
 - Mensajes de error user-friendly en español
 - Sugerencias automáticas de solución para problemas comunes
 - Manejo específico de errores de LLM, base de datos y agentes
 
-#### ✅ Correcciones de Bugs Críticos
+#### Correcciones de Bugs Críticos
 - **Corregido**: Error de parsing de datetime en monitor de rendimiento
 - **Corregido**: Problemas de inicialización de agentes
 - **Mejorado**: Manejo de caché y memoria optimizado
@@ -800,7 +800,7 @@ Los logs se almacenan en `./data/logs/hce_analyzer.log` con rotación automátic
 - **Estabilidad**: Manejo robusto de errores y recuperación automática
 - **Mantenimiento**: Logs estructurados para análisis y debugging
 
-## 🔄 Guía de Migración a Claude
+## Guía de Migración a Claude
 
 ### Para Instalaciones Existentes
 
@@ -834,8 +834,8 @@ python check_config.py
 ```
 
 Debe mostrar:
-- ✅ Claude API configurada correctamente
-- ✅ Todos los sistemas operativos
+- Claude API configurada correctamente
+- Todos los sistemas operativos
 
 #### Paso 5: Probar el Sistema
 
@@ -912,7 +912,7 @@ El sistema tiene fallback automático entre 3 modelos Claude.
 
 ---
 
-## 🔄 Migración al Chat Unificado
+## Migración al Chat Unificado
 
 ### Para Usuarios Existentes
 
@@ -921,12 +921,12 @@ Si has estado usando las interfaces anteriores (Chat HCE o Chat RAG), aquí est�
 #### ¿Qué Cambió?
 
 **Antes**: Tenías que elegir entre:
-- 🏥 Chat HCE → Solo consultas de base de datos MIMIC
-- 📚 Chat RAG → Solo consultas de documentos clínicos
+- Chat HCE  Solo consultas de base de datos MIMIC
+- Chat RAG  Solo consultas de documentos clínicos
 - Cambiar manualmente entre interfaces según tu necesidad
 
-**Ahora**: 
-- 🎯 Chat Unificado → Acceso automático a ambas fuentes
+**Ahora**:
+- Chat Unificado  Acceso automático a ambas fuentes
 - El agente decide qué herramientas usar
 - Sin cambio manual de interfaces
 
@@ -945,37 +945,37 @@ Si has estado usando las interfaces anteriores (Chat HCE o Chat RAG), aquí est�
 
 **Consulta que antes requería Chat HCE:**
 ```
-Antes: Ir a Chat HCE → "Muéstrame datos del paciente 10014729"
-Ahora: Chat Unificado → "Muéstrame datos del paciente 10014729"
+Antes: Ir a Chat HCE  "Muéstrame datos del paciente 10014729"
+Ahora: Chat Unificado  "Muéstrame datos del paciente 10014729"
 ```
 
 **Consulta que antes requería Chat RAG:**
 ```
-Antes: Ir a Chat RAG → "¿Cuál es el protocolo para hipertensión?"
-Ahora: Chat Unificado → "¿Cuál es el protocolo para hipertensión?"
+Antes: Ir a Chat RAG  "¿Cuál es el protocolo para hipertensión?"
+Ahora: Chat Unificado  "¿Cuál es el protocolo para hipertensión?"
 ```
 
 **Consulta que antes requería ambos:**
 ```
-Antes: 
-  1. Chat HCE → "Datos del paciente 10014729"
-  2. Chat RAG → "Protocolo de hipertensión"
+Antes:
+  1. Chat HCE  "Datos del paciente 10014729"
+  2. Chat RAG  "Protocolo de hipertensión"
   3. Tú combinas manualmente la información
 
-Ahora: 
-  Chat Unificado → "¿El tratamiento del paciente 10014729 sigue el protocolo de hipertensión?"
+Ahora:
+  Chat Unificado  "¿El tratamiento del paciente 10014729 sigue el protocolo de hipertensión?"
   (El agente hace todo automáticamente)
 ```
 
-### ⚠️ Componentes Deprecados
+### Componentes Deprecados
 
 Los siguientes componentes serán eliminados en futuras versiones:
 
 | Componente | Reemplazo | Estado | Fecha de Eliminación |
 |------------|-----------|--------|---------------------|
-| `ClaudeHCEAgent` | `UnifiedChatAgent` | ✅ Eliminado | 2025-11-25 |
-| `HCEChatInterface` | `UnifiedChatInterface` | ✅ Eliminado | 2025-11-25 |
-| `RAGChatInterface` | `UnifiedChatInterface` | ✅ Eliminado | 2025-11-25 |
+| `ClaudeHCEAgent` | `UnifiedChatAgent` |  Eliminado | 2025-11-25 |
+| `HCEChatInterface` | `UnifiedChatInterface` |  Eliminado | 2025-11-25 |
+| `RAGChatInterface` | `UnifiedChatInterface` |  Eliminado | 2025-11-25 |
 | `ClinicalChat` | `UnifiedChatAgent` | Deprecado | 6 meses |
 
 **Recomendación**: Comienza a usar el Chat Unificado ahora para evitar interrupciones futuras.
@@ -998,7 +998,7 @@ response = agent.process_message("query", context=[])
 
 Consulta la [Guía de Migración para Desarrolladores](docs/DEPRECATION_PLAN.md) para más detalles.
 
-## 🤝 Contribución
+## Contribución
 
 ### Cómo Contribuir
 
@@ -1015,25 +1015,25 @@ Consulta la [Guía de Migración para Desarrolladores](docs/DEPRECATION_PLAN.md)
 - Incluir tests para nuevas funcionalidades
 - Mantener cobertura de tests > 80%
 
-## 🔍 Diagnóstico y Solución de Problemas
+## Diagnóstico y Solución de Problemas
 
-### 🚨 Diagnóstico Automático Completo
+### Diagnóstico Automático Completo
 
 ```bash
 python scripts/diagnose_system.py
 ```
 
 Este script verifica:
-- ✅ Versión de Python y dependencias
-- ✅ Variables de entorno y configuración
-- ✅ Conexión a base de datos
-- ✅ Servicios de LLM (Claude)
-- ✅ Permisos del sistema de archivos
-- ✅ Inicialización de agentes de IA
-- ✅ Sistema de monitoreo de rendimiento
-- ✅ Sistema de logging
+- Versión de Python y dependencias
+- Variables de entorno y configuración
+- Conexión a base de datos
+- Servicios de LLM (Claude)
+- Permisos del sistema de archivos
+- Inicialización de agentes de IA
+- Sistema de monitoreo de rendimiento
+- Sistema de logging
 
-### 📋 Verificar Logs en Tiempo Real
+### Verificar Logs en Tiempo Real
 
 ```bash
 # Log principal de la aplicación
@@ -1046,18 +1046,18 @@ tail -f logs/errors.log
 tail -f logs/performance.log
 ```
 
-### 🔧 Estado del Sistema en la Aplicación
+### Estado del Sistema en la Aplicación
 
 1. Ve al Chat Clínico
-2. Expande "🔧 Estado del Sistema"
-3. Verifica que todos los componentes estén en verde (✅)
+2. Expande " Estado del Sistema"
+3. Verifica que todos los componentes estén en verde ()
 
 ### Problemas Comunes y Soluciones
 
 | Problema | Síntoma | Solución |
 |----------|---------|----------|
 | **Chat no responde** | Spinner infinito | Verificar `ANTHROPIC_API_KEY` y conexión |
-| **Error de datetime** | Error en logs de rendimiento | ✅ **Ya corregido** automáticamente |
+| **Error de datetime** | Error en logs de rendimiento |  **Ya corregido** automáticamente |
 | **Agentes no inicializan** | Error al cargar chat | Ejecutar diagnóstico completo |
 | **Base de datos** | Error al guardar mensajes | Verificar configuración Supabase |
 | **RAG no encuentra documentos** | Error RAG | Verificar conexión a Supabase y tabla `rag_chunks` |
@@ -1065,7 +1065,7 @@ tail -f logs/performance.log
 
 Ver [DIAGNOSTIC_GUIDE.md](DIAGNOSTIC_GUIDE.md) para guía completa de solución de problemas.
 
-### 📊 Sistema de Logging Avanzado
+### Sistema de Logging Avanzado
 
 - **Logs Rotativos**: Se rotan automáticamente al alcanzar 10MB
 - **Múltiples Niveles**: DEBUG, INFO, WARNING, ERROR, CRITICAL
