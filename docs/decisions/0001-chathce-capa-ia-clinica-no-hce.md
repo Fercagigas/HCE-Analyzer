@@ -27,6 +27,7 @@ La HCE hospitalaria seguirá siendo el *system of record*. ChatHCE:
 
 - tendrá una versión 1 de investigación/educación para médicos, sin modo `shadow` ni influencia en decisiones asistenciales reales;
 - abarcará como intended purpose todos los servicios hospitalarios, aunque cada servicio y capability deberá disponer de fuentes y validación representativas antes de evaluarse o habilitarse;
+- tendrá como primera modalidad asistencial futura, si llega a autorizarse, un uso asistivo de solo lectura, con evidencia verificable, validación médica obligatoria y sin diagnóstico, recomendación o acción autónomos;
 - se integrará preferentemente mediante SMART on FHIR y FHIR R4, con adaptadores que no contaminen el dominio central;
 - accederá a datos a través de un Clinical Data Gateway que aplique identidad, autorización, contexto, minimización, allowlists, auditoría y procedencia antes del LLM;
 - será de solo lectura por defecto;
@@ -55,6 +56,8 @@ La decisión aplica los principios del roadmap: evidence before eloquence, read-
 - ChatHCE depende de la disponibilidad y calidad de los sistemas fuente; debe mostrar información ausente, conflictos y fallos sin aparentar completitud.
 - La comunicación externa de v1 se limita a claims técnicos verificables; la reducción de esfuerzo y cualquier beneficio clínico siguen siendo hipótesis hasta validarse.
 - El riesgo residual Medio requiere aceptación conjunta del product owner y el clinical safety owner; el riesgo Alto y las excepciones corresponden a un comité multidisciplinar; el riesgo Crítico permanece prohibido en v1.
+- Fernando Cagigas Villar es provisionalmente el único integrante activo, product owner, director del proyecto y responsable de implementación; el clinical safety owner y el comité multidisciplinar están por constituir y bloquean cualquier aceptación de riesgo clínico para uso asistencial real.
+- Los umbrales de calidad se fijarán después de un baseline por capability y servicio, con gates inmediatos de cero accesos no autorizados, cero fugas entre pacientes/tenants y cero violaciones de políticas de herramientas.
 - La integración con múltiples HCE y la operación de gateways añaden trabajo inicial, pero evitan acoplar el producto a un proveedor o duplicar el registro oficial.
 - Cualquier propuesta futura de utilizar ChatHCE en decisiones asistenciales reales, convertirlo en repositorio principal o habilitar acciones clínicas reabre este ADR y el intended purpose.
 
@@ -63,7 +66,7 @@ La decisión aplica los principios del roadmap: evidence before eloquence, read-
 No quedan decisiones de producto abiertas para cerrar este ADR. Permanecen como trabajo de implementación y futuros gates:
 
 - ampliar el adapter MIMIC-IV-ED hacia MIMIC general y demostrar cobertura por servicio;
-- definir antes de la comunicación externa los umbrales de evaluación de cada claim técnico;
-- designar nominalmente product owner, clinical safety owner y comité multidisciplinar;
+- ejecutar el baseline y aprobar los umbrales restantes mediante el método acordado antes de comunicar cada claim técnico;
+- designar un clinical safety owner y constituir el comité multidisciplinar antes de cualquier aceptación de riesgo para uso asistencial real;
 - reabrir el intended purpose, este ADR y la evaluación regulatoria antes de cualquier transición desde investigación/educación hacia decisiones asistenciales reales;
 - documentar mediante un nuevo ADR cualquier futura escritura o transferencia de borradores a la HCE.

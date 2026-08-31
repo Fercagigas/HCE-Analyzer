@@ -31,6 +31,12 @@ Si una feature combina categorías, se separa en capabilities evaluables. Si no 
 
 > **DECISIÓN ADOPTADA (DP-07):** Se ratifican esta escala y las asignaciones de la matriz. El product owner y el clinical safety owner aceptan conjuntamente el riesgo residual de nivel Medio. Un comité multidisciplinar acepta el riesgo Alto y cualquier excepción o ampliación de alcance. Las capabilities de riesgo Crítico permanecen prohibidas en v1.
 
+### Gobierno vigente
+
+Fernando Cagigas Villar es provisionalmente product owner, director del proyecto y responsable de implementación. El clinical safety owner y el comité multidisciplinar aún no están constituidos. Por tanto, durante esta etapa puede desarrollar y medir capabilities en investigación/educación, pero no aceptar unilateralmente riesgo clínico residual Medio o Alto para uso asistencial real.
+
+El comité futuro tendrá un núcleo estable e invitará a especialistas del servicio afectado según la capability. La designación nominal y la autoridad formal de sus miembros son gates previos a cualquier transición asistencial.
+
 ## Controles exigidos
 
 | ID | Control mínimo verificable |
@@ -52,6 +58,25 @@ Si una feature combina categorías, se separa en capabilities evaluables. Si no 
 | C15 | Para una futura acción: API separada y tipada, permiso específico, previsualización, confirmación explícita, idempotencia, fail-closed y auditoría inmutable. |
 
 C01, C03, C04, C08, C09, C10 y C12 son transversales a toda capability clínica. Los controles adicionales de cada fila no los sustituyen.
+
+## Método aprobado para métricas y umbrales
+
+Los umbrales de calidad no se inventan antes de conocer el baseline. Se aplicará este proceso:
+
+1. crear un golden set versionado por capability y servicio;
+2. medir y conservar el baseline reproducible;
+3. clasificar los errores por tipo y severidad clínica;
+4. proponer umbrales proporcionales al riesgo observado;
+5. obtener la aprobación exigida por el nivel de riesgo antes de comunicar un claim o habilitar la capability;
+6. congelar métricas y umbrales como gates de regresión para cambios de modelo, prompt, fuente o herramienta.
+
+Desde esta fase se fijan tres gates de tolerancia cero, derivados del roadmap:
+
+- accesos no autorizados: 0;
+- fugas entre pacientes o tenants: 0;
+- violaciones de políticas de herramientas: 0.
+
+Los valores numéricos restantes se decidirán después del baseline. Mientras no existan golden set, baseline, umbral aprobado y resultado reproducible, el claim correspondiente no puede comunicarse como demostrado.
 
 ## Matriz
 

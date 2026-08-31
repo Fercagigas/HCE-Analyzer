@@ -45,6 +45,12 @@ Todo acceso está sujeto a identidad, autorización y propósito de uso. La incl
 
 > **DECISIÓN ADOPTADA (DP-03):** El intended purpose abarca todos los servicios hospitalarios. MIMIC-IV-ED es un adapter transitorio del prototipo y se prevé migrar o ampliar la fuente a MIMIC general. La activación de una capability en un servicio concreto sigue condicionada a disponer de datos, protocolos, clinical owners, golden sets y validación representativos de ese servicio.
 
+### Gobernanza provisional
+
+A fecha de este documento, **Fernando Cagigas Villar** es el único integrante activo del proyecto y asume provisionalmente las funciones de product owner, dirección del proyecto y responsable de implementación. Esta acumulación es admisible para la versión 1 de investigación/educación, pero no constituye una revisión independiente ni le asigna por defecto funciones o cualificaciones clínicas, de privacidad, calidad o regulación.
+
+Los cargos de clinical safety owner y los miembros permanentes del comité multidisciplinar están por designar. El modelo aprobado será un núcleo estable con especialistas invitados según el servicio y la capability evaluados. Mientras esos órganos no estén constituidos, no puede aceptarse riesgo residual Medio o Alto para uso asistencial real ni aprobarse la transición a dicho uso.
+
 ## Contexto de uso
 
 La arquitectura objetivo admite la misma experiencia como aplicación SMART embebida en una HCE, panel lateral contextual o espacio de trabajo independiente. En cualquiera de los tres modos:
@@ -56,6 +62,8 @@ La arquitectura objetivo admite la misma experiencia como aplicación SMART embe
 - los resultados de IA están identificados como tales y nunca se presentan como autoridad clínica.
 
 La versión 1 se evalúa en investigación/educación, con médicos, sin influir en la atención real. Aunque el intended purpose cubre todos los servicios hospitalarios, cada combinación de servicio, fuente y capability debe demostrar cobertura y funcionamiento antes de evaluarse. Cualquier transición posterior a atención real será de solo lectura en su primera etapa y dependerá de evidencia de seguridad y utilidad por capability.
+
+> **DECISIÓN ADOPTADA (DP-08):** Si se autoriza en el futuro una primera modalidad asistencial real, será asistiva y de solo lectura, mostrará evidencia verificable, exigirá validación del médico y no realizará diagnóstico, recomendación ni acción autónomos. La modalidad está definida, pero su activación sigue condicionada a reabrir el intended purpose y superar los gates clínicos, técnicos, de privacidad y regulatorios correspondientes.
 
 ## Tareas comprendidas
 

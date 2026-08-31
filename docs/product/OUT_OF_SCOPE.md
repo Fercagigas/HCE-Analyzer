@@ -47,6 +47,7 @@ ChatHCE no solicita pruebas, procedimientos, interconsultas, medicación, ingres
 - No realiza vigilancia continua ni promete detectar todos los cambios o deterioros.
 - No comunica certeza clínica mediante un porcentaje de confianza autodeclarado por el LLM.
 - No se utiliza en la versión 1 para modo `shadow` ni para tomar decisiones asistenciales reales.
+- La futura modalidad asistencial, si supera sus gates, seguirá sin diagnóstico, recomendación o acción autónomos y mantendrá validación médica obligatoria.
 - No usa contenido documental no aprobado, vencido, retirado o de otro tenant como fundamento clínico.
 - No usa en la versión 1 guías externas ni búsqueda externa en tiempo real como fuente clínica.
 - No expone información de un paciente fuera del contexto y propósito autorizados.
