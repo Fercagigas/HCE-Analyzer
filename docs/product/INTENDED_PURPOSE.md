@@ -2,7 +2,7 @@
 
 ## Estado y alcance del documento
 
-Este documento define el intended purpose de la primera versión de producto propuesta en el roadmap hospitalario. Es una especificación de producto y seguridad: no afirma que el prototipo actual esté validado o autorizado para uso asistencial.
+Este documento define el intended purpose aprobado para la primera versión de producto del roadmap hospitalario. Es una especificación de producto y seguridad: no afirma que el prototipo actual esté validado o autorizado para uso asistencial.
 
 ChatHCE se define como un **copiloto de información clínica** que ayuda a profesionales autorizados a encontrar, organizar, resumir y comprender información ya disponible. No realiza diagnóstico autónomo y no sustituye el juicio profesional, la HCE ni los sistemas clínicos que conservan el registro oficial.
 
@@ -10,11 +10,11 @@ Este documento no constituye asesoramiento jurídico y no determina la clasifica
 
 ## Intended purpose propuesto
 
-ChatHCE está destinado a asistir a profesionales sanitarios autorizados, dentro de un contexto clínico institucional y, cuando la tarea esté vinculada a un paciente, sobre el paciente y episodio activos, en tareas de revisión de información: recuperar hechos de la HCE y conocimiento clínico aprobado, resumir la información disponible, reconstruir su evolución temporal, comparar episodios o periodos, identificar cambios, preparar borradores y responder preguntas sobre esas fuentes.
+En la versión 1, ChatHCE está destinado a que **médicos autorizados** utilicen datos anonimizados o debidamente preparados para investigación y educación, en cualquier servicio hospitalario, para evaluar tareas de revisión de información: recuperar hechos de la HCE y conocimiento clínico aprobado, resumir la información disponible, reconstruir su evolución temporal, comparar episodios o periodos, identificar cambios, preparar borradores y responder preguntas sobre esas fuentes.
 
-Los resultados son informativos y asistivos. Deben mostrar su evidencia, distinguir hechos de inferencias, expresar información ausente o contradictoria y ser revisados por el profesional antes de influir en una decisión o incorporarse a documentación clínica. La responsabilidad clínica permanece en el profesional y en los procesos del centro.
+Los resultados de la versión 1 son informativos y se limitan a investigación y educación: no se utilizan para tomar decisiones asistenciales reales ni se incorporan a documentación clínica. Deben mostrar su evidencia, distinguir hechos de inferencias y expresar información ausente o contradictoria. El objetivo futuro es evaluar un uso asistivo real, siempre bajo responsabilidad profesional, pero ese cambio requerirá validación, gestión de riesgos, decisión regulatoria y una nueva aprobación explícita del intended purpose.
 
-> **DECISION PENDIENTE:** DP-01 — ¿Cuál será el contexto autorizado de la versión 1: (a) investigación/educación con datos anonimizados, (b) piloto hospitalario `shadow` sin influencia asistencial, o (c) uso asistivo en atención real tras validación? Elegir (b) conserva la ruta incremental del roadmap; elegir (c) exige adelantar validación clínica, gestión de riesgos, privacidad y decisión regulatoria; elegir (a) impide formular claims de uso clínico real.
+> **DECISIÓN ADOPTADA (DP-01):** La versión 1 se limita a investigación y educación y no incluye modo `shadow`. El uso que pueda influir en decisiones asistenciales reales pertenece a una versión futura y exige reabrir formalmente el intended purpose antes de habilitarlo.
 
 ## Naturaleza del producto y frontera del sistema
 
@@ -31,9 +31,9 @@ El prototipo del repositorio implementa una interfaz Streamlit con un agente con
 
 | Actor del roadmap | Relación con ChatHCE v1 | Tareas previstas |
 |---|---|---|
-| Médico | Usuario clínico | Revisar la historia, consultar evidencia, comparar episodios y validar resultados o borradores. |
-| Enfermería | Usuario clínico | Revisar evolución y cambios pertinentes a su flujo de trabajo, consultar evidencia y validar resultados o borradores. |
-| Farmacéutico | Usuario clínico | Revisar información de medicación disponible, cambios y protocolos autorizados, y validar resultados o borradores. |
+| Médico | Usuario previsto en v1 | Evaluar la revisión de historias, consultas de evidencia, comparaciones y resultados o borradores dentro del ámbito de investigación/educación. |
+| Enfermería | Actor clínico futuro y participante potencial en validación | No es usuario previsto en v1; requerirá intended purpose, workflows, permisos y evaluación propios antes de habilitarse. |
+| Farmacéutico | Actor clínico futuro y participante potencial en validación | No es usuario previsto en v1; requerirá intended purpose, workflows, permisos y evaluación propios antes de habilitarse. |
 | Administrador clínico | Usuario de gobierno | Configurar flujos y ámbitos organizativos sin sustituir la aprobación clínica de contenidos. |
 | Administrador IT | Usuario técnico | Configurar integración, identidad, disponibilidad y operación; no obtiene acceso clínico por el mero rol técnico. |
 | Responsable de seguridad/DPO | Usuario de supervisión | Revisar controles, flujos de datos, incidentes y evidencias de cumplimiento según sus atribuciones. |
@@ -41,9 +41,9 @@ El prototipo del repositorio implementa una interfaz Streamlit con un agente con
 
 Todo acceso está sujeto a identidad, autorización y propósito de uso. La inclusión de un actor en esta tabla no le concede acceso a datos ni a todas las capacidades.
 
-> **DECISION PENDIENTE:** DP-02 — ¿Qué perfiles serán usuarios clínicos de la versión 1: (a) solo médicos, (b) médicos y enfermería, o (c) médicos, enfermería y farmacia con permisos diferenciados? Ampliar perfiles incrementa el valor transversal, pero obliga a diseñar y validar tareas, lenguaje, RBAC/ABAC y riesgos específicos para cada profesión.
+> **DECISIÓN ADOPTADA (DP-02):** Los únicos usuarios clínicos previstos en la versión 1 son médicos. Enfermería y farmacia se mantienen como actores del roadmap, pero no entran en el intended purpose hasta contar con diseño y validación específicos.
 
-> **DECISION PENDIENTE:** DP-03 — ¿Qué servicios delimitan el primer intended purpose: (a) Urgencias, alineado con los datos MIMIC-IV-ED actuales, (b) Urgencias y UCI, alineado también con el corpus documental actual, o (c) varios servicios hospitalarios? Un ámbito más amplio exige fuentes, golden sets, clinical owners y validación representativos de cada servicio antes de habilitarlo.
+> **DECISIÓN ADOPTADA (DP-03):** El intended purpose abarca todos los servicios hospitalarios. MIMIC-IV-ED es un adapter transitorio del prototipo y se prevé migrar o ampliar la fuente a MIMIC general. La activación de una capability en un servicio concreto sigue condicionada a disponer de datos, protocolos, clinical owners, golden sets y validación representativos de ese servicio.
 
 ## Contexto de uso
 
@@ -55,7 +55,7 @@ La arquitectura objetivo admite la misma experiencia como aplicación SMART embe
 - el profesional puede abrir la fuente de cada afirmación clínica relevante;
 - los resultados de IA están identificados como tales y nunca se presentan como autoridad clínica.
 
-El despliegue inicial hospitalario previsto por el roadmap es controlado, de solo lectura y con pocos servicios y usuarios. La ampliación depende de evidencia de seguridad y utilidad obtenida por capability.
+La versión 1 se evalúa en investigación/educación, con médicos, sin influir en la atención real. Aunque el intended purpose cubre todos los servicios hospitalarios, cada combinación de servicio, fuente y capability debe demostrar cobertura y funcionamiento antes de evaluarse. Cualquier transición posterior a atención real será de solo lectura en su primera etapa y dependerá de evidencia de seguridad y utilidad por capability.
 
 ## Tareas comprendidas
 
@@ -74,7 +74,7 @@ La descripción operacional y los criterios de aceptación están en [CLINICAL_U
 
 ## Claims de producto verificables
 
-Los siguientes son claims de capacidad propuestos. Describen resultados observables, no exactitud absoluta ni beneficio clínico demostrado.
+Los siguientes son los claims técnicos autorizados para la versión 1. Describen resultados observables, no exactitud absoluta, ahorro demostrado ni beneficio clínico.
 
 | Claim permitido | Cómo se verifica | Condición para comunicarlo |
 |---|---|---|
@@ -83,11 +83,11 @@ Los siguientes son claims de capacidad propuestos. Describen resultados observab
 | ChatHCE presenta cambios entre periodos o revisiones. | Concordancia del diff con un conjunto de referencia, errores temporales, omisiones y falsos cambios. | Diferenciar cambios observados de la priorización inferida. |
 | ChatHCE permite realizar consultas longitudinales sobre la información disponible. | Exactitud temporal, soporte de cada respuesta, abstención ante datos insuficientes y ausencia de mezcla de pacientes/episodios. | Limitarlo a recursos y ventanas temporales cubiertos por la validación. |
 | ChatHCE permite comparar episodios o periodos conservando la trazabilidad. | Exactitud de valores, unidades, fechas, alcance y enlaces a la evidencia de cada lado de la comparación. | Mostrar datos ausentes y no inferir equivalencia entre episodios incompatibles. |
-| ChatHCE puede reducir el esfuerzo de revisión de información clínica. | Estudio con usuarios representativos: tiempo y acciones de revisión, tasa de verificación de evidencia, errores y carga percibida frente al flujo de referencia. | Tratarlo como hipótesis hasta demostrar una mejora sin degradar métricas de seguridad. |
+La reducción del esfuerzo de revisión se conserva como **hipótesis de evaluación**, no como claim autorizado. Para promoverla a claim será necesario un estudio con médicos representativos que mida tiempo y acciones de revisión, verificación de evidencia, errores y carga percibida frente al flujo de referencia.
 
-Claims no permitidos incluyen «ChatHCE diagnostica», «recomienda el mejor tratamiento», «evita errores», «garantiza que no hay alucinaciones» o cualquier afirmación de seguridad, eficacia o ahorro no sustentada para el contexto evaluado.
+Claims no permitidos incluyen «ChatHCE diagnostica», «recomienda el mejor tratamiento», «reduce el esfuerzo», «evita errores», «garantiza que no hay alucinaciones» o cualquier afirmación de seguridad, eficacia, ahorro o beneficio clínico no demostrada para el contexto evaluado.
 
-> **DECISION PENDIENTE:** DP-04 — ¿Qué claims se autorizarán para comunicación externa y con qué umbrales de evidencia? Opciones: (a) comunicar solo capacidades técnicas verificadas, (b) añadir reducción de esfuerzo tras un estudio de usabilidad, o (c) añadir beneficios clínicos tras validación clínica específica. Cada escalón aumenta la carga de evidencia y puede modificar la evaluación regulatoria; los umbrales deben acordarse antes de publicar claims cuantitativos.
+> **DECISIÓN ADOPTADA (DP-04):** La comunicación de la versión 1 se limita a capacidades técnicas verificables. No se autorizan claims de reducción de esfuerzo ni de beneficio clínico hasta disponer de la validación específica correspondiente; tampoco se publican claims cuantitativos sin umbrales predefinidos y resultados reproducibles.
 
 ## Principios de UX
 

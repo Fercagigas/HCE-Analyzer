@@ -2,7 +2,7 @@
 
 ## Propósito de estos límites
 
-Los límites siguientes aplican a la versión 1 y al piloto inicial. Evitan que una capa de recuperación y síntesis se convierta implícitamente en un sistema autónomo de decisión o ejecución clínica sin la evidencia, los controles y la estrategia regulatoria correspondientes.
+Los límites siguientes aplican a la versión 1 de investigación/educación y continúan como baseline para cualquier futura transición a atención real. Evitan que una capa de recuperación y síntesis se convierta implícitamente en un sistema autónomo de decisión o ejecución clínica sin la evidencia, los controles y la estrategia regulatoria correspondientes.
 
 Este documento no es asesoramiento jurídico ni fija la clasificación regulatoria de ChatHCE. Esa decisión se realizará en la Fase 7 conforme al uso real, los claims, la jurisdicción y `ROADMAP_HOSPITAL_READY/13-regulatory-quality-clinical-safety.md`.
 
@@ -46,7 +46,9 @@ ChatHCE no solicita pruebas, procedimientos, interconsultas, medicación, ingres
 - No ofrece una «segunda opinión» autónoma ni una recomendación individual de tratamiento.
 - No realiza vigilancia continua ni promete detectar todos los cambios o deterioros.
 - No comunica certeza clínica mediante un porcentaje de confianza autodeclarado por el LLM.
+- No se utiliza en la versión 1 para modo `shadow` ni para tomar decisiones asistenciales reales.
 - No usa contenido documental no aprobado, vencido, retirado o de otro tenant como fundamento clínico.
+- No usa en la versión 1 guías externas ni búsqueda externa en tiempo real como fuente clínica.
 - No expone información de un paciente fuera del contexto y propósito autorizados.
 
 ## Límites técnicos para producción hospitalaria

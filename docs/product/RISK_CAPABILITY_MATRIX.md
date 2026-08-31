@@ -2,7 +2,7 @@
 
 ## Finalidad y límites
 
-Esta matriz permite clasificar una capability antes de diseñarla, habilitarla o modificarla. Los niveles son una taxonomía interna y conservadora de riesgo de producto; no son una clasificación de producto sanitario, una evaluación jurídica ni el risk file clínico exigido en Fase 7.
+Esta matriz permite clasificar una capability antes de diseñarla, habilitarla o modificarla. Los estados de v1 se refieren exclusivamente a investigación/educación y no autorizan influencia en decisiones asistenciales reales. Los niveles son una taxonomía interna y conservadora de riesgo de producto; no son una clasificación de producto sanitario, una evaluación jurídica ni el risk file clínico exigido en Fase 7.
 
 El riesgo indicado es **inherente**, antes de controles. La activación requiere verificar todos los controles, evaluar el riesgo residual y obtener la aprobación correspondiente. Una etiqueta de riesgo no convierte una capability fuera de alcance en permitida.
 
@@ -29,7 +29,7 @@ Si una feature combina categorías, se separa en capabilities evaluables. Si no 
 | Alto | Una omisión, error temporal o inferencia puede influir de forma material en el juicio o la documentación clínica. Requiere validación clínica específica. |
 | Crítico | Puede producir una decisión o cambio clínico directo. No está admitido en la versión 1. |
 
-> **DECISION PENDIENTE:** DP-07 — ¿Se ratifican esta escala y las asignaciones provisionales, y quién acepta el riesgo residual por capability? Opciones: (a) product owner con clinical safety owner para Medio/Alto, (b) comité multidisciplinar para Alto y cualquier excepción, o (c) otro esquema institucional. Sin propietario y umbrales aprobados, la matriz sirve para diseño pero no como gate de release.
+> **DECISIÓN ADOPTADA (DP-07):** Se ratifican esta escala y las asignaciones de la matriz. El product owner y el clinical safety owner aceptan conjuntamente el riesgo residual de nivel Medio. Un comité multidisciplinar acepta el riesgo Alto y cualquier excepción o ampliación de alcance. Las capabilities de riesgo Crítico permanecen prohibidas en v1.
 
 ## Controles exigidos
 
@@ -79,6 +79,6 @@ C01, C03, C04, C08, C09, C10 y C12 son transversales a toda capability clínica.
 2. Ingeniería convierte los controles aplicables en requisitos y pruebas observables.
 3. Evaluación clínica define datasets, usuarios, métricas y umbrales proporcionales a la capability.
 4. Seguridad y privacidad verifican aislamiento, mínimo necesario, ataques y auditoría.
-5. El responsable designado acepta o rechaza el riesgo residual antes de habilitarla.
+5. Product owner y clinical safety owner aceptan o rechazan conjuntamente el riesgo residual Medio; el comité multidisciplinar decide para riesgo Alto y cualquier excepción o ampliación de alcance.
 6. Un cambio de modelo, prompt, fuente, herramienta, ámbito clínico o UX relevante reabre la evaluación.
 7. Una capability sin clasificación, controles verificables o propietario permanece deshabilitada.

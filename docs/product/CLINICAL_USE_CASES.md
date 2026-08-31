@@ -2,7 +2,7 @@
 
 ## Regla de inclusión
 
-Un caso de uso está permitido en la versión 1 solo si es asistivo, opera sobre fuentes autorizadas y disponibles, conserva el contexto de paciente y episodio cuando la tarea está vinculada a ellos, y deja la interpretación y decisión final al profesional. Su inclusión en este documento no autoriza su activación: cada capability debe superar los controles y evaluaciones de [RISK_CAPABILITY_MATRIX.md](RISK_CAPABILITY_MATRIX.md).
+Un caso de uso está permitido en la versión 1 solo para investigación/educación con médicos, opera sobre fuentes autorizadas y disponibles, conserva el contexto de paciente y episodio cuando la tarea está vinculada a ellos y no influye en decisiones asistenciales reales. Su inclusión en este documento no autoriza su activación: cada capability y servicio debe superar los controles y evaluaciones de [RISK_CAPABILITY_MATRIX.md](RISK_CAPABILITY_MATRIX.md).
 
 Todos los casos comparten estas condiciones:
 
@@ -65,7 +65,7 @@ Todos los casos comparten estas condiciones:
 
 **Límite:** borradores, documentos vencidos, retirados o sustituidos no participan por defecto. Un protocolo general no se presenta como instrucción individual para el paciente.
 
-> **DECISION PENDIENTE:** DP-05 — ¿Qué fuentes admite la base de conocimiento de la versión 1: (a) solo protocolos internos aprobados por el hospital, (b) protocolos internos y guías externas curadas por un clinical owner, o (c) además búsqueda externa en tiempo real? (a) ofrece el gobierno más claro; (b) amplía cobertura con trabajo de versionado; (c) introduce riesgos de vigencia, autoridad y trazabilidad y no debería habilitarse sin controles adicionales.
+> **DECISIÓN ADOPTADA (DP-05):** La versión 1 solo admite protocolos internos aprobados por el hospital. Las guías externas y la búsqueda externa en tiempo real quedan fuera hasta contar con curación, versionado, autoridad, trazabilidad y aprobación explícitos.
 
 ## UC-06 — Detectar cambios
 
@@ -83,11 +83,11 @@ Todos los casos comparten estas condiciones:
 
 **Entrada:** evidencias y contexto reunidos explícitamente por el profesional.
 
-**Salida permitida:** texto editable marcado de forma persistente como `AI-generated draft`, con fuentes y elementos pendientes de comprobar.
+**Salida permitida:** texto editable marcado de forma persistente como `AI-generated draft`, con fuentes y elementos pendientes de comprobar, visible únicamente dentro del workspace de ChatHCE.
 
-**Límite:** el borrador no se guarda automáticamente en la HCE, no se firma, no se envía y no ejecuta ninguna orden. El profesional debe verificarlo y asumir la autoría mediante un flujo separado antes de cualquier incorporación.
+**Límite:** ChatHCE no ofrece en la versión 1 una función para copiar, exportar, guardar en la HCE, firmar o enviar el borrador, y este no ejecuta ninguna orden. Cualquier mecanismo de transferencia requerirá una nueva decisión de alcance.
 
-> **DECISION PENDIENTE:** DP-06 — ¿Qué tratamiento de borradores se permite en la versión 1: (a) solo visualización dentro del workspace, (b) copia/exportación manual con aviso y auditoría, o (c) posponer por completo la generación de borradores hasta después del piloto? (a) minimiza el riesgo de propagación pero reduce utilidad; (b) aporta utilidad, aunque puede perder trazabilidad fuera de ChatHCE; (c) reduce el alcance que debe validarse en v1. El envío a una bandeja de la HCE es una `write-action` y queda fuera de v1 en las tres opciones.
+> **DECISIÓN ADOPTADA (DP-06):** Los borradores de la versión 1 permanecen exclusivamente dentro del workspace. No se habilita copia/exportación ni envío a una bandeja de la HCE; este último sería además una `write-action` fuera de alcance.
 
 ## UC-08 — Responder preguntas sobre información disponible
 

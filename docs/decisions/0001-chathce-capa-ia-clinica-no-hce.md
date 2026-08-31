@@ -25,6 +25,8 @@ ChatHCE será una **Clinical AI Intelligence Layer / Clinical AI Workspace**, no
 
 La HCE hospitalaria seguirá siendo el *system of record*. ChatHCE:
 
+- tendrá una versión 1 de investigación/educación para médicos, sin modo `shadow` ni influencia en decisiones asistenciales reales;
+- abarcará como intended purpose todos los servicios hospitalarios, aunque cada servicio y capability deberá disponer de fuentes y validación representativas antes de evaluarse o habilitarse;
 - se integrará preferentemente mediante SMART on FHIR y FHIR R4, con adaptadores que no contaminen el dominio central;
 - accederá a datos a través de un Clinical Data Gateway que aplique identidad, autorización, contexto, minimización, allowlists, auditoría y procedencia antes del LLM;
 - será de solo lectura por defecto;
@@ -35,7 +37,7 @@ La HCE hospitalaria seguirá siendo el *system of record*. ChatHCE:
 
 ## Motivo
 
-Esta opción concentra el producto en reducir la carga de revisión y hacer navegable la información clínica sin competir con las capacidades transaccionales de una HCE. También preserva una fuente oficial, facilita una integración agnóstica de proveedor, limita privilegios y hace posible evaluar cada capability de IA de manera separada.
+Esta opción concentra el producto en evaluar si puede reducir la carga de revisión y hacer navegable la información clínica sin competir con las capacidades transaccionales de una HCE. También preserva una fuente oficial, facilita una integración agnóstica de proveedor, limita privilegios y hace posible evaluar cada capability de IA de manera separada.
 
 La decisión aplica los principios del roadmap: evidence before eloquence, read-only by default, least privilege, human in the loop, interoperabilidad, degradación segura, auditabilidad y UX clínica en lugar de UX de chatbot genérico.
 
@@ -43,24 +45,25 @@ La decisión aplica los principios del roadmap: evidence before eloquence, read-
 
 - La arquitectura debe separar presentación, orquestación de IA y acceso clínico; el LLM no conoce credenciales ni consulta libremente producción.
 - MIMIC-IV-ED se conserva como adapter y entorno de investigación, no como modelo de dominio ni evidencia de preparación hospitalaria.
+- El adapter deberá evolucionar desde MIMIC-IV-ED hacia fuentes MIMIC más amplias y, posteriormente, fuentes hospitalarias que cubran todos los servicios incluidos en el intended purpose.
 - La nueva UX se diseña alrededor de contexto de paciente, preguntas, cambios, timeline, evidencia e investigación, no alrededor de mantener un expediente paralelo.
 - La escritura futura queda fuera de alcance hasta contar con un flujo separado, permiso específico, previsualización, aprobación humana, auditoría y validación.
+- Los borradores permanecen dentro del workspace en v1, sin funciones de copia/exportación ni envío a la HCE.
 - La base documental necesita gobierno, aprobación, vigencia, versionado y aislamiento por hospital.
+- La versión 1 solo utiliza protocolos internos aprobados por el hospital; la incorporación de guías o búsquedas externas exige una decisión posterior.
 - Cada afirmación clínica relevante debe poder reconstruirse desde datos o documentos fuente y diferenciar hechos de inferencias.
 - ChatHCE depende de la disponibilidad y calidad de los sistemas fuente; debe mostrar información ausente, conflictos y fallos sin aparentar completitud.
+- La comunicación externa de v1 se limita a claims técnicos verificables; la reducción de esfuerzo y cualquier beneficio clínico siguen siendo hipótesis hasta validarse.
+- El riesgo residual Medio requiere aceptación conjunta del product owner y el clinical safety owner; el riesgo Alto y las excepciones corresponden a un comité multidisciplinar; el riesgo Crítico permanece prohibido en v1.
 - La integración con múltiples HCE y la operación de gateways añaden trabajo inicial, pero evitan acoplar el producto a un proveedor o duplicar el registro oficial.
-- Cualquier propuesta futura de convertir ChatHCE en repositorio principal o habilitar acciones clínicas reabre este ADR y el intended purpose.
+- Cualquier propuesta futura de utilizar ChatHCE en decisiones asistenciales reales, convertirlo en repositorio principal o habilitar acciones clínicas reabre este ADR y el intended purpose.
 
 ## Pendientes
 
-Las decisiones abiertas que concretan esta arquitectura se mantienen en los documentos de producto:
+No quedan decisiones de producto abiertas para cerrar este ADR. Permanecen como trabajo de implementación y futuros gates:
 
-- DP-01: contexto autorizado de la versión 1;
-- DP-02: perfiles clínicos habilitados;
-- DP-03: servicios incluidos en el primer intended purpose;
-- DP-04: claims externos y umbrales de evidencia;
-- DP-05: fuentes admitidas en la base de conocimiento;
-- DP-06: tratamiento permitido de los borradores dentro del alcance de v1;
-- DP-07: gobierno y aceptación del riesgo residual.
-
-Ninguno de estos pendientes cambia la decisión fundacional de que la HCE conserva el registro oficial y ChatHCE actúa como capa asistiva.
+- ampliar el adapter MIMIC-IV-ED hacia MIMIC general y demostrar cobertura por servicio;
+- definir antes de la comunicación externa los umbrales de evaluación de cada claim técnico;
+- designar nominalmente product owner, clinical safety owner y comité multidisciplinar;
+- reabrir el intended purpose, este ADR y la evaluación regulatoria antes de cualquier transición desde investigación/educación hacia decisiones asistenciales reales;
+- documentar mediante un nuevo ADR cualquier futura escritura o transferencia de borradores a la HCE.
