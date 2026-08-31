@@ -1,6 +1,6 @@
 # ADR 0010: Desacoplar el core del runtime y de los proveedores
 
-Estado: propuesto para Fase 1
+Estado: aceptado para Fase 1, con la migración de la fuente clínica gestionada por separado
 
 Fecha: 2026-08-31
 
@@ -15,21 +15,23 @@ Esta estructura impide cumplir los objetivos de Fase 1: core testeable sin UI, F
 1. **Mantener Streamlit como capa de aplicación y añadir FastAPI alrededor.** Se descarta porque FastAPI acabaría llamando funciones que leen `st.session_state`, y existirían dos runtimes con semánticas de sesión diferentes. No rompe el acoplamiento ni hace el core testeable.
 2. **Abstraer únicamente `supabase.Client` con una interfaz genérica de consultas.** Se descarta porque reproducir métodos `table/select/eq/rpc` detrás de una interfaz conserva nombres de tabla, SQL y semántica del proveedor en el dominio. Tampoco crea operaciones clínicas ni DTOs canónicos.
 3. **Reescritura completa y simultánea a FastAPI, FHIR y otro frontend.** Se descarta para Fase 1 porque es un cambio big-bang sin baseline suficiente, dificulta comparar comportamiento y mezcla separación arquitectónica con interoperabilidad hospitalaria.
-4. **Ports and adapters incrementales, manteniendo Streamlit y Supabase como adapters temporales.** Se elige. Permite caracterizar y envolver el comportamiento actual, cortar dependencias en orden y sustituir adapters sin reescribir los casos de uso.
+4. **Ports and adapters incrementales, manteniendo Streamlit como adapter temporal y aislando las implementaciones de datos actuales mientras se sustituyen.** Se elige. Permite caracterizar y envolver el comportamiento actual, cortar dependencias en orden y sustituir adapters sin reescribir los casos de uso. La elección de la fuente clínica sucesora y la migración completa de Supabase se gestionan fuera de este ADR.
 5. **Un único gateway genérico para LLM, datos clínicos, RAG e identidad.** Se descarta porque diluye políticas y scopes distintos; un fallo o permiso amplio se propagaría a capacidades que deben poder degradarse y autorizarse por separado.
 
 ## Decision
 
-Adoptar una separación incremental por ports and adapters con estas reglas:
+Adoptar una separación incremental por ports and adapters con estas reglas, ratificadas para Fase 1:
 
 1. El core de aplicación no importará Streamlit, Supabase, Anthropic ni tipos de sus SDKs. Streamlit permanecerá temporalmente como adapter de presentación; FastAPI será otro adapter.
 2. Todo caso de uso recibirá un `RequestContext` obligatorio con tenant, usuario, paciente, episodio, sesión y correlación. Ninguna tool podrá reconstruir ese contexto desde globals o desde el prompt.
-3. El acceso clínico se expresará mediante `ClinicalDataProvider`, con operaciones clínicas read-only allowlisted y DTOs canónicos. `MimicClinicalDataProvider` encapsulará tablas/columnas Supabase MIMIC. Un futuro adapter FHIR implementará el mismo port.
+3. El acceso clínico se expresará mediante `ClinicalDataProvider`, con operaciones clínicas read-only allowlisted y DTOs canónicos. La fuente, el schema y el plan de sustitución de Supabase no se fijan en este ADR: son una línea de trabajo separada a cargo del responsable del proyecto. Cualquier implementación MIMIC o FHIR deberá implementar el mismo port sin filtrar detalles de almacenamiento al core.
 4. SQL libre no formará parte del contrato productivo. Si se conserva para investigación MIMIC, vivirá en un adapter y despliegue separados, sin credenciales ni datos de producción.
 5. La generación se dividirá en un port `LLMProvider` y un `ModelGateway`. El provider adaptará SDK, mensajes, errores y streaming; el gateway aplicará selección de modelo, fallback, retry, timeout, circuit breaker, policy de tools, trazas y degradación.
-6. RAG, identidad, conversación, análisis y preferencias usarán ports propios (`KnowledgeRepository`, `IdentityProvider`, `ConversationRepository`, `AnalysisRepository`, `UserPreferencesRepository`). Supabase será una implementación de infraestructura, no una abstracción transversal del dominio.
+6. RAG, identidad, conversación, análisis y preferencias usarán ports propios (`KnowledgeRepository`, `IdentityProvider`, `ConversationRepository`, `AnalysisRepository`, `UserPreferencesRepository`). La sustitución del almacenamiento se podrá realizar detrás de esos ports, sin convertir Supabase ni su sucesor en una abstracción transversal del dominio. Fase 1 incluye extraer `RequestContext` e `IdentityProvider`; la selección o migración del backend de identidad se coordinará por separado.
 7. Los tools usarán contratos internos Pydantic/provider-neutral. Los schemas específicos de Anthropic/LangChain se construirán dentro del Model Gateway.
 8. La migración seguirá patrón strangler: primero contratos y tests de caracterización, luego adapters sobre implementaciones actuales, después application services y finalmente FastAPI/SSE. No se añadirán features clínicas durante el corte.
+9. En Fase 1, las visualizaciones productivas se limitarán a transformaciones y templates deterministas. La ejecución de Python generado por un LLM queda fuera de la ruta clínica; sólo podrá reconsiderarse con sandbox, límites de recursos y una política de autorización explícita.
+10. Mientras exista acceso transitorio a Supabase, se separarán las credenciales por función y se aplicará mínimo privilegio/RLS antes de exponer la ruta mediante FastAPI. La misma exigencia de autorización se aplicará al backend sucesor.
 
 ## Motivo
 
@@ -46,23 +48,24 @@ Positivas:
 - Anthropic podrá sustituirse o combinarse con otros providers sin cambiar application services.
 - Autorización, scope, auditoría y trazas se aplicarán antes de recuperar datos o llamar al modelo.
 - El modo degradado podrá conservar retrieval y operaciones clínicas deterministas aunque falle el LLM.
-- La superficie Supabase quedará localizada y será posible imponer credenciales/policies de mínimo privilegio por adapter.
+- La superficie de almacenamiento quedará localizada y será posible sustituir Supabase sin cambiar los casos de uso.
+- Las visualizaciones de Fase 1 no ejecutarán código generado por el modelo en la ruta clínica.
 
 Negativas y costes:
 
 - Habrá adapters temporales y cierta duplicación mientras convivan Streamlit/FastAPI y contratos viejo/nuevo.
 - Los dicts/DataFrames actuales deberán mapearse a DTOs, y los prompts/tools necesitarán cambios coordinados.
 - Separar identidad/conversación de `st.session_state` exige definir explícitamente ciclo de vida y persistencia.
-- La generación de visualizaciones necesitará un contrato propio si conserva fallback LLM y ejecución de código.
+- Las visualizaciones no podrán recurrir al fallback LLM actual; ampliar esa capacidad exigirá un diseño de sandbox independiente.
 - El SQL dataset-wide útil para investigación dejará de estar disponible en el producto salvo entorno separado.
 
 ## Pendientes
 
 1. Definir los métodos iniciales y DTOs de `ClinicalDataProvider` a partir de los casos de uso realmente usados, no de las seis tablas completas.
-2. Resolver si las tablas MIMIC canónicas viven en schema `mimic_ed` o `public` y versionar las migraciones/RPC necesarias.
+2. Coordinar con la línea de trabajo responsable de sustituir Supabase la fuente clínica, el schema canónico y el versionado de migraciones/RPC. Este ADR no selecciona esa fuente.
 3. Definir `RequestContext`, reglas de propagación y rechazo cuando falte patient/encounter scope.
 4. Definir contratos de eventos/respuesta del Model Gateway, incluido streaming sin chain-of-thought.
-5. Decidir la tecnología y límites de `ConversationRepository`/`IdentityProvider` durante la transición.
+5. Especificar los límites de `ConversationRepository`/`IdentityProvider`; la tecnología de persistencia se decidirá en la migración de Supabase gestionada por separado.
 6. Especificar el perfil research-only si se decide conservar SQL libre para MIMIC.
 7. Caracterizar con tests chat, RAG, resúmenes, visualización, fallback y persistencia antes de mover código.
-8. Inventariar y versionar RLS/policies de Supabase y confirmar el tipo de clave desplegada.
+8. Inventariar y versionar RLS/policies, separar credenciales y confirmar el tipo de clave durante cualquier convivencia transitoria con Supabase.

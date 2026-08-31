@@ -104,17 +104,17 @@ El objetivo no es ocultar el string `Claude`, sino impedir que application servi
 | Pregunta clínica | `st.session_state` → `UnifiedChatAgent` → Claude selecciona `custom_query` → RPC Supabase | El contexto de paciente no es obligatorio y el modelo controla el lenguaje de acceso. | `ChatApplicationService(RequestContext)` → Model Gateway → tool allowlisted → `ClinicalDataProvider`. |
 | Restaurar sesión | Cookie Streamlit → dict usuario confiado → `authenticated=True` → services Supabase | No existe verificación de principal por request. | Cookie/token opaco → `IdentityProvider.verify()` → `RequestContext`. |
 | RAG | UI → RAGTool → Anthropic multi-query/HyDE → Supabase RPC → texto a Anthropic principal | Dos providers concretos y varias llamadas LLM están ocultos dentro de un tool. | `KnowledgeService` + `KnowledgeRepository`; augmentation a través de Model Gateway y modo degradado sin LLM. |
-| Visualización | Claude tool → Supabase tablas MIMIC → DataFrame → Claude genera código → executor → session state | Une selección de datos, provider, ejecución y renderer. | Tool tipada → `ClinicalDataProvider`; servicio de visualización; Model Gateway opcional; renderer UI separado. |
+| Visualización | Claude tool → Supabase tablas MIMIC → DataFrame → Claude genera código → executor → session state | Une selección de datos, provider, ejecución y renderer. | Tool tipada → `ClinicalDataProvider`; transformaciones/templates deterministas en Fase 1; renderer UI separado. El código generado queda fuera de la ruta clínica. |
 | Persistencia de chat | UI clasifica respuesta → AuthService/AnalysisService Supabase | El caso de uso no es invocable desde FastAPI y carece de trazas/contexto uniformes. | Application service transaccional con Conversation/Analysis repositories. |
 
 ## Orden recomendado de extracción en Fase 1
 
 1. Definir `RequestContext`, DTOs clínicos y contratos de tool; caracterizar el comportamiento actual con tests sin mover implementación.
-2. Crear `ClinicalDataProvider` y envolver `DatabaseService` como `MimicClinicalDataProvider`; exponer sólo operaciones clínicas. Deshabilitar `custom` fuera de un perfil research explícito.
+2. Crear `ClinicalDataProvider` y exponer sólo operaciones clínicas. El adapter concreto y la migración integral de Supabase pertenecen a una línea de trabajo separada; este mapa no elige la fuente sucesora. Deshabilitar `custom` fuera de un perfil research explícito.
 3. Crear `LLMProvider` y `AnthropicLLMProvider`; colocar fallback, retry, tracing, tool registry y degradación en Model Gateway.
 4. Extraer `ChatApplicationService` de `ui/unified_chat_interface.py:835-1028`, `:1296-1448`; Streamlit se convierte en un cliente/adapter.
-5. Encapsular Supabase de producto en repositorios e introducir un port de conocimiento para `rag_chunks`/RPC.
-6. Separar resultados de visualización del renderer Streamlit y, sólo entonces, exponer FastAPI/SSE.
+5. Extraer `IdentityProvider`, `ConversationRepository`, `AnalysisRepository`, `UserPreferencesRepository` y el port de conocimiento para que la migración de Supabase se realice detrás de contratos estables.
+6. Separar resultados de visualización del renderer Streamlit, admitir únicamente templates deterministas en la ruta clínica y, sólo entonces, exponer FastAPI/SSE.
 
 ## Criterios verificables de desacoplamiento
 
@@ -124,3 +124,4 @@ El objetivo no es ocultar el string `Claude`, sino impedir que application servi
 - El Model Gateway puede usar un fake provider y seleccionar Anthropic sólo en composition root.
 - El fallo de Anthropic permite retrieval determinista sin query augmentation y no impide consultar datos clínicos allowlisted.
 - Supabase sólo aparece en adapters de infraestructura y scripts administrativos, nunca en UI/application/domain.
+- Ninguna ruta clínica productiva ejecuta código de visualización generado por un LLM.

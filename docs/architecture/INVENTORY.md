@@ -137,7 +137,7 @@ El contrato real de columnas está codificado en `utils/validators/mimic_validat
 
 Todas pasan por acceso genérico a tabla en `services/medical_agent/services/database_service.py:421-495`. Los resúmenes combinan tablas en `services/medical_agent/services/database_service.py:499-671` y `:675-878`. El modo `custom` sale por la RPC `execute_readonly_query` (`services/medical_agent/services/database_service.py:1245-1305`).
 
-Hay deriva de schema: el runtime principal selecciona explícitamente `mimic_ed` (`services/medical_agent/services/database_service.py:138-145`, `:450-473`), pero `MimicValidator` consulta tablas sin `.schema()` y sus comentarios dicen `public` (`utils/validators/mimic_validator.py:50-73`). El README también conserva índices `public.*` (`README.md:249-280`). Debe aclararse la fuente canónica antes del adapter MIMIC.
+Hay deriva de schema: el runtime principal selecciona explícitamente `mimic_ed` (`services/medical_agent/services/database_service.py:138-145`, `:450-473`), pero `MimicValidator` consulta tablas sin `.schema()` y sus comentarios dicen `public` (`utils/validators/mimic_validator.py:50-73`). El README también conserva índices `public.*` (`README.md:249-280`). La fuente y el schema canónicos se resolverán en la línea de trabajo separada de migración integral de Supabase; este inventario no selecciona una alternativa.
 
 ### Supabase Auth y tablas de producto
 
@@ -229,9 +229,9 @@ Derivas concretas:
 
 ## Preguntas abiertas para Fase 1
 
-1. ¿Las seis tablas canónicas están en `mimic_ed` o siguen existiendo copias `public`? El adapter MIMIC debe tener una única respuesta.
+1. ¿Qué fuente y schema sustituirán a las tablas clínicas actuales (`mimic_ed`/copias `public`)? Decisión reservada a la línea de trabajo de migración integral de Supabase; el futuro adapter deberá ofrecer una única respuesta al core.
 2. ¿Qué tipo de `SUPABASE_KEY` se despliega hoy y qué RLS/policies protegen cada tabla/RPC? No puede deducirse del repositorio.
 3. ¿`execute_readonly_query`, `hybrid_search` y `vector_search` están versionadas fuera del repositorio? No se encontró migración SQL que defina sus contratos.
-4. ¿Debe Fase 1 migrar conversaciones/identidad además de datos clínicos, o mantenerlos temporalmente como repositorios Supabase detrás de interfaces?
+4. ¿Cómo se coordinará el corte de conversaciones/identidad con la migración integral de Supabase? Fase 1 sí extraerá sus ports; el backend sucesor y su calendario pertenecen a esa migración separada.
 5. ¿Qué documentos de `guias/` están aprobados, versionados y autorizados para indexación? El código contiene una allowlist nominal, no gobernanza.
 6. ¿Se conservará generación de código para visualizaciones? No bloquea el mapa de acoplamiento, pero sí condiciona el Model Gateway y la política de tools.
