@@ -1,0 +1,22 @@
+COMMAND: conda run -n HCE python -m pytest --cov=config --cov=services --cov=src --cov=ui --cov=utils --cov=main --cov-report=term-missing --cov-report=xml:docs/baseline/raw/coverage.xml
+START: 2026-08-31T17:18:56+02:00
+WORKDIR: C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3
+conda.exe : ERROR: usage: __main__.py [options] [file_or_dir] [file_or_dir] [...]
+En C:\Users\ferna\anaconda3\shell\condabin\Conda.psm1: 153 Carácter: 17
++ ...             & $Env:CONDA_EXE $Env:_CE_M $Env:_CE_CONDA $Command @Othe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR: usage: _...e_or_dir] [...]:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+__main__.py: error: unrecognized arguments: --cov=config --cov=services --cov=src --cov=ui --cov=utils --cov=main
+--cov-report=term-missing --cov-report=xml:docs/baseline/raw/coverage.xml
+  inifile: C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3\pytest.ini
+  rootdir: C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3
+
+
+ERROR conda.cli.main_run:execute(127): `conda run python -m pytest --cov=config --cov=services --cov=src --cov=ui
+--cov=utils --cov=main --cov-report=term-missing --cov-report=xml:docs/baseline/raw/coverage.xml` failed. (See above
+for error)
+
+EXIT_CODE: 4
+ELAPSED_SECONDS: 3.817

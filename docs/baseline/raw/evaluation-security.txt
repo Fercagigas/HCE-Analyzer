@@ -1,0 +1,21 @@
+COMMAND: conda run -n HCE python Evaluation/run_security_tests.py --output docs/baseline/raw/evaluation-generated/security
+START: 2026-08-31T17:22:01+02:00
+WORKDIR: C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3
+CREDENTIAL VARIABLES EXPLICITLY UNSET FOR THIS PROCESS: ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_KEY, OPENAI_API_KEY, HUGGINFACEHUB_API_TOKEN
+conda.exe : Traceback (most recent call last):
+En C:\Users\ferna\anaconda3\shell\condabin\Conda.psm1: 153 Carácter: 17
++ ...             & $Env:CONDA_EXE $Env:_CE_M $Env:_CE_CONDA $Command @Othe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+  File "C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3\Evaluation\run_security_tests.py", line 23, in
+<module>
+    from Evaluation.eval_helpers import (
+ModuleNotFoundError: No module named 'Evaluation'
+
+ERROR conda.cli.main_run:execute(127): `conda run python Evaluation/run_security_tests.py --output
+docs/baseline/raw/evaluation-generated/security` failed. (See above for error)
+
+EXIT_CODE: 1
+ELAPSED_SECONDS: 2.677

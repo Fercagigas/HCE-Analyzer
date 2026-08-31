@@ -1,0 +1,24 @@
+COMMAND: conda run -n HCE python -m Evaluation.run_security_tests --output docs/baseline/raw/evaluation-generated/security-module
+START: 2026-08-31T17:25:14+02:00
+WORKDIR: C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3
+CREDENTIAL VARIABLES EXPLICITLY UNSET FOR THIS PROCESS: ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_KEY, OPENAI_API_KEY, HUGGINFACEHUB_API_TOKEN
+conda.exe : ERROR conda.cli.main_run:execute(127): `conda run python -m Evaluation.run_security_tests --output
+docs/baseline/raw/evaluation-generated/security-module` failed. (See above for error)
+En C:\Users\ferna\anaconda3\shell\condabin\Conda.psm1: 153 Carácter: 17
++ ...             & $Env:CONDA_EXE $Env:_CE_M $Env:_CE_CONDA $Command @Othe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR conda.cli...bove for error):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+2026-08-31 17:25:21,196 [INFO] __main__: Starting security tests: 13 total tests (7 SQL injection, 3 prompt injection, 3 anti-hallucination)
+2026-08-31 17:25:22,691 [ERROR] __main__: Failed to instantiate UnifiedChatAgent: 2 validation errors for DatabaseSettings
+supabase_url
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+supabase_key
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+
+
+EXIT_CODE: 1
+ELAPSED_SECONDS: 8.201

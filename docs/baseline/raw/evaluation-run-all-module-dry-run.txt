@@ -1,0 +1,68 @@
+COMMAND: conda run -n HCE python -m Evaluation.run_all_evaluations --dry-run --output-dir docs/baseline/raw/evaluation-generated/run-all-module-dry-run
+START: 2026-08-31T17:23:38+02:00
+WORKDIR: C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3
+CREDENTIAL VARIABLES EXPLICITLY UNSET FOR THIS PROCESS: ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_KEY, OPENAI_API_KEY, HUGGINFACEHUB_API_TOKEN
+conda.exe : ERROR conda.cli.main_run:execute(127): `conda run python -m Evaluation.run_all_evaluations --dry-run
+--output-dir docs/baseline/raw/evaluation-generated/run-all-module-dry-run` failed. (See above for error)
+En C:\Users\ferna\anaconda3\shell\condabin\Conda.psm1: 153 Carácter: 17
++ ...             & $Env:CONDA_EXE $Env:_CE_M $Env:_CE_CONDA $Command @Othe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR conda.cli...bove for error):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+2026-08-31 17:23:41,082 [INFO] __main__: Evaluation Orchestrator starting — timestamp: 20260831_172341
+2026-08-31 17:23:41,082 [INFO] __main__: Output directory: docs/baseline/raw/evaluation-generated/run-all-module-dry-run
+2026-08-31 17:23:41,082 [INFO] __main__: Log file: docs/baseline/raw/evaluation-generated/run-all-module-dry-run\evaluation_20260831_172341.log
+2026-08-31 17:23:41,082 [INFO] __main__: Running pre-flight checks...
+2026-08-31 17:23:41,307 [INFO] __main__:   Pre-flight [OK]: golden_set_files
+2026-08-31 17:23:41,307 [INFO] __main__:   Pre-flight [FAIL]: anthropic_api_key
+2026-08-31 17:23:41,307 [INFO] __main__:   Pre-flight [FAIL]: supabase_connection
+2026-08-31 17:23:41,307 [INFO] __main__:   Pre-flight [OK]: results_directory
+2026-08-31 17:23:41,307 [ERROR] __main__:   Pre-flight error: ANTHROPIC_API_KEY environment variable is not set.
+2026-08-31 17:23:41,307 [ERROR] __main__:   Pre-flight error: Supabase connection error: 2 validation errors for DatabaseSettings
+supabase_url
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+supabase_key
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+
+============================================================
+  DRY-RUN MODE — no API calls will be made
+============================================================
+
+  PRE-FLIGHT CHECKS:
+    [OK  ] Golden set files exist
+    [FAIL] ANTHROPIC_API_KEY set
+    [FAIL] Supabase connection available
+    [OK  ] Results directory ready
+
+  Errors:
+    - ANTHROPIC_API_KEY environment variable is not set.
+    - Supabase connection error: 2 validation errors for DatabaseSettings
+supabase_url
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+supabase_key
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+
+============================================================
+  API COST ESTIMATE (DRY-RUN)
+============================================================
+  [RUN]  RAGAS DB: ~40 questions * $0.001              ~$0.04
+  [RUN]  RAGAS RAG: ~30 questions * $0.001             ~$0.03
+  [RUN]  Latency: ~17 queries * 4 runs * $0.001        ~$0.07
+  [RUN]  Security: ~11 tests * $0.001                  ~$0.01
+  [RUN]  Functional: ~28 tests * $0.001                ~$0.03
+  -------------------------------------------------------
+  Total estimated cost                          ~$0.18
+============================================================
+
+  System status: NOT READY (fix errors above)
+  Log file: docs/baseline/raw/evaluation-generated/run-all-module-dry-run\evaluation_20260831_172341.log
+
+
+
+EXIT_CODE: 1
+ELAPSED_SECONDS: 3.162

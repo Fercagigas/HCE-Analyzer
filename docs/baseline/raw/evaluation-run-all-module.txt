@@ -1,0 +1,33 @@
+COMMAND: conda run -n HCE python -m Evaluation.run_all_evaluations --output-dir docs/baseline/raw/evaluation-generated/run-all-module
+START: 2026-08-31T17:23:16+02:00
+WORKDIR: C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3
+CREDENTIAL VARIABLES EXPLICITLY UNSET FOR THIS PROCESS: ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_KEY, OPENAI_API_KEY, HUGGINFACEHUB_API_TOKEN
+conda.exe : ERROR conda.cli.main_run:execute(127): `conda run python -m Evaluation.run_all_evaluations --output-dir
+docs/baseline/raw/evaluation-generated/run-all-module` failed. (See above for error)
+En C:\Users\ferna\anaconda3\shell\condabin\Conda.psm1: 153 Carácter: 17
++ ...             & $Env:CONDA_EXE $Env:_CE_M $Env:_CE_CONDA $Command @Othe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR conda.cli...bove for error):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+2026-08-31 17:23:19,051 [INFO] __main__: Evaluation Orchestrator starting — timestamp: 20260831_172319
+2026-08-31 17:23:19,051 [INFO] __main__: Output directory: docs/baseline/raw/evaluation-generated/run-all-module
+2026-08-31 17:23:19,051 [INFO] __main__: Log file: docs/baseline/raw/evaluation-generated/run-all-module\evaluation_20260831_172319.log
+2026-08-31 17:23:19,051 [INFO] __main__: Running pre-flight checks...
+2026-08-31 17:23:19,260 [INFO] __main__:   Pre-flight [OK]: golden_set_files
+2026-08-31 17:23:19,260 [INFO] __main__:   Pre-flight [FAIL]: anthropic_api_key
+2026-08-31 17:23:19,260 [INFO] __main__:   Pre-flight [FAIL]: supabase_connection
+2026-08-31 17:23:19,260 [INFO] __main__:   Pre-flight [OK]: results_directory
+2026-08-31 17:23:19,260 [ERROR] __main__:   Pre-flight error: ANTHROPIC_API_KEY environment variable is not set.
+2026-08-31 17:23:19,260 [ERROR] __main__:   Pre-flight error: Supabase connection error: 2 validation errors for DatabaseSettings
+supabase_url
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+supabase_key
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+2026-08-31 17:23:19,260 [ERROR] __main__: Pre-flight checks failed. Aborting evaluation. Fix the errors above and retry.
+
+
+EXIT_CODE: 1
+ELAPSED_SECONDS: 2.867
