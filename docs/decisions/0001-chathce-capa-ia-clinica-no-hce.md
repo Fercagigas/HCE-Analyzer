@@ -60,7 +60,7 @@ Las decisiones abiertas que concretan esta arquitectura se mantienen en los docu
 - DP-03: servicios incluidos en el primer intended purpose;
 - DP-04: claims externos y umbrales de evidencia;
 - DP-05: fuentes admitidas en la base de conocimiento;
-- DP-06: mecanismo permitido para transferir borradores;
+- DP-06: tratamiento permitido de los borradores dentro del alcance de v1;
 - DP-07: gobierno y aceptación del riesgo residual.
 
 Ninguno de estos pendientes cambia la decisión fundacional de que la HCE conserva el registro oficial y ChatHCE actúa como capa asistiva.

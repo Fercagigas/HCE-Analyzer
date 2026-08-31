@@ -87,7 +87,7 @@ Todos los casos comparten estas condiciones:
 
 **Límite:** el borrador no se guarda automáticamente en la HCE, no se firma, no se envía y no ejecuta ninguna orden. El profesional debe verificarlo y asumir la autoría mediante un flujo separado antes de cualquier incorporación.
 
-> **DECISION PENDIENTE:** DP-06 — ¿Qué transferencia de borradores se permite en la versión 1: (a) solo visualización dentro del workspace, (b) copia/exportación manual con aviso y auditoría, o (c) envío a una bandeja de borradores de la HCE con confirmación? (a) minimiza riesgo pero reduce utilidad; (b) puede perder trazabilidad fuera de ChatHCE; (c) es una integración de escritura y requiere autorización, contrato técnico, auditoría y validación adicionales.
+> **DECISION PENDIENTE:** DP-06 — ¿Qué tratamiento de borradores se permite en la versión 1: (a) solo visualización dentro del workspace, (b) copia/exportación manual con aviso y auditoría, o (c) posponer por completo la generación de borradores hasta después del piloto? (a) minimiza el riesgo de propagación pero reduce utilidad; (b) aporta utilidad, aunque puede perder trazabilidad fuera de ChatHCE; (c) reduce el alcance que debe validarse en v1. El envío a una bandeja de la HCE es una `write-action` y queda fuera de v1 en las tres opciones.
 
 ## UC-08 — Responder preguntas sobre información disponible
 
