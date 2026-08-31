@@ -10,7 +10,7 @@ Este documento no constituye asesoramiento jurídico y no determina la clasifica
 
 ## Intended purpose propuesto
 
-ChatHCE está destinado a asistir a profesionales sanitarios autorizados, dentro de un contexto clínico institucional y sobre el paciente y episodio activos, en tareas de revisión de información: recuperar hechos de la HCE y conocimiento clínico aprobado, resumir la información disponible, reconstruir su evolución temporal, comparar episodios o periodos, identificar cambios, preparar borradores y responder preguntas sobre esas fuentes.
+ChatHCE está destinado a asistir a profesionales sanitarios autorizados, dentro de un contexto clínico institucional y, cuando la tarea esté vinculada a un paciente, sobre el paciente y episodio activos, en tareas de revisión de información: recuperar hechos de la HCE y conocimiento clínico aprobado, resumir la información disponible, reconstruir su evolución temporal, comparar episodios o periodos, identificar cambios, preparar borradores y responder preguntas sobre esas fuentes.
 
 Los resultados son informativos y asistivos. Deben mostrar su evidencia, distinguir hechos de inferencias, expresar información ausente o contradictoria y ser revisados por el profesional antes de influir en una decisión o incorporarse a documentación clínica. La responsabilidad clínica permanece en el profesional y en los procesos del centro.
 
@@ -20,7 +20,7 @@ Los resultados son informativos y asistivos. Deben mostrar su evidencia, disting
 
 - La HCE hospitalaria continúa siendo el *system of record*.
 - ChatHCE es una capa de inteligencia clínica sobre fuentes autorizadas; no es una HCE alternativa.
-- El acceso es de solo lectura por defecto y se limita al contexto de hospital, usuario, paciente, episodio y sesión.
+- El acceso es de solo lectura por defecto y se limita siempre al hospital, usuario y sesión; paciente y episodio son obligatorios únicamente cuando la tarea está vinculada a ellos.
 - ChatHCE no asume que la información recuperada sea completa, correcta o vigente. Hace visibles los datos ausentes, los conflictos y la procedencia.
 - Los borradores viven en un espacio temporal de trabajo y no forman parte de la HCE hasta que exista una acción humana separada y autorizada.
 - Una indisponibilidad del modelo no debe ocultar la evidencia ni impedir la recuperación determinista cuando esta pueda operar de forma segura.
@@ -49,7 +49,7 @@ Todo acceso está sujeto a identidad, autorización y propósito de uso. La incl
 
 La arquitectura objetivo admite la misma experiencia como aplicación SMART embebida en una HCE, panel lateral contextual o espacio de trabajo independiente. En cualquiera de los tres modos:
 
-- el paciente y el episodio activos permanecen visibles;
+- el paciente y el episodio activos permanecen visibles en tareas vinculadas a un paciente; las tareas institucionales sin paciente muestran explícitamente «sin paciente seleccionado»;
 - un cambio de contexto es inequívoco e invalida el contexto que ya no corresponda;
 - solo se exponen datos previamente autorizados y minimizados;
 - el profesional puede abrir la fuente de cada afirmación clínica relevante;

@@ -35,7 +35,7 @@ Si una feature combina categorías, se separa en capabilities evaluables. Si no 
 
 | ID | Control mínimo verificable |
 |---|---|
-| C01 | Identidad institucional y autorización RBAC/ABAC antes del LLM; contexto obligatorio de tenant, usuario, paciente, episodio y sesión. |
+| C01 | Identidad institucional y autorización RBAC/ABAC antes del LLM; tenant, usuario y sesión siempre obligatorios. Paciente y episodio son obligatorios y visibles solo en capabilities vinculadas a ellos; una tarea institucional sin paciente se marca explícitamente como tal. |
 | C02 | Acceso de solo lectura, mínimo necesario y mediante operaciones allowlisted; sin SQL libre en producción. |
 | C03 | Procedencia completa: fuente, timestamp, unidades, versión y ámbito de paciente/episodio; acceso al original en un clic. |
 | C04 | Validación de schema, tipos, tamaño, unidades, timestamps, ámbito y freshness de los resultados de herramientas. |

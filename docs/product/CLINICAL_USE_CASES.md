@@ -2,7 +2,7 @@
 
 ## Regla de inclusión
 
-Un caso de uso está permitido en la versión 1 solo si es asistivo, opera sobre fuentes autorizadas y disponibles, conserva el contexto de paciente y episodio, y deja la interpretación y decisión final al profesional. Su inclusión en este documento no autoriza su activación: cada capability debe superar los controles y evaluaciones de [RISK_CAPABILITY_MATRIX.md](RISK_CAPABILITY_MATRIX.md).
+Un caso de uso está permitido en la versión 1 solo si es asistivo, opera sobre fuentes autorizadas y disponibles, conserva el contexto de paciente y episodio cuando la tarea está vinculada a ellos, y deja la interpretación y decisión final al profesional. Su inclusión en este documento no autoriza su activación: cada capability debe superar los controles y evaluaciones de [RISK_CAPABILITY_MATRIX.md](RISK_CAPABILITY_MATRIX.md).
 
 Todos los casos comparten estas condiciones:
 
