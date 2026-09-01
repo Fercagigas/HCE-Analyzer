@@ -157,31 +157,40 @@ select
   p.roles,
   p.cmd,
   p.qual as using_expression,
-  p.with_check,
-  coalesce(string_agg(distinct g.grantee || ':' || g.privilege_type, ', '), 'NO_GRANTS') as grants
+  p.with_check
 from pg_policies p
-left join information_schema.role_table_grants g
-  on g.table_schema = p.schemaname
- and g.table_name = p.tablename
- and g.grantee in ('anon', 'authenticated', 'service_role')
 where p.schemaname in ('public', 'mimic_ed')
-group by p.schemaname, p.tablename, p.policyname, p.permissive,
-         p.roles, p.cmd, p.qual, p.with_check
 order by p.schemaname, p.tablename, p.cmd, p.policyname;
 ```
 
-  Para detectar grants incluso en tablas sin policies, ejecuta además:
+  Para detectar privilegios **efectivos** incluso en tablas sin policies, grants a `PUBLIC` y grants heredados de otros roles, ejecuta además:
 
 ```sql
-select table_schema, table_name, grantee, privilege_type
-from information_schema.role_table_grants
-where table_schema in ('public', 'mimic_ed')
-  and grantee in ('anon', 'authenticated', 'service_role')
-order by table_schema, table_name, grantee, privilege_type;
+with api_roles(role_name) as (
+  values ('anon'), ('authenticated'), ('service_role')
+), api_objects as (
+  select n.nspname as schema_name, c.relname as object_name, c.relacl
+  from pg_class c
+  join pg_namespace n on n.oid = c.relnamespace
+  where n.nspname in ('public', 'mimic_ed')
+    and c.relkind in ('r', 'p', 'v', 'm')
+)
+select
+  o.schema_name,
+  o.object_name,
+  r.role_name,
+  o.relacl as raw_acl,
+  has_table_privilege(r.role_name, format('%I.%I', o.schema_name, o.object_name), 'SELECT') as can_select,
+  has_table_privilege(r.role_name, format('%I.%I', o.schema_name, o.object_name), 'INSERT') as can_insert,
+  has_table_privilege(r.role_name, format('%I.%I', o.schema_name, o.object_name), 'UPDATE') as can_update,
+  has_table_privilege(r.role_name, format('%I.%I', o.schema_name, o.object_name), 'DELETE') as can_delete
+from api_objects o
+cross join api_roles r
+order by o.schema_name, o.object_name, r.role_name;
 ```
 
-- **Resultado correcto:** `anon` no accede a datos del proyecto; `authenticated` solo tiene las operaciones necesarias. `users`, sesiones, mensajes, análisis y preferencias se limitan a `auth.uid()` y al propietario; `chat_messages` prueba ownership a través de `chat_sessions`; `INSERT`/`UPDATE` tienen `WITH CHECK`. Datos clínicos y RAG se limitan al contexto aprobado de usuario/tenant/paciente o no son accesibles por roles públicos. Hay policies separadas por operación y tests de permitir/denegar.
-- **Resultado problemático:** expresiones `true`; rol `public`/`anon`; acceso global de `authenticated`; comprobación solo en `SELECT`; escritura que permite cambiar `user_id`/tenant; policy basada en metadata modificable por el usuario; RLS existente pero nunca probado. El runtime actual no transporta tenant/paciente obligatorios, por lo que una policy global no demuestra aislamiento hospitalario.
+- **Resultado correcto:** `anon` no tiene ningún privilegio efectivo sobre datos del proyecto; `authenticated` solo tiene las operaciones necesarias. `users`, sesiones, mensajes, análisis y preferencias se limitan a `auth.uid()` y al propietario; `chat_messages` prueba ownership a través de `chat_sessions`; `INSERT`/`UPDATE` tienen `WITH CHECK`. Datos clínicos y RAG se limitan al contexto aprobado de usuario/tenant/paciente o no son accesibles por roles públicos. Hay policies separadas por operación y tests de permitir/denegar. Un `true` en la matriz efectiva está justificado aunque proceda de `PUBLIC` o de herencia.
+- **Resultado problemático:** expresiones `true`; privilegio efectivo inesperado de `anon`/`authenticated`, aunque el grant directo no aparezca; acceso global de `authenticated`; comprobación solo en `SELECT`; escritura que permite cambiar `user_id`/tenant; policy basada en metadata modificable por el usuario; RLS existente pero nunca probado. El runtime actual no transporta tenant/paciente obligatorios, por lo que una policy global no demuestra aislamiento hospitalario.
 - **Gravedad si sale mal:** **Crítica** para lectura/escritura cruzada, acceso anónimo o datos clínicos/RAG globales; **Alta** si falta evidencia de tests aunque la policy parezca correcta.
 - **Marca:** `[ ] OK  [ ] PROBLEMA  [ ] NO VERIFICADO` — anota nombres de policies fallidas, nunca datos de filas.
 
@@ -246,11 +255,12 @@ order by p.proname;
 curl.exe -sS -o NUL -w "HTTP=%{http_code} DESTINO=%{url_effective} TLS_VERIFY=%{ssl_verify_result}`n" http://TU_HOST_AQUI
 curl.exe -sS -I https://TU_HOST_AQUI
 Test-NetConnection TU_HOST_AQUI -Port 443
-Test-NetConnection TU_HOST_AQUI -Port 5432
-Test-NetConnection TU_HOST_AQUI -Port 6543
+Test-NetConnection TU_DB_DIRECTO_AQUI -Port 5432
+Test-NetConnection TU_POOLER_AQUI -Port 5432
+Test-NetConnection TU_POOLER_AQUI -Port 6543
 ```
 
-  En el panel del proveedor de despliegue, abre el servicio → **Networking/Domains** y **Access/IAM**; identifica balanceador/proxy, origen y allowlist. No guardes la salida si contiene IP o hostname real.
+  Obtén `TU_DB_DIRECTO_AQUI` y `TU_POOLER_AQUI` solo para esta prueba desde Supabase Dashboard → **Connect → Direct connection / Connection pooler**; no los copies a la evidencia. En el panel del proveedor de despliegue, abre el servicio → **Networking/Domains** y **Access/IAM**; identifica balanceador/proxy, origen y allowlist. No guardes la salida si contiene IP o hostname real.
 - **Resultado correcto:** acceso limitado a usuarios/red autorizados; HTTP redirige a HTTPS; certificado válido (`TLS_VERIFY=0`); HSTS presente; solo 443 es público; origen no accesible saltándose el proxy; 5432/6543 no son alcanzables desde Internet; existe propietario del proxy/WAF.
 - **Resultado problemático:** login o aplicación accesible para cualquiera; HTTP sin redirección; error de certificado; ausencia de HSTS; puertos DB públicos; IP/puerto de origen accesible; topología o propietario desconocidos.
 - **Gravedad si sale mal:** **Crítica** si el prototipo actual es público o hay bypass hasta datos/servicio; **Alta** para TLS/HSTS/topología incompleta.
@@ -310,18 +320,24 @@ select
   document_id,
   filename,
   count(*) as chunks,
-  min(metadata ->> 'version') as version,
-  min(metadata ->> 'owner') as owner,
-  min(metadata ->> 'approval_status') as approval_status,
-  min(metadata ->> 'review_date') as review_date
+  count(distinct metadata ->> 'version') as version_values,
+  array_remove(array_agg(distinct metadata ->> 'version'), null) as versions,
+  count(distinct metadata ->> 'owner') as owner_values,
+  array_remove(array_agg(distinct metadata ->> 'owner'), null) as owners,
+  count(distinct metadata ->> 'license') as license_values,
+  array_remove(array_agg(distinct metadata ->> 'license'), null) as licenses,
+  count(distinct metadata ->> 'approval_status') as approval_values,
+  array_remove(array_agg(distinct metadata ->> 'approval_status'), null) as approvals,
+  count(distinct metadata ->> 'review_date') as review_date_values,
+  array_remove(array_agg(distinct metadata ->> 'review_date'), null) as review_dates
 from public.rag_chunks
 group by document_id, filename
 order by filename, document_id;
 ```
 
-  Si algún campo no existe en metadata, el resultado nulo es evidencia de que no está gobernado; no abras el texto de los chunks. Contrasta la salida con el registro documental aprobado.
-- **Resultado correcto:** correspondencia uno a uno con el registro; owner, licencia, versión, fecha de revisión/vigencia y aprobación actuales; corpus segregado por tenant cuando aplique; retirada definida.
-- **Resultado problemático:** documento desconocido, vencido, sin licencia/owner/aprobación, duplicado o de otro tenant; metadata insuficiente; no existe registro externo autorizado.
+  Si un contador vale `0`, falta metadata; si vale más de `1`, hay metadata contradictoria entre chunks. No abras el texto de los chunks. Contrasta los arrays únicamente dentro de la evidencia protegida con el registro documental aprobado.
+- **Resultado correcto:** cada contador de metadata vale exactamente `1`, existe correspondencia uno a uno con el registro y owner, licencia, versión, fecha de revisión/vigencia y aprobación están actuales; corpus segregado por tenant cuando aplique; retirada definida.
+- **Resultado problemático:** contador `0` o mayor que `1`; documento desconocido, vencido, sin licencia/owner/aprobación, duplicado o de otro tenant; metadata insuficiente o contradictoria; no existe registro externo autorizado.
 - **Gravedad si sale mal:** **Crítica** si el corpus es compartido, clínico o cross-tenant; **Alta** para demo controlada.
 - **Marca:** `[ ] OK  [ ] PROBLEMA  [ ] NO VERIFICADO` — guarda inventario protegido; no lo adjuntes al repo si los nombres son sensibles.
 
@@ -352,18 +368,20 @@ stat scripts/index_guias.py scripts/clear_rag.py
 - **Dónde exactamente:** en la copia exacta desplegada:
 
 ```powershell
-rg -n "cache|cache_ttl" services\unified_chat\unified_agent.py
+rg -n "cache_manager\.(get|set)|cache_ttl\s*=" services\unified_chat\unified_agent.py
+rg -n "cache_enabled.*CACHE_ENABLED|cache_ttl_seconds.*CACHE_TTL_SECONDS" config\settings.py
 $n = @(Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'streamlit' }).Count; "procesos_streamlit=$n"
 ```
 
 ```bash
-rg -n 'cache|cache_ttl' services/unified_chat/unified_agent.py
+rg -n 'cache_manager\.(get|set)|cache_ttl\s*=' services/unified_chat/unified_agent.py
+rg -n 'cache_enabled.*CACHE_ENABLED|cache_ttl_seconds.*CACHE_TTL_SECONDS' config/settings.py
 printf 'procesos_streamlit='; pgrep -fc streamlit
 ```
 
-  Confirma además el número deseado de réplicas en el control de scaling del proveedor. No guardes líneas de comando completas.
-- **Resultado correcto:** caché deshabilitada para datos sensibles/uso compartido, o claveada y probada por tenant, usuario, paciente, sesión y autorización; número de procesos conocido; almacenamiento y borrado de caché documentados.
-- **Resultado problemático:** estado desconocido; caché global activa con varios usuarios; clave sin contexto completo; varias réplicas con comportamiento no documentado. El baseline observado usa caché en proceso que puede contener información clínica (`docs/architecture/INVENTORY.md:164-169`).
+  Interpreta el artefacto, no solo la variable: si aparecen llamadas `cache_manager.get/set` sin una condición que lea `cache_enabled`, la caché está **activa** aunque `CACHE_ENABLED` diga `false`; el valor de `cache_ttl =` es el TTL efectivo. En el baseline revisado las llamadas no están condicionadas y el TTL efectivo está fijado a 300 segundos; los settings declarados no gobiernan ese flujo. Confirma además el número deseado de réplicas en el control de scaling del proveedor. No guardes líneas de comando completas.
+- **Resultado correcto:** la inspección del flujo efectivo demuestra caché deshabilitada para datos sensibles/uso compartido, o claveada y probada por tenant, usuario, paciente, sesión y autorización; TTL efectivo conocido; número de procesos conocido; almacenamiento y borrado documentados.
+- **Resultado problemático:** llamadas de lectura/escritura sin guard efectivo; confundir `CACHE_ENABLED=false` con caché desactivada cuando el flujo no lo consulta; TTL efectivo desconocido; caché global activa con varios usuarios; clave sin contexto completo; varias réplicas con comportamiento no documentado.
 - **Gravedad si sale mal:** **Crítica** en entorno compartido o con PHI/PII; **Alta** en demo controlada.
 - **Marca:** `[ ] OK  [ ] PROBLEMA  [ ] NO VERIFICADO` — anota `cache sí/no/desconocida` y número de procesos.
 
