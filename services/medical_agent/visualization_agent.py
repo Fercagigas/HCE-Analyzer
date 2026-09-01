@@ -1,12 +1,12 @@
 """
-Visualization Agent - Generates Python code for medical data visualizations
+Visualization Agent - Builds allowlisted medical data visualizations.
 
 This agent collaborates with the Claude HCE Agent to create visualizations
-by generating and executing Python code using Plotly.
+through deterministic Plotly functions with validated parameters.
 
 Performance optimizations:
 - Singleton pattern for agent instance
-- Template caching via VisualizationTemplates
+- Deterministic Plotly function dispatch
 - Execution time tracking
 - Optimized preprocessing pipeline
 """
@@ -15,15 +15,15 @@ import logging
 import time
 from typing import Dict, Any, Optional, List
 import pandas as pd
-from langchain_anthropic import ChatAnthropic
-
 from config.settings import settings
-from .code_executor import execute_visualization_code, ImprovedCodeValidator
-from .llm_manager import ClaudeLLMManager
-from .prompt_manager import PromptManager
+from .code_executor import (
+    MAX_METRICS,
+    SUPPORTED_VISUALIZATION_TYPES,
+    VISUALIZATION_TYPE_ALIASES,
+    create_allowlisted_visualization,
+)
 from .data_preprocessor import DataPreprocessor
 from .visualization_selector import VisualizationSelector
-from .visualization_templates import create_visualization_templates
 
 logger = logging.getLogger(__name__)
 
@@ -33,14 +33,14 @@ _visualization_agent_instance: Optional['VisualizationAgent'] = None
 
 class VisualizationAgent:
     """
-    Agent specialized in generating visualization code for medical data.
+    Agent specialized in deterministic visualizations for medical data.
     
     This agent receives data and requirements from the clinical agent
-    and generates Python code to create appropriate visualizations.
+    and selects an allowlisted function with validated parameters.
     
     Performance optimizations:
     - Singleton pattern via create_visualization_agent()
-    - Template caching for common visualization types
+    - Explicit allowlist for supported visualization types
     - Execution time tracking for monitoring
     - Optimized preprocessing pipeline
     """
@@ -54,55 +54,22 @@ class VisualizationAgent:
         # Store visualization settings for easy access
         self.viz_settings = settings.visualization
         
-        # Initialize new components (using singleton for templates)
-        self.selector = VisualizationSelector()  # NUEVO: Selector automático
+        # Initialize deterministic selection and preprocessing components.
+        self.selector = VisualizationSelector()
         self.preprocessor = DataPreprocessor()
-        self.templates = create_visualization_templates()  # Uses singleton with lazy loading
-        self.validator = ImprovedCodeValidator()
-        
-        # Initialize LLM only for fallback cases (lazy initialization)
-        self._llm = None
-        self._prompt_manager = None
         
         # Performance tracking
         self._total_visualizations = 0
         self._successful_visualizations = 0
         self._total_execution_time_ms = 0.0
         self._template_usage_count = 0
-        self._llm_usage_count = 0
         
         init_time_ms = (time.perf_counter() - start_time) * 1000
         
         logger.info(
-            f"✅ Visualization Agent initialized with template-first approach "
-            f"(LLM lazy-loaded) in {init_time_ms:.2f}ms"
+            f"✅ Visualization Agent initialized with allowlisted functions "
+            f"in {init_time_ms:.2f}ms"
         )
-    
-    @property
-    def llm(self):
-        """Lazy initialization of LLM (only when needed)."""
-        if self._llm is None:
-            logger.info("Lazy-loading Claude Sonnet 4.5 for visualization...")
-            self._llm = ChatAnthropic(
-                model=self.viz_settings.model_name,
-                anthropic_api_key=settings.claude_agent.anthropic_api_key,
-                max_tokens=self.viz_settings.max_tokens,
-                temperature=self.viz_settings.temperature,
-                timeout=self.viz_settings.timeout_seconds
-            )
-            logger.info(f"Claude Sonnet 4.5 loaded: {self.viz_settings.model_name}")
-        return self._llm
-    
-    @property
-    def prompt_manager(self):
-        """Lazy initialization of prompt manager (only when needed)."""
-        if self._prompt_manager is None:
-            logger.info("Lazy-loading prompt manager...")
-            self._prompt_manager = PromptManager(
-                max_tokens=self.viz_settings.max_tokens,
-                anthropic_api_key=settings.claude_agent.anthropic_api_key
-            )
-        return self._prompt_manager
     
     def get_performance_stats(self) -> Dict[str, Any]:
         """
@@ -127,25 +94,39 @@ class VisualizationAgent:
             'total_execution_time_ms': self._total_execution_time_ms,
             'average_execution_time_ms': avg_time,
             'template_usage_count': self._template_usage_count,
-            'llm_usage_count': self._llm_usage_count,
+            'allowlisted_function_usage_count': self._template_usage_count,
+            'llm_usage_count': 0,
             'preprocessor_stats': self.preprocessor.get_performance_stats(),
-            'template_cache_stats': self.templates.get_cache_stats()
+            'template_cache_stats': {
+                'templates_loaded': 0,
+                'templates_available': 0,
+            },
+            'supported_visualization_types': sorted(SUPPORTED_VISUALIZATION_TYPES),
         }
-    
-    def _initialize_sonnet_45(self) -> ChatAnthropic:
-        """Inicializar Claude Sonnet 4.5 específicamente."""
-        logger.info("Initializing Claude Sonnet 4.5 for visualization...")
-        
-        llm = ChatAnthropic(
-            model=self.viz_settings.model_name,
-            anthropic_api_key=settings.claude_agent.anthropic_api_key,
-            max_tokens=self.viz_settings.max_tokens,
-            temperature=self.viz_settings.temperature,
-            timeout=self.viz_settings.timeout_seconds
+
+    @staticmethod
+    def _coerce_auto_selection(data: pd.DataFrame, selected_type: str) -> str:
+        """Keep automatic selection inside the approved visualization allowlist."""
+        normalized = selected_type.lower().strip().replace(' ', '_')
+        normalized = VISUALIZATION_TYPE_ALIASES.get(normalized, normalized)
+        if normalized in SUPPORTED_VISUALIZATION_TYPES:
+            return normalized
+
+        numeric_columns = [
+            column for column in data.select_dtypes(include=['number']).columns
+            if not column.endswith('_id') and column != 'seq_num'
+        ]
+        has_time = any(
+            column in data.columns
+            for column in ('charttime', 'time', 'date', 'datetime', 'timestamp')
         )
-        
-        logger.info(f"Claude Sonnet 4.5 initialized: {self.viz_settings.model_name}")
-        return llm
+        if has_time and numeric_columns:
+            return 'comparison' if len(numeric_columns) > 1 else 'timeline'
+        if len(data.select_dtypes(include=['object', 'category', 'string']).columns):
+            return 'bar'
+        if numeric_columns:
+            return 'histogram'
+        return normalized
     
     def generate_visualization(
         self,
@@ -156,20 +137,19 @@ class VisualizationAgent:
         max_retries: int = 2
     ) -> Dict[str, Any]:
         """
-        Generate visualization code and execute it.
+        Generate a visualization through an allowlisted function.
         
-        NUEVO FLUJO SIMPLIFICADO:
+        FLUJO SEGURO:
         1. Selector automático elige el tipo correcto (si no se especifica)
-        2. Template se carga y personaliza
-        3. Se ejecuta el código
-        4. LLM solo como último recurso si falla
+        2. El tipo se limita a la allowlist aprobada
+        3. Una función determinista valida parámetros y crea la figura
         
         Args:
             data: DataFrame with medical data
             visualization_type: Type of visualization (auto-detected if 'auto')
             requirements: Additional requirements in natural language
             title: Chart title
-            max_retries: Maximum number of retry attempts (default: 2)
+            max_retries: Conserved for API compatibility; no LLM retries occur
             
         Returns:
             Dict with figure and metadata including execution_time_ms
@@ -202,15 +182,16 @@ class VisualizationAgent:
         # PASO 2: Selección automática de tipo de visualización
         if visualization_type == 'auto' or not visualization_type:
             logger.info("Auto-selecting visualization type based on data characteristics...")
-            visualization_type, suggested_params = self.selector.select_visualization_type(data)
-            logger.info(f"Auto-selected: {visualization_type}")
+            selected_type, suggested_params = self.selector.select_visualization_type(data)
+            visualization_type = self._coerce_auto_selection(data, selected_type)
+            logger.info(f"Auto-selected allowlisted type: {visualization_type}")
             
             # Usar título sugerido si no se proporcionó uno
             if not title and 'title' in suggested_params:
                 title = suggested_params['title']
         
-        # PASO 3: Intentar con template primero (FLUJO PRINCIPAL)
-        logger.info(f"Attempting template-based generation for {visualization_type}...")
+        # PASO 3: Construir mediante una función parametrizada allowlisted.
+        logger.info(f"Attempting allowlisted generation for {visualization_type}...")
         template_result = self._try_template_generation(
             data=data,
             visualization_type=visualization_type,
@@ -223,86 +204,25 @@ class VisualizationAgent:
             self._total_execution_time_ms += execution_time_ms
             self._template_usage_count += 1
             
-            logger.info(f"✅ Visualization generated using template in {execution_time_ms:.2f}ms")
+            logger.info(f"✅ Visualization generated using allowlisted function in {execution_time_ms:.2f}ms")
             template_result['preprocess_metadata'] = preprocess_metadata
             template_result['execution_time_ms'] = execution_time_ms
-            template_result['method'] = 'template'
+            template_result['method'] = 'allowlisted_function'
             return template_result
-        
-        # PASO 4: Si el template falla, intentar con LLM (FALLBACK)
-        logger.warning("Template generation failed, falling back to LLM generation...")
-        
-        retry_count = 0
-        last_error = template_result.get('error', 'Template generation failed')
-        
-        while retry_count < max_retries:
-            try:
-                logger.info(f"LLM generation attempt {retry_count + 1}/{max_retries}...")
-                
-                # Crear prompt simplificado
-                prompt = self._create_simplified_retry_prompt(
-                    data=data,
-                    visualization_type=visualization_type,
-                    title=title or 'Gráfico de Datos Médicos',
-                    previous_error=last_error if retry_count > 0 else None
-                )
-                
-                # Generar código con LLM (lazy-loaded)
-                response = self.llm.invoke(prompt)
-                code = self._extract_code_from_response(response.content)
-                
-                if not code:
-                    last_error = 'No se pudo generar código de visualización'
-                    retry_count += 1
-                    continue
-                
-                logger.debug(f"Generated code:\n{code}")
-                
-                # Ejecutar código
-                result = execute_visualization_code(
-                    code=code,
-                    data={'data': data}
-                )
-                
-                if result['success']:
-                    execution_time_ms = (time.perf_counter() - start_time) * 1000
-                    self._successful_visualizations += 1
-                    self._total_execution_time_ms += execution_time_ms
-                    self._llm_usage_count += 1
-                    
-                    logger.info(f"✅ Visualization generated using LLM in {execution_time_ms:.2f}ms")
-                    return {
-                        'success': True,
-                        'figure': result['figure'],
-                        'code': code,
-                        'visualization_type': visualization_type,
-                        'retry_count': retry_count,
-                        'preprocess_metadata': preprocess_metadata,
-                        'execution_time_ms': execution_time_ms,
-                        'method': 'llm'
-                    }
-                else:
-                    last_error = result['error']
-                    retry_count += 1
-                    
-            except Exception as e:
-                last_error = str(e)
-                logger.error(f"LLM generation error: {last_error}")
-                retry_count += 1
-        
-        # Todo falló
+
+        # Fail closed: no LLM fallback and no code-string execution.
         execution_time_ms = (time.perf_counter() - start_time) * 1000
         self._total_execution_time_ms += execution_time_ms
-        
-        error_msg = f"Error generando visualización después de template y {max_retries} intentos LLM: {last_error}"
+
+        error_msg = template_result.get('error', 'Visualización no permitida')
         logger.error(error_msg)
         return {
             'success': False,
             'error': error_msg,
             'figure': None,
-            'retry_count': retry_count,
+            'retry_count': 0,
             'execution_time_ms': execution_time_ms,
-            'method': 'failed'
+            'method': 'rejected'
         }
     
     def generate_multiple_visualizations(
@@ -426,7 +346,7 @@ class VisualizationAgent:
                 results['figures'].append({
                     'metric': metric,
                     'figure': viz_result['figure'],
-                    'viz_type': viz_type,
+                    'viz_type': viz_result.get('visualization_type', viz_type),
                     'title': title,
                     'reason': plan['reason']
                 })
@@ -635,33 +555,13 @@ class VisualizationAgent:
             Dict con figura y metadata
         """
         try:
-            # Obtener template
-            template = self.templates.get_template(viz_type)
-            
-            if not template:
-                # Fallback a timeline
-                template = self.templates.get_template('timeline')
-                viz_type = 'timeline'
-            
-            # Preparar información
-            data_info = {
-                'time_column': 'charttime' if 'charttime' in data.columns else data.columns[0],
-                'categorical_columns': [],
-                'unit': self._get_metric_unit(metric)
-            }
-            
-            # Personalizar template
-            customized_code = self.templates.customize_template(
-                template=template,
-                data_info=data_info,
+            viz_type = self._coerce_auto_selection(data, viz_type)
+            result = create_allowlisted_visualization(
+                visualization_type=viz_type,
+                data=data,
                 title=title,
-                metrics=[metric]
-            )
-            
-            # Ejecutar
-            result = execute_visualization_code(
-                code=customized_code,
-                data={'data': data}
+                metrics=[metric],
+                time_column='charttime' if 'charttime' in data.columns else None,
             )
             
             return result
@@ -690,28 +590,12 @@ class VisualizationAgent:
             Dict con figura y metadata
         """
         try:
-            # Usar template de comparison
-            template = self.templates.get_template('comparison')
-            
-            if not template:
-                return {'success': False, 'error': 'Template comparison no disponible'}
-            
-            data_info = {
-                'time_column': 'charttime' if 'charttime' in data.columns else data.columns[0],
-                'categorical_columns': [],
-                'unit': ''
-            }
-            
-            customized_code = self.templates.customize_template(
-                template=template,
-                data_info=data_info,
+            result = create_allowlisted_visualization(
+                visualization_type='comparison',
+                data=data,
                 title=title,
-                metrics=metrics[:2]  # Template comparison usa 2 métricas
-            )
-            
-            result = execute_visualization_code(
-                code=customized_code,
-                data={'data': data}
+                metrics=metrics[:MAX_METRICS],
+                time_column='charttime' if 'charttime' in data.columns else None,
             )
             
             return result
@@ -743,7 +627,7 @@ class VisualizationAgent:
         title: str
     ) -> Dict[str, Any]:
         """
-        Generar visualización usando template (FLUJO PRINCIPAL).
+        Generar visualización usando una función allowlisted.
         
         Args:
             data: DataFrame con datos
@@ -754,164 +638,50 @@ class VisualizationAgent:
             Dict con resultado de la visualización
         """
         try:
-            logger.info(f"Generating visualization using template for {visualization_type}...")
-            
-            # Obtener template (lazy loading)
-            template = self.templates.get_template(visualization_type)
-            
-            if not template:
-                logger.warning(f"No template found for {visualization_type}")
-                return {
-                    'success': False,
-                    'error': f'No hay template disponible para {visualization_type}'
-                }
-            
-            # Preparar información de datos
-            data_info = {
-                'time_column': 'charttime' if 'charttime' in data.columns else data.columns[0],
-                'categorical_columns': data.select_dtypes(include=['object']).columns.tolist(),
-                'unit': ''  # Puede ser expandido en el futuro
-            }
-            
-            # Obtener métricas numéricas
-            numeric_columns = data.select_dtypes(include=['number']).columns.tolist()
-            metrics = numeric_columns[:3] if numeric_columns else []
-            
-            if not metrics and visualization_type not in ['table', 'pie', 'sunburst']:
-                return {
-                    'success': False,
-                    'error': 'No hay métricas numéricas disponibles para visualización'
-                }
-            
-            # Personalizar template
-            customized_code = self.templates.customize_template(
-                template=template,
-                data_info=data_info,
+            logger.info(f"Generating allowlisted visualization for {visualization_type}...")
+
+            numeric_columns = [
+                column for column in data.select_dtypes(include=['number']).columns
+                if not column.endswith('_id') and column != 'seq_num'
+            ]
+            metrics = numeric_columns[:MAX_METRICS]
+            categorical_columns = data.select_dtypes(
+                include=['object', 'category', 'string']
+            ).columns.tolist()
+
+            result = create_allowlisted_visualization(
+                visualization_type=visualization_type,
+                data=data,
                 title=title,
-                metrics=metrics
-            )
-            
-            logger.debug(f"Customized template code:\n{customized_code}")
-            
-            # Ejecutar código de template
-            result = execute_visualization_code(
-                code=customized_code,
-                data={'data': data}
+                metrics=metrics or None,
+                time_column='charttime' if 'charttime' in data.columns else None,
+                category_column=categorical_columns[0] if categorical_columns else None,
             )
             
             if result['success']:
-                logger.info("✅ Template generation successful")
+                logger.info("✅ Allowlisted generation successful")
                 return {
                     'success': True,
                     'figure': result['figure'],
-                    'code': customized_code,
-                    'visualization_type': visualization_type,
-                    'used_template': True
+                    'visualization_type': result['visualization_type'],
+                    'used_template': False,
+                    'method': 'allowlisted_function',
                 }
             else:
-                logger.error(f"Template execution failed: {result['error']}")
+                logger.error(f"Allowlisted generation rejected: {result['error']}")
                 return {
                     'success': False,
-                    'error': f"Template execution failed: {result['error']}"
+                    'error': result['error'],
+                    'method': 'rejected',
                 }
                 
         except Exception as e:
-            error_msg = f"Error en template generation: {str(e)}"
+            error_msg = f"Error en visualización allowlisted: {str(e)}"
             logger.error(error_msg)
             return {
                 'success': False,
                 'error': error_msg
             }
-    
-    def _create_simplified_retry_prompt(
-        self,
-        data: pd.DataFrame,
-        visualization_type: str,
-        title: str,
-        previous_error: Optional[str]
-    ) -> str:
-        """
-        Crear prompt simplificado para LLM (solo usado como fallback).
-        
-        Args:
-            data: DataFrame con datos
-            visualization_type: Tipo de visualización
-            title: Título del gráfico
-            previous_error: Error del intento anterior
-            
-        Returns:
-            Prompt simplificado
-        """
-        data_info = self._get_data_info(data)
-        
-        error_context = f"\nEl intento anterior falló con este error:\n{previous_error}\n" if previous_error else ""
-        
-        prompt = f"""Genera código Python SIMPLE usando Plotly para crear una visualización de tipo {visualization_type}.
-
-{error_context}
-DATOS DISPONIBLES:
-{data_info}
-
-TÍTULO: {title}
-
-REGLAS:
-1. Los datos están en la variable 'data' (pandas DataFrame)
-2. Usa plotly.graph_objects (go)
-3. La figura final DEBE estar en la variable 'fig'
-4. Usa template='plotly_white'
-5. Código SIMPLE y DIRECTO
-6. Verifica que las columnas existen
-
-GENERA SOLO EL CÓDIGO PYTHON, sin explicaciones."""
-        
-        return prompt
-    
-    def _get_data_info(self, data: pd.DataFrame) -> str:
-        """Get formatted information about the DataFrame."""
-        info_parts = []
-        
-        # Shape
-        info_parts.append(f"Dimensiones: {data.shape[0]} filas × {data.shape[1]} columnas")
-        
-        # Columns
-        info_parts.append(f"\nColumnas disponibles:")
-        for col in data.columns:
-            dtype = data[col].dtype
-            non_null = data[col].notna().sum()
-            info_parts.append(f"  - {col} ({dtype}): {non_null} valores no nulos")
-        
-        # Sample data
-        if len(data) > 0:
-            info_parts.append(f"\nPrimeras filas:")
-            info_parts.append(data.head(3).to_string())
-        
-        return '\n'.join(info_parts)
-    
-    def _extract_code_from_response(self, response: str) -> Optional[str]:
-        """Extract Python code from LLM response."""
-        # Look for code blocks
-        if '```python' in response:
-            # Extract code between ```python and ```
-            start = response.find('```python') + len('```python')
-            end = response.find('```', start)
-            if end != -1:
-                code = response[start:end].strip()
-                return code
-        
-        elif '```' in response:
-            # Extract code between ``` and ```
-            start = response.find('```') + len('```')
-            end = response.find('```', start)
-            if end != -1:
-                code = response[start:end].strip()
-                return code
-        
-        # If no code blocks, assume entire response is code
-        # (but this is risky, so we'll be cautious)
-        if 'import' in response and 'fig' in response:
-            return response.strip()
-        
-        return None
 
 
 # Convenience function with singleton pattern
@@ -920,7 +690,7 @@ def create_visualization_agent() -> VisualizationAgent:
     Create or return the singleton visualization agent instance.
     
     Uses singleton pattern to avoid re-initializing the agent on every call.
-    This improves performance by reusing the LLM connection and cached templates.
+    This improves performance by reusing deterministic preprocessing components.
     
     Returns:
         VisualizationAgent singleton instance
