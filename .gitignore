@@ -87,3 +87,8 @@ tmp/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# MIMIC-IV dataset (large; not versioned)
+mimic-iv-clinical-database-demo-2.2.zip
+_mimic_iv_extract/
+_smoke_out.txt

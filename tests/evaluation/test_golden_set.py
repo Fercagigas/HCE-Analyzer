@@ -18,13 +18,20 @@ from hypothesis import strategies as st
 # Constants
 # ---------------------------------------------------------------------------
 
-ALLOWED_TABLES = ["edstays", "triage", "vitalsign", "diagnosis", "medrecon", "pyxis"]
+ALLOWED_TABLES = [
+    "patients", "admissions", "transfers", "services",
+    "diagnoses_icd", "d_icd_diagnoses", "procedures_icd", "d_icd_procedures",
+    "labevents", "d_labitems", "microbiologyevents", "omr",
+    "prescriptions", "pharmacy", "emar",
+    "icustays", "chartevents", "d_items",
+]
 VALID_CATEGORIES = [
     "patient_summary",
-    "vital_signs",
+    "admission_details",
     "diagnoses",
     "medications",
-    "triage",
+    "labs",
+    "icu_vitals",
     "cross_table",
 ]
 REQUIRED_FIELDS = ["id", "question", "ground_truth", "ground_truth_sql", "contexts", "category"]

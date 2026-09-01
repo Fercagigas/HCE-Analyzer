@@ -55,15 +55,15 @@ class VisualizationRequest(BaseModel):
         
         También puedes especificar cualquier tipo de Plotly en lenguaje natural."""
     )
-    stay_id: Optional[int] = Field(None, description="ID de estancia para obtener datos")
+    stay_id: Optional[int] = Field(None, description="ID de estancia UCI (chartevents) para obtener datos")
     subject_id: Optional[int] = Field(None, description="ID de paciente para obtener datos")
     metrics: Optional[List[str]] = Field(
         None,
         description="Métricas a visualizar (ej: ['temperature', 'heartrate', 'resprate'])"
     )
     data_source: str = Field(
-        default="vitalsign",
-        description="Tabla fuente de datos: vitalsign, diagnosis, medrecon, pyxis"
+        default="labevents",
+        description="Tabla fuente de datos: labevents, chartevents, diagnoses_icd, prescriptions, admissions"
     )
     title: Optional[str] = Field(None, description="Título del gráfico")
     requirements: Optional[str] = Field(
@@ -134,37 +134,34 @@ ESPECIALIZADOS (disponibles):
 16. indicator: Indicador de métrica clave (KPI)
 
 FUENTES DE DATOS:
-- vitalsign: Signos vitales (temperatura, frecuencia cardíaca, presión arterial, etc.)
-- diagnosis: Diagnósticos médicos
-- medrecon: Reconciliación de medicamentos
-- pyxis: Dispensación de medicamentos
+- labevents: Resultados de laboratorio (usa itemid + d_labitems)
+- chartevents: Signos vitales/mediciones UCI (usa stay_id + itemid + d_items)
+- diagnoses_icd: Diagnósticos (agregado por título vía d_icd_diagnoses)
+- prescriptions: Medicamentos prescritos
+- admissions: Admisiones hospitalarias
 
-MÉTRICAS DISPONIBLES (para vitalsign):
-- temperature: Temperatura corporal
-- heartrate: Frecuencia cardíaca
-- resprate: Frecuencia respiratoria
-- o2sat: Saturación de oxígeno
-- sbp: Presión arterial sistólica
-- dbp: Presión arterial diastólica
+MÉTRICAS DISPONIBLES:
+- Para labevents/chartevents, las métricas son itemids concretos (ver d_labitems / d_items)
+- valuenum es el valor numérico; charttime la marca temporal
 
 EJEMPLOS BÁSICOS:
-1. Línea temporal de un paciente:
-   {"visualization_type": "timeline", "stay_id": 37887480, "metrics": ["temperature", "heartrate"], "data_source": "vitalsign"}
+1. Serie temporal de un lab de un paciente (por itemid):
+   {"visualization_type": "timeline", "subject_id": 10000032, "metrics": ["50912"], "data_source": "labevents"}
 
-2. Comparación de métricas de un paciente:
-   {"visualization_type": "comparison", "stay_id": 37887480, "metrics": ["sbp", "dbp"], "data_source": "vitalsign"}
+2. Signos vitales UCI de una estancia:
+   {"visualization_type": "timeline", "stay_id": 30057454, "data_source": "chartevents"}
 
 3. Top-N diagnósticos más frecuentes en TODO el dataset (SIN subject_id):
-   {"visualization_type": "bar", "data_source": "diagnosis", "title": "10 Diagnósticos Más Frecuentes en Urgencias"}
+   {"visualization_type": "bar", "data_source": "diagnoses_icd", "title": "10 Diagnósticos Más Frecuentes"}
 
-4. Medicamentos más administrados en TODO el dataset (SIN subject_id):
-   {"visualization_type": "bar", "data_source": "pyxis", "title": "Medicamentos Más Administrados en Urgencias"}
+4. Fármacos más prescritos en TODO el dataset (SIN subject_id):
+   {"visualization_type": "bar", "data_source": "prescriptions", "title": "Fármacos Más Prescritos"}
 
-5. Distribución de disposiciones en TODO el dataset (SIN subject_id):
-   {"visualization_type": "bar", "data_source": "edstays", "title": "Distribución de Disposiciones"}
+5. Distribución de tipos de admisión en TODO el dataset (SIN subject_id):
+   {"visualization_type": "bar", "data_source": "admissions", "title": "Distribución de Tipos de Admisión"}
 
 IMPORTANTE:
-- Para datos de UN PACIENTE específico: proporciona stay_id o subject_id
+- Para datos de UN PACIENTE específico: proporciona subject_id (o stay_id para chartevents UCI)
 - Para estadísticas de TODO el dataset (top-N, frecuencias globales): NO incluyas subject_id ni stay_id
 - El sistema puede generar CUALQUIER visualización de Plotly
 - Usa "requirements" para especificar detalles adicionales en lenguaje natural""",
@@ -218,7 +215,7 @@ IMPORTANTE:
         stay_id: Optional[int] = None,
         subject_id: Optional[int] = None,
         metrics: Optional[List[str]] = None,
-        data_source: str = "vitalsign",
+        data_source: str = "labevents",
         title: Optional[str] = None,
         requirements: Optional[str] = None
     ) -> str:
@@ -286,7 +283,7 @@ IMPORTANTE:
             
             # Preprocess data automatically after fetching
             preprocess_metadata = {}
-            if metrics and data_source == 'vitalsign':
+            if metrics and data_source in ('labevents', 'chartevents'):
                 # Validate metrics before generating visualization
                 validation_result = self.preprocessor.validate_metrics(data, metrics)
                 
@@ -318,7 +315,7 @@ IMPORTANTE:
                 # NUEVO: Decidir si generar múltiples visualizaciones o una sola
                 # Si hay múltiples métricas de signos vitales, generar una por cada una
                 should_generate_multiple = (
-                    data_source == 'vitalsign' and 
+                    data_source in ('labevents', 'chartevents') and 
                     metrics and 
                     len(metrics) > 1 and
                     visualization_type in ['timeline', 'auto', 'comparison']
@@ -488,7 +485,8 @@ IMPORTANTE:
         """
         try:
             # Validate data source
-            valid_sources = ['vitalsign', 'diagnosis', 'medrecon', 'pyxis', 'triage', 'edstays']
+            valid_sources = ['labevents', 'chartevents', 'diagnoses_icd', 'prescriptions',
+                             'pharmacy', 'emar', 'admissions', 'icustays', 'microbiologyevents']
             if data_source not in valid_sources:
                 logger.error(f"Invalid data source: {data_source}")
                 raise ValueError(
@@ -521,9 +519,9 @@ IMPORTANTE:
             logger.info(f"Fetched {len(data)} rows from {data_source}")
             
             # Filter metrics if specified
-            if metrics and data_source == 'vitalsign':
+            if metrics and data_source in ('chartevents', 'labevents'):
                 # Keep only specified metrics plus identifiers and time
-                keep_cols = ['subject_id', 'stay_id', 'charttime'] + metrics
+                keep_cols = ['subject_id', 'hadm_id', 'stay_id', 'charttime', 'itemid', 'valuenum', 'valueuom'] + metrics
                 available_cols = [col for col in keep_cols if col in data.columns]
                 
                 # Log missing columns
@@ -563,7 +561,7 @@ IMPORTANTE:
           - 'frecuencia': the count
 
         Args:
-            data_source: Table name ('diagnosis', 'pyxis', 'medrecon', 'edstays', …)
+            data_source: Table name ('diagnoses_icd', 'prescriptions', 'admissions', …)
             metrics: Ignored for aggregate queries (kept for API consistency)
             top_n: How many top rows to return (default 10)
 
@@ -571,53 +569,36 @@ IMPORTANTE:
             DataFrame with columns ['categoria', 'frecuencia'] or None on error
         """
         try:
-            if data_source == 'diagnosis':
-                raw = self.db_service.get_table_data('diagnosis', {})
+            if data_source == 'diagnoses_icd':
+                # Aggregate by ICD title via a JOIN against the dictionary.
+                rows = self.db_service.execute_custom_query(
+                    "SELECT d.long_title AS categoria, COUNT(*) AS frecuencia "
+                    "FROM mimiciv_hosp.diagnoses_icd x "
+                    "JOIN mimiciv_hosp.d_icd_diagnoses d "
+                    "ON d.icd_code = x.icd_code AND d.icd_version = x.icd_version "
+                    "GROUP BY d.long_title ORDER BY frecuencia DESC LIMIT " + str(int(top_n))
+                )
+                return pd.DataFrame(rows) if rows else None
+
+            elif data_source == 'prescriptions':
+                raw = self.db_service.get_table_data('prescriptions', {})
                 if raw is None or len(raw) == 0:
                     return None
                 agg = (
-                    raw.groupby('icd_title')
+                    raw.groupby('drug')
                     .size()
                     .reset_index(name='frecuencia')
                     .sort_values('frecuencia', ascending=False)
                     .head(top_n)
-                    .rename(columns={'icd_title': 'categoria'})
+                    .rename(columns={'drug': 'categoria'})
                 )
                 return agg
 
-            elif data_source == 'pyxis':
-                raw = self.db_service.get_table_data('pyxis', {})
+            elif data_source == 'admissions':
+                raw = self.db_service.get_table_data('admissions', {})
                 if raw is None or len(raw) == 0:
                     return None
-                agg = (
-                    raw.groupby('name')
-                    .size()
-                    .reset_index(name='frecuencia')
-                    .sort_values('frecuencia', ascending=False)
-                    .head(top_n)
-                    .rename(columns={'name': 'categoria'})
-                )
-                return agg
-
-            elif data_source == 'medrecon':
-                raw = self.db_service.get_table_data('medrecon', {})
-                if raw is None or len(raw) == 0:
-                    return None
-                agg = (
-                    raw.groupby('name')
-                    .size()
-                    .reset_index(name='frecuencia')
-                    .sort_values('frecuencia', ascending=False)
-                    .head(top_n)
-                    .rename(columns={'name': 'categoria'})
-                )
-                return agg
-
-            elif data_source == 'edstays':
-                raw = self.db_service.get_table_data('edstays', {})
-                if raw is None or len(raw) == 0:
-                    return None
-                group_col = 'disposition'
+                group_col = 'admission_type'
                 agg = (
                     raw.groupby(group_col)
                     .size()
@@ -674,7 +655,7 @@ IMPORTANTE:
             f"No hay datos disponibles en la tabla '{data_source}' para {identifier}.\n\n"
             f"**Sugerencias:**\n"
             f"- Verifica que el identificador sea correcto\n"
-            f"- Intenta con otra tabla de datos (vitalsign, diagnosis, medrecon, pyxis)\n"
+            f"- Intenta con otra tabla de datos (labevents, chartevents, diagnoses_icd, prescriptions)\n"
             f"- Consulta primero los datos disponibles para este paciente"
         )
     

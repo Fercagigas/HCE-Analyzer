@@ -5,7 +5,7 @@
 
 ## Resumen
 
-El Chat Unificado consolida las interfaces previamente separadas (Medical Agent y Clinical Chat) en una sola interfaz inteligente. Usa Claude Haiku 4.5 (Anthropic) como LLM primario con selección automática de herramientas para acceder a la base de datos MIMIC-IV-ED, documentos clínicos indexados (RAG) y generación de visualizaciones.
+El Chat Unificado consolida las interfaces previamente separadas (Medical Agent y Clinical Chat) en una sola interfaz inteligente. Usa Claude Haiku 4.5 (Anthropic) como LLM primario con selección automática de herramientas para acceder a la base de datos MIMIC-IV clinical (esquemas `mimiciv_hosp` y `mimiciv_icu`), documentos clínicos indexados (RAG) y generación de visualizaciones.
 
 ### Características Clave
 - **Claude Haiku 4.5**: Modelo primario (`claude-haiku-4-5-20251001`)
@@ -42,7 +42,7 @@ El Chat Unificado consolida las interfaces previamente separadas (Medical Agent 
           ▼                  ▼                   ▼
    ┌────────────┐  ┌─────────────────┐  ┌────────────────┐
    │  Supabase  │  │ImprovedRAGService│  │Visualization   │
-   │ (mimic_ed) │  │ + QueryAugmenter│  │    Agent       │
+   │(mimiciv_*) │  │ + QueryAugmenter│  │    Agent       │
    └────────────┘  │ + Supabase     │  │(Claude Sonnet) │
                    │ + Reranker      │  └────────────────┘
                    └─────────────────┘
@@ -133,13 +133,15 @@ Retorna respuesta integrada
 
 **Ubicación**: `services/unified_chat/tools/database_tool.py`
 
-Consultas a la base de datos MIMIC-IV-ED en Supabase (esquema `mimic_ed`).
+Consultas a la base de datos MIMIC-IV clinical en Supabase (esquemas `mimiciv_hosp` y `mimiciv_icu`).
 
 ```python
 class DatabaseToolInput(BaseModel):
     query_type: str = Field(..., description="Tipo de consulta")
     subject_id: Optional[int] = Field(None, description="ID del paciente")
-    stay_id: Optional[int] = Field(None, description="ID de estancia")
+    hadm_id: Optional[int] = Field(None, description="ID de admisión hospitalaria")
+    stay_id: Optional[int] = Field(None, description="ID de estancia UCI")
+    itemid: Optional[int] = Field(None, description="ID de ítem lab/chart")
     icd_code: Optional[str] = Field(None, description="Código ICD")
     custom_query: Optional[str] = Field(None, description="SQL personalizado")
     limit: Optional[int] = Field(None, description="Límite de resultados")
@@ -155,17 +157,19 @@ class DatabaseTool(ClaudeToolAdapter):
     
     def execute(self, query_type, subject_id=None, ...):
         # Despacha según query_type:
-        # patient_summary, vital_signs, diagnoses, medications, custom
+        # patient_summary, admission_details, diagnoses, medications, labs, icu_vitals, custom
 ```
 
 **Tipos de Consulta**:
 | Tipo | Descripción | Tablas |
 |------|-------------|--------|
-| `patient_summary` | Resumen completo del paciente | edstays, triage |
-| `vital_signs` | Signos vitales y tendencias | vitalsign |
-| `diagnoses` | Diagnósticos con códigos ICD | diagnosis |
-| `medications` | Medicamentos administrados | medrecon, pyxis |
-| `custom` | SQL personalizado (validado) | Cualquiera |
+| `patient_summary` | Resumen del paciente | patients, admissions, diagnoses_icd, labevents, prescriptions |
+| `admission_details` | Detalle de una admisión | admissions, diagnoses_icd, transfers, services |
+| `diagnoses` | Diagnósticos y diccionario ICD | diagnoses_icd, d_icd_diagnoses |
+| `medications` | Medicamentos (prescripción + eMAR) | prescriptions, emar |
+| `labs` | Resultados de laboratorio | labevents, d_labitems |
+| `icu_vitals` | Signos vitales UCI | chartevents, d_items |
+| `custom` | SQL personalizado (validado) | Cualquiera del subconjunto |
 
 **Seguridad**:
 - Prevención de SQL injection (whitelist de operaciones)
@@ -275,11 +279,11 @@ Las directivas se generan en `services/medical_agent/prompt_manager.py` via `get
 **Manejo de Datos Faltantes**:
 - Sin datos: "No encontré información sobre [X] en el dataset"
 - Valores nulos: "Algunos registros tienen datos incompletos"
-- Paciente inexistente: "El paciente [ID] no existe en MIMIC-IV-ED"
+- Paciente inexistente: "El paciente [ID] no existe en MIMIC-IV"
 
 **Citación de Fuentes**:
 - Indicar qué herramienta se usó
-- Mencionar tabla de origen (edstays, triage, vitalsign, etc.)
+- Mencionar tabla de origen (admissions, labevents, diagnoses_icd, etc.)
 - Para RAG, citar documento fuente
 
 **Reconocimiento de Incertidumbre**:
@@ -288,8 +292,8 @@ Las directivas se generan en `services/medical_agent/prompt_manager.py` via `get
 - "Esto podría indicar..." (interpretaciones)
 
 **Limitaciones del Dataset**:
-- MIMIC-IV-ED: dataset demo con 222 pacientes
-- Solo datos de urgencias
+- MIMIC-IV clinical: dataset demo con 100 pacientes
+- Historia clínica hospitalaria (hosp + icu), sin notas de texto libre
 - Sin acceso a información fuera del dataset
 
 ## Memoria Conversacional
@@ -345,8 +349,8 @@ self.rag_service = ImprovedRAGService()
 from services.medical_agent.services.database_service import DatabaseService
 self.db_service = DatabaseService()
 
-# Tablas MIMIC-IV-ED en esquema mimic_ed
-result = supabase.schema('mimic_ed').table('edstays').select('*').execute()
+# Tablas MIMIC-IV en esquemas mimiciv_hosp / mimiciv_icu
+result = supabase.schema('mimiciv_hosp').table('admissions').select('*').execute()
 
 # Tablas de aplicación en esquema public (default)
 result = supabase.table('users').select('*').execute()
@@ -411,7 +415,7 @@ class UnifiedChatConfig:
 - Prevención de SQL injection en DatabaseTool
 - Sandbox para ejecución de código de visualización
 - Validación de inputs con Pydantic
-- Datos MIMIC-IV-ED anonimizados
+- Datos MIMIC-IV clinical anonimizados
 - API keys en variables de entorno (nunca en código)
 - Autenticación con Supabase Auth (JWT)
 
@@ -423,7 +427,7 @@ services/unified_chat/
 ├── config.py                 # Configuración del chat
 ├── document_manager.py       # Gestión de documentos
 ├── tools/
-│   ├── database_tool.py      # Consultas MIMIC-IV-ED
+│   ├── database_tool.py      # Consultas MIMIC-IV clinical
 │   ├── rag_tool.py           # Búsqueda RAG con augmentación
 │   └── __init__.py
 └── __init__.py

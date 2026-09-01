@@ -1,5 +1,7 @@
 # Inventario de arquitectura de ChatHCE
 
+> **Addendum (sep 2026):** La fuente clínica se migró de MIMIC-IV-ED (schema `mimic_ed`, 6 tablas) a **MIMIC-IV Clinical Demo 2.2** (`mimiciv_hosp` + `mimiciv_icu`, 18 tablas cargadas). Las referencias a `mimic_ed`, `edstays`, `triage`, `vitalsign`, `medrecon`, `pyxis` y `diagnosis` de este inventario reflejan el estado del commit `38b94ba` y ya **no aplican** al runtime actual. El nombre de esquema y el allowlist quedan encapsulados en `DatabaseService.TABLE_SCHEMA`. Ver `docs/MIGRACION_MIMIC_IV.md` y `docs/ESTADO_ACTUAL.md`.
+
 ## Alcance y fotografía analizada
 
 Este documento describe el estado real del repositorio en el commit `38b94ba856998eef5cfffa21bc8b03cde510f1c3`. Es un inventario de Fase 0: no describe todavía la arquitectura objetivo ni presupone que una dependencia declarada esté integrada.

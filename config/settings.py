@@ -150,7 +150,7 @@ class MedicalAgentSettings(BaseSettings):
     
     # Security and validation
     enable_query_validation: bool = Field(True, env="ENABLE_QUERY_VALIDATION")
-    allowed_schemas: List[str] = Field(["mimic_ed"], env="ALLOWED_SCHEMAS")
+    allowed_schemas: List[str] = Field(["mimiciv_hosp", "mimiciv_icu"], env="ALLOWED_SCHEMAS")
     
     # Agent health monitoring
     health_check_interval: int = Field(300, env="HEALTH_CHECK_INTERVAL")  # 5 minutes

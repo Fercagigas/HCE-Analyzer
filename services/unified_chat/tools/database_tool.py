@@ -1,8 +1,9 @@
 """
 Database Tool for Unified Chat System
 
-This module provides a Claude-compatible tool for querying the MIMIC-IV-ED database.
-It supports multiple query types with comprehensive validation and error handling.
+This module provides a Claude-compatible tool for querying the MIMIC-IV clinical
+database (schemas `mimiciv_hosp` and `mimiciv_icu`). It supports multiple query
+types with comprehensive validation and error handling.
 """
 
 import logging
@@ -19,15 +20,23 @@ logger = logging.getLogger(__name__)
 class DatabaseToolInput(BaseModel):
     """Input schema for database tool."""
     query_type: str = Field(
-        description="Type of query: patient_summary, vital_signs, diagnoses, medications, custom"
+        description="Type of query: patient_summary, admission_details, diagnoses, medications, labs, icu_vitals, custom"
     )
     subject_id: Optional[int] = Field(
-        None, 
-        description="Patient identifier (required for patient_summary, medications)"
+        None,
+        description="Patient identifier (required for patient_summary, medications, labs)"
+    )
+    hadm_id: Optional[int] = Field(
+        None,
+        description="Hospital admission identifier (required for admission_details; optional filter for labs/medications)"
     )
     stay_id: Optional[int] = Field(
-        None, 
-        description="Stay identifier (required for vital_signs)"
+        None,
+        description="ICU stay identifier (required for icu_vitals)"
+    )
+    itemid: Optional[int] = Field(
+        None,
+        description="Chart/lab item identifier (optional filter for icu_vitals)"
     )
     icd_code: Optional[str] = Field(
         None, 
@@ -38,8 +47,8 @@ class DatabaseToolInput(BaseModel):
         description="ICD title search term for diagnosis search"
     )
     table_name: Optional[str] = Field(
-        None, 
-        description="Table name for direct table queries (diagnosis, edstays, triage, vitalsign, medrecon, pyxis)"
+        None,
+        description="Table name for direct table queries (patients, admissions, diagnoses_icd, labevents, prescriptions, pharmacy, emar, icustays, chartevents, ...)"
     )
     filters: Optional[Dict[str, Any]] = Field(
         None, 
@@ -87,83 +96,92 @@ class DatabaseTool(ClaudeToolAdapter):
         # Initialize the adapter with tool metadata
         super().__init__(
             tool_name="query_mimic_database",
-            tool_description="""Query the MIMIC-IV-ED database for patient data, vital signs, diagnoses, medications, and clinical information.
+            tool_description="""Query the MIMIC-IV clinical database for patient data, hospital admissions, diagnoses, lab results, medications and ICU measurements.
 
 Use this tool when the user asks about:
-- Specific patients (by subject_id or stay_id)
-- Vital signs and trends
+- Specific patients (by subject_id) or admissions (by hadm_id)
+- Hospital admissions and their evolution
 - Diagnoses and ICD codes
-- Medications and administration
-- Emergency department visits
+- Laboratory results
+- Medications (prescriptions and eMAR)
+- ICU stays and charted vital signs
 - Statistical analysis of clinical data
 
-DATABASE SCHEMA (mimic_ed schema — use ONLY these exact column names):
+KEY IDENTIFIERS:
+- subject_id: patient (100 demo patients)
+- hadm_id: hospital admission (an episode); a patient may have several
+- stay_id: ICU stay (only for ICU tables)
 
-TABLE: edstays
-  subject_id INT, stay_id INT, hadm_id INT, intime TIMESTAMP, outtime TIMESTAMP,
-  gender VARCHAR, race VARCHAR, arrival_transport VARCHAR, disposition VARCHAR
+DATABASE SCHEMAS — use ONLY these exact column names.
 
-TABLE: triage
-  subject_id INT, stay_id INT, temperature FLOAT, heartrate FLOAT, resprate FLOAT,
-  o2sat FLOAT, sbp FLOAT, dbp FLOAT, pain VARCHAR, acuity FLOAT, chiefcomplaint TEXT
+SCHEMA mimiciv_hosp:
+  patients(subject_id INT, gender VARCHAR, anchor_age INT, anchor_year INT, anchor_year_group VARCHAR, dod DATE)
+  admissions(subject_id INT, hadm_id INT, admittime TS, dischtime TS, deathtime TS, admission_type VARCHAR,
+             admission_location VARCHAR, discharge_location VARCHAR, insurance VARCHAR, language VARCHAR,
+             marital_status VARCHAR, race VARCHAR, hospital_expire_flag INT)
+  transfers(subject_id INT, hadm_id INT, transfer_id INT, eventtype VARCHAR, careunit VARCHAR, intime TS, outtime TS)
+  services(subject_id INT, hadm_id INT, transfertime TS, prev_service VARCHAR, curr_service VARCHAR)
+  diagnoses_icd(subject_id INT, hadm_id INT, seq_num INT, icd_code VARCHAR, icd_version INT)
+  procedures_icd(subject_id INT, hadm_id INT, seq_num INT, chartdate TS, icd_code VARCHAR, icd_version INT)
+  d_icd_diagnoses(icd_code VARCHAR, icd_version INT, long_title TEXT)   -- diagnosis titles
+  d_icd_procedures(icd_code VARCHAR, icd_version INT, long_title TEXT)  -- procedure titles
+  labevents(labevent_id INT, subject_id INT, hadm_id INT, itemid INT, charttime TS, value TEXT, valuenum FLOAT,
+            valueuom VARCHAR, ref_range_lower FLOAT, ref_range_upper FLOAT, flag VARCHAR, priority VARCHAR)
+  d_labitems(itemid INT, label TEXT, fluid TEXT, category TEXT)         -- lab test names
+  microbiologyevents(microevent_id INT, subject_id INT, hadm_id INT, charttime TS, spec_type_desc VARCHAR,
+                     test_name VARCHAR, org_name VARCHAR, ab_name VARCHAR, interpretation VARCHAR)
+  omr(subject_id INT, chartdate DATE, seq_num INT, result_name VARCHAR, result_value TEXT)  -- outpatient measurements (BMI, BP...)
+  prescriptions(subject_id INT, hadm_id INT, starttime TS, stoptime TS, drug VARCHAR, gsn VARCHAR, ndc VARCHAR,
+                prod_strength VARCHAR, dose_val_rx VARCHAR, dose_unit_rx VARCHAR, route VARCHAR)
+  pharmacy(subject_id INT, hadm_id INT, pharmacy_id INT, starttime TS, stoptime TS, medication TEXT, status VARCHAR, route VARCHAR, frequency VARCHAR)
+  emar(subject_id INT, hadm_id INT, emar_id VARCHAR, charttime TS, medication TEXT, event_txt VARCHAR)  -- administrations
 
-TABLE: vitalsign
-  subject_id INT, stay_id INT, charttime TIMESTAMP, temperature FLOAT, heartrate FLOAT,
-  resprate FLOAT, o2sat FLOAT, sbp FLOAT, dbp FLOAT, rhythm VARCHAR, pain VARCHAR
+SCHEMA mimiciv_icu:
+  icustays(subject_id INT, hadm_id INT, stay_id INT, first_careunit VARCHAR, last_careunit VARCHAR, intime TS, outtime TS, los FLOAT)
+  chartevents(subject_id INT, hadm_id INT, stay_id INT, charttime TS, itemid INT, value TEXT, valuenum FLOAT, valueuom VARCHAR)
+  d_items(itemid INT, label TEXT, category VARCHAR, unitname VARCHAR)   -- chart item names (HR, BP, SpO2...)
 
-TABLE: diagnosis
-  subject_id INT, stay_id INT, seq_num INT, icd_code VARCHAR, icd_title TEXT, icd_version INT
-
-TABLE: medrecon  (habitual medications — what the patient takes at home)
-  subject_id INT, stay_id INT, charttime TIMESTAMP, name VARCHAR, gsn VARCHAR,
-  ndc VARCHAR, etc_rn INT, etccode VARCHAR, etcdescription TEXT
-
-TABLE: pyxis  (medications dispensed in the ED)
-  subject_id INT, stay_id INT, charttime TIMESTAMP, name VARCHAR, gsn_rn INT, gsn VARCHAR
-
-CRITICAL: For medications always use column "name" (NOT drugname, medication, drug, med_name).
-CRITICAL: For custom queries always prefix tables with schema: mimic_ed.edstays, mimic_ed.pyxis, etc.
+CRITICAL:
+- Diagnoses/procedures store codes only; JOIN d_icd_diagnoses / d_icd_procedures on (icd_code, icd_version) for titles.
+- Labs and chartevents store itemid only; JOIN d_labitems / d_items on itemid for the measurement name.
+- For custom queries ALWAYS prefix tables with schema: mimiciv_hosp.admissions, mimiciv_icu.chartevents, etc.
 
 QUERY TYPES:
 
-1. patient_summary: Complete patient summary with demographics, stays, diagnoses, vital signs, and medications
+1. patient_summary: demographics, admissions, diagnoses, recent labs and medications
    Required: subject_id
-   Example: {"query_type": "patient_summary", "subject_id": 10014729}
+   Example: {"query_type": "patient_summary", "subject_id": 10000032}
 
-2. vital_signs: Vital signs measurements for a specific stay
-   Required: stay_id
-   Example: {"query_type": "vital_signs", "stay_id": 37887480}
+2. admission_details: one hospital admission with diagnoses, transfers and services
+   Required: hadm_id
+   Example: {"query_type": "admission_details", "hadm_id": 22595853}
 
-3. diagnoses: Search diagnoses by ICD code or title
-   Required: icd_code OR icd_title
-   Example: {"query_type": "diagnoses", "icd_code": "431"}
-   Example: {"query_type": "diagnoses", "icd_title": "pneumonia"}
+3. diagnoses: search the ICD dictionary by code or title (or list a patient's diagnoses via subject_id/hadm_id filters)
+   Required: icd_code OR icd_title (or subject_id/hadm_id)
+   Example: {"query_type": "diagnoses", "icd_title": "sepsis"}
 
-4. medications: Medication history for a patient
-   Required: subject_id
-   Example: {"query_type": "medications", "subject_id": 10014729}
+4. medications: medication history for a patient (prescriptions + eMAR)
+   Required: subject_id (optional hadm_id to scope to one admission)
+   Example: {"query_type": "medications", "subject_id": 10000032}
 
-5. custom: Custom SQL SELECT query — MUST use exact column names from schema above
+5. labs: laboratory results for a patient
+   Required: subject_id (optional hadm_id)
+   Example: {"query_type": "labs", "subject_id": 10000032}
+
+6. icu_vitals: ICU charted measurements for an ICU stay
+   Required: stay_id (optional itemid)
+   Example: {"query_type": "icu_vitals", "stay_id": 30057454}
+
+7. custom: Custom SQL SELECT query — MUST use exact schema-qualified table names
    Required: custom_query
-   Example: {"query_type": "custom", "custom_query": "SELECT name, charttime FROM mimic_ed.pyxis WHERE subject_id = 10014729 ORDER BY charttime"}
-   Example: {"query_type": "custom", "custom_query": "SELECT icd_code, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10014729"}
-
-   DATASET-WIDE QUERIES (no subject_id filter needed):
-   - List all unique patients:
-     {"query_type": "custom", "custom_query": "SELECT DISTINCT subject_id FROM mimic_ed.edstays ORDER BY subject_id"}
-   - List unique patients with gender and race:
-     {"query_type": "custom", "custom_query": "SELECT DISTINCT subject_id, gender, race FROM mimic_ed.edstays ORDER BY subject_id"}
-   - Count visits per patient:
-     {"query_type": "custom", "custom_query": "SELECT subject_id, COUNT(stay_id) as total_visitas FROM mimic_ed.edstays GROUP BY subject_id ORDER BY total_visitas DESC"}
-   - Top 10 most frequent diagnoses:
-     {"query_type": "custom", "custom_query": "SELECT icd_title, COUNT(*) as frecuencia FROM mimic_ed.diagnosis GROUP BY icd_title ORDER BY frecuencia DESC LIMIT 10"}
-   - Distribution by disposition:
-     {"query_type": "custom", "custom_query": "SELECT disposition, COUNT(*) as total FROM mimic_ed.edstays GROUP BY disposition ORDER BY total DESC"}
+   Example: {"query_type": "custom", "custom_query": "SELECT DISTINCT subject_id FROM mimiciv_hosp.patients ORDER BY subject_id"}
+   Example: {"query_type": "custom", "custom_query": "SELECT d.long_title, COUNT(*) AS n FROM mimiciv_hosp.diagnoses_icd x JOIN mimiciv_hosp.d_icd_diagnoses d ON d.icd_code = x.icd_code AND d.icd_version = x.icd_version GROUP BY d.long_title ORDER BY n DESC LIMIT 10"}
+   Example: {"query_type": "custom", "custom_query": "SELECT l.charttime, di.label, l.valuenum, l.valueuom FROM mimiciv_hosp.labevents l JOIN mimiciv_hosp.d_labitems di ON di.itemid = l.itemid WHERE l.subject_id = 10000032 ORDER BY l.charttime"}
 
 IMPORTANT:
 - Always provide required parameters for each query type
-- Patient IDs (subject_id) and stay IDs (stay_id) must be positive integers
-- Custom queries are validated for security (no INSERT, UPDATE, DELETE, DROP, etc.)
+- subject_id / hadm_id / stay_id must be positive integers
+- Custom queries are validated for security (SELECT-only, no writes)
 - Results are limited to prevent performance issues
 - All responses are formatted for clinical interpretation""",
             args_schema=DatabaseToolInput
@@ -175,7 +193,9 @@ IMPORTANT:
         self,
         query_type: str,
         subject_id: Optional[int] = None,
+        hadm_id: Optional[int] = None,
         stay_id: Optional[int] = None,
+        itemid: Optional[int] = None,
         icd_code: Optional[str] = None,
         icd_title: Optional[str] = None,
         table_name: Optional[str] = None,
@@ -208,23 +228,29 @@ IMPORTANT:
             # Validate and execute based on query type
             if query_type == "patient_summary":
                 return self._execute_patient_summary(subject_id)
-                
-            elif query_type == "vital_signs":
-                return self._execute_vital_signs(stay_id)
-                
+
+            elif query_type == "admission_details":
+                return self._execute_admission_details(hadm_id)
+
             elif query_type == "diagnoses":
-                return self._execute_diagnoses(icd_code, icd_title, subject_id, stay_id, filters, limit)
-                
+                return self._execute_diagnoses(icd_code, icd_title, subject_id, hadm_id, filters, limit)
+
             elif query_type == "medications":
-                return self._execute_medications(subject_id, stay_id, limit)
-                
+                return self._execute_medications(subject_id, hadm_id, limit)
+
+            elif query_type == "labs":
+                return self._execute_labs(subject_id, hadm_id, limit)
+
+            elif query_type == "icu_vitals":
+                return self._execute_icu_vitals(stay_id, itemid)
+
             elif query_type == "custom":
                 return self._execute_custom(custom_query, params, limit)
-                
+
             else:
                 return {
                     'success': False,
-                    'error': f"Tipo de consulta no reconocido: '{query_type}'. Tipos válidos: patient_summary, vital_signs, diagnoses, medications, custom",
+                    'error': f"Tipo de consulta no reconocido: '{query_type}'. Tipos válidos: patient_summary, admission_details, diagnoses, medications, labs, icu_vitals, custom",
                     'data': None
                 }
                 
@@ -278,41 +304,64 @@ IMPORTANT:
             'parameters': {'subject_id': subject_id}
         }
     
-    def _execute_vital_signs(self, stay_id: Optional[int]) -> Dict[str, Any]:
-        """
-        Execute vital signs query.
-        
-        Args:
-            stay_id: Stay identifier
-            
-        Returns:
-            Dict with vital signs data
-        """
-        # Validate required parameters
-        if not stay_id:
-            raise ValidationError("stay_id es requerido para vital_signs")
-        
-        if not isinstance(stay_id, int) or stay_id <= 0:
-            raise ValidationError(f"stay_id debe ser un entero positivo, recibido: {stay_id}")
-        
-        # Execute query
-        logger.info(f"Fetching vital signs for stay_id={stay_id}")
-        result = self.db_service.get_vital_signs(stay_id)
-        
+    def _execute_admission_details(self, hadm_id: Optional[int]) -> Dict[str, Any]:
+        """Execute hospital admission details query."""
+        if not hadm_id:
+            raise ValidationError("hadm_id es requerido para admission_details")
+        if not isinstance(hadm_id, int) or hadm_id <= 0:
+            raise ValidationError(f"hadm_id debe ser un entero positivo, recibido: {hadm_id}")
+
+        logger.info(f"Fetching admission details for hadm_id={hadm_id}")
+        result = self.db_service.get_admission_details(hadm_id)
         return {
             'success': True,
             'data': result,
-            'query_type': 'vital_signs',
-            'parameters': {'stay_id': stay_id},
+            'query_type': 'admission_details',
+            'parameters': {'hadm_id': hadm_id}
+        }
+
+    def _execute_icu_vitals(self, stay_id: Optional[int], itemid: Optional[int]) -> Dict[str, Any]:
+        """Execute ICU chartevents (vital signs) query for an ICU stay."""
+        if not stay_id:
+            raise ValidationError("stay_id es requerido para icu_vitals")
+        if not isinstance(stay_id, int) or stay_id <= 0:
+            raise ValidationError(f"stay_id debe ser un entero positivo, recibido: {stay_id}")
+
+        logger.info(f"Fetching ICU chartevents for stay_id={stay_id}, itemid={itemid}")
+        result = self.db_service.get_icu_chartevents(stay_id, itemid)
+        return {
+            'success': True,
+            'data': result,
+            'query_type': 'icu_vitals',
+            'parameters': {'stay_id': stay_id, 'itemid': itemid},
             'count': len(result) if isinstance(result, list) else 0
         }
-    
+
+    def _execute_labs(self, subject_id: Optional[int], hadm_id: Optional[int], limit: Optional[int]) -> Dict[str, Any]:
+        """Execute laboratory results query for a patient."""
+        if not subject_id:
+            raise ValidationError("subject_id es requerido para labs")
+        if not isinstance(subject_id, int) or subject_id <= 0:
+            raise ValidationError(f"subject_id debe ser un entero positivo, recibido: {subject_id}")
+
+        logger.info(f"Fetching labs for subject_id={subject_id}, hadm_id={hadm_id}")
+        result = self.db_service.get_lab_results(subject_id, hadm_id)
+        if limit and isinstance(result, list):
+            result = result[:self._get_validated_limit(limit)]
+        return {
+            'success': True,
+            'data': result,
+            'query_type': 'labs',
+            'parameters': {'subject_id': subject_id, 'hadm_id': hadm_id},
+            'count': len(result) if isinstance(result, list) else 0
+        }
+
     def _execute_diagnoses(
         self,
         icd_code: Optional[str],
         icd_title: Optional[str],
         subject_id: Optional[int],
-        stay_id: Optional[int],
+        hadm_id: Optional[int],
         filters: Optional[Dict],
         limit: Optional[int]
     ) -> Dict[str, Any]:
@@ -331,31 +380,31 @@ IMPORTANT:
             Dict with diagnosis data
         """
         # Validate that at least one search criterion is provided
-        if not icd_code and not icd_title and not subject_id and not stay_id and not filters:
+        if not icd_code and not icd_title and not subject_id and not hadm_id and not filters:
             raise ValidationError(
-                "Se requiere al menos un criterio de búsqueda: icd_code, icd_title, subject_id, stay_id, o filters"
+                "Se requiere al menos un criterio de búsqueda: icd_code, icd_title, subject_id, hadm_id, o filters"
             )
-        
-        # Use search_diagnoses if ICD code or title provided
+
+        # Use dictionary search if ICD code or title provided
         if icd_code or icd_title:
-            logger.info(f"Searching diagnoses: icd_code={icd_code}, icd_title={icd_title}")
+            logger.info(f"Searching diagnoses dictionary: icd_code={icd_code}, icd_title={icd_title}")
             result = self.db_service.search_diagnoses(icd_code=icd_code, icd_title=icd_title)
+        elif hadm_id:
+            logger.info(f"Fetching diagnoses for admission hadm_id={hadm_id}")
+            result = self.db_service.get_admission_diagnoses(hadm_id)
+        elif subject_id:
+            logger.info(f"Fetching diagnoses for patient subject_id={subject_id}")
+            result = self.db_service.get_patient_diagnoses(subject_id)
         else:
-            # Use table query with filters
             query_filters = filters or {}
-            if subject_id:
-                query_filters['subject_id'] = subject_id
-            if stay_id:
-                query_filters['stay_id'] = stay_id
-            
-            logger.info(f"Querying diagnosis table with filters: {query_filters}")
+            logger.info(f"Querying diagnoses_icd with filters: {query_filters}")
             result_df = self.db_service.get_table_data(
-                'diagnosis',
+                'diagnoses_icd',
                 filters=query_filters,
                 limit=self._get_validated_limit(limit)
             )
             result = result_df.to_dict('records') if not result_df.empty else []
-        
+
         return {
             'success': True,
             'data': result,
@@ -364,62 +413,40 @@ IMPORTANT:
                 'icd_code': icd_code,
                 'icd_title': icd_title,
                 'subject_id': subject_id,
-                'stay_id': stay_id
+                'hadm_id': hadm_id
             },
             'count': len(result) if isinstance(result, list) else 0
         }
-    
+
     def _execute_medications(
         self,
         subject_id: Optional[int],
-        stay_id: Optional[int],
+        hadm_id: Optional[int],
         limit: Optional[int]
     ) -> Dict[str, Any]:
-        """
-        Execute medications query.
-        
-        Args:
-            subject_id: Patient identifier
-            stay_id: Optional stay identifier
-            limit: Row limit
-            
-        Returns:
-            Dict with medication data
-        """
-        # Validate required parameters
-        if not subject_id and not stay_id:
-            raise ValidationError("subject_id o stay_id es requerido para medications")
-        
-        # Execute query based on available parameters
-        if subject_id:
+        """Execute medications query (prescriptions + eMAR)."""
+        if not subject_id and not hadm_id:
+            raise ValidationError("subject_id o hadm_id es requerido para medications")
+
+        if hadm_id:
+            if not isinstance(hadm_id, int) or hadm_id <= 0:
+                raise ValidationError(f"hadm_id debe ser un entero positivo, recibido: {hadm_id}")
+            logger.info(f"Fetching medications for hadm_id={hadm_id}")
+            result = self.db_service.get_medications_by_admission(hadm_id)
+        else:
             if not isinstance(subject_id, int) or subject_id <= 0:
                 raise ValidationError(f"subject_id debe ser un entero positivo, recibido: {subject_id}")
-            
             logger.info(f"Fetching medication history for subject_id={subject_id}")
             result = self.db_service.get_medication_history(subject_id)
-            
-            # Apply limit if specified
-            if limit and isinstance(result, list):
-                validated_limit = self._get_validated_limit(limit)
-                result = result[:validated_limit]
-        else:
-            # Query by stay_id using table data
-            if not isinstance(stay_id, int) or stay_id <= 0:
-                raise ValidationError(f"stay_id debe ser un entero positivo, recibido: {stay_id}")
-            
-            logger.info(f"Fetching medications for stay_id={stay_id}")
-            result_df = self.db_service.get_table_data(
-                'medrecon',
-                filters={'stay_id': stay_id},
-                limit=self._get_validated_limit(limit)
-            )
-            result = result_df.to_dict('records') if not result_df.empty else []
-        
+
+        if limit and isinstance(result, list):
+            result = result[:self._get_validated_limit(limit)]
+
         return {
             'success': True,
             'data': result,
             'query_type': 'medications',
-            'parameters': {'subject_id': subject_id, 'stay_id': stay_id},
+            'parameters': {'subject_id': subject_id, 'hadm_id': hadm_id},
             'count': len(result) if isinstance(result, list) else 0
         }
     
@@ -576,43 +603,35 @@ IMPORTANT:
             )
 
         # --- Column name validation ---
-        # Map of incorrect column names → correct column name + table context
+        # Map of incorrect column names → correct column name + table context (MIMIC-IV)
         WRONG_COLUMNS: Dict[str, str] = {
-            'DRUGNAME':       'name (en pyxis o medrecon)',
-            'DRUG_NAME':      'name (en pyxis o medrecon)',
-            'MEDICATION':     'name (en pyxis o medrecon)',
-            'MEDICATION_NAME':'name (en pyxis o medrecon)',
-            'MED_NAME':       'name (en pyxis o medrecon)',
-            'DRUG':           'name (en pyxis o medrecon)',
-            'MEDICINE':       'name (en pyxis o medrecon)',
-            'AGE':            'no existe columna age; calcula desde intime si es necesario',
-            'DOB':            'no existe columna dob en MIMIC-IV-ED',
-            'BIRTH_DATE':     'no existe columna birth_date en MIMIC-IV-ED',
-            'DEATH_DATE':     'no existe columna death_date en MIMIC-IV-ED',
-            'PATIENT_ID':     'subject_id (en edstays, triage, vitalsign, diagnosis, medrecon, pyxis)',
-            'VISIT_ID':       'stay_id',
-            'ENCOUNTER_ID':   'stay_id',
-            'ADMISSION_ID':   'hadm_id (en edstays)',
-            'DIAGNOSIS_CODE': 'icd_code (en diagnosis)',
-            'DIAGNOSIS_NAME': 'icd_title (en diagnosis)',
-            'VITAL_SIGNS':    'tabla vitalsign (columnas: heartrate, sbp, dbp, o2sat, temperature, resprate)',
-            'HEART_RATE':     'heartrate (en vitalsign o triage)',
-            'BLOOD_PRESSURE': 'sbp y dbp (en vitalsign o triage)',
-            'OXYGEN_SAT':     'o2sat (en vitalsign o triage)',
-            'RESP_RATE':      'resprate (en vitalsign o triage)',
-            'CHIEF_COMPLAINT':'chiefcomplaint (en triage)',
-            'COMPLAINT':      'chiefcomplaint (en triage)',
-            'ARRIVAL_MODE':   'arrival_transport (en edstays)',
-            'TRANSPORT':      'arrival_transport (en edstays)',
-            'DISCHARGE':      'disposition (en edstays)',
-            'DISCHARGE_DISPOSITION': 'disposition (en edstays)',
+            'DRUGNAME':        'drug (en prescriptions) o medication (en pharmacy/emar)',
+            'DRUG_NAME':       'drug (en prescriptions) o medication (en pharmacy/emar)',
+            'MED_NAME':        'drug (en prescriptions) o medication (en pharmacy/emar)',
+            'MEDICINE':        'drug (en prescriptions) o medication (en pharmacy/emar)',
+            'AGE':             'anchor_age (en patients)',
+            'DOB':             'no existe fecha de nacimiento; usa anchor_age/anchor_year (en patients)',
+            'BIRTH_DATE':      'no existe; usa anchor_age/anchor_year (en patients)',
+            'DEATH_DATE':      'dod (en patients) o deathtime (en admissions)',
+            'PATIENT_ID':      'subject_id',
+            'VISIT_ID':        'hadm_id (admisión hospitalaria) o stay_id (estancia ICU)',
+            'ENCOUNTER_ID':    'hadm_id (admisión hospitalaria)',
+            'ADMISSION_ID':    'hadm_id (en admissions)',
+            'DIAGNOSIS_CODE':  'icd_code (en diagnoses_icd)',
+            'DIAGNOSIS_NAME':  'long_title (en d_icd_diagnoses)',
+            'ICD_TITLE':       'long_title (en d_icd_diagnoses / d_icd_procedures)',
+            'LAB_NAME':        'label (en d_labitems)',
+            'ITEM_NAME':       'label (en d_labitems o d_items)',
+            'CHIEF_COMPLAINT': 'no existe en MIMIC-IV clinical (era de MIMIC-IV-ED)',
+            'ACUITY':          'no existe en MIMIC-IV clinical (era de triage en MIMIC-IV-ED)',
+            'DISPOSITION':     'discharge_location (en admissions)',
         }
 
         for wrong_col, correction in WRONG_COLUMNS.items():
             # Match as a word boundary to avoid false positives inside longer names
             if re.search(r'\b' + wrong_col + r'\b', query_upper):
                 raise ValidationError(
-                    f"Columna '{wrong_col.lower()}' no existe en MIMIC-IV-ED. "
+                    f"Columna '{wrong_col.lower()}' no existe en MIMIC-IV. "
                     f"Usa en su lugar: {correction}. "
                     f"Consulta el schema completo en la descripción de la herramienta."
                 )
@@ -628,20 +647,17 @@ IMPORTANT:
                 f"Consulta demasiado compleja. Máximo {self.MAX_QUERY_CONDITIONS} condiciones permitidas."
             )
         
-        # Verify only allowed tables are referenced
-        allowed_tables = {
-            'EDSTAYS', 'TRIAGE', 'VITALSIGN', 'DIAGNOSIS',
-            'MEDRECON', 'PYXIS'
-        }
-        table_pattern = r'(?:FROM|JOIN)\s+(?:mimic_ed\.)?(\w+)'
+        # Verify only allowed tables are referenced (MIMIC-IV hosp/icu)
+        allowed_tables = {t.upper() for t in self.db_service.ALLOWED_TABLES}
+        table_pattern = r'(?:FROM|JOIN)\s+(?:(?:MIMICIV_HOSP|MIMICIV_ICU)\.)?(\w+)'
         tables_found = re.findall(table_pattern, query_upper)
         for table in tables_found:
             if table not in allowed_tables:
                 raise ValidationError(
                     f"Tabla '{table}' no permitida. "
-                    f"Solo se permiten tablas MIMIC-IV-ED: {', '.join(sorted(allowed_tables))}."
+                    f"Solo se permiten tablas MIMIC-IV: {', '.join(sorted(t.lower() for t in allowed_tables))}."
                 )
-        
+
         logger.debug("Custom query validation passed")
     
     def _get_validated_limit(self, limit: Optional[int]) -> int:

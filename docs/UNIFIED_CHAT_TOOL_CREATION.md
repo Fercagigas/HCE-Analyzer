@@ -227,7 +227,7 @@ Añadir la descripción de la herramienta en `_create_system_prompt()`:
 """
 HERRAMIENTAS DISPONIBLES:
 
-1. query_mimic_database - Consultas a MIMIC-IV-ED
+1. query_mimic_database - Consultas a MIMIC-IV clinical
 2. search_clinical_documents - Búsqueda RAG en documentos
 3. request_visualization - Generación de visualizaciones
 4. my_new_tool - [Descripción y cuándo usarla]
