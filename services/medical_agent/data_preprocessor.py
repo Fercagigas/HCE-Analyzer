@@ -385,17 +385,37 @@ class DataPreprocessor:
             # Use pre-calculated null counts
             null_count = all_null_counts.get(metric, 0) if total_count > 0 else 0
             null_percentage = null_count / total_count if total_count > 0 else 1.0
+            non_null_count = total_count - null_count
             
             null_percentages[metric] = null_percentage
             
+            # For small datasets (<=20 rows), allow metrics if there are at least
+            # 2 non-null values, regardless of null percentage. This prevents
+            # excluding metrics that have enough data points for a meaningful chart.
+            min_data_points = 2
+            is_small_dataset = total_count <= 20
+            has_minimum_data = non_null_count >= min_data_points
+            
             # Excluir métricas con más del umbral de nulos
-            if null_percentage > self.null_threshold:
+            # UNLESS it's a small dataset with enough actual data points
+            if null_percentage > self.null_threshold and not (is_small_dataset and has_minimum_data):
                 excluded_metrics.append(metric)
                 warnings.append(
                     f"Métrica '{metric}' excluida: {null_percentage*100:.1f}% valores nulos "
                     f"(umbral: {self.null_threshold*100:.1f}%)"
                 )
                 logger.debug(f"Metric '{metric}' excluded due to high null percentage: {null_percentage*100:.1f}%")
+            elif null_percentage > self.null_threshold and is_small_dataset and has_minimum_data:
+                # Allow it but warn
+                warnings.append(
+                    f"Métrica '{metric}': {null_percentage*100:.1f}% valores nulos, "
+                    f"pero se incluye porque hay {non_null_count} valores disponibles"
+                )
+                logger.info(
+                    f"Metric '{metric}' has high null rate ({null_percentage*100:.1f}%) "
+                    f"but allowed: small dataset with {non_null_count} valid data points"
+                )
+                valid_metrics.append(metric)
             else:
                 # Reemplazar inf y NaN con None para Plotly
                 if pd.api.types.is_numeric_dtype(data[metric]):
