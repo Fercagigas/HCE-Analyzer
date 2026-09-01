@@ -1281,17 +1281,18 @@ class UnifiedChatInterface:
     def _show_visualization_capabilities(self):
         """Show minimal visualization capabilities overview."""
         st.markdown("""
-        El sistema genera visualizaciones con **Plotly** a partir de lenguaje natural.
+        El sistema genera visualizaciones con **Plotly** mediante funciones
+        parametrizadas y validadas.
 
-        **Tipos disponibles:** timeline, comparación, distribución, scatter, heatmap, 
-        box plot, violin, 3D, sunburst, treemap, waterfall, sankey, y más.
+        **Tipos disponibles:** evolución temporal, comparación de métricas,
+        barras e histogramas/distribuciones.
 
         **Ejemplos:**
         - "Muestra la evolución de temperatura del paciente 10014729"
         - "Compara presión sistólica y diastólica"
         - "Distribución de diagnósticos por categoría ICD"
         """)
-        st.caption("💡 Describe cualquier visualización en tu consulta y el sistema la generará automáticamente.")
+        st.caption("💡 Los tipos no incluidos en la lista segura se rechazan sin ejecutar código generado.")
     
     def _get_conversation_context(self) -> List[Dict[str, Any]]:
         """
