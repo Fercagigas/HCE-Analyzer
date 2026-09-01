@@ -27,8 +27,8 @@ El system prompt se construye en `PromptManager.get_system_prompt()` con las sig
    - Propósito y capacidades
 
 2. CONTEXTO OPERATIVO
-   - Dataset MIMIC-IV-ED (222 pacientes, 6 tablas)
-   - Esquema mimic_ed en Supabase
+   - Dataset MIMIC-IV Clinical Demo 2.2 (100 pacientes, módulos hosp + icu)
+   - Esquemas mimiciv_hosp / mimiciv_icu en Supabase
 
 3. HERRAMIENTAS DISPONIBLES
    - query_mimic_database: consultas a MIMIC-IV-ED
@@ -45,7 +45,7 @@ El system prompt se construye en `PromptManager.get_system_prompt()` con las sig
    - Respuestas en español
    - Terminología médica apropiada
 
-6. BASE DE DATOS MIMIC-IV-ED
+6. BASE DE DATOS MIMIC-IV (mimiciv_hosp / mimiciv_icu)
    - Esquema completo de tablas
    - Columnas y tipos de datos
    - Reglas SQL (solo SELECT, sin punto y coma)
@@ -85,14 +85,14 @@ El system prompt se construye en `PromptManager.get_system_prompt()` con las sig
 ```
 - Si no encuentra datos: "No encontré información sobre [X] en el dataset"
 - Si hay valores nulos: "Algunos registros tienen datos incompletos"
-- Si el paciente no existe: "El paciente [ID] no existe en MIMIC-IV-ED"
+- Si el paciente no existe: "El paciente [ID] no existe en MIMIC-IV"
 ```
 
 ### Citación de Fuentes
 
 ```
 - Siempre indicar qué herramienta se usó
-- Mencionar la tabla de origen (edstays, triage, vitalsign, etc.)
+- Mencionar la tabla de origen (admissions, labevents, diagnoses_icd, etc.)
 - Para RAG, citar el documento fuente
 ```
 
@@ -191,8 +191,8 @@ Ejemplo: {"query": "protocolo para hipertensión arterial"}
 Identidad clara del agente:
 
 ```
-Eres ChatHCE, un asistente de análisis clínico de urgencias
-especializado en datos del dataset MIMIC-IV-ED.
+Eres ChatHCE, un asistente de análisis clínico
+especializado en datos del dataset MIMIC-IV clinical.
 ```
 
 ### 4. Structured Output

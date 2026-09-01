@@ -16,7 +16,9 @@
 
 ## Descripción
 
-ChatHCE es un sistema avanzado de análisis de datos de urgencias hospitalarias que combina inteligencia artificial con capacidades RAG (Retrieval-Augmented Generation). El sistema está especializado en el análisis de datos del **Servicio de Urgencias** utilizando el dataset MIMIC-IV-ED (Emergency Department). Utiliza un **Chat Unificado** como interfaz principal, que automáticamente selecciona las herramientas correctas (base de datos MIMIC-IV-ED, documentos clínicos de urgencias, o visualizaciones) según tu consulta.
+ChatHCE es un sistema avanzado de análisis de datos clínicos hospitalarios que combina inteligencia artificial con capacidades RAG (Retrieval-Augmented Generation). El sistema analiza la historia clínica hospitalaria utilizando el dataset **MIMIC-IV Clinical Database Demo 2.2** (módulos hospitalario y UCI, esquemas `mimiciv_hosp` / `mimiciv_icu`). Utiliza un **Chat Unificado** como interfaz principal, que automáticamente selecciona las herramientas correctas (base de datos MIMIC-IV, documentos clínicos, o visualizaciones) según tu consulta.
+
+> **Nota de migración (sep 2026):** el sistema se migró de MIMIC-IV-ED (urgencias, esquema `mimic_ed`) a MIMIC-IV Clinical Demo 2.2. Detalles en [docs/MIGRACION_MIMIC_IV.md](docs/MIGRACION_MIMIC_IV.md).
 
 ### ¿Qué hace especial al Chat Unificado?
 
@@ -244,40 +246,18 @@ CREATE INDEX idx_users_created_at ON public.users USING btree (created_at);
 CREATE INDEX idx_users_id ON public.users USING btree (id);
 ```
 
-#### Índices MIMIC-IV-ED (Datos Médicos)
+#### Índices MIMIC-IV (Datos Médicos)
+
+Tras la migración a MIMIC-IV Clinical Demo 2.2, los índices se crean sobre los esquemas `mimiciv_hosp` y `mimiciv_icu` (por `subject_id`, `hadm_id`, `stay_id`, `charttime`, `itemid` y `(icd_code, icd_version)`). Se aplican mediante migraciones de Supabase; el listado completo está en [docs/MIGRACION_MIMIC_IV.md](docs/MIGRACION_MIMIC_IV.md) y en la migración `create_mimiciv_indexes`. Ejemplos:
+
 ```sql
--- Índices para tabla diagnosis (diagnósticos)
-CREATE INDEX idx_diagnosis_icd_code ON public.diagnosis USING btree (icd_code);
-CREATE INDEX idx_diagnosis_stay_id ON public.diagnosis USING btree (stay_id);
-CREATE INDEX idx_diagnosis_subject_id ON public.diagnosis USING btree (subject_id);
-CREATE INDEX idx_diagnosis_subject_stay ON public.diagnosis USING btree (subject_id, stay_id);
-
--- Índices para tabla edstays (estancias en emergencias)
-CREATE INDEX idx_edstays_hadm_id ON public.edstays USING btree (hadm_id);
-CREATE INDEX idx_edstays_intime ON public.edstays USING btree (intime);
-CREATE INDEX idx_edstays_subject_id ON public.edstays USING btree (subject_id);
-
--- Índices para tabla medrecon (reconciliación de medicamentos)
-CREATE INDEX idx_medrecon_charttime ON public.medrecon USING btree (charttime);
-CREATE INDEX idx_medrecon_stay_id ON public.medrecon USING btree (stay_id);
-CREATE INDEX idx_medrecon_subject_charttime ON public.medrecon USING btree (subject_id, charttime);
-CREATE INDEX idx_medrecon_subject_id ON public.medrecon USING btree (subject_id);
-
--- Índices para tabla pyxis (dispensación de medicamentos)
-CREATE INDEX idx_pyxis_charttime ON public.pyxis USING btree (charttime);
-CREATE INDEX idx_pyxis_stay_id ON public.pyxis USING btree (stay_id);
-CREATE INDEX idx_pyxis_subject_charttime ON public.pyxis USING btree (subject_id, charttime);
-CREATE INDEX idx_pyxis_subject_id ON public.pyxis USING btree (subject_id);
-
--- Índices para tabla triage (triaje)
-CREATE INDEX idx_triage_acuity ON public.triage USING btree (acuity);
-CREATE INDEX idx_triage_subject_id ON public.triage USING btree (subject_id);
-
--- Índices para tabla vitalsign (signos vitales)
-CREATE INDEX idx_vitalsign_charttime ON public.vitalsign USING btree (charttime);
-CREATE INDEX idx_vitalsign_stay_id ON public.vitalsign USING btree (stay_id);
-CREATE INDEX idx_vitalsign_subject_charttime ON public.vitalsign USING btree (subject_id, charttime);
-CREATE INDEX idx_vitalsign_subject_id ON public.vitalsign USING btree (subject_id);
+-- hosp
+CREATE INDEX idx_hosp_labevents_subject_time ON mimiciv_hosp.labevents (subject_id, charttime);
+CREATE INDEX idx_hosp_diagnoses_icd ON mimiciv_hosp.diagnoses_icd (icd_code, icd_version);
+CREATE INDEX idx_hosp_admissions_subject ON mimiciv_hosp.admissions (subject_id);
+-- icu
+CREATE INDEX idx_icu_chartevents_subject_time ON mimiciv_icu.chartevents (subject_id, charttime);
+CREATE INDEX idx_icu_chartevents_stay ON mimiciv_icu.chartevents (stay_id);
 ```
 
 #### Beneficios de Rendimiento

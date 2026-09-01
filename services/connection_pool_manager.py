@@ -337,8 +337,8 @@ class ConnectionPoolManager:
         # Set health checker
         def check_supabase_health(client: Client) -> bool:
             try:
-                # Simple health check query - use .schema() for mimic_ed schema
-                result = client.schema('mimic_ed').table('edstays').select('stay_id').limit(1).execute()
+                # Simple health check query against the MIMIC-IV hosp schema
+                result = client.schema('mimiciv_hosp').table('patients').select('subject_id').limit(1).execute()
                 return hasattr(result, 'data')
             except Exception:
                 return False

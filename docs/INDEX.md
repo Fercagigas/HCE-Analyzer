@@ -1,6 +1,12 @@
 # ChatHCE - Índice de Documentación
 
-**Última actualización**: Febrero 2026
+**Última actualización**: Septiembre 2026
+
+---
+
+## 🧭 Estado del proyecto
+
+- **[ESTADO_ACTUAL.md](ESTADO_ACTUAL.md)** - En qué punto estamos: fase, arquitectura, migración MIMIC-IV, pendientes y estado git (empezar aquí)
 
 ---
 
@@ -28,6 +34,7 @@
 
 ## ⚙️ Configuración
 
+- **[MIGRACION_MIMIC_IV.md](MIGRACION_MIMIC_IV.md)** - Migración de MIMIC-IV-ED a MIMIC-IV Clinical Demo 2.2 (esquemas, tablas, cambios de código)
 - **[CONFIGURACION_SUPABASE_VERIFICADA.md](CONFIGURACION_SUPABASE_VERIFICADA.md)** - Configuración de Supabase, esquemas y función RPC
 - **[DATABASE_SCHEMA_UPDATE.md](DATABASE_SCHEMA_UPDATE.md)** - Esquema de BD (RLS, triggers, migraciones, autenticación)
 - **[RAG_VECTORIZATION_VERIFICATION.md](RAG_VECTORIZATION_VERIFICATION.md)** - Sistema RAG: búsqueda híbrida, reranking y verificación
