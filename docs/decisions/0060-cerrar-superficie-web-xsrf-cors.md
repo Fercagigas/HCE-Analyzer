@@ -1,4 +1,4 @@
-# ADR 0062 — Cerrar superficie web con XSRF y CORS
+# ADR 0060 — Cerrar superficie web con XSRF y CORS
 
 Estado: aceptado
 
