@@ -17,10 +17,11 @@ ChatHCE es un prototipo Streamlit de capa de inteligencia clínica (chat unifica
 
 | Fase | Estado | Notas |
 |---|---|---|
-| **Fase 0 — Freeze y baseline** | ✅ Completada | Baseline de tests, inventario de arquitectura, mapa de acoplamiento, intended purpose, out-of-scope, matriz de riesgo, threat model, ADRs 0001/0010/0020. |
+| **Fase 0 — Freeze y baseline** | ✅ Completada | Baseline de tests, inventario, mapa de acoplamiento, intended purpose, out-of-scope, matriz de riesgo, threat model. ADRs 0001/0010/0020/0030. |
 | **Migración de datos MIMIC-IV** | ✅ Completada | Fuera de la secuencia estricta del roadmap; prevista por DP-03 ("MIMIC-IV-ED es adapter transitorio"). Ver §4. |
+| **Mitigaciones de seguridad iniciales** | ✅ Integradas | Cierre de superficie web XSRF/CORS + bind localhost (ADR 0060), visualizaciones parametrizadas sin ejecución de código LLM (ADR 0040) con `tests/test_visualization_security.py`, checklist de verificación de Supabase (ADR 0070). |
 | **Fase 1 — Foundation / P0** | ⏳ Pendiente | Separar core de Streamlit, FastAPI, Model Gateway, Clinical Data Gateway tipado, `RequestContext`, eliminación de SQL libre. |
-| Fases 2–9 | ⏳ Pendientes | Seguridad, evidencia, frontend React, FHIR/SMART, features AI-first, piloto. |
+| Fases 2–9 | ⏳ Pendientes | Seguridad completa, evidencia, frontend React, FHIR/SMART, features AI-first, piloto. |
 
 Detalle del roadmap: `ROADMAP_HOSPITAL_READY/` y steering `.kiro/steering/roadmap.md`.
 
@@ -113,13 +114,25 @@ Requiere en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY` (service
 - SQL libre (`custom_query`) sigue existiendo como activo de investigación; sustituir por `ClinicalDataProvider` tipado.
 - No hay FastAPI, Model Gateway, `RequestContext` ni aislamiento por tenant/paciente.
 - Suite de tests no está verde sin credenciales (settings exige Supabase en tiempo de importación).
-- Riesgos Fase 0 vigentes: restauración de sesión por cookie, CORS/XSRF desactivados, config duplicada `settings.py`/`config.py`.
+
+### Riesgos Fase 0: estado
+- ✅ **Mitigado** — CORS/XSRF desactivados en Streamlit: cerrados y bind a localhost (ADR 0060).
+- ✅ **Mitigado** — Ejecución de código de visualización generado por LLM: ruta clínica limitada a templates parametrizados (ADR 0040).
+- ⏳ **Vigente** — Restauración de sesión confiando en cookie sin revalidar contra Supabase.
+- ⏳ **Vigente** — Config duplicada `settings.py`/`config.py`; `SECRET_KEY` ausente de `.env.example`.
+- ⏳ **Vigente** — SQL libre controlable por el modelo (ver arriba).
 
 ---
 
 ## 8. Estado git
 
-- `main` sincronizado con `origin/main`.
-- PR de la checklist de verificación de Supabase (#13, docs-only + ADR 0070) integrado.
-- Trabajo de migración en su propia rama/PR (ver historial).
+- `main` sincronizado con `origin/main`; sin PRs abiertos.
+- PRs integrados en esta sesión:
+  - #12 Threat model inicial (ADR 0030)
+  - #13 Checklist de verificación de Supabase (ADR 0070)
+  - #14 Migración MIMIC-IV-ED → MIMIC-IV Clinical Demo 2.2
+  - #15 Cierre de superficie web XSRF/CORS (ADR 0060)
+  - #16 Visualización: métricas en datasets pequeños
+  - (previo) Visualizaciones parametrizadas sin ejecución de código (ADR 0040) + `tests/test_visualization_security.py`
+- Ramas de trabajo locales ya fusionadas eliminadas.
 - Artefactos de tesis (`TFM VIU Fernando Cagigas.pdf`, `figures/`) permanecen sin versionar intencionadamente.
