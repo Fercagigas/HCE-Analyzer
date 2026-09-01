@@ -1,0 +1,38 @@
+COMMAND: conda run -n HCE python Evaluation/run_ragas_eval.py --dry-run --golden-set Evaluation/golden_set_ragas.json --subset all --output docs/baseline/raw/evaluation-generated/ragas-dry-run
+START: 2026-08-31T17:21:50+02:00
+WORKDIR: C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3
+CREDENTIAL VARIABLES EXPLICITLY UNSET FOR THIS PROCESS: ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_KEY, OPENAI_API_KEY, HUGGINFACEHUB_API_TOKEN
+conda.exe : C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3\Evaluation\run_ragas_eval.py:38:
+DeprecationWarning: Importing faithfulness from 'ragas.metrics' is deprecated and will be removed in v1.0. Please use
+'ragas.metrics.collections' instead. Example: from ragas.metrics.collections import faithfulness
+En C:\Users\ferna\anaconda3\shell\condabin\Conda.psm1: 153 Carácter: 17
++ ...             & $Env:CONDA_EXE $Env:_CE_M $Env:_CE_CONDA $Command @Othe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\ferna\...rt faithfulness:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+  from ragas.metrics import (  # noqa: deprecated but functional in 0.4
+C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3\Evaluation\run_ragas_eval.py:38: DeprecationWarning:
+Importing answer_relevancy from 'ragas.metrics' is deprecated and will be removed in v1.0. Please use
+'ragas.metrics.collections' instead. Example: from ragas.metrics.collections import answer_relevancy
+  from ragas.metrics import (  # noqa: deprecated but functional in 0.4
+C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3\Evaluation\run_ragas_eval.py:38: DeprecationWarning:
+Importing context_precision from 'ragas.metrics' is deprecated and will be removed in v1.0. Please use
+'ragas.metrics.collections' instead. Example: from ragas.metrics.collections import context_precision
+  from ragas.metrics import (  # noqa: deprecated but functional in 0.4
+C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3\Evaluation\run_ragas_eval.py:38: DeprecationWarning:
+Importing context_recall from 'ragas.metrics' is deprecated and will be removed in v1.0. Please use
+'ragas.metrics.collections' instead. Example: from ragas.metrics.collections import context_recall
+  from ragas.metrics import (  # noqa: deprecated but functional in 0.4
+Traceback (most recent call last):
+  File "C:\Users\ferna\.ao\data\worktrees\hce-analyzer\hce-analyzer-3\Evaluation\run_ragas_eval.py", line 74, in
+<module>
+    from Evaluation.eval_helpers import (
+ModuleNotFoundError: No module named 'Evaluation'
+
+ERROR conda.cli.main_run:execute(127): `conda run python Evaluation/run_ragas_eval.py --dry-run --golden-set
+Evaluation/golden_set_ragas.json --subset all --output docs/baseline/raw/evaluation-generated/ragas-dry-run` failed.
+(See above for error)
+
+EXIT_CODE: 1
+ELAPSED_SECONDS: 11.112
