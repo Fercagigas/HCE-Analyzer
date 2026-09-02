@@ -71,17 +71,19 @@ def test_research_purpose_is_granted_to_legacy_runtime():
     assert result["tool_results"][0]["success"] is True
 
 
-def test_visualization_is_bridged_to_legacy_store():
-    facade = LegacyAgentFacade(build_test_container([
+def test_visualization_ids_point_to_core_repository():
+    container = build_test_container([
         ScriptedTurn(tool_calls=[("create_visualization", {"visualization_type": "timeline", "source": "labs", "subject_id": SUBJECT})]),
         ScriptedTurn(text="grafica"),
-    ]))
+    ])
+    facade = LegacyAgentFacade(container)
     result = facade.process_message("grafica", session_id="s", patient_id=str(SUBJECT))
     assert result["visualizations"] and result["visualizations"][0]["type"] == "visualization_ids"
-    from services.medical_agent.visualization_store import visualization_store
+    viz_id = result["visualizations"][0]["ids"][0]
+    from chathce.domain.context import Channel, RequestContext
 
-    legacy_id = result["visualizations"][0]["ids"][0]
-    assert visualization_store.get(legacy_id) is not None
+    artifact = container.run(container.visualizations.get(RequestContext(user_id="legacy-runtime", channel=Channel.evaluation), viz_id))
+    assert artifact is not None and artifact.figure_json.startswith("{")
 
 
 def test_unified_chat_agent_facade_accepts_injected_container():

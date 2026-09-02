@@ -98,7 +98,7 @@ def show_navigation():
         else:
             st.error("Error al crear nueva conversación")
     
-    st.caption("Chat con acceso a MIMIC-IV-ED y documentos")
+    st.caption("Chat con acceso a datos MIMIC-IV y documentos clínicos")
 
 
 def show_recent_sessions():

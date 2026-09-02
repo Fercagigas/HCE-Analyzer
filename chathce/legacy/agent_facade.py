@@ -1,7 +1,7 @@
 """LegacyAgentFacade: conserva el contrato ``process_message(...) -> dict`` para la UI Streamlit y Evaluation.
 
 Construye el RequestContext explicito (ADR 0010 §2), invoca ChatService y devuelve el
-dict legacy. Puente TRANSITORIO hasta que la UI use ChatService directamente (WP10).
+dict legacy. Lo usan los runners de Evaluation/ y `services.unified_chat.unified_agent`.
 """
 
 from __future__ import annotations
@@ -21,12 +21,10 @@ LEGACY_USER_ID = "legacy-runtime"
 
 
 class LegacyAgentFacade:
-    def __init__(self, container: Container, *, channel: Channel = Channel.evaluation, persist: bool = False,
-                 bridge_visualizations: bool = True):
+    def __init__(self, container: Container, *, channel: Channel = Channel.evaluation, persist: bool = False):
         self._container = container
         self._channel = channel
         self._persist = persist
-        self._bridge = bridge_visualizations
 
     # ------------------------------------------------------------------
     def build_context(self, *, session_id: Optional[str], patient_id: Optional[str], encounter_id: Optional[str],
@@ -60,31 +58,9 @@ class LegacyAgentFacade:
         request = ChatRequest(message=message, session_id=session_id, patient_id=ctx.patient_id, encounter_id=ctx.encounter_id,
                               purpose=ctx.purpose, history=from_legacy_history(context), options=options or ChatOptions())
         response = self._container.run(self._container.chat_service.handle_chat(request, ctx, persist=self._persist))
-        viz_map = self._bridge_visualizations(ctx, response) if self._bridge and response.visualizations else {}
-        return to_legacy_dict(response, viz_id_map=viz_map, query_length=len(message))
-
-    # ------------------------------------------------------------------
-    def _bridge_visualizations(self, ctx: RequestContext, response) -> Dict[str, str]:
-        """Copia las figuras al visualization_store legacy que aun renderiza la UI (se retira en WP10)."""
-        mapping: Dict[str, str] = {}
-        try:
-            import plotly.io as pio
-            from services.medical_agent.visualization_store import visualization_store
-        except Exception as exc:  # noqa: BLE001
-            logger.debug("visualization_store legacy no disponible: %s", exc)
-            return mapping
-        for ref in response.visualizations:
-            try:
-                artifact = self._container.run(self._container.visualizations.get(ctx, ref.viz_id))
-                if artifact is None:
-                    continue
-                figure = pio.from_json(artifact.figure_json)
-                legacy_id = visualization_store.store(figure=figure, title=artifact.title, metric=artifact.metadata.get("source", ""),
-                                                      viz_type=artifact.viz_type, metadata=dict(artifact.metadata))
-                mapping[ref.viz_id] = legacy_id
-            except Exception as exc:  # noqa: BLE001
-                logger.warning("No se pudo puentear la visualizacion %s: %s", ref.viz_id, exc)
-        return mapping
+        legacy = to_legacy_dict(response, query_length=len(message))
+        legacy["session_id"] = response.metadata.session_id
+        return legacy
 
     def get_performance_stats(self) -> Dict[str, Any]:
         return {"engine": "chathce.gateway", "profile": dict(self._container.profile)}
