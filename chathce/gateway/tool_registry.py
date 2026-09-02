@@ -112,6 +112,11 @@ class ToolRegistry:
 
         result = result.model_copy(update={"tool_name": call.name, "tool_use_id": call.id, "scope": scope,
                                            "contract_version": contract.version, "timeout_s": contract.timeout_s})
+        if result.evidence:
+            result = result.model_copy(update={"evidence": [
+                e.model_copy(update={"provenance": e.provenance.model_copy(update={"tool_use_id": call.id, "tool_name": call.name})})
+                for e in result.evidence
+            ]})
         if result.success:
             requested_limit = getattr(args, "limit", None)
             result = self._policy.cap_rows(contract, result, requested_limit)

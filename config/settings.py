@@ -11,7 +11,7 @@ Reglas (Fase 1, ADR 0010 / ADR 0120):
 """
 from functools import lru_cache
 from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from typing import Optional, List
 import os
 from pathlib import Path
@@ -507,12 +507,13 @@ class ClinicalDataSettings(BaseSettings):
     timeout_s: float = Field(30.0, env="CLINICAL_TIMEOUT_S")
     # Clave de un rol de solo lectura sobre mimiciv_hosp/mimiciv_icu (db/README.md). Si falta,
     # se usa SUPABASE_KEY (transitorio, documentado en ADR 0100).
-    supabase_clinical_key: Optional[str] = Field(None, env="SUPABASE_CLINICAL_KEY")
+    supabase_clinical_key: Optional[str] = Field(None, validation_alias="SUPABASE_CLINICAL_KEY")
 
     model_config = {
         "env_file": _ENV_FILE,
         "case_sensitive": False,
-        "extra": "allow"
+        "extra": "allow",
+        "env_prefix": "CLINICAL_"
     }
 
 
@@ -534,7 +535,8 @@ class LLMGatewaySettings(BaseSettings):
     model_config = {
         "env_file": _ENV_FILE,
         "case_sensitive": False,
-        "extra": "allow"
+        "extra": "allow",
+        "env_prefix": "LLM_"
     }
 
 
@@ -546,7 +548,8 @@ class AuditSettings(BaseSettings):
     model_config = {
         "env_file": _ENV_FILE,
         "case_sensitive": False,
-        "extra": "allow"
+        "extra": "allow",
+        "env_prefix": "AUDIT_"
     }
 
 

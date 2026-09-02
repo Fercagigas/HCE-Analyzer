@@ -70,10 +70,13 @@ def test_message_metadata_is_allowlisted():
 @pytest.mark.parametrize("tools_used, expected", [
     ([], "general"),
     (["query_mimic_database"], "database_query"),
-    (["search_clinical_documents"], "general"),
+    (["search_clinical_documents"], "rag_search"),
+    (["get_labs"], "database_query"),
+    (["create_visualization"], "visualization"),
+    (["get_labs", "create_visualization"], "mixed"),
     (["request_visualization"], "visualization"),
     (["query_mimic_database", "search_clinical_documents"], "mixed"),
     (["rag_tool"], "rag_search"),
 ])
-def test_classify_analysis_matches_characterized_legacy_rule(tools_used, expected):
+def test_classify_analysis_covers_legacy_and_core_tools(tools_used, expected):
     assert classify_analysis(tools_used) == expected

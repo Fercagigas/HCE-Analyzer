@@ -1,9 +1,8 @@
 """Caracterizacion de la persistencia de conversaciones (`AuthService` legacy).
 
 Fija: tablas `chat_sessions`/`chat_messages`, allowlist de metadata del mensaje
-del asistente, orden de lectura y la clasificacion de `analysis_type` que hoy vive
-en `ui/unified_chat_interface.py::_save_analysis`. WP7/WP8 deben conservar estas
-reglas en `ConversationRepository` / `ConversationService.classify_analysis`.
+del asistente y orden de lectura. `ConversationRepository` (WP7) conserva estas reglas;
+la clasificacion de analisis vive en `chathce.domain.conversation.classify_analysis`.
 """
 
 import pytest
@@ -86,32 +85,3 @@ def test_get_user_sessions_caps_limit_at_three(client):
 
     assert ok is True
     assert [s["id"] for s in sessions] == ["s4", "s3", "s2"]
-
-
-def legacy_classify_analysis(tools_used) -> str:
-    """Copia literal de la regla de ui/unified_chat_interface.py::_save_analysis."""
-    if len(tools_used) > 1:
-        return "mixed"
-    if "query_mimic_database" in tools_used or "database" in str(tools_used).lower():
-        return "database_query"
-    if "rag" in str(tools_used).lower():
-        return "rag_search"
-    if "visualization" in str(tools_used).lower():
-        return "visualization"
-    return "general"
-
-
-ANALYSIS_TYPE_CASES = [
-    ([], "general"),
-    (["query_mimic_database"], "database_query"),
-    (["search_clinical_documents"], "general"),  # hoy no contiene 'rag': queda como general
-    (["request_visualization"], "visualization"),
-    (["query_mimic_database", "search_clinical_documents"], "mixed"),
-    (["rag_tool"], "rag_search"),
-]
-
-
-@pytest.mark.parametrize("tools_used, expected", ANALYSIS_TYPE_CASES)
-def test_analysis_type_classification_contract(tools_used, expected):
-    """Tabla de referencia que `ConversationService.classify_analysis` debe reproducir (WP8)."""
-    assert legacy_classify_analysis(tools_used) == expected

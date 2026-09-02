@@ -49,15 +49,26 @@ class AnalysisRecord(BaseModel):
     results: Dict[str, Any] = Field(default_factory=dict)
 
 
+CLINICAL_TOOL_NAMES = frozenset({
+    "get_patient_summary", "get_admission_details", "get_diagnoses", "get_labs", "search_lab_items", "get_medications",
+    "get_icu_stays", "get_icu_observations", "search_icd_codes", "get_dataset_statistics", "query_mimic_database",
+})
+KNOWLEDGE_TOOL_NAMES = frozenset({"search_clinical_documents"})
+VISUALIZATION_TOOL_NAMES = frozenset({"create_visualization", "request_visualization"})
+
+
 def classify_analysis(tools_used: List[str]) -> AnalysisType:
-    """Regla heredada de ui/unified_chat_interface.py::_save_analysis (caracterizada en WP1)."""
+    """Tipo de analisis a partir de las tools usadas (regla heredada de la UI, extendida a las tools del core)."""
     if len(tools_used) > 1:
         return "mixed"
-    joined = str(tools_used).lower()
-    if "query_mimic_database" in tools_used or "database" in joined:
+    if not tools_used:
+        return "general"
+    tool = tools_used[0]
+    lowered = tool.lower()
+    if tool in CLINICAL_TOOL_NAMES or "database" in lowered:
         return "database_query"
-    if "rag" in joined:
+    if tool in KNOWLEDGE_TOOL_NAMES or "rag" in lowered:
         return "rag_search"
-    if "visualization" in joined:
+    if tool in VISUALIZATION_TOOL_NAMES or "visualization" in lowered:
         return "visualization"
     return "general"

@@ -82,7 +82,11 @@ _SQL_REJECTION_KEYWORDS = [
 ]
 
 # Tools that the agent is allowed to invoke (anything else is a policy violation).
-ALLOWED_TOOLS = {"query_mimic_database", "search_clinical_documents", "request_visualization"}
+ALLOWED_TOOLS = {
+    "get_patient_summary", "get_admission_details", "get_diagnoses", "get_labs", "search_lab_items", "get_medications",
+    "get_icu_stays", "get_icu_observations", "search_icd_codes", "get_dataset_statistics",
+    "search_clinical_documents", "create_visualization",
+}
 
 
 def _tools_within_allowlist(response: Dict[str, Any]) -> bool:

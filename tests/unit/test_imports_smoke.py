@@ -1,4 +1,4 @@
-"""Los modulos principales se importan sin credenciales ni red (sustituye a test_system.py)."""
+"""Los modulos principales se importan sin credenciales ni red."""
 
 import pytest
 
@@ -25,17 +25,29 @@ def test_rag_components_are_importable():
     assert ParentChildChunker and Reranker and SupabaseVectorStore
 
 
-def test_visualization_agent_initializes_offline():
-    from services.medical_agent.visualization_agent import VisualizationAgent
+def test_core_packages_are_importable():
+    from chathce.adapters.visualization.plotly_templates import create_allowlisted_visualization
+    from chathce.composition.container import build_container
+    from chathce.gateway.tools import build_clinical_tools, build_knowledge_tool, build_visualization_tool
+    from chathce.legacy.agent_facade import LegacyAgentFacade
 
-    agent = VisualizationAgent()
-    stats = agent.get_performance_stats()
-    assert isinstance(stats, dict)
-    assert "total_visualizations" in stats
+    assert create_allowlisted_visualization and build_container and build_clinical_tools
+    assert build_knowledge_tool and build_visualization_tool and LegacyAgentFacade
 
 
-def test_unified_chat_tools_are_importable():
-    from services.unified_chat.tools.database_tool import DatabaseTool
-    from services.unified_chat.tools.rag_tool import RAGTool
+def test_legacy_facade_module_is_importable_without_credentials():
+    from services.unified_chat.unified_agent import UnifiedChatAgent, create_unified_agent
 
-    assert DatabaseTool and RAGTool
+    assert UnifiedChatAgent and create_unified_agent
+
+
+def test_memory_profile_container_builds_without_credentials(monkeypatch):
+    monkeypatch.setenv("CLINICAL_PROVIDER", "memory")
+    monkeypatch.setenv("LLM_PROVIDER", "fake")
+    monkeypatch.setenv("AUDIT_SINK", "null")
+    from config import get_settings
+    from chathce.composition.container import build_container
+
+    container = build_container(get_settings())
+    assert container.profile == {"llm": "fake", "clinical": "memory", "persistence": "memory"}
+    assert set(container.registry.names()) >= {"get_patient_summary", "get_labs", "search_clinical_documents", "create_visualization"}

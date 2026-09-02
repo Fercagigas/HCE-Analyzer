@@ -10,10 +10,8 @@ openai
 anthropic>=0.39.0
 langchain>=0.3.0
 langchain-community>=0.3.0
-# Claude LangChain Integration
+# LangChain solo para RAG (embeddings/splitters) y el juez RAGAS de Evaluation/
 langchain-anthropic>=0.3.0
-# TEMPORAL (Fase 1, WP8): bucle agentico legacy; se retira al pasar al Model Gateway
-langchain-classic
 langchain-huggingface>=0.1.0
 sentence-transformers>=3.0.0
 # Token counting for prompt optimization

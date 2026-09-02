@@ -17,8 +17,8 @@ import pytest
 pytestmark = pytest.mark.security
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-EXECUTOR_PATH = PROJECT_ROOT / "services" / "medical_agent" / "code_executor.py"
-AGENT_PATH = PROJECT_ROOT / "services" / "medical_agent" / "visualization_agent.py"
+EXECUTOR_PATH = PROJECT_ROOT / "chathce" / "adapters" / "visualization" / "plotly_templates.py"
+AGENT_PATH = PROJECT_ROOT / "chathce" / "gateway" / "tools" / "visualization_tool.py"
 RUNTIME_DIRS = ("services", "ui", "src", "chathce")
 
 
@@ -166,7 +166,7 @@ def test_runtime_has_no_dynamic_execution_calls():
 
 def test_visualization_agent_has_no_llm_code_generation_path():
     if not AGENT_PATH.exists():
-        pytest.skip("visualization_agent.py retirado; la ruta determinista vive en chathce/adapters/visualization")
+        pytest.skip("tool de visualizacion no encontrada")
     source = AGENT_PATH.read_text(encoding="utf-8")
     assert "ChatAnthropic" not in source
     assert ".invoke(" not in source
