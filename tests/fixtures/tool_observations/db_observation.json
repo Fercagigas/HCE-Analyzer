@@ -1,0 +1,18 @@
+{
+  "success": true,
+  "query_type": "patient_summary",
+  "parameters": {"subject_id": 10014729},
+  "data": {
+    "subject_id": 10014729,
+    "demographics": {"gender": "F", "anchor_age": 21, "anchor_year_group": "2011 - 2013", "deceased": false, "race": "WHITE"},
+    "admissions": [
+      {"hadm_id": 23300884, "admittime": "2125-02-27T16:44:00", "dischtime": "2125-03-01T13:37:00", "admission_type": "EW EMER.", "admission_location": "EMERGENCY ROOM", "discharge_location": "HOME", "race": "WHITE", "hospital_expire_flag": 0}
+    ],
+    "diagnoses": [
+      {"subject_id": 10014729, "hadm_id": 23300884, "seq_num": 1, "icd_code": "5990", "icd_version": 9, "long_title": "Urinary tract infection, site not specified"}
+    ],
+    "recent_labs": [],
+    "medications": [],
+    "summary_stats": {"total_admissions": 1, "total_diagnoses": 1, "total_medications": 0, "last_admission": "2125-02-27T16:44:00"}
+  }
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "anchor_age": 55,
+    "anchor_year": 2157,
+    "anchor_year_group": "2011 - 2013",
+    "dod": null,
+    "gender": "F",
+    "subject_id": 10001217
+  },
+  {
+    "anchor_age": 64,
+    "anchor_year": 2154,
+    "anchor_year_group": "2011 - 2013",
+    "dod": null,
+    "gender": "M",
+    "subject_id": 10003046
+  },
+  {
+    "anchor_age": 81,
+    "anchor_year": 2141,
+    "anchor_year_group": "2014 - 2016",
+    "dod": null,
+    "gender": "M",
+    "subject_id": 10002495
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "curr_service": "CMED",
+    "hadm_id": 24982426,
+    "prev_service": null,
+    "subject_id": 10002495,
+    "transfertime": "2141-05-22T20:18:01"
+  },
+  {
+    "curr_service": "NMED",
+    "hadm_id": 24597018,
+    "prev_service": null,
+    "subject_id": 10001217,
+    "transfertime": "2157-11-18T22:57:43"
+  },
+  {
+    "curr_service": "NSURG",
+    "hadm_id": 24597018,
+    "prev_service": "NMED",
+    "subject_id": 10001217,
+    "transfertime": "2157-11-19T00:36:42"
+  },
+  {
+    "curr_service": "NSURG",
+    "hadm_id": 27703517,
+    "prev_service": null,
+    "subject_id": 10001217,
+    "transfertime": "2157-12-18T16:59:25"
+  },
+  {
+    "curr_service": "TSURG",
+    "hadm_id": 26048429,
+    "prev_service": null,
+    "subject_id": 10003046,
+    "transfertime": "2154-01-02T00:15:52"
+  }
+]

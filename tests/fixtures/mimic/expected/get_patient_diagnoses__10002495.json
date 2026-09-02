@@ -1,0 +1,217 @@
+{
+  "args": [
+    10002495
+  ],
+  "kwargs": {},
+  "method": "get_patient_diagnoses",
+  "result": [
+    {
+      "hadm_id": 24982426,
+      "icd_code": "I214",
+      "icd_version": 10,
+      "long_title": "Non-ST elevation (NSTEMI) myocardial infarction",
+      "seq_num": 1,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "R570",
+      "icd_version": 10,
+      "long_title": "Cardiogenic shock",
+      "seq_num": 2,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "I509",
+      "icd_version": 10,
+      "long_title": "Heart failure, unspecified",
+      "seq_num": 3,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "R578",
+      "icd_version": 10,
+      "long_title": "Other shock",
+      "seq_num": 4,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "A047",
+      "icd_version": 10,
+      "long_title": "Enterocolitis due to Clostridium difficile",
+      "seq_num": 5,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "N179",
+      "icd_version": 10,
+      "long_title": "Acute kidney failure, unspecified",
+      "seq_num": 6,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "S3730XA",
+      "icd_version": 10,
+      "long_title": "Unspecified injury of urethra, initial encounter",
+      "seq_num": 7,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "I2510",
+      "icd_version": 10,
+      "long_title": "Atherosclerotic heart disease of native coronary artery without angina pectoris",
+      "seq_num": 8,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "E118",
+      "icd_version": 10,
+      "long_title": "Type 2 diabetes mellitus with unspecified complications",
+      "seq_num": 9,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "X58XXXA",
+      "icd_version": 10,
+      "long_title": "Exposure to other specified factors, initial encounter",
+      "seq_num": 10,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "Y92239",
+      "icd_version": 10,
+      "long_title": "Unspecified place in hospital as the place of occurrence of the external cause",
+      "seq_num": 11,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "I10",
+      "icd_version": 10,
+      "long_title": "Essential (primary) hypertension",
+      "seq_num": 12,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "E785",
+      "icd_version": 10,
+      "long_title": "Hyperlipidemia, unspecified",
+      "seq_num": 13,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "T45515A",
+      "icd_version": 10,
+      "long_title": "Adverse effect of anticoagulants, initial encounter",
+      "seq_num": 14,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "Z86718",
+      "icd_version": 10,
+      "long_title": "Personal history of other venous thrombosis and embolism",
+      "seq_num": 15,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "Z7901",
+      "icd_version": 10,
+      "long_title": "Long term (current) use of anticoagulants",
+      "seq_num": 16,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "R310",
+      "icd_version": 10,
+      "long_title": "Gross hematuria",
+      "seq_num": 17,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "Z7902",
+      "icd_version": 10,
+      "long_title": "Long term (current) use of antithrombotics/antiplatelets",
+      "seq_num": 18,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "I480",
+      "icd_version": 10,
+      "long_title": "Paroxysmal atrial fibrillation",
+      "seq_num": 19,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "Z23",
+      "icd_version": 10,
+      "long_title": "Encounter for immunization",
+      "seq_num": 20,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "K2960",
+      "icd_version": 10,
+      "long_title": "Other gastritis without bleeding",
+      "seq_num": 21,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "B9681",
+      "icd_version": 10,
+      "long_title": "Helicobacter pylori [H. pylori] as the cause of diseases classified elsewhere",
+      "seq_num": 22,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "Z87891",
+      "icd_version": 10,
+      "long_title": "Personal history of nicotine dependence",
+      "seq_num": 23,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "I252",
+      "icd_version": 10,
+      "long_title": "Old myocardial infarction",
+      "seq_num": 24,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "R410",
+      "icd_version": 10,
+      "long_title": "Disorientation, unspecified",
+      "seq_num": 25,
+      "subject_id": 10002495
+    },
+    {
+      "hadm_id": 24982426,
+      "icd_code": "K219",
+      "icd_version": 10,
+      "long_title": "Gastro-esophageal reflux disease without esophagitis",
+      "seq_num": 26,
+      "subject_id": 10002495
+    }
+  ]
+}

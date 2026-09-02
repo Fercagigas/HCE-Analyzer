@@ -1,0 +1,114 @@
+[
+  {
+    "chartdate": "2141-05-22T00:00:00",
+    "hadm_id": 24982426,
+    "icd_code": "027034Z",
+    "icd_version": 10,
+    "seq_num": 1,
+    "subject_id": 10002495
+  },
+  {
+    "chartdate": "2141-05-22T00:00:00",
+    "hadm_id": 24982426,
+    "icd_code": "4A023N7",
+    "icd_version": 10,
+    "seq_num": 3,
+    "subject_id": 10002495
+  },
+  {
+    "chartdate": "2141-05-22T00:00:00",
+    "hadm_id": 24982426,
+    "icd_code": "B211YZZ",
+    "icd_version": 10,
+    "seq_num": 4,
+    "subject_id": 10002495
+  },
+  {
+    "chartdate": "2141-05-23T00:00:00",
+    "hadm_id": 24982426,
+    "icd_code": "3E1K78Z",
+    "icd_version": 10,
+    "seq_num": 7,
+    "subject_id": 10002495
+  },
+  {
+    "chartdate": "2141-05-23T00:00:00",
+    "hadm_id": 24982426,
+    "icd_code": "4A023N6",
+    "icd_version": 10,
+    "seq_num": 5,
+    "subject_id": 10002495
+  },
+  {
+    "chartdate": "2141-05-23T00:00:00",
+    "hadm_id": 24982426,
+    "icd_code": "5A02210",
+    "icd_version": 10,
+    "seq_num": 2,
+    "subject_id": 10002495
+  },
+  {
+    "chartdate": "2141-05-23T00:00:00",
+    "hadm_id": 24982426,
+    "icd_code": "B211YZZ",
+    "icd_version": 10,
+    "seq_num": 6,
+    "subject_id": 10002495
+  },
+  {
+    "chartdate": "2154-01-02T00:00:00",
+    "hadm_id": 26048429,
+    "icd_code": "4242",
+    "icd_version": 9,
+    "seq_num": 1,
+    "subject_id": 10003046
+  },
+  {
+    "chartdate": "2154-01-03T00:00:00",
+    "hadm_id": 26048429,
+    "icd_code": "4639",
+    "icd_version": 9,
+    "seq_num": 2,
+    "subject_id": 10003046
+  },
+  {
+    "chartdate": "2154-01-03T00:00:00",
+    "hadm_id": 26048429,
+    "icd_code": "966",
+    "icd_version": 9,
+    "seq_num": 3,
+    "subject_id": 10003046
+  },
+  {
+    "chartdate": "2157-11-19T00:00:00",
+    "hadm_id": 24597018,
+    "icd_code": "0331",
+    "icd_version": 9,
+    "seq_num": 2,
+    "subject_id": 10001217
+  },
+  {
+    "chartdate": "2157-11-20T00:00:00",
+    "hadm_id": 24597018,
+    "icd_code": "0139",
+    "icd_version": 9,
+    "seq_num": 1,
+    "subject_id": 10001217
+  },
+  {
+    "chartdate": "2157-11-22T00:00:00",
+    "hadm_id": 24597018,
+    "icd_code": "3897",
+    "icd_version": 9,
+    "seq_num": 3,
+    "subject_id": 10001217
+  },
+  {
+    "chartdate": "2157-12-19T00:00:00",
+    "hadm_id": 27703517,
+    "icd_code": "0139",
+    "icd_version": 9,
+    "seq_num": 1,
+    "subject_id": 10001217
+  }
+]

@@ -1,0 +1,182 @@
+{
+  "args": [
+    24597018
+  ],
+  "kwargs": {},
+  "method": "get_admission_details",
+  "result": {
+    "admission_info": {
+      "admission_location": "EMERGENCY ROOM",
+      "admission_type": "EW EMER.",
+      "admit_provider_id": "P4645A",
+      "admittime": "2157-11-18T22:56:00",
+      "deathtime": null,
+      "discharge_location": "HOME HEALTH CARE",
+      "dischtime": "2157-11-25T18:00:00",
+      "edouttime": "2157-11-19T01:24:00",
+      "edregtime": "2157-11-18T17:38:00",
+      "hadm_id": 24597018,
+      "hospital_expire_flag": 0,
+      "insurance": "Other",
+      "language": "?",
+      "marital_status": "MARRIED",
+      "race": "WHITE",
+      "subject_id": 10001217
+    },
+    "diagnoses": [
+      {
+        "hadm_id": 24597018,
+        "icd_code": "04109",
+        "icd_version": 9,
+        "long_title": "Streptococcus infection in conditions classified elsewhere and of unspecified site, other streptococcus",
+        "seq_num": 6,
+        "subject_id": 10001217
+      },
+      {
+        "hadm_id": 24597018,
+        "icd_code": "3051",
+        "icd_version": 9,
+        "long_title": "Tobacco use disorder",
+        "seq_num": 7,
+        "subject_id": 10001217
+      },
+      {
+        "hadm_id": 24597018,
+        "icd_code": "3240",
+        "icd_version": 9,
+        "long_title": "Intracranial abscess",
+        "seq_num": 1,
+        "subject_id": 10001217
+      },
+      {
+        "hadm_id": 24597018,
+        "icd_code": "340",
+        "icd_version": 9,
+        "long_title": "Multiple sclerosis",
+        "seq_num": 5,
+        "subject_id": 10001217
+      },
+      {
+        "hadm_id": 24597018,
+        "icd_code": "3484",
+        "icd_version": 9,
+        "long_title": "Compression of brain",
+        "seq_num": 2,
+        "subject_id": 10001217
+      },
+      {
+        "hadm_id": 24597018,
+        "icd_code": "3485",
+        "icd_version": 9,
+        "long_title": "Cerebral edema",
+        "seq_num": 3,
+        "subject_id": 10001217
+      },
+      {
+        "hadm_id": 24597018,
+        "icd_code": "4019",
+        "icd_version": 9,
+        "long_title": "Unspecified essential hypertension",
+        "seq_num": 8,
+        "subject_id": 10001217
+      },
+      {
+        "hadm_id": 24597018,
+        "icd_code": "5180",
+        "icd_version": 9,
+        "long_title": "Pulmonary collapse",
+        "seq_num": 4,
+        "subject_id": 10001217
+      },
+      {
+        "hadm_id": 24597018,
+        "icd_code": "V161",
+        "icd_version": 9,
+        "long_title": "Family history of malignant neoplasm of trachea, bronchus, and lung",
+        "seq_num": 10,
+        "subject_id": 10001217
+      },
+      {
+        "hadm_id": 24597018,
+        "icd_code": "V168",
+        "icd_version": 9,
+        "long_title": "Family history of other specified malignant neoplasm",
+        "seq_num": 9,
+        "subject_id": 10001217
+      }
+    ],
+    "hadm_id": 24597018,
+    "services": [
+      {
+        "curr_service": "NMED",
+        "hadm_id": 24597018,
+        "prev_service": null,
+        "subject_id": 10001217,
+        "transfertime": "2157-11-18T22:57:43"
+      },
+      {
+        "curr_service": "NSURG",
+        "hadm_id": 24597018,
+        "prev_service": "NMED",
+        "subject_id": 10001217,
+        "transfertime": "2157-11-19T00:36:42"
+      }
+    ],
+    "transfers": [
+      {
+        "careunit": "Emergency Department",
+        "eventtype": "ED",
+        "hadm_id": 24597018,
+        "intime": "2157-11-18T17:38:00",
+        "outtime": "2157-11-19T01:24:00",
+        "subject_id": 10001217,
+        "transfer_id": 39866888
+      },
+      {
+        "careunit": "Medicine",
+        "eventtype": "admit",
+        "hadm_id": 24597018,
+        "intime": "2157-11-19T01:24:00",
+        "outtime": "2157-11-20T19:18:02",
+        "subject_id": 10001217,
+        "transfer_id": 37058438
+      },
+      {
+        "careunit": "Neurology",
+        "eventtype": "transfer",
+        "hadm_id": 24597018,
+        "intime": "2157-11-21T22:08:00",
+        "outtime": "2157-11-24T15:32:32",
+        "subject_id": 10001217,
+        "transfer_id": 35343802
+      },
+      {
+        "careunit": "Neurology",
+        "eventtype": "transfer",
+        "hadm_id": 24597018,
+        "intime": "2157-11-24T15:32:32",
+        "outtime": "2157-11-25T18:11:46",
+        "subject_id": 10001217,
+        "transfer_id": 30437372
+      },
+      {
+        "careunit": "Surgical Intensive Care Unit (SICU)",
+        "eventtype": "transfer",
+        "hadm_id": 24597018,
+        "intime": "2157-11-20T19:18:02",
+        "outtime": "2157-11-21T22:08:00",
+        "subject_id": 10001217,
+        "transfer_id": 37067082
+      },
+      {
+        "careunit": null,
+        "eventtype": "discharge",
+        "hadm_id": 24597018,
+        "intime": "2157-11-25T18:11:46",
+        "outtime": null,
+        "subject_id": 10001217,
+        "transfer_id": 30487570
+      }
+    ]
+  }
+}

@@ -1,0 +1,331 @@
+[
+  {
+    "hadm_id": 24597018,
+    "icd_code": "04109",
+    "icd_version": 9,
+    "seq_num": 6,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 24597018,
+    "icd_code": "3051",
+    "icd_version": 9,
+    "seq_num": 7,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 24597018,
+    "icd_code": "3240",
+    "icd_version": 9,
+    "seq_num": 1,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 24597018,
+    "icd_code": "340",
+    "icd_version": 9,
+    "seq_num": 5,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 24597018,
+    "icd_code": "3484",
+    "icd_version": 9,
+    "seq_num": 2,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 24597018,
+    "icd_code": "3485",
+    "icd_version": 9,
+    "seq_num": 3,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 24597018,
+    "icd_code": "4019",
+    "icd_version": 9,
+    "seq_num": 8,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 24597018,
+    "icd_code": "5180",
+    "icd_version": 9,
+    "seq_num": 4,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 24597018,
+    "icd_code": "V161",
+    "icd_version": 9,
+    "seq_num": 10,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 24597018,
+    "icd_code": "V168",
+    "icd_version": 9,
+    "seq_num": 9,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "A047",
+    "icd_version": 10,
+    "seq_num": 5,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "B9681",
+    "icd_version": 10,
+    "seq_num": 22,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "E118",
+    "icd_version": 10,
+    "seq_num": 9,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "E785",
+    "icd_version": 10,
+    "seq_num": 13,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "I10",
+    "icd_version": 10,
+    "seq_num": 12,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "I214",
+    "icd_version": 10,
+    "seq_num": 1,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "I2510",
+    "icd_version": 10,
+    "seq_num": 8,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "I252",
+    "icd_version": 10,
+    "seq_num": 24,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "I480",
+    "icd_version": 10,
+    "seq_num": 19,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "I509",
+    "icd_version": 10,
+    "seq_num": 3,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "K219",
+    "icd_version": 10,
+    "seq_num": 26,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "K2960",
+    "icd_version": 10,
+    "seq_num": 21,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "N179",
+    "icd_version": 10,
+    "seq_num": 6,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "R310",
+    "icd_version": 10,
+    "seq_num": 17,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "R410",
+    "icd_version": 10,
+    "seq_num": 25,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "R570",
+    "icd_version": 10,
+    "seq_num": 2,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "R578",
+    "icd_version": 10,
+    "seq_num": 4,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "S3730XA",
+    "icd_version": 10,
+    "seq_num": 7,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "T45515A",
+    "icd_version": 10,
+    "seq_num": 14,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "X58XXXA",
+    "icd_version": 10,
+    "seq_num": 10,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "Y92239",
+    "icd_version": 10,
+    "seq_num": 11,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "Z23",
+    "icd_version": 10,
+    "seq_num": 20,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "Z7901",
+    "icd_version": 10,
+    "seq_num": 16,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "Z7902",
+    "icd_version": 10,
+    "seq_num": 18,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "Z86718",
+    "icd_version": 10,
+    "seq_num": 15,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 24982426,
+    "icd_code": "Z87891",
+    "icd_version": 10,
+    "seq_num": 23,
+    "subject_id": 10002495
+  },
+  {
+    "hadm_id": 26048429,
+    "icd_code": "1505",
+    "icd_version": 9,
+    "seq_num": 1,
+    "subject_id": 10003046
+  },
+  {
+    "hadm_id": 26048429,
+    "icd_code": "2762",
+    "icd_version": 9,
+    "seq_num": 2,
+    "subject_id": 10003046
+  },
+  {
+    "hadm_id": 26048429,
+    "icd_code": "53081",
+    "icd_version": 9,
+    "seq_num": 4,
+    "subject_id": 10003046
+  },
+  {
+    "hadm_id": 26048429,
+    "icd_code": "53085",
+    "icd_version": 9,
+    "seq_num": 3,
+    "subject_id": 10003046
+  },
+  {
+    "hadm_id": 27703517,
+    "icd_code": "04102",
+    "icd_version": 9,
+    "seq_num": 4,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 27703517,
+    "icd_code": "04184",
+    "icd_version": 9,
+    "seq_num": 5,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 27703517,
+    "icd_code": "3051",
+    "icd_version": 9,
+    "seq_num": 7,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 27703517,
+    "icd_code": "3240",
+    "icd_version": 9,
+    "seq_num": 1,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 27703517,
+    "icd_code": "340",
+    "icd_version": 9,
+    "seq_num": 3,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 27703517,
+    "icd_code": "3485",
+    "icd_version": 9,
+    "seq_num": 2,
+    "subject_id": 10001217
+  },
+  {
+    "hadm_id": 27703517,
+    "icd_code": "4019",
+    "icd_version": 9,
+    "seq_num": 6,
+    "subject_id": 10001217
+  }
+]

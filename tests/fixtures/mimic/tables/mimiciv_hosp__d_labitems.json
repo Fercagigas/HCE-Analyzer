@@ -1,0 +1,722 @@
+[
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50802,
+    "label": "Base Excess"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50804,
+    "label": "Calculated Total CO2"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50806,
+    "label": "Chloride, Whole Blood"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50808,
+    "label": "Free Calcium"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50809,
+    "label": "Glucose"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50810,
+    "label": "Hematocrit, Calculated"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50811,
+    "label": "Hemoglobin"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50812,
+    "label": "Intubated"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50813,
+    "label": "Lactate"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50817,
+    "label": "Oxygen Saturation"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50818,
+    "label": "pCO2"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50820,
+    "label": "pH"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50821,
+    "label": "pO2"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50822,
+    "label": "Potassium, Whole Blood"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50824,
+    "label": "Sodium, Whole Blood"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50825,
+    "label": "Temperature"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 50827,
+    "label": "Ventilation Rate"
+  },
+  {
+    "category": "Blood Gas",
+    "fluid": "Blood",
+    "itemid": 52033,
+    "label": "Specimen Type"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50852,
+    "label": "% Hemoglobin A1c"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50861,
+    "label": "Alanine Aminotransferase (ALT)"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50862,
+    "label": "Albumin"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50863,
+    "label": "Alkaline Phosphatase"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50868,
+    "label": "Anion Gap"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50878,
+    "label": "Asparate Aminotransferase (AST)"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50882,
+    "label": "Bicarbonate"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50885,
+    "label": "Bilirubin, Total"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50887,
+    "label": "Blue Top Hold"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50889,
+    "label": "C-Reactive Protein"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50893,
+    "label": "Calcium, Total"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50902,
+    "label": "Chloride"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50903,
+    "label": "Cholesterol Ratio (Total/HDL)"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50904,
+    "label": "Cholesterol, HDL"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50905,
+    "label": "Cholesterol, LDL, Calculated"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50907,
+    "label": "Cholesterol, Total"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50911,
+    "label": "Creatine Kinase, MB Isoenzyme"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50912,
+    "label": "Creatinine"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50920,
+    "label": "Estimated GFR (MDRD equation)"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50931,
+    "label": "Glucose"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50933,
+    "label": "Green Top Hold (plasma)"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50934,
+    "label": "H"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50947,
+    "label": "I"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50954,
+    "label": "Lactate Dehydrogenase (LD)"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50956,
+    "label": "Lipase"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50960,
+    "label": "Magnesium"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50970,
+    "label": "Phosphate"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50971,
+    "label": "Potassium"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50979,
+    "label": "Red Top Hold"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 50983,
+    "label": "Sodium"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 51000,
+    "label": "Triglycerides"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 51003,
+    "label": "Troponin T"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 51006,
+    "label": "Urea Nitrogen"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 51009,
+    "label": "Vancomycin"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 51613,
+    "label": "eAG"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Blood",
+    "itemid": 51678,
+    "label": "L"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Cerebrospinal Fluid",
+    "itemid": 51790,
+    "label": "Glucose, CSF"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Cerebrospinal Fluid",
+    "itemid": 51802,
+    "label": "Total Protein, CSF"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Urine",
+    "itemid": 51087,
+    "label": "Length of Urine Collection"
+  },
+  {
+    "category": "Chemistry",
+    "fluid": "Urine",
+    "itemid": 51107,
+    "label": "Urine tube, held"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51133,
+    "label": "Absolute Lymphocyte Count"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51137,
+    "label": "Anisocytosis"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51143,
+    "label": "Atypical Lymphocytes"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51144,
+    "label": "Bands"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51146,
+    "label": "Basophils"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51200,
+    "label": "Eosinophils"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51221,
+    "label": "Hematocrit"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51222,
+    "label": "Hemoglobin"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51233,
+    "label": "Hypochromia"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51237,
+    "label": "INR(PT)"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51244,
+    "label": "Lymphocytes"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51246,
+    "label": "Macrocytes"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51248,
+    "label": "MCH"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51249,
+    "label": "MCHC"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51250,
+    "label": "MCV"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51251,
+    "label": "Metamyelocytes"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51252,
+    "label": "Microcytes"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51254,
+    "label": "Monocytes"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51255,
+    "label": "Myelocytes"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51256,
+    "label": "Neutrophils"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51260,
+    "label": "Ovalocytes"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51265,
+    "label": "Platelet Count"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51266,
+    "label": "Platelet Smear"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51267,
+    "label": "Poikilocytosis"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51268,
+    "label": "Polychromasia"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51274,
+    "label": "PT"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51275,
+    "label": "PTT"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51277,
+    "label": "RDW"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51279,
+    "label": "Red Blood Cells"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51288,
+    "label": "Sedimentation Rate"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 51301,
+    "label": "White Blood Cells"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 52069,
+    "label": "Absolute Basophil Count"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 52073,
+    "label": "Absolute Eosinophil Count"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 52074,
+    "label": "Absolute Monocyte Count"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 52075,
+    "label": "Absolute Neutrophil Count"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 52111,
+    "label": "Echinocytes"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Blood",
+    "itemid": 52172,
+    "label": "RDW-SD"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Cerebrospinal Fluid",
+    "itemid": 52264,
+    "label": "Lymphs"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Cerebrospinal Fluid",
+    "itemid": 52272,
+    "label": "Monocytes"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Cerebrospinal Fluid",
+    "itemid": 52281,
+    "label": "Polys"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Cerebrospinal Fluid",
+    "itemid": 52285,
+    "label": "RBC, CSF"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Cerebrospinal Fluid",
+    "itemid": 52286,
+    "label": "Total Nucleated Cells, CSF"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51463,
+    "label": "Bacteria"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51464,
+    "label": "Bilirubin"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51466,
+    "label": "Blood"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51476,
+    "label": "Epithelial Cells"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51478,
+    "label": "Glucose"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51482,
+    "label": "Hyaline Casts"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51484,
+    "label": "Ketone"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51486,
+    "label": "Leukocytes"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51487,
+    "label": "Nitrite"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51491,
+    "label": "pH"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51492,
+    "label": "Protein"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51493,
+    "label": "RBC"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51498,
+    "label": "Specific Gravity"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51506,
+    "label": "Urine Appearance"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51508,
+    "label": "Urine Color"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51512,
+    "label": "Urine Mucous"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51514,
+    "label": "Urobilinogen"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51516,
+    "label": "WBC"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51518,
+    "label": "WBC Clumps"
+  },
+  {
+    "category": "Hematology",
+    "fluid": "Urine",
+    "itemid": 51519,
+    "label": "Yeast"
+  }
+]

@@ -1,24 +1,49 @@
 # Tests de ChatHCE
 
-## Estructura
+## Estructura por capas
 
 ```
 tests/
-├── test_system.py         # Tests generales del sistema (imports, inicialización)
-├── test_rag_components.py # Tests de componentes RAG (chunker, searcher, reranker)
-├── test_database.py       # Tests de base de datos
-└── conftest.py            # Fixtures compartidos
+├── conftest.py            # sys.path, filtros de warnings, reset de get_settings()
+├── fakes/                 # FakeSupabaseClient (PostgREST en memoria), factorias legacy, normalize
+├── fixtures/
+│   ├── mimic/             # tablas grabadas de MIMIC-IV demo + salidas esperadas (manifest.json)
+│   ├── prompts/           # snapshot del system prompt
+│   └── tool_observations/ # observaciones de tools para caracterizar el formato de respuesta
+├── unit/                  # sin red ni credenciales (autouse: HCE_DISABLE_DOTENV=1, socket bloqueado)
+├── contract/              # cada adapter cumple su port usando fakes o fixtures grabadas
+├── integration/           # requieren HCE_RUN_INTEGRATION=1 y credenciales; se saltan sin ellas
+├── security/              # controles: no exec, superficie de schemas, scope, inyeccion
+├── characterization/      # temporal (Fase 1): congela el comportamiento legacy antes de moverlo
+└── evaluation/            # tests de los helpers de Evaluation/ (Hypothesis)
 ```
 
-## Ejecutar Tests
+Marcadores (`pytest.ini`, `--strict-markers`): `unit`, `contract`, `integration`, `security`, `slow`.
 
-```bash
-# Todos los tests
-python -m pytest tests/ -v
+## Ejecutar (PowerShell)
 
-# Test específico
-python -m pytest tests/test_system.py -v
+```powershell
+# Sin credenciales (lo que corre en cada paquete de trabajo)
+conda activate HCE ; $env:HCE_DISABLE_DOTENV="1" ; python -m pytest
 
-# Con cobertura
-python -m pytest tests/ -v --cov=services
+# Solo seguridad
+conda activate HCE ; python -m pytest tests/security -q
+
+# Integracion (lee .env; solo lectura sobre Supabase demo; pocas llamadas a Anthropic)
+conda activate HCE ; $env:HCE_RUN_INTEGRATION="1" ; python -m pytest -m integration
+
+# Cobertura
+conda activate HCE ; python -m pytest -m "not integration" --cov=config --cov=services --cov=chathce --cov-report=term-missing
 ```
+
+`asyncio_mode = auto`: los tests `async def` no necesitan decorador.
+
+## Fixtures MIMIC
+
+Grabadas una vez con `scripts/record_mimic_fixtures.py` (lectura sobre Supabase). Regrabar
+solo si cambia el dataset; `tests/fixtures/mimic/manifest.json` registra commit, fecha,
+pacientes y conteos.
+
+## Snapshots
+
+`tests/fixtures/prompts/system_prompt_v0.txt` se regenera con `UPDATE_SNAPSHOTS=1`.

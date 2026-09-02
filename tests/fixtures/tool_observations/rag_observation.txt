@@ -1,0 +1,13 @@
+Se encontraron 2 documentos relevantes.
+
+--- Documento 1: Documento: guia_sepsis.pdf | Página: 12 | Especialidad: Urgencias | Tipo: guia_clinica ---
+La sepsis se define como una disfunción orgánica potencialmente mortal causada por una respuesta desregulada del huésped a la infección. El diagnóstico precoz y la administración de antibióticos en la primera hora son determinantes del pronóstico.
+
+--- Documento 2: Documento: protocolo_hta.pdf | Página: 4 | Especialidad: Cardiología | Tipo: protocolo ---
+Se considera hipertensión arterial una presión sistólica mantenida igual o superior a 140 mmHg o diastólica igual o superior a 90 mmHg en consulta.
+
+=== FUENTES CITADAS ===
+IMPORTANTE: Cita estas fuentes en tu respuesta al usuario.
+
+[1] 📄 guia_sepsis.pdf | p. 12 | Especialidad: Urgencias | Tipo: guia_clinica
+[2] 📄 protocolo_hta.pdf | p. 4 | Especialidad: Cardiología | Tipo: protocolo

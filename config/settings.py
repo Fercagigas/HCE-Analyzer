@@ -548,9 +548,23 @@ class Settings(BaseSettings):
         return key
 
 
+_SETTINGS_CLASSES = (
+    DatabaseSettings, AISettings, AppSettings, SecuritySettings, NotificationSettings,
+    RAGSettings, MedicalAgentSettings, ClaudeAgentSettings, PerformanceSettings,
+    VisualizationSettings, UnifiedChatSettings, Settings,
+)
+
+
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    """Devuelve la instancia unica de Settings, construida en el primer uso."""
+    """Devuelve la instancia unica de Settings, construida en el primer uso.
+
+    ``HCE_DISABLE_DOTENV`` se evalua aqui (no al importar) para que los tests
+    puedan fijarlo con monkeypatch antes del primer acceso.
+    """
+    env_file = _env_file()
+    for cls in _SETTINGS_CLASSES:
+        cls.model_config["env_file"] = env_file
     return Settings()
 
 

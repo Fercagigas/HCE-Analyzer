@@ -1,0 +1,14 @@
+{
+  "args": [],
+  "kwargs": {
+    "icd_code": "04102"
+  },
+  "method": "search_diagnoses",
+  "result": [
+    {
+      "icd_code": "04102",
+      "icd_version": 9,
+      "long_title": "Streptococcus infection in conditions classified elsewhere and of unspecified site, streptococcus, group B"
+    }
+  ]
+}
