@@ -96,200 +96,51 @@ class FunctionalTestResult:
 
 
 # ---------------------------------------------------------------------------
-# TC-DB test cases (10)
+# TC-DB test cases: derivados del golden set v2 (Evaluation/golden_set_ragas.json)
 # ---------------------------------------------------------------------------
 
-TC_DB_CASES: List[FunctionalTestCase] = [
-    FunctionalTestCase(
-        test_id="TC-DB-001",
-        category="TC-DB",
-        description="Patient summary retrieval for subject_id 10014729",
-        query="Dame un resumen completo del paciente 10014729 incluyendo estancia, género y disposición.",
-        expected_tool="query_mimic_database",
-        criteria_weights={
-            "contiene_valor": 0.40,
-            "herramienta_correcta": 0.30,
-            "no_alucinacion": 0.20,
-            "formato_respuesta": 0.10,
-        },
-        score_minimo=0.60,
-        verification_data={
-            "expected_values": ["10014729"],
-            "expected_tool": "query_mimic_database",
-        },
-    ),
-    FunctionalTestCase(
-        test_id="TC-DB-002",
-        category="TC-DB",
-        description="Vital signs query for subject_id 10018328",
-        query="¿Cuáles son los signos vitales del paciente 10018328?",
-        expected_tool="query_mimic_database",
-        criteria_weights={
-            "contiene_valor": 0.40,
-            "herramienta_correcta": 0.30,
-            "no_alucinacion": 0.20,
-            "formato_respuesta": 0.10,
-        },
-        score_minimo=0.60,
-        verification_data={
-            "expected_values": ["10018328"],
-            "expected_tool": "query_mimic_database",
-        },
-    ),
-    FunctionalTestCase(
-        test_id="TC-DB-003",
-        category="TC-DB",
-        description="Diagnosis lookup for subject_id 10026255",
-        query="¿Cuáles son los diagnósticos del paciente 10026255?",
-        expected_tool="query_mimic_database",
-        criteria_weights={
-            "contiene_valor": 0.40,
-            "herramienta_correcta": 0.30,
-            "no_alucinacion": 0.20,
-            "formato_respuesta": 0.10,
-        },
-        score_minimo=0.60,
-        verification_data={
-            "expected_values": ["10026255"],
-            "expected_tool": "query_mimic_database",
-        },
-    ),
-    FunctionalTestCase(
-        test_id="TC-DB-004",
-        category="TC-DB",
-        description="Medication listing for subject_id 10014729",
-        query="Lista todos los medicamentos administrados al paciente 10014729 en urgencias.",
-        expected_tool="query_mimic_database",
-        criteria_weights={
-            "contiene_valor": 0.40,
-            "herramienta_correcta": 0.30,
-            "no_alucinacion": 0.20,
-            "formato_respuesta": 0.10,
-        },
-        score_minimo=0.60,
-        verification_data={
-            "expected_values": ["10014729"],
-            "expected_tool": "query_mimic_database",
-        },
-    ),
-    FunctionalTestCase(
-        test_id="TC-DB-005",
-        category="TC-DB",
-        description="Triage data for subject_id 10015272",
-        query="¿Cuáles fueron los datos de triaje del paciente 10015272?",
-        expected_tool="query_mimic_database",
-        criteria_weights={
-            "contiene_valor": 0.40,
-            "herramienta_correcta": 0.30,
-            "no_alucinacion": 0.20,
-            "formato_respuesta": 0.10,
-        },
-        score_minimo=0.60,
-        verification_data={
-            "expected_values": ["10015272"],
-            "expected_tool": "query_mimic_database",
-        },
-    ),
-    FunctionalTestCase(
-        test_id="TC-DB-006",
-        category="TC-DB",
-        description="Cross-table join: edstays + diagnosis",
-        query=(
-            "Muestra las estancias del paciente 10014729 junto con sus diagnósticos ICD. "
-            "Necesito ver la información combinada de edstays y diagnosis."
-        ),
-        expected_tool="query_mimic_database",
-        criteria_weights={
-            "contiene_valor": 0.35,
-            "herramienta_correcta": 0.30,
-            "no_alucinacion": 0.25,
-            "formato_respuesta": 0.10,
-        },
-        score_minimo=0.60,
-        verification_data={
-            "expected_values": ["10014729"],
-            "expected_tool": "query_mimic_database",
-        },
-    ),
-    FunctionalTestCase(
-        test_id="TC-DB-007",
-        category="TC-DB",
-        description="Temporal query: vitalsign ordered by charttime",
-        query=(
-            "Muestra la evolución temporal de los signos vitales del paciente 10014729, "
-            "ordenados por hora de registro."
-        ),
-        expected_tool="query_mimic_database",
-        criteria_weights={
-            "contiene_valor": 0.35,
-            "herramienta_correcta": 0.30,
-            "no_alucinacion": 0.25,
-            "formato_respuesta": 0.10,
-        },
-        score_minimo=0.60,
-        verification_data={
-            "expected_values": ["10014729"],
-            "expected_tool": "query_mimic_database",
-        },
-    ),
-    FunctionalTestCase(
-        test_id="TC-DB-008",
-        category="TC-DB",
-        description="Aggregate statistics: COUNT diagnoses",
-        query="¿Cuántos diagnósticos distintos hay en total en la base de datos MIMIC-IV-ED?",
-        expected_tool="query_mimic_database",
-        criteria_weights={
-            "contiene_valor": 0.35,
-            "herramienta_correcta": 0.30,
-            "no_alucinacion": 0.25,
-            "formato_respuesta": 0.10,
-        },
-        score_minimo=0.55,
-        verification_data={
-            "expected_values": [],
-            "expected_tool": "query_mimic_database",
-        },
-    ),
-    FunctionalTestCase(
-        test_id="TC-DB-009",
-        category="TC-DB",
-        description="Null edge case: patient with no vitals recorded",
-        query="¿Tiene el paciente 10019003 registros de signos vitales durante su estancia?",
-        expected_tool="query_mimic_database",
-        criteria_weights={
-            "contiene_valor": 0.30,
-            "herramienta_correcta": 0.30,
-            "no_alucinacion": 0.30,
-            "formato_respuesta": 0.10,
-        },
-        score_minimo=0.55,
-        verification_data={
-            "expected_values": [],
-            "expected_tool": "query_mimic_database",
-        },
-    ),
-    FunctionalTestCase(
-        test_id="TC-DB-010",
-        category="TC-DB",
-        description="Multi-patient comparison",
-        query=(
-            "Compara los niveles de acuidad de triaje de los pacientes 10014729 y 10018328. "
-            "¿Cuál tuvo mayor urgencia?"
-        ),
-        expected_tool="query_mimic_database",
-        criteria_weights={
-            "contiene_valor": 0.35,
-            "herramienta_correcta": 0.30,
-            "no_alucinacion": 0.25,
-            "formato_respuesta": 0.10,
-        },
-        score_minimo=0.60,
-        verification_data={
-            "expected_values": ["10014729", "10018328"],
-            "expected_tool": "query_mimic_database",
-        },
-    ),
-]
+from Evaluation.golden_set import default_golden_set_path, load_golden_set, scope_kwargs  # noqa: E402
+
+
+def build_tc_db_cases(golden_set_path: Optional[str] = None) -> List[FunctionalTestCase]:
+    """Un caso funcional por pregunta del golden set DB (scope y tool esperada incluidos)."""
+    path = golden_set_path or default_golden_set_path()
+    try:
+        data = load_golden_set(path)
+    except (FileNotFoundError, ValueError) as exc:
+        logger.warning("Golden set no disponible (%s); TC-DB vacio", exc)
+        return []
+    cases: List[FunctionalTestCase] = []
+    for idx, q in enumerate(data.get("questions", []), start=1):
+        if not str(q.get("id", "")).startswith("DB-"):
+            continue
+        scope = q.get("scope") or {}
+        expected_values = [str(v) for v in (scope.get("subject_id"), scope.get("hadm_id"), scope.get("stay_id")) if v]
+        cases.append(FunctionalTestCase(
+            test_id=f"TC-DB-{idx:03d}",
+            category="TC-DB",
+            description=f"{q['id']} [{q.get('category', '')}]",
+            query=q["question"],
+            expected_tool=q.get("expected_tool", ""),
+            criteria_weights={
+                "contiene_valor": 0.40,
+                "herramienta_correcta": 0.30,
+                "no_alucinacion": 0.20,
+                "formato_respuesta": 0.10,
+            },
+            score_minimo=0.60,
+            verification_data={
+                "expected_values": expected_values,
+                "expected_tool": q.get("expected_tool", ""),
+                "golden_id": q["id"],
+                "ground_truth": q.get("ground_truth", ""),
+                **scope_kwargs(q),
+            },
+        ))
+    return cases
+
+
+TC_DB_CASES: List[FunctionalTestCase] = build_tc_db_cases()
 
 # ---------------------------------------------------------------------------
 # TC-RAG test cases (8)
@@ -466,10 +317,10 @@ TC_VIZ_CASES: List[FunctionalTestCase] = [
         category="TC-VIZ",
         description="Vital signs timeline for patient 10014729",
         query=(
-            "Genera una gráfica de líneas con la evolución temporal de los signos vitales "
-            "(frecuencia cardíaca y presión arterial) del paciente 10014729."
+            "Genera una gráfica de líneas con la evolución temporal de las constantes de UCI "
+            "(frecuencia cardíaca) del paciente 10014729 en su estancia de UCI."
         ),
-        expected_tool="generate_visualization",
+        expected_tool="request_visualization",
         criteria_weights={
             "contiene_valor": 0.25,
             "herramienta_correcta": 0.35,
@@ -479,7 +330,8 @@ TC_VIZ_CASES: List[FunctionalTestCase] = [
         score_minimo=0.55,
         verification_data={
             "expected_values": ["10014729"],
-            "expected_tool": "generate_visualization",
+            "expected_tool": "request_visualization",
+            "patient_id": "10014729",
         },
     ),
     FunctionalTestCase(
@@ -488,9 +340,9 @@ TC_VIZ_CASES: List[FunctionalTestCase] = [
         description="Diagnosis distribution bar chart",
         query=(
             "Crea un gráfico de barras con los 10 diagnósticos más frecuentes "
-            "en el dataset MIMIC-IV-ED."
+            "en el conjunto de datos."
         ),
-        expected_tool="generate_visualization",
+        expected_tool="request_visualization",
         criteria_weights={
             "contiene_valor": 0.25,
             "herramienta_correcta": 0.35,
@@ -500,7 +352,8 @@ TC_VIZ_CASES: List[FunctionalTestCase] = [
         score_minimo=0.55,
         verification_data={
             "expected_values": [],
-            "expected_tool": "generate_visualization",
+            "expected_tool": "request_visualization",
+            "purpose": "research",
         },
     ),
     FunctionalTestCase(
@@ -508,10 +361,10 @@ TC_VIZ_CASES: List[FunctionalTestCase] = [
         category="TC-VIZ",
         description="Medication frequency chart",
         query=(
-            "Genera una visualización de los medicamentos más administrados en urgencias, "
+            "Genera una visualización de los fármacos más prescritos en el conjunto de datos, "
             "mostrando la frecuencia de cada uno."
         ),
-        expected_tool="generate_visualization",
+        expected_tool="request_visualization",
         criteria_weights={
             "contiene_valor": 0.25,
             "herramienta_correcta": 0.35,
@@ -521,7 +374,8 @@ TC_VIZ_CASES: List[FunctionalTestCase] = [
         score_minimo=0.55,
         verification_data={
             "expected_values": [],
-            "expected_tool": "generate_visualization",
+            "expected_tool": "request_visualization",
+            "purpose": "research",
         },
     ),
     FunctionalTestCase(
@@ -529,10 +383,10 @@ TC_VIZ_CASES: List[FunctionalTestCase] = [
         category="TC-VIZ",
         description="Multi-metric comparison chart",
         query=(
-            "Crea una gráfica comparando la presión arterial sistólica, diastólica "
-            "y la frecuencia cardíaca del paciente 10014729 a lo largo del tiempo."
+            "Crea una gráfica comparando la frecuencia cardíaca y la saturación de oxígeno "
+            "del paciente 10014729 a lo largo de su estancia de UCI."
         ),
-        expected_tool="generate_visualization",
+        expected_tool="request_visualization",
         criteria_weights={
             "contiene_valor": 0.25,
             "herramienta_correcta": 0.35,
@@ -542,7 +396,8 @@ TC_VIZ_CASES: List[FunctionalTestCase] = [
         score_minimo=0.55,
         verification_data={
             "expected_values": ["10014729"],
-            "expected_tool": "generate_visualization",
+            "expected_tool": "request_visualization",
+            "patient_id": "10014729",
         },
     ),
     FunctionalTestCase(
@@ -550,10 +405,10 @@ TC_VIZ_CASES: List[FunctionalTestCase] = [
         category="TC-VIZ",
         description="Custom visualization request",
         query=(
-            "Genera un histograma de la distribución de los niveles de acuidad de triaje "
-            "en todos los pacientes del dataset."
+            "Genera un gráfico de barras con la distribución de tipos de ingreso hospitalario "
+            "en todos los pacientes del conjunto de datos."
         ),
-        expected_tool="generate_visualization",
+        expected_tool="request_visualization",
         criteria_weights={
             "contiene_valor": 0.20,
             "herramienta_correcta": 0.40,
@@ -563,7 +418,8 @@ TC_VIZ_CASES: List[FunctionalTestCase] = [
         score_minimo=0.55,
         verification_data={
             "expected_values": [],
-            "expected_tool": "generate_visualization",
+            "expected_tool": "request_visualization",
+            "purpose": "research",
         },
     ),
 ]
@@ -577,7 +433,7 @@ TC_AGENT_CASES: List[FunctionalTestCase] = [
         test_id="TC-AGENT-001",
         category="TC-AGENT",
         description="Automatic tool selection based on query intent",
-        query="¿Cuántas estancias hay registradas en urgencias en total?",
+        query="¿Cuántos ingresos hospitalarios hay registrados en total en el conjunto de datos?",
         expected_tool="query_mimic_database",
         criteria_weights={
             "contiene_valor": 0.25,
@@ -589,6 +445,7 @@ TC_AGENT_CASES: List[FunctionalTestCase] = [
         verification_data={
             "expected_values": [],
             "expected_tool": "query_mimic_database",
+            "purpose": "research",
         },
     ),
     FunctionalTestCase(
@@ -596,7 +453,7 @@ TC_AGENT_CASES: List[FunctionalTestCase] = [
         category="TC-AGENT",
         description="Multi-tool orchestration: database + RAG",
         query=(
-            "Analiza los signos vitales del paciente 10014729 y compáralos con "
+            "Analiza los resultados de laboratorio del paciente 10014729 y compáralos con "
             "los valores normales según los protocolos clínicos."
         ),
         expected_tool="query_mimic_database",
@@ -611,6 +468,7 @@ TC_AGENT_CASES: List[FunctionalTestCase] = [
         verification_data={
             "expected_values": ["10014729"],
             "expected_tool": "query_mimic_database",
+            "patient_id": "10014729",
         },
     ),
     FunctionalTestCase(
@@ -651,13 +509,14 @@ TC_AGENT_CASES: List[FunctionalTestCase] = [
             "expected_values": [],
             "expected_tool": "query_mimic_database",
             "expect_no_data": True,
+            "patient_id": "99999999",
         },
     ),
     FunctionalTestCase(
         test_id="TC-AGENT-005",
         category="TC-AGENT",
         description="Response language consistency: always Spanish",
-        query="What are the vital signs of patient 10014729?",
+        query="What are the latest lab results of patient 10014729?",
         expected_tool="query_mimic_database",
         criteria_weights={
             "contiene_valor": 0.20,
@@ -669,6 +528,7 @@ TC_AGENT_CASES: List[FunctionalTestCase] = [
         verification_data={
             "expected_values": ["10014729"],
             "expected_tool": "query_mimic_database",
+            "patient_id": "10014729",
             "expect_spanish": True,
         },
     ),
@@ -751,7 +611,16 @@ def score_herramienta_correcta(
     for tool in tools_used:
         if expected_tool.lower() in tool.lower() or tool.lower() in expected_tool.lower():
             return 1.0
+    # Equivalencia transitoria (WP5-WP8): las tools clinicas del core sustituyen a query_mimic_database
+    if expected_tool in _CLINICAL_CORE_TOOLS and "query_mimic_database" in tools_used:
+        return 1.0
     return 0.0
+
+
+_CLINICAL_CORE_TOOLS = {
+    "get_patient_summary", "get_admission_details", "get_diagnoses", "get_labs", "search_lab_items",
+    "get_medications", "get_icu_stays", "get_icu_observations", "search_icd_codes", "get_dataset_statistics",
+}
 
 
 def score_no_alucinacion(
@@ -960,10 +829,16 @@ def run_test_case(
     )
 
     try:
+        scope = {
+            key: test_case.verification_data[key]
+            for key in ("patient_id", "encounter_id", "purpose")
+            if test_case.verification_data.get(key)
+        }
         response = agent.process_message(
             test_case.query,
             context=None,
             session_id=f"eval-func-{test_case.test_id}",
+            **scope,
         )
         if not isinstance(response, dict):
             response = {"content": str(response), "tools_used": [], "sources": []}

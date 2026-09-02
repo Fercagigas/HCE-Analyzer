@@ -56,84 +56,41 @@ THRESHOLDS_MS: Dict[str, float] = {
 # ---------------------------------------------------------------------------
 # Predefined queries (17 total)
 # ---------------------------------------------------------------------------
-QUERIES: List[Dict[str, str]] = [
-    # DB queries (5)
-    {
-        "category": "DB",
-        "query": "¿Cuáles son los diagnósticos del paciente 10014729?",
-    },
-    {
-        "category": "DB",
-        "query": "¿Cuáles son los signos vitales del paciente 10018328 en su estancia 34176810?",
-    },
-    {
-        "category": "DB",
-        "query": "¿Qué medicamentos se administraron al paciente 10026255?",
-    },
-    {
-        "category": "DB",
-        "query": "¿Cuál es la disposición final del paciente 10015272?",
-    },
-    {
-        "category": "DB",
-        "query": "¿Cuántas visitas tiene el paciente 10014354 en urgencias?",
-    },
+QUERIES: List[Dict[str, Any]] = [
+    # DB queries (5) — pacientes del golden set v2 / fixtures MIMIC-IV hosp
+    {"category": "DB", "query": "¿Cuáles son los diagnósticos del paciente 10001217?", "scope": {"patient_id": "10001217"}},
+    {"category": "DB", "query": "¿Cuáles son los últimos resultados de laboratorio del paciente 10002495?", "scope": {"patient_id": "10002495"}},
+    {"category": "DB", "query": "¿Qué fármacos se prescribieron al paciente 10003046?", "scope": {"patient_id": "10003046"}},
+    {"category": "DB", "query": "¿Cuántos ingresos hospitalarios tiene el paciente 10001217 y cuándo fue el último?", "scope": {"patient_id": "10001217"}},
+    {"category": "DB", "query": "¿Cuáles son los 10 diagnósticos más frecuentes del conjunto de datos?", "scope": {"purpose": "research"}},
     # RAG queries (5)
-    {
-        "category": "RAG",
-        "query": "¿Cuál es el protocolo de manejo de sepsis en urgencias?",
-    },
-    {
-        "category": "RAG",
-        "query": "¿Cuáles son las indicaciones de vancomicina en urgencias?",
-    },
-    {
-        "category": "RAG",
-        "query": "¿Cuál es el protocolo de triaje de Manchester?",
-    },
-    {
-        "category": "RAG",
-        "query": "¿Cómo se maneja la fibrilación auricular en urgencias?",
-    },
-    {
-        "category": "RAG",
-        "query": "¿Cuáles son los criterios de ingreso hospitalario desde urgencias?",
-    },
+    {"category": "RAG", "query": "¿Cuál es el protocolo de manejo de sepsis?"},
+    {"category": "RAG", "query": "¿Cuáles son las indicaciones de vancomicina?"},
+    {"category": "RAG", "query": "¿Cuál es el protocolo de triaje de Manchester?"},
+    {"category": "RAG", "query": "¿Cómo se maneja la fibrilación auricular?"},
+    {"category": "RAG", "query": "¿Cuáles son los criterios de ingreso hospitalario desde urgencias?"},
     # VIZ queries (5)
-    {
-        "category": "VIZ",
-        "query": "Genera una gráfica de la evolución de la frecuencia cardíaca del paciente 10014729",
-    },
-    {
-        "category": "VIZ",
-        "query": "Muestra un gráfico de barras de los diagnósticos más frecuentes en urgencias",
-    },
-    {
-        "category": "VIZ",
-        "query": "Crea una visualización de la distribución de acuidad de triaje",
-    },
-    {
-        "category": "VIZ",
-        "query": "Genera un gráfico de la presión arterial del paciente 10026255 en su estancia 34236274",
-    },
-    {
-        "category": "VIZ",
-        "query": "Muestra la distribución de medicamentos administrados en urgencias",
-    },
+    {"category": "VIZ", "query": "Genera una gráfica de la evolución de la frecuencia cardíaca del paciente 10001217 en su estancia de UCI", "scope": {"patient_id": "10001217"}},
+    {"category": "VIZ", "query": "Muestra un gráfico de barras de los diagnósticos más frecuentes del conjunto de datos", "scope": {"purpose": "research"}},
+    {"category": "VIZ", "query": "Muestra la distribución de tipos de ingreso hospitalario", "scope": {"purpose": "research"}},
+    {"category": "VIZ", "query": "Genera un gráfico de la evolución de la creatinina del paciente 10002495", "scope": {"patient_id": "10002495"}},
+    {"category": "VIZ", "query": "Muestra los fármacos más prescritos del conjunto de datos", "scope": {"purpose": "research"}},
     # Complex queries (2)
     {
         "category": "Complex",
         "query": (
-            "Analiza los signos vitales del paciente 10014729, "
+            "Analiza los resultados de laboratorio del paciente 10001217, "
             "busca protocolos de sepsis y genera una gráfica de evolución"
         ),
+        "scope": {"patient_id": "10001217"},
     },
     {
         "category": "Complex",
         "query": (
-            "Compara los diagnósticos del paciente 10026255 con las guías clínicas "
-            "de fibrilación auricular y visualiza los signos vitales"
+            "Compara los diagnósticos del paciente 10002495 con las guías clínicas "
+            "de fibrilación auricular y visualiza sus constantes de UCI"
         ),
+        "scope": {"patient_id": "10002495"},
     },
 ]
 
@@ -206,6 +163,7 @@ def run_single_query(
     query: str,
     run_number: int,
     category: str,
+    scope: Optional[Dict[str, str]] = None,
 ) -> Dict[str, Any]:
     """Execute a single query against the agent and measure latency.
 
@@ -233,7 +191,12 @@ def run_single_query(
         start = time.perf_counter()
         # Pass UUID as context to bypass cache (cache key includes context)
         cache_bypass_context = {"_eval_run_id": str(uuid.uuid4())}
-        agent.process_message(query, context=cache_bypass_context, session_id=f"eval-latency-{category}-{run_number}")
+        agent.process_message(
+            query,
+            context=cache_bypass_context,
+            session_id=f"eval-latency-{category}-{run_number}",
+            **(scope or {}),
+        )
         end = time.perf_counter()
         result["latency_ms"] = (end - start) * 1000
         result["success"] = True
@@ -274,7 +237,8 @@ def benchmark_query(
 
     # Warmup run (run_number=0, excluded from stats)
     logger.info("  Warmup run for: %s...", query[:60])
-    warmup = run_single_query(agent, query, run_number=0, category=category)
+    scope = query_def.get("scope")
+    warmup = run_single_query(agent, query, run_number=0, category=category, scope=scope)
     all_results.append(warmup)
     time.sleep(DELAY_BETWEEN_RUNS_SECONDS)
 
@@ -282,7 +246,7 @@ def benchmark_query(
     successful_latencies: List[float] = []
     for i in range(1, n_runs + 1):
         logger.info("  Run %d/%d for: %s...", i, n_runs, query[:60])
-        run_result = run_single_query(agent, query, run_number=i, category=category)
+        run_result = run_single_query(agent, query, run_number=i, category=category, scope=scope)
         all_results.append(run_result)
 
         if run_result["success"] and run_result["latency_ms"] is not None:

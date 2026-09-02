@@ -1,212 +1,141 @@
-"""
-Property-based tests for the golden set structure and SQL table references.
+"""Tests del golden set DB v2 (estructura, operaciones allowlisted y JSON real).
 
-**Validates: Requirements 1.3, 1.6, 1.7**
-
-Note: validate_question is re-implemented inline here to avoid importing
-Evaluation.run_ragas_eval at module level, which triggers a slow HuggingFace
-model load. The logic is identical to the one in run_ragas_eval.py.
+Usa `Evaluation.golden_set` (modulo ligero, sin RAGAS/HuggingFace).
 """
 
-import re
-from typing import Any, Dict, List
+import json
+import os
 
-from hypothesis import given, settings, assume
+import pytest
+from hypothesis import given, settings
 from hypothesis import strategies as st
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
+from Evaluation.golden_set import (
+    ALLOWED_OPERATIONS,
+    DB_REQUIRED_FIELDS,
+    EXPECTED_TOOLS,
+    SQL_LIKE_PATTERN,
+    VALID_CATEGORIES,
+    default_golden_set_path,
+    scope_kwargs,
+    validate_question,
+)
 
-ALLOWED_TABLES = [
-    "patients", "admissions", "transfers", "services",
-    "diagnoses_icd", "d_icd_diagnoses", "procedures_icd", "d_icd_procedures",
-    "labevents", "d_labitems", "microbiologyevents", "omr",
-    "prescriptions", "pharmacy", "emar",
-    "icustays", "chartevents", "d_items",
-]
-VALID_CATEGORIES = [
-    "patient_summary",
-    "admission_details",
-    "diagnoses",
-    "medications",
-    "labs",
-    "icu_vitals",
-    "cross_table",
-]
-REQUIRED_FIELDS = ["id", "question", "ground_truth", "ground_truth_sql", "contexts", "category"]
-
-# ---------------------------------------------------------------------------
-# validate_question — mirrors Evaluation/run_ragas_eval.py exactly
-# ---------------------------------------------------------------------------
-
-def validate_question(question: Dict[str, Any]) -> List[str]:
-    """Return a list of validation errors for a single question dict.
-
-    Mirrors the implementation in ``Evaluation/run_ragas_eval.py`` so that
-    tests remain fast without triggering the heavy RAGAS/HuggingFace import.
-    """
-    errors: List[str] = []
-    for field in REQUIRED_FIELDS:
-        if field not in question:
-            errors.append(f"Missing field: '{field}'")
-        elif not question[field]:
-            errors.append(f"Empty field: '{field}'")
-
-    contexts = question.get("contexts")
-    if isinstance(contexts, list) and len(contexts) == 0:
-        errors.append("'contexts' must be a non-empty list")
-
-    return errors
+pytestmark = pytest.mark.unit
 
 
-# ---------------------------------------------------------------------------
-# Property 1: Golden set structural completeness
-# Validates: Requirements 1.3, 1.6
-# ---------------------------------------------------------------------------
+def _base_question(**overrides):
+    q = {
+        "id": "DB-LAB-001",
+        "category": "labs",
+        "question": "¿Cuál es el último valor de Hemoglobin del paciente 10001217?",
+        "ground_truth": "El último valor es 12.1 g/dL.",
+        "ground_truth_operation": {"operation": "list_lab_observations", "arguments": {"subject_id": 10001217}},
+        "scope": {"subject_id": 10001217, "hadm_id": None, "stay_id": None},
+        "expected_tool": "get_labs",
+        "contexts": ["labevent ..."],
+        "clinical_validation": {"required": True, "status": "pending", "notes": ""},
+    }
+    q.update(overrides)
+    return q
+
 
 @given(
-    st.fixed_dictionaries(
-        {
-            "id": st.text(min_size=1, max_size=20),
-            "question": st.text(min_size=1, max_size=200),
-            "ground_truth": st.text(min_size=1, max_size=500),
-            "ground_truth_sql": st.text(min_size=1, max_size=500),
-            "contexts": st.lists(st.text(min_size=1), min_size=1, max_size=5),
-            "category": st.sampled_from(VALID_CATEGORIES),
-        }
-    )
+    st.fixed_dictionaries({
+        "id": st.text(min_size=1, max_size=20),
+        "question": st.text(min_size=1, max_size=200).filter(lambda t: not SQL_LIKE_PATTERN.search(t)),
+        "ground_truth": st.text(min_size=1, max_size=500).filter(lambda t: not SQL_LIKE_PATTERN.search(t)),
+        "ground_truth_operation": st.fixed_dictionaries({
+            "operation": st.sampled_from(ALLOWED_OPERATIONS),
+            "arguments": st.dictionaries(st.sampled_from(["subject_id", "hadm_id", "limit"]), st.integers(1, 10**8), max_size=3),
+        }),
+        "contexts": st.lists(st.text(min_size=1), min_size=1, max_size=5),
+        "category": st.sampled_from(VALID_CATEGORIES),
+    })
 )
 @settings(max_examples=100)
-def test_property_1_valid_question_passes_validation(question):
-    """
-    **Validates: Requirements 1.3, 1.6**
-
-    A question dict with all 6 required non-empty fields must produce no
-    validation errors.
-    """
-    errors = validate_question(question)
-    assert errors == [], f"Valid question should have no errors, got: {errors}"
+def test_property_valid_question_passes_validation(question):
+    assert validate_question(question) == []
 
 
-@given(st.sampled_from(REQUIRED_FIELDS))
-@settings(max_examples=50)
-def test_property_1b_missing_field_causes_error(missing_field):
-    """
-    **Validates: Requirements 1.3, 1.6**
-
-    A question dict with a missing required field must produce at least one
-    validation error.
-    """
-    question = {
-        "id": "Q-001",
-        "question": "What is the diagnosis?",
-        "ground_truth": "Hypertension",
-        "ground_truth_sql": "SELECT * FROM diagnosis WHERE subject_id = 1",
-        "contexts": ["context text"],
-        "category": "diagnoses",
-    }
+@given(st.sampled_from(DB_REQUIRED_FIELDS))
+@settings(max_examples=30)
+def test_property_missing_required_field_causes_error(missing_field):
+    question = _base_question()
     del question[missing_field]
-    errors = validate_question(question)
-    assert len(errors) > 0, f"Missing field '{missing_field}' should produce errors"
+    assert validate_question(question)
 
 
-@given(st.sampled_from(REQUIRED_FIELDS))
-@settings(max_examples=50)
-def test_property_1c_empty_field_causes_error(empty_field):
-    """
-    **Validates: Requirements 1.3, 1.6**
+@given(st.sampled_from(DB_REQUIRED_FIELDS))
+@settings(max_examples=30)
+def test_property_empty_required_field_causes_error(empty_field):
+    question = _base_question()
+    question[empty_field] = [] if empty_field == "contexts" else ("" if empty_field != "ground_truth_operation" else {})
+    assert validate_question(question)
 
-    A question dict with an empty required field must produce at least one
-    validation error.
-    """
-    question = {
-        "id": "Q-001",
-        "question": "What is the diagnosis?",
-        "ground_truth": "Hypertension",
-        "ground_truth_sql": "SELECT * FROM diagnosis WHERE subject_id = 1",
-        "contexts": ["context text"],
-        "category": "diagnoses",
-    }
-    # Set the field to an empty value appropriate for its type
-    if empty_field == "contexts":
-        question[empty_field] = []
-    else:
-        question[empty_field] = ""
-    errors = validate_question(question)
-    assert len(errors) > 0, f"Empty field '{empty_field}' should produce errors"
+
+@pytest.mark.parametrize("operation", ["execute_custom_query", "custom", "select_rows"])
+def test_non_allowlisted_operation_is_rejected(operation):
+    q = _base_question(ground_truth_operation={"operation": operation, "arguments": {}})
+    assert any("not allowlisted" in e for e in validate_question(q))
+
+
+@pytest.mark.parametrize("text", ["SELECT subject_id FROM patients", "consulta mimiciv_hosp.labevents", "tabla mimic_ed.edstays"])
+def test_sql_like_text_is_rejected(text):
+    assert any("looks like SQL" in e for e in validate_question(_base_question(ground_truth=text)))
+
+
+def test_unknown_category_and_tool_are_rejected():
+    assert any("Unknown category" in e for e in validate_question(_base_question(category="triage")))
+    assert any("Unknown expected_tool" in e for e in validate_question(_base_question(expected_tool="query_sql")))
+
+
+def test_scope_kwargs_maps_scope_to_agent_arguments():
+    q = _base_question(scope={"subject_id": 10001217, "hadm_id": 24597018, "stay_id": None})
+    assert scope_kwargs(q) == {"patient_id": "10001217", "encounter_id": "24597018"}
+    assert scope_kwargs(_base_question(category="aggregates", scope={})) == {"purpose": "research"}
 
 
 # ---------------------------------------------------------------------------
-# Property 2: Golden set SQL references only allowed tables
-# Validates: Requirements 1.7
+# JSON real
 # ---------------------------------------------------------------------------
 
-def _build_sql_with_allowed_tables(tables: list) -> str:
-    """Build a simple SELECT SQL using only the provided allowed tables."""
-    primary = tables[0]
-    sql = f"SELECT * FROM {primary}"
-    for extra in tables[1:]:
-        sql += f" JOIN {extra} ON {primary}.stay_id = {extra}.stay_id"
-    return sql
+@pytest.fixture(scope="module")
+def golden_set():
+    path = default_golden_set_path()
+    if not os.path.exists(path):
+        pytest.skip("golden set no generado")
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)
 
 
-def _extract_table_names(sql: str) -> list:
-    """Extract table names referenced in FROM and JOIN clauses."""
-    pattern = r"(?:FROM|JOIN)\s+([a-zA-Z_][a-zA-Z0-9_]*)"
-    return re.findall(pattern, sql, re.IGNORECASE)
+def test_real_golden_set_is_v2_and_valid(golden_set):
+    meta = golden_set["metadata"]
+    assert meta["version"] == "2.0"
+    questions = golden_set["questions"]
+    assert len(questions) == meta["total_preguntas"] == 40
+    errors = {q["id"]: validate_question(q) for q in questions}
+    assert all(not e for e in errors.values()), {k: v for k, v in errors.items() if v}
+    assert len({q["id"] for q in questions}) == len(questions)
 
 
-@given(
-    st.lists(
-        st.sampled_from(ALLOWED_TABLES),
-        min_size=1,
-        max_size=6,
-        unique=True,
-    )
-)
-@settings(max_examples=100)
-def test_property_2_sql_references_only_allowed_tables(tables):
-    """
-    **Validates: Requirements 1.7**
-
-    SQL queries built exclusively from the 6 MIMIC-IV-ED allowed tables must
-    not reference any table outside that set.
-    """
-    sql = _build_sql_with_allowed_tables(tables)
-    referenced = _extract_table_names(sql)
-    disallowed = [t for t in referenced if t.lower() not in ALLOWED_TABLES]
-    assert disallowed == [], (
-        f"SQL references disallowed tables {disallowed}. SQL: {sql}"
-    )
-
-
-@given(
-    st.lists(
-        st.sampled_from(ALLOWED_TABLES),
-        min_size=1,
-        max_size=6,
-        unique=True,
-    )
-)
-@settings(max_examples=100)
-def test_property_2b_sql_with_allowed_tables_passes_as_valid_question(tables):
-    """
-    **Validates: Requirements 1.7**
-
-    A complete question dict whose ground_truth_sql uses only allowed tables
-    must pass validate_question() with no errors.
-    """
-    sql = _build_sql_with_allowed_tables(tables)
-    question = {
-        "id": "DB-001",
-        "question": "How many patients visited the ED?",
-        "ground_truth": "42 patients",
-        "ground_truth_sql": sql,
-        "contexts": ["context about ED visits"],
-        "category": "patient_summary",
-    }
-    errors = validate_question(question)
-    assert errors == [], (
-        f"Question with allowed-table SQL should have no errors, got: {errors}"
-    )
+def test_real_golden_set_distribution_and_scope(golden_set):
+    meta = golden_set["metadata"]
+    questions = golden_set["questions"]
+    counts = {}
+    for q in questions:
+        counts[q["category"]] = counts.get(q["category"], 0) + 1
+    assert counts == meta["distribucion"]
+    subjects = set(meta["subject_ids_usados"])
+    for q in questions:
+        sid = q["scope"]["subject_id"]
+        if q["category"] == "aggregates":
+            assert sid is None
+        else:
+            assert sid in subjects
+        assert q["expected_tool"] in EXPECTED_TOOLS
+        assert q["ground_truth_operation"]["operation"] in meta["operaciones_referenciadas"]
+        for field in ("question", "ground_truth"):
+            assert not SQL_LIKE_PATTERN.search(q[field]), q["id"]
+    pending = {q["id"] for q in questions if q["clinical_validation"]["required"]}
+    assert pending == set(meta["requiere_validacion_clinica"])
