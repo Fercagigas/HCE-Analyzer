@@ -540,6 +540,25 @@ class LLMGatewaySettings(BaseSettings):
     }
 
 
+class APISettings(BaseSettings):
+    """FastAPI (Fase 1): bind local, CORS cerrado por defecto, SSE."""
+    host: str = Field("127.0.0.1", env="API_HOST")
+    port: int = Field(8000, env="API_PORT")
+    cors_allowed_origins: List[str] = Field(["http://localhost:8501", "http://127.0.0.1:8501"], env="API_CORS_ALLOWED_ORIGINS")
+    docs_enabled: bool = Field(True, env="API_DOCS_ENABLED")
+    sse_ping_s: int = Field(15, env="API_SSE_PING_S")
+    ready_cache_s: int = Field(300, env="API_READY_CACHE_S")
+    max_body_bytes: int = Field(64 * 1024, env="API_MAX_BODY_BYTES")
+    environment: str = Field("dev", env="API_ENVIRONMENT")  # dev | prod (mensajes de error genericos)
+
+    model_config = {
+        "env_file": _ENV_FILE,
+        "case_sensitive": False,
+        "extra": "allow",
+        "env_prefix": "API_"
+    }
+
+
 class AuditSettings(BaseSettings):
     """Auditoria estructurada sin PHI (roadmap 12)."""
     sink: str = Field("jsonl", env="AUDIT_SINK")  # jsonl | stdout | null
@@ -578,6 +597,7 @@ class Settings(BaseSettings):
     clinical: ClinicalDataSettings = Field(default_factory=ClinicalDataSettings)
     llm: LLMGatewaySettings = Field(default_factory=LLMGatewaySettings)
     audit: AuditSettings = Field(default_factory=AuditSettings)
+    api: APISettings = Field(default_factory=APISettings)
 
     model_config = {
         "env_file": _ENV_FILE,
@@ -610,7 +630,7 @@ class Settings(BaseSettings):
 _SETTINGS_CLASSES = (
     DatabaseSettings, AISettings, AppSettings, SecuritySettings, NotificationSettings,
     RAGSettings, MedicalAgentSettings, ClaudeAgentSettings, PerformanceSettings,
-    VisualizationSettings, UnifiedChatSettings, ClinicalDataSettings, LLMGatewaySettings, AuditSettings, Settings,
+    VisualizationSettings, UnifiedChatSettings, ClinicalDataSettings, LLMGatewaySettings, AuditSettings, APISettings, Settings,
 )
 
 
@@ -661,4 +681,5 @@ __all__ = [
     "ClinicalDataSettings",
     "LLMGatewaySettings",
     "AuditSettings",
+    "APISettings",
 ]
