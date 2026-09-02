@@ -1,9 +1,9 @@
 """Caracterizacion del ensamblado del system prompt (`PromptManager`).
 
-Snapshot en `tests/fixtures/prompts/system_prompt_v0.txt`. Regenerar con
+Snapshot en `tests/fixtures/prompts/system_prompt_v1.txt`. Regenerar con
 `UPDATE_SNAPSHOTS=1`. Los asserts estructurales fijan lo que WP6/WP8 deben
 conservar (identidad, idioma, anti-alucinacion, nombres reales de tools) y lo que
-deben eliminar (DDL y ejemplos SQL; `xfail` hasta WP4).
+han eliminado (DDL y ejemplos SQL, WP4).
 """
 
 import os
@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-SNAPSHOT = Path(__file__).resolve().parents[1] / "fixtures" / "prompts" / "system_prompt_v0.txt"
+SNAPSHOT = Path(__file__).resolve().parents[1] / "fixtures" / "prompts" / "system_prompt_v1.txt"
 REAL_TOOL_NAMES = ("query_mimic_database", "search_clinical_documents", "request_visualization")
 
 
@@ -46,8 +46,8 @@ def test_prompt_keeps_core_directives(system_prompt):
         assert name in system_prompt, f"El prompt no menciona la tool real {name}"
 
 
-@pytest.mark.xfail(strict=True, reason="Hasta WP4 el prompt expone DDL y ejemplos SQL al modelo")
 def test_prompt_exposes_no_schema_or_sql(system_prompt):
+    """Desde WP4 el prompt no expone DDL, esquemas ni ejemplos SQL."""
     lowered = system_prompt.lower()
     assert "create table" not in lowered
     assert "mimiciv_hosp." not in lowered

@@ -137,14 +137,7 @@ class DatabaseService:
 
     ALLOWED_TABLES = set(TABLE_SCHEMA.keys())
 
-    # Schemas that may appear (prefixed) in custom SQL. Kept in sync with settings.
-    ALLOWED_SCHEMAS = {'mimiciv_hosp', 'mimiciv_icu'}
-
-    DANGEROUS_KEYWORDS = {
-        'DROP', 'DELETE', 'INSERT', 'UPDATE', 'ALTER', 'CREATE', 'TRUNCATE',
-        'GRANT', 'REVOKE', 'EXEC', 'EXECUTE', 'UNION', 'DECLARE', 'CURSOR',
-        'COPY', 'VACUUM', 'ANALYZE', 'COMMENT', 'SECURITY', 'OWNER',
-    }
+    # WP4 (ADR 0050): no existe ninguna ruta de SQL libre. Las operaciones son metodos tipados.
 
     # A stable, cheap table for health checks.
     _HEALTH_TABLE = 'patients'
@@ -265,73 +258,6 @@ class DatabaseService:
             return "The medical database is experiencing technical difficulties. Please try again in a few minutes."
         else:
             return "An unexpected error occurred while accessing medical data. Please try again or contact support if the problem persists."
-
-    def _validate_query(self, query: str) -> bool:
-        """Validate SQL query for security with defense-in-depth."""
-        if not query or not query.strip():
-            logger.warning("Empty query rejected")
-            return False
-        if len(query) > 2000:
-            logger.warning("Query exceeds maximum length of 2000 characters")
-            return False
-
-        query_upper = query.upper().strip()
-        if not query_upper.startswith('SELECT'):
-            logger.warning("Query does not start with SELECT")
-            return False
-
-        for keyword in self.DANGEROUS_KEYWORDS:
-            if re.search(r'\b' + keyword + r'\b', query_upper):
-                logger.warning(f"Dangerous keyword '{keyword}' found in query")
-                return False
-
-        if ';' in query or '--' in query or '/*' in query:
-            logger.warning("Query contains forbidden characters (;, --, /*)")
-            return False
-
-        if re.search(r'\b(?:PG_|INFORMATION_SCHEMA)\b', query_upper):
-            logger.warning("Query attempts to access system tables")
-            return False
-
-        dangerous_functions = [
-            'PG_SLEEP', 'PG_READ_FILE', 'PG_WRITE_FILE',
-            'DBLINK', 'LO_IMPORT', 'LO_EXPORT',
-            'CURRENT_SETTING', 'SET_CONFIG',
-        ]
-        for func in dangerous_functions:
-            if func in query_upper:
-                logger.warning(f"Dangerous function '{func}' found in query")
-                return False
-
-        # Only allowlisted tables may be referenced, with or without schema prefix.
-        table_pattern = r'(?:FROM|JOIN)\s+(?:(MIMICIV_HOSP|MIMICIV_ICU)\.)?(\w+)'
-        for _schema, table in re.findall(table_pattern, query_upper):
-            if table.lower() not in self.ALLOWED_TABLES:
-                logger.warning(f"Unauthorized table '{table}' in query")
-                return False
-
-        return True
-
-    def _sanitize_params(self, params: Optional[Dict]) -> Dict:
-        """Sanitize query parameters."""
-        if not params:
-            return {}
-        sanitized = {}
-        for key, value in params.items():
-            if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', key):
-                logger.warning(f"Invalid parameter key: {key}")
-                continue
-            if isinstance(value, (int, float, str, bool)):
-                sanitized[key] = value
-            else:
-                logger.warning(f"Invalid parameter type for {key}: {type(value)}")
-        return sanitized
-
-    def execute_query(self, query: str, params: Optional[Dict] = None) -> pd.DataFrame:
-        """Deprecated raw SQL path. Use specific methods or execute_custom_query."""
-        if not self._validate_query(query):
-            raise ValueError("Query validation failed - unsafe or unauthorized query")
-        raise NotImplementedError("Direct SQL execution not implemented. Use specific query methods.")
 
     @retry_on_failure(max_retries=2, delay=0.5, backoff=2.0)
     @timeout_handler(timeout_seconds=30)
@@ -801,41 +727,3 @@ class DatabaseService:
             'reading': f"{sys_val or '?'}/{dia_val or '?'}",
             'status': status,
         }
-
-    @retry_on_failure(max_retries=2, delay=0.5)
-    def execute_custom_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
-        """Execute a custom read-only SQL query through the Supabase RPC."""
-        try:
-            query = query.strip()
-            while query.endswith(';'):
-                query = query[:-1].strip()
-
-            query_upper = query.upper()
-            if not query_upper.startswith('SELECT'):
-                raise ValidationError("Only SELECT queries are allowed")
-
-            dangerous_keywords = ['DROP', 'DELETE', 'UPDATE', 'INSERT', 'ALTER', 'CREATE', 'TRUNCATE', 'EXEC', 'EXECUTE']
-            for keyword in dangerous_keywords:
-                if re.search(r'\b' + keyword + r'\b', query_upper):
-                    raise ValidationError(f"Query contains forbidden keyword: {keyword}")
-
-            logger.info(f"Executing custom query: {query[:200]}...")
-
-            with self._get_connection() as supabase_client:
-                result = supabase_client.rpc('execute_readonly_query', {'query_text': query}).execute()
-                if hasattr(result, 'data') and result.data:
-                    logger.info(f"Custom query returned {len(result.data)} rows")
-                    return result.data
-                logger.info("Custom query returned no results")
-                return []
-        except ValidationError:
-            raise
-        except Exception as e:
-            error_msg = f"Custom query execution failed: {str(e)}"
-            logger.error(error_msg)
-            if 'function' in str(e).lower() and 'does not exist' in str(e).lower():
-                raise DatabaseError(
-                    "Custom SQL queries require a stored procedure in Supabase. "
-                    "Please use specific query methods instead."
-                )
-            raise DatabaseError(error_msg)

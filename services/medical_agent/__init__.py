@@ -52,18 +52,15 @@ except ImportError as e:
 
 # Import Claude tools and services
 try:
-    from .tools.database_tool_claude import create_claude_database_tool
     from .tools.visualization_collaboration_tool import create_visualization_collaboration_tool
     from .services.database_service import DatabaseService
     if __all__:
         __all__.extend([
-            "create_claude_database_tool",
             "create_visualization_collaboration_tool",
             "DatabaseService"
         ])
     else:
         __all__ = [
-            "create_claude_database_tool",
             "create_visualization_collaboration_tool",
             "DatabaseService"
         ]

@@ -1,16 +1,14 @@
 """
 Medical Agent Tools Module
 
-This module provides Claude-compatible tools for database queries
-and visualization collaboration.
+Herramientas legacy del agente (colaboracion de visualizacion). La tool de base de
+datos vive en services/unified_chat/tools/database_tool.py; la variante Claude
+(database_tool_claude.py) se retiro en WP4 por ofrecer SQL libre.
 """
 
-from .database_tool_claude import create_claude_database_tool, ClaudeDatabaseQueryTool
 from .visualization_collaboration_tool import create_visualization_collaboration_tool, VisualizationCollaborationTool
 
 __all__ = [
-    "create_claude_database_tool",
-    "ClaudeDatabaseQueryTool",
     "create_visualization_collaboration_tool",
     "VisualizationCollaborationTool"
 ]
