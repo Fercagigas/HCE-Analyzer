@@ -497,6 +497,25 @@ class UnifiedChatSettings(BaseSettings):
     }
 
 
+class ClinicalDataSettings(BaseSettings):
+    """Clinical Data Gateway (Fase 1): proveedor, limites y clave de solo lectura."""
+    provider: str = Field("supabase_mimic", env="CLINICAL_PROVIDER")  # supabase_mimic | memory
+    source_name: str = Field("mimic-iv-demo-2.2", env="CLINICAL_SOURCE_NAME")
+    default_limit: int = Field(100, env="CLINICAL_DEFAULT_LIMIT")
+    max_limit: int = Field(200, env="CLINICAL_MAX_LIMIT")
+    aggregate_limit: int = Field(50, env="CLINICAL_AGGREGATE_LIMIT")
+    timeout_s: float = Field(30.0, env="CLINICAL_TIMEOUT_S")
+    # Clave de un rol de solo lectura sobre mimiciv_hosp/mimiciv_icu (db/README.md). Si falta,
+    # se usa SUPABASE_KEY (transitorio, documentado en ADR 0100).
+    supabase_clinical_key: Optional[str] = Field(None, env="SUPABASE_CLINICAL_KEY")
+
+    model_config = {
+        "env_file": _ENV_FILE,
+        "case_sensitive": False,
+        "extra": "allow"
+    }
+
+
 class Settings(BaseSettings):
     """
     Main settings class
@@ -519,6 +538,7 @@ class Settings(BaseSettings):
     performance: PerformanceSettings = Field(default_factory=PerformanceSettings)
     visualization: VisualizationSettings = Field(default_factory=VisualizationSettings)
     unified_chat: UnifiedChatSettings = Field(default_factory=UnifiedChatSettings)
+    clinical: ClinicalDataSettings = Field(default_factory=ClinicalDataSettings)
 
     model_config = {
         "env_file": _ENV_FILE,
@@ -551,7 +571,7 @@ class Settings(BaseSettings):
 _SETTINGS_CLASSES = (
     DatabaseSettings, AISettings, AppSettings, SecuritySettings, NotificationSettings,
     RAGSettings, MedicalAgentSettings, ClaudeAgentSettings, PerformanceSettings,
-    VisualizationSettings, UnifiedChatSettings, Settings,
+    VisualizationSettings, UnifiedChatSettings, ClinicalDataSettings, Settings,
 )
 
 
@@ -599,4 +619,5 @@ __all__ = [
     "PerformanceSettings",
     "VisualizationSettings",
     "UnifiedChatSettings",
+    "ClinicalDataSettings",
 ]
