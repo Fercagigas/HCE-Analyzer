@@ -7,7 +7,10 @@ from typing import Any, Dict, List, Mapping, Optional
 from chathce.domain.chat import ChatMessageIn, ChatResponse, ToolCallSummary
 
 
-def to_legacy_dict(response: ChatResponse, *, viz_id_map: Optional[Mapping[str, str]] = None, query_length: int = 0) -> Dict[str, Any]:
+def to_legacy_dict(response: ChatResponse, *, viz_id_map: Optional[Mapping[str, str]] = None, query_length: int = 0,
+                   tool_outputs: Optional[Mapping[str, str]] = None) -> Dict[str, Any]:
+    """tool_outputs: texto visible al modelo por tool_use_id (solo runtime legacy/evaluacion); rellena raw_output."""
+    outputs = tool_outputs or {}
     viz_ids = [(viz_id_map or {}).get(v.viz_id, v.viz_id) for v in response.visualizations]
     tools_used: List[str] = []
     for call in response.tool_calls:
@@ -20,7 +23,7 @@ def to_legacy_dict(response: ChatResponse, *, viz_id_map: Optional[Mapping[str, 
         "tool_results": [
             {"tool": c.tool_name, "tool_use_id": c.tool_use_id, "operation": c.operation, "success": c.success,
              "count": c.count, "truncated": c.truncated, "elapsed_ms": c.elapsed_ms, "error_code": c.error_code,
-             "evidence_ids": c.evidence_ids, "raw_output": None,
+             "evidence_ids": c.evidence_ids, "raw_output": outputs.get(c.tool_use_id),
              "summary": f"[DATOS: {c.tool_name}] {c.count} registro(s) ({c.operation})" if c.success else f"[ERROR: {c.tool_name}] {c.error_code}"}
             for c in response.tool_calls
         ],

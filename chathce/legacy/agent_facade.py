@@ -57,8 +57,11 @@ class LegacyAgentFacade:
                     "error": exc.message, "error_type": exc.code, "suggestions": []}
         request = ChatRequest(message=message, session_id=session_id, patient_id=ctx.patient_id, encounter_id=ctx.encounter_id,
                               purpose=ctx.purpose, history=from_legacy_history(context), options=options or ChatOptions())
-        response = self._container.run(self._container.chat_service.handle_chat(request, ctx, persist=self._persist))
-        legacy = to_legacy_dict(response, query_length=len(message))
+        response, tool_results = self._container.run(
+            self._container.chat_service.handle_chat_detailed(request, ctx, persist=self._persist))
+        # raw_output = texto visible al modelo (<tool_data>) de cada tool con exito: contexto para RAGAS y depuracion.
+        outputs = {r.tool_use_id: r.model_visible_text for r in tool_results if r.success and r.model_visible_text}
+        legacy = to_legacy_dict(response, query_length=len(message), tool_outputs=outputs)
         legacy["session_id"] = response.metadata.session_id
         return legacy
 

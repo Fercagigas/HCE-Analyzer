@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import time
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, AsyncIterator, Dict, List, Optional, Sequence
+from typing import Any, AsyncIterator, Dict, List, Optional, Sequence, Tuple
 
 from chathce.application.audit_events import emit_safely, make_audit_event
 from chathce.application.conversation_service import ConversationService, to_llm_history
@@ -49,6 +49,12 @@ CLAIM_TYPE_BY_CATEGORY = {
 }
 
 
+
+@dataclass
+class _ToolResultsEvent:
+    """Evento interno de stream_chat con los ToolResult completos; lo consume handle_chat_detailed y nunca la API."""
+    results: List[ToolResult] = field(default_factory=list)
+
 @dataclass
 class ChatServiceConfig:
     rate_limit_enabled: bool = True
@@ -77,14 +83,33 @@ class ChatService:
 
     # ------------------------------------------------------------------
     async def handle_chat(self, request: ChatRequest, ctx: RequestContext, *, persist: bool = True) -> ChatResponse:
-        response: Optional[ChatResponse] = None
-        async for event in self.stream_chat(request, ctx, persist=persist):
-            if isinstance(event, CompleteEvent):
-                response = event.response
-        assert response is not None
+        response, _ = await self.handle_chat_detailed(request, ctx, persist=persist)
         return response
 
+    async def handle_chat_detailed(self, request: ChatRequest, ctx: RequestContext, *, persist: bool = True
+                                   ) -> Tuple[ChatResponse, List[ToolResult]]:
+        """Como handle_chat, pero devuelve ademas los ToolResult completos del turno.
+
+        Los usa el runtime legacy (UI y Evaluation) para exponer el texto visible al modelo de cada tool
+        como contexto de evaluacion. La API publica solo devuelve ChatResponse.
+        """
+        response: Optional[ChatResponse] = None
+        tool_results: List[ToolResult] = []
+        async for event in self._stream_internal(request, ctx, persist=persist):
+            if isinstance(event, CompleteEvent):
+                response = event.response
+            elif isinstance(event, _ToolResultsEvent):
+                tool_results = event.results
+        assert response is not None
+        return response, tool_results
+
     async def stream_chat(self, request: ChatRequest, ctx: RequestContext, *, persist: bool = True) -> AsyncIterator[ChatEvent]:
+        """Eventos publicos del turno (status, tool_call, tool_result_summary, text_delta, error, complete)."""
+        async for event in self._stream_internal(request, ctx, persist=persist):
+            if not isinstance(event, _ToolResultsEvent):
+                yield event
+
+    async def _stream_internal(self, request: ChatRequest, ctx: RequestContext, *, persist: bool = True):
         started = time.perf_counter()
         with bind_context(ctx):
             await emit_safely(self._audit, make_audit_event(ctx, action=AuditAction.chat_started, outcome="success", component="chat_service"))
@@ -140,6 +165,8 @@ class ChatService:
                 return
 
             response = await self._build_response(ctx, request, done, started, session_id=session_id, prompt_version=prompt_version)
+
+            yield _ToolResultsEvent(results=list(done.tool_results))
             if persist and session_id:
                 await self._conversations.persist_turn(ctx, session_id=session_id, user_message=request.message, response=response)
             await emit_safely(self._audit, make_audit_event(

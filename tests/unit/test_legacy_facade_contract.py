@@ -31,7 +31,8 @@ def test_tool_call_is_summarized_never_raw_data():
     assert result["tools_used"] == ["get_labs"]
     tool_result = result["tool_results"][0]
     assert tool_result["tool"] == "get_labs" and tool_result["success"] and tool_result["count"] == 3
-    assert tool_result["raw_output"] is None and tool_result["summary"].startswith("[DATOS: get_labs]")
+    assert isinstance(tool_result["raw_output"], str) and "<tool_data" in tool_result["raw_output"]
+    assert tool_result["summary"].startswith("[DATOS: get_labs]")
 
 
 def test_scope_required_without_patient():
