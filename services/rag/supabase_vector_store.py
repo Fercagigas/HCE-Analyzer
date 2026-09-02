@@ -11,7 +11,7 @@ import logging
 from typing import Dict, Any, Optional, List, Tuple
 
 from supabase import create_client, Client
-from config.settings import settings
+from config.settings import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -63,8 +63,8 @@ class SupabaseVectorStore:
         """Create Supabase client."""
         try:
             self.client = create_client(
-                settings.database.supabase_url,
-                settings.database.supabase_key,
+                get_settings().database.supabase_url,
+                get_settings().database.supabase_key,
             )
             logger.info("SupabaseVectorStore: cliente inicializado")
         except Exception as e:

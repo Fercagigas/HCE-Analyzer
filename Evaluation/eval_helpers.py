@@ -132,8 +132,8 @@ def _get_model_name() -> str:
         Model name string, or 'N/A' if settings cannot be loaded.
     """
     try:
-        from config.settings import settings  # type: ignore
-        return settings.claude_agent.primary_model
+        from config.settings import get_settings  # type: ignore
+        return get_settings().llm.model_chain[0]
     except Exception:
         return "N/A"
 

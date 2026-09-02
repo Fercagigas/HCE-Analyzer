@@ -135,7 +135,9 @@ def check_supabase_connection() -> List[str]:
         List of error strings; empty list means connection is available.
     """
     try:
-        from config.settings import settings  # type: ignore
+        from config.settings import get_settings  # type: ignore
+
+        settings = get_settings()
         import httpx
 
         # Ping the REST root — any 2xx/404 means Supabase is reachable

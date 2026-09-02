@@ -2,10 +2,8 @@
 
 Lectura unica sobre Supabase (solo SELECT). Selecciona de forma determinista N
 pacientes con al menos una admision, una estancia UCI y un numero acotado de
-labevents, descarga sus filas y los subconjuntos de diccionario necesarios, y
-calcula la salida actual de cada operacion publica de `DatabaseService`
-ejecutandola sobre el cliente en memoria cargado con esas mismas filas. Asi la
-verdad de referencia (`expected/`) es reproducible sin red.
+labevents, y descarga sus filas y los subconjuntos de diccionario necesarios.
+`expected/` conserva la salida congelada del DatabaseService legacy como baseline de contrato.
 
 Uso (PowerShell, una sola vez o cuando cambie el dataset):
 
@@ -27,8 +25,6 @@ from typing import Any, Dict, List
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from tests.fakes.fake_supabase import FakeSupabaseClient  # noqa: E402
-from tests.fakes.legacy_factories import make_database_service  # noqa: E402
 from tests.fakes.normalize import dump_json, normalize  # noqa: E402
 
 HOSP = "mimiciv_hosp"
@@ -135,51 +131,8 @@ def record_tables(client, subjects: List[int]) -> Dict[str, Dict[str, List[dict]
     return tables
 
 
-def compute_expected(tables: Dict[str, Dict[str, List[dict]]], subjects: List[int]) -> Dict[str, dict]:
-    fake = FakeSupabaseClient.from_tables(tables)
-    service = make_database_service(fake)
-    expected: Dict[str, dict] = {}
-
-    def record(method: str, *args, **kwargs):
-        fn = getattr(service, method)
-        result = fn(*args, **kwargs)
-        arg_repr = "_".join(str(a) for a in args) or "noargs"
-        if kwargs:
-            arg_repr += "_" + "_".join(f"{k}-{v}" for k, v in sorted(kwargs.items()))
-        expected[f"{method}__{arg_repr}"] = {
-            "method": method,
-            "args": list(args),
-            "kwargs": kwargs,
-            "result": normalize(result),
-        }
-
-    admissions_by_subject = {}
-    for row in tables[HOSP]["admissions"]:
-        admissions_by_subject.setdefault(int(row["subject_id"]), []).append(int(row["hadm_id"]))
-    stays_by_subject = {}
-    for row in tables[ICU]["icustays"]:
-        stays_by_subject.setdefault(int(row["subject_id"]), []).append(int(row["stay_id"]))
-
-    for sid in subjects:
-        hadm = sorted(admissions_by_subject[sid])[0]
-        stay = sorted(stays_by_subject[sid])[0]
-        record("get_patient_summary", sid)
-        record("get_admission_details", hadm)
-        record("get_patient_diagnoses", sid)
-        record("get_admission_diagnoses", hadm)
-        record("get_lab_results", sid)
-        record("get_lab_results", sid, hadm)
-        record("get_medication_history", sid)
-        record("get_medications_by_admission", hadm)
-        record("get_icu_chartevents", stay)
-        stay_items = sorted({int(r["itemid"]) for r in tables[ICU]["chartevents"] if int(r["stay_id"]) == stay})
-        if stay_items:
-            record("get_icu_chartevents", stay, itemid=stay_items[0])
-
-    first_code = sorted({r["icd_code"] for r in tables[HOSP]["diagnoses_icd"]})[0]
-    record("search_diagnoses", icd_code=first_code)
-    record("search_diagnoses", icd_title="hypertension")
-    return expected
+# NOTA: `tests/fixtures/mimic/expected/` es la salida congelada del DatabaseService legacy (retirado en
+# WP12) y sirve como baseline de contrato para MimicClinicalDataProvider. No se regenera.
 
 
 def main() -> int:
@@ -199,12 +152,10 @@ def main() -> int:
     subjects = select_subjects(client, args.n_subjects, args.min_labs, args.max_labs)
     print(f"Pacientes seleccionados: {subjects}")
     tables = record_tables(client, subjects)
-    expected = compute_expected(tables, subjects)
 
     out = args.output
     (out / "tables").mkdir(parents=True, exist_ok=True)
-    (out / "expected").mkdir(parents=True, exist_ok=True)
-    for old in list((out / "tables").glob("*.json")) + list((out / "expected").glob("*.json")):
+    for old in (out / "tables").glob("*.json"):
         old.unlink()
 
     counts: Dict[str, int] = {}
@@ -212,8 +163,6 @@ def main() -> int:
         for table, rows in by_table.items():
             (out / "tables" / f"{schema}__{table}.json").write_text(dump_json(rows) + "\n", encoding="utf-8")
             counts[f"{schema}.{table}"] = len(rows)
-    for name, payload in expected.items():
-        (out / "expected" / f"{name}.json").write_text(dump_json(payload) + "\n", encoding="utf-8")
 
     try:
         commit = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT_ROOT, text=True).strip()
@@ -226,10 +175,10 @@ def main() -> int:
         "subject_ids": subjects,
         "selection": {"min_labs": args.min_labs, "max_labs": args.max_labs, "chartevents_per_stay": CHARTEVENTS_PER_STAY},
         "row_counts": counts,
-        "expected_files": sorted(expected.keys()),
+        "expected_files": sorted(p.stem for p in (out / "expected").glob("*.json")) if (out / "expected").exists() else [],
     }
     (out / "manifest.json").write_text(dump_json(manifest) + "\n", encoding="utf-8")
-    print(f"Fixtures escritas en {out}: {sum(counts.values())} filas, {len(expected)} salidas esperadas")
+    print(f"Fixtures escritas en {out}: {sum(counts.values())} filas")
     return 0
 
 

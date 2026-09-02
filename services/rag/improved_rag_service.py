@@ -23,7 +23,8 @@ from services.rag.parent_child_chunker import ParentChildChunker
 from services.rag.supabase_vector_store import SupabaseVectorStore
 from services.rag.reranker import Reranker
 from src.processors.document_processor import DocumentProcessor
-from config.config import RAG_CONFIG, HUGGINGFACE_API_TOKEN
+from config.constants import RAG_CONFIG
+from config.settings import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -106,8 +107,9 @@ class ImprovedRAGService:
                 pass
 
             model_kwargs = {"device": device}
-            if HUGGINGFACE_API_TOKEN:
-                model_kwargs["token"] = HUGGINGFACE_API_TOKEN
+            hf_token = get_settings().ai.huggingface_api_token
+            if hf_token:
+                model_kwargs["token"] = hf_token
 
             try:
                 self.embeddings = HuggingFaceEmbeddings(

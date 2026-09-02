@@ -40,13 +40,6 @@ def test_system_prompt_is_clean_and_names_real_tools():
         assert name in prompt
 
 
-def test_legacy_database_service_has_no_free_sql_path():
-    from services.medical_agent.services.database_service import DatabaseService
-
-    for name in ("execute_custom_query", "execute_query", "_validate_query", "_sanitize_params", "ALLOWED_SCHEMAS"):
-        assert not hasattr(DatabaseService, name), f"DatabaseService.{name} sigue existiendo"
-
-
 def test_no_langchain_agent_loop_remains():
     import subprocess
     import sys

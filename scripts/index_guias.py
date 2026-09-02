@@ -43,7 +43,7 @@ PDF_METADATA = {
 
 
 def main() -> int:
-    from services.rag_service import RAGService
+    from services.rag.improved_rag_service import get_rag_service
 
     # Verify PDFs exist
     pdf_paths = []
@@ -56,7 +56,7 @@ def main() -> int:
         logger.info("Found: %s", path)
 
     logger.info("Initializing RAG service...")
-    rag = RAGService()
+    rag = get_rag_service()
 
     # Check current state
     stats = rag.get_collection_stats()

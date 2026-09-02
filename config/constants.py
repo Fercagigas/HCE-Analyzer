@@ -1,6 +1,6 @@
 
 """
-Application constants
+Constantes de aplicacion (unico modulo de constantes; config.config se retiro en Fase 1).
 """
 
 # Application Information
@@ -65,3 +65,162 @@ DRUG_INTERACTIONS = [
     ('ace_inhibitor', 'potassium'),
     ('statin', 'fibrate')
 ]
+
+
+# ================================
+# CONFIGURACIÓN RAG
+# ================================
+RAG_CONFIG = {
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "storage": "supabase_pgvector",
+    "collection_name": "clinical_guidelines",
+    "search_type": "hybrid",
+    "top_k": 3,
+    "fetch_k": 20,
+    "llm_model": "claude-haiku-4-5-20251001",
+    "chunk_size": 2400,        # was 1200 — larger pre-split chunks for DocumentProcessor
+    "chunk_overlap": 400,      # was 200
+    "parent_chunk_size": 3000, # was 1500 — richer context returned to LLM
+    "child_chunk_size": 800,   # was 400  — more meaningful search units
+    "max_file_size_mb": 50,
+    "supported_formats": [".pdf"],
+    "ocr_enabled": True,
+}
+
+# ================================
+# CONFIGURACIÓN DE ESPECIALIDADES MÉDICAS
+# ================================
+MEDICAL_SPECIALTIES = {
+    "urgencias": {
+        "name": "Urgencias y Emergencias",
+        "keywords": ["urgencia", "emergencia", "trauma", "shock", "reanimación"],
+        "color": "#FF5722"
+    },
+    "cardiologia": {
+        "name": "Cardiología",
+        "keywords": ["corazón", "cardíaco", "arritmia", "infarto", "hipertensión"],
+        "color": "#E91E63"
+    },
+    "neurologia": {
+        "name": "Neurología",
+        "keywords": ["cerebro", "neurológico", "ACV", "epilepsia", "cefalea"],
+        "color": "#9C27B0"
+    },
+    "pediatria": {
+        "name": "Pediatría",
+        "keywords": ["niño", "pediátrico", "lactante", "adolescente", "neonato"],
+        "color": "#2196F3"
+    },
+    "ginecologia": {
+        "name": "Ginecología y Obstetricia",
+        "keywords": ["ginecológico", "obstétrico", "embarazo", "parto", "menstrual"],
+        "color": "#FF9800"
+    },
+    "traumatologia": {
+        "name": "Traumatología",
+        "keywords": ["fractura", "ortopédico", "hueso", "articulación", "lesión"],
+        "color": "#795548"
+    },
+    "medicina_interna": {
+        "name": "Medicina Interna",
+        "keywords": ["interno", "sistémico", "diabetes", "endocrino", "metabólico"],
+        "color": "#607D8B"
+    },
+    "cirugia": {
+        "name": "Cirugía General",
+        "keywords": ["quirúrgico", "operación", "cirugía", "postoperatorio", "anestesia"],
+        "color": "#4CAF50"
+    }
+}
+
+# ================================
+# TIPOS DE DOCUMENTOS CLÍNICOS
+# ================================
+DOCUMENT_TYPES = {
+    "guia_clinica": {
+        "name": "Guía Clínica",
+        "description": "Guías de práctica clínica basadas en evidencia",
+        "icon": "📋"
+    },
+    "protocolo": {
+        "name": "Protocolo",
+        "description": "Protocolos de actuación y procedimientos",
+        "icon": "📝"
+    },
+    "manual": {
+        "name": "Manual",
+        "description": "Manuales de procedimientos y técnicas",
+        "icon": "📖"
+    },
+    "algoritmo": {
+        "name": "Algoritmo",
+        "description": "Algoritmos de decisión clínica",
+        "icon": "🔄"
+    },
+    "consenso": {
+        "name": "Consenso",
+        "description": "Documentos de consenso de sociedades médicas",
+        "icon": "🤝"
+    }
+}
+
+# ================================
+# TIPOS DE ANÁLISIS
+# ================================
+ANALYSIS_TYPES = {
+    "blood_test": {
+        "name": "Análisis de Sangre",
+        "description": "Interpretación de hemogramas y bioquímica sanguínea",
+        "icon": "🩸",
+        "prompt_key": "blood_analysis"
+    },
+    "imaging": {
+        "name": "Estudios de Imagen",
+        "description": "Interpretación de radiografías, TAC, RMN",
+        "icon": "🔬",
+        "prompt_key": "imaging_analysis"
+    },
+    "general_report": {
+        "name": "Reporte General",
+        "description": "Análisis de reportes médicos generales",
+        "icon": "📄",
+        "prompt_key": "general_analysis"
+    },
+    "pathology": {
+        "name": "Anatomía Patológica",
+        "description": "Interpretación de biopsias y citologías",
+        "icon": "🔬",
+        "prompt_key": "pathology_analysis"
+    }
+}
+
+# ================================
+# MENSAJES DE LA INTERFAZ
+# ================================
+UI_MESSAGES = {
+    "welcome": {
+        "title": f"Bienvenido a {APP_NAME}",
+        "subtitle": "Tu asistente inteligente para análisis clínico",
+        "description": "Analiza historias clínicas y consulta guías médicas con IA avanzada"
+    },
+    "errors": {
+        "no_session": "No hay sesión activa. Por favor, crea una nueva sesión.",
+        "auth_required": "Debes iniciar sesión para acceder a esta funcionalidad.",
+        "file_too_large": "El archivo es demasiado grande. Máximo permitido: {max_size}MB",
+        "invalid_file_type": "Tipo de archivo no soportado. Solo se permiten: {types}",
+        "processing_error": "Error procesando la solicitud. Inténtalo nuevamente.",
+        "rate_limit_exceeded": "Límite de uso diario alcanzado. Inténtalo mañana."
+    },
+    "success": {
+        "file_uploaded": "Archivo cargado exitosamente",
+        "document_processed": "Documento procesado y añadido a la base de conocimiento",
+        "analysis_completed": "Análisis completado exitosamente",
+        "session_created": "Nueva sesión creada"
+    },
+    "info": {
+        "processing": "Procesando solicitud...",
+        "uploading": "Cargando archivo...",
+        "analyzing": "Analizando datos clínicos...",
+        "searching": "Buscando en guías clínicas..."
+    }
+}
