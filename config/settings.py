@@ -516,6 +516,40 @@ class ClinicalDataSettings(BaseSettings):
     }
 
 
+class LLMGatewaySettings(BaseSettings):
+    """Model Gateway (Fase 1): cadena de modelos, timeouts, reintentos e iteraciones."""
+    provider: str = Field("anthropic", env="LLM_PROVIDER")  # anthropic | fake
+    model_chain: List[str] = Field(
+        ["claude-haiku-4-5-20251001", "claude-sonnet-4-5", "claude-opus-4-0"], env="LLM_MODEL_CHAIN"
+    )
+    max_tokens: int = Field(4096, env="LLM_MAX_TOKENS")
+    temperature: float = Field(0.1, env="LLM_TEMPERATURE")
+    request_timeout_s: float = Field(60.0, env="LLM_REQUEST_TIMEOUT_S")
+    total_timeout_s: float = Field(120.0, env="LLM_TOTAL_TIMEOUT_S")
+    max_retries_per_model: int = Field(1, env="LLM_MAX_RETRIES_PER_MODEL")
+    max_iterations: int = Field(6, env="LLM_MAX_ITERATIONS")
+    max_tool_visible_chars: int = Field(12000, env="LLM_MAX_TOOL_VISIBLE_CHARS")
+    query_augmentation_enabled: bool = Field(True, env="LLM_QUERY_AUGMENTATION_ENABLED")
+
+    model_config = {
+        "env_file": _ENV_FILE,
+        "case_sensitive": False,
+        "extra": "allow"
+    }
+
+
+class AuditSettings(BaseSettings):
+    """Auditoria estructurada sin PHI (roadmap 12)."""
+    sink: str = Field("jsonl", env="AUDIT_SINK")  # jsonl | stdout | null
+    directory: str = Field("logs/audit", env="AUDIT_DIRECTORY")
+
+    model_config = {
+        "env_file": _ENV_FILE,
+        "case_sensitive": False,
+        "extra": "allow"
+    }
+
+
 class Settings(BaseSettings):
     """
     Main settings class
@@ -539,6 +573,8 @@ class Settings(BaseSettings):
     visualization: VisualizationSettings = Field(default_factory=VisualizationSettings)
     unified_chat: UnifiedChatSettings = Field(default_factory=UnifiedChatSettings)
     clinical: ClinicalDataSettings = Field(default_factory=ClinicalDataSettings)
+    llm: LLMGatewaySettings = Field(default_factory=LLMGatewaySettings)
+    audit: AuditSettings = Field(default_factory=AuditSettings)
 
     model_config = {
         "env_file": _ENV_FILE,
@@ -571,7 +607,7 @@ class Settings(BaseSettings):
 _SETTINGS_CLASSES = (
     DatabaseSettings, AISettings, AppSettings, SecuritySettings, NotificationSettings,
     RAGSettings, MedicalAgentSettings, ClaudeAgentSettings, PerformanceSettings,
-    VisualizationSettings, UnifiedChatSettings, ClinicalDataSettings, Settings,
+    VisualizationSettings, UnifiedChatSettings, ClinicalDataSettings, LLMGatewaySettings, AuditSettings, Settings,
 )
 
 
@@ -620,4 +656,6 @@ __all__ = [
     "VisualizationSettings",
     "UnifiedChatSettings",
     "ClinicalDataSettings",
+    "LLMGatewaySettings",
+    "AuditSettings",
 ]
