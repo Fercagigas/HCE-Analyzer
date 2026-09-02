@@ -611,7 +611,10 @@ def score_herramienta_correcta(
     for tool in tools_used:
         if expected_tool.lower() in tool.lower() or tool.lower() in expected_tool.lower():
             return 1.0
-    # Equivalencia transitoria (WP5-WP8): las tools clinicas del core sustituyen a query_mimic_database
+    # Equivalencias legacy <-> core (los casos historicos nombran las tools del agente LangChain retirado en WP8)
+    equivalents = _TOOL_EQUIVALENTS.get(expected_tool, set())
+    if any(tool in equivalents for tool in tools_used):
+        return 1.0
     if expected_tool in _CLINICAL_CORE_TOOLS and "query_mimic_database" in tools_used:
         return 1.0
     return 0.0
@@ -620,6 +623,11 @@ def score_herramienta_correcta(
 _CLINICAL_CORE_TOOLS = {
     "get_patient_summary", "get_admission_details", "get_diagnoses", "get_labs", "search_lab_items",
     "get_medications", "get_icu_stays", "get_icu_observations", "search_icd_codes", "get_dataset_statistics",
+}
+_TOOL_EQUIVALENTS = {
+    "query_mimic_database": _CLINICAL_CORE_TOOLS,
+    "request_visualization": {"create_visualization"},
+    "search_clinical_documents": {"search_clinical_documents"},
 }
 
 
