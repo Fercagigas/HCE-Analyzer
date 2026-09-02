@@ -71,7 +71,9 @@ main.py -> src/core/app.py
 - Conteos por tabla exactos vs CSV origen; integridad referencial OK (0 huérfanos).
 - Smoke test del data service + tool (patient_summary, labs, diagnoses con títulos, custom query por RPC, rechazo del esquema antiguo).
 
-Documentación completa: `docs/MIGRACION_MIMIC_IV.md`.
+Documentación:
+- Diccionario de datos (columna a columna, 18 tablas): `docs/MIMIC_IV_DATA_DICTIONARY.md`
+- Contexto y cambios de la migración: `docs/MIGRACION_MIMIC_IV.md`
 
 ---
 

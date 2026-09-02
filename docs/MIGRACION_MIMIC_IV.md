@@ -3,6 +3,8 @@
 **Fecha:** 1 de septiembre de 2026
 **Estado:** Completada y verificada
 
+> Para el detalle columna a columna de cada tabla, ver el diccionario de datos: [MIMIC_IV_DATA_DICTIONARY.md](MIMIC_IV_DATA_DICTIONARY.md).
+
 ## Resumen
 
 Se migró la fuente de datos clínicos del prototipo desde **MIMIC-IV-ED** (schema `mimic_ed`, 6 tablas de urgencias) a la **MIMIC-IV Clinical Database Demo 2.2** (historia clínica hospitalaria completa, 100 pacientes). Esta migración está alineada con la decisión DP-03 del intended purpose ("MIMIC-IV-ED es un adapter transitorio... se prevé migrar o ampliar la fuente a MIMIC general") y con el ADR 0010.

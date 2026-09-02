@@ -32,9 +32,15 @@
 
 ---
 
+## 🗄️ Base de datos MIMIC-IV
+
+- **[MIMIC_IV_DATA_DICTIONARY.md](MIMIC_IV_DATA_DICTIONARY.md)** - Diccionario de datos completo: 18 tablas, columnas, tipos, claves y consultas de ejemplo (referencia canónica del esquema)
+- **[MIGRACION_MIMIC_IV.md](MIGRACION_MIMIC_IV.md)** - Migración de MIMIC-IV-ED a MIMIC-IV Clinical Demo 2.2 (esquemas, tablas, cambios de código)
+
+---
+
 ## ⚙️ Configuración
 
-- **[MIGRACION_MIMIC_IV.md](MIGRACION_MIMIC_IV.md)** - Migración de MIMIC-IV-ED a MIMIC-IV Clinical Demo 2.2 (esquemas, tablas, cambios de código)
 - **[CONFIGURACION_SUPABASE_VERIFICADA.md](CONFIGURACION_SUPABASE_VERIFICADA.md)** - Configuración de Supabase, esquemas y función RPC
 - **[DATABASE_SCHEMA_UPDATE.md](DATABASE_SCHEMA_UPDATE.md)** - Esquema de BD (RLS, triggers, migraciones, autenticación)
 - **[RAG_VECTORIZATION_VERIFICATION.md](RAG_VECTORIZATION_VERIFICATION.md)** - Sistema RAG: búsqueda híbrida, reranking y verificación
