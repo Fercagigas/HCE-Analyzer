@@ -348,7 +348,9 @@ class SessionManager:
             
         except Exception as e:
             logger.error(f"Error verificando límites de sesión: {e}")
-            return {'valid': False, 'reason': 'Error interno'}    @staticmethod
+            return {'valid': False, 'reason': 'Error interno'}
+
+    @staticmethod
     def _load_user_preferences(user_id: str) -> None:
         """
         Carga las preferencias del usuario desde Supabase y las guarda en session_state.

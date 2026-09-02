@@ -2,6 +2,7 @@
 streamlit
 fastapi
 uvicorn[standard]
+sse-starlette
 
 # AI and ML
 openai
@@ -11,6 +12,8 @@ langchain>=0.3.0
 langchain-community>=0.3.0
 # Claude LangChain Integration
 langchain-anthropic>=0.3.0
+# TEMPORAL (Fase 1, WP8): bucle agentico legacy; se retira al pasar al Model Gateway
+langchain-classic
 langchain-huggingface>=0.1.0
 sentence-transformers>=3.0.0
 # Token counting for prompt optimization
@@ -58,12 +61,12 @@ email-validator
 # Utilities
 python-dateutil
 pytz
-pathlib
 json5
 
 # Development and Testing
 pytest
 pytest-asyncio
+pytest-cov
 black
 flake8
 
@@ -85,6 +88,3 @@ jinja2
 
 # Rate Limiting
 slowapi
-
-# CORS and Security
-python-multipart

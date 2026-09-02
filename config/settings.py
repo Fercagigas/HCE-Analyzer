@@ -1,20 +1,51 @@
+"""
+Configuracion centralizada con pydantic-settings.
 
+Reglas (Fase 1, ADR 0010 / ADR 0120):
+- Importar este modulo NUNCA exige credenciales ni abre red. Las credenciales se
+  validan de forma explicita en el composition root mediante ``require_*``.
+- El acceso canonico es ``get_settings()`` (perezoso y cacheado). El nombre
+  ``settings`` se mantiene temporalmente como shim de compatibilidad (PEP 562)
+  para los importadores legacy y se retira al final de Fase 1.
+- ``HCE_DISABLE_DOTENV=1`` impide leer ``.env`` (tests sin credenciales).
 """
-Enhanced configuration management with Pydantic
-"""
+from functools import lru_cache
 from pydantic_settings import BaseSettings
 from pydantic import Field
 from typing import Optional, List
 import os
 from pathlib import Path
 
+
+def _env_file() -> Optional[str]:
+    """Ruta del fichero .env, o None si esta deshabilitado por entorno."""
+    if os.environ.get("HCE_DISABLE_DOTENV", "").strip().lower() in {"1", "true", "yes"}:
+        return None
+    return ".env"
+
+
+_ENV_FILE = _env_file()
+
+
+class ConfigurationError(RuntimeError):
+    """Falta una variable de configuracion obligatoria para la operacion pedida."""
+
+    def __init__(self, variables: List[str], purpose: str):
+        self.variables = variables
+        self.purpose = purpose
+        names = ", ".join(variables)
+        super().__init__(
+            f"Configuracion incompleta para {purpose}: faltan {names}. "
+            "Defina las variables en el entorno o en .env."
+        )
+
 class DatabaseSettings(BaseSettings):
     """Database configuration"""
-    supabase_url: str = Field(..., env="SUPABASE_URL")
-    supabase_key: str = Field(..., env="SUPABASE_KEY")
+    supabase_url: Optional[str] = Field(None, env="SUPABASE_URL")
+    supabase_key: Optional[str] = Field(None, env="SUPABASE_KEY")
     
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow"
     }
@@ -29,7 +60,7 @@ class AISettings(BaseSettings):
     temperature: float = Field(0.1, env="TEMPERATURE")
     
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow"
     }
@@ -40,10 +71,10 @@ class AppSettings(BaseSettings):
     version: str = "2.0.0"
     debug: bool = Field(False, env="DEBUG")
     log_level: str = Field("INFO", env="LOG_LEVEL")
-    secret_key: str = Field(..., env="SECRET_KEY")
+    secret_key: Optional[str] = Field(None, env="SECRET_KEY")
     
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow"
     }
@@ -61,7 +92,7 @@ class SecuritySettings(BaseSettings):
     max_query_complexity: int = Field(10, env="MAX_QUERY_COMPLEXITY")
     
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow"
     }
@@ -74,7 +105,7 @@ class NotificationSettings(BaseSettings):
     smtp_password: Optional[str] = Field(None, env="SMTP_PASSWORD")
     
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow"
     }
@@ -85,7 +116,7 @@ class RAGSettings(BaseSettings):
     Uses Claude API (Anthropic) for document retrieval and clinical guideline queries
     """
     # LLM Configuration - Uses Claude API (Anthropic)
-    anthropic_api_key: str = Field(..., alias="ANTHROPIC_API_KEY")
+    anthropic_api_key: Optional[str] = Field(None, alias="ANTHROPIC_API_KEY")
     rag_model: str = Field("claude-haiku-4-5-20251001", alias="RAG_MODEL")
     
     # Claude fallback chain for RAG queries
@@ -115,7 +146,7 @@ class RAGSettings(BaseSettings):
     api_timeout_seconds: int = Field(60, alias="RAG_API_TIMEOUT_SECONDS")
     
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow",
         "populate_by_name": True
@@ -157,7 +188,7 @@ class MedicalAgentSettings(BaseSettings):
     max_memory_usage_mb: int = Field(512, env="MAX_MEMORY_USAGE_MB")
     
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow"
     }
@@ -166,7 +197,7 @@ class MedicalAgentSettings(BaseSettings):
 class ClaudeAgentSettings(BaseSettings):
     """Claude Agent configuration for medical conversation agent"""
     # API Configuration
-    anthropic_api_key: str = Field(..., alias="ANTHROPIC_API_KEY")
+    anthropic_api_key: Optional[str] = Field(None, alias="ANTHROPIC_API_KEY")
     
     # Model Configuration - Primary Model (Claude Haiku 4.5)
     primary_model: str = Field("claude-haiku-4-5-20251001", alias="PRIMARY_CLAUDE_MODEL")
@@ -196,7 +227,7 @@ class ClaudeAgentSettings(BaseSettings):
     verbose: bool = Field(True, alias="CLAUDE_VERBOSE")
     
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow",
         "populate_by_name": True
@@ -252,7 +283,7 @@ class PerformanceSettings(BaseSettings):
     log_memory_usage: bool = Field(True, env="LOG_MEMORY_USAGE")
     
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow"
     }
@@ -319,7 +350,7 @@ class VisualizationSettings(BaseSettings):
     )
     
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow"
     }
@@ -460,7 +491,7 @@ class UnifiedChatSettings(BaseSettings):
     )
     
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow"
     }
@@ -477,23 +508,81 @@ class Settings(BaseSettings):
     - Visualization: Uses Claude Sonnet 4.5 (visualization)
     - Legacy Agent: Uses Claude API (medical_agent)
     """
-    database: DatabaseSettings = DatabaseSettings()
-    ai: AISettings = AISettings()
-    app: AppSettings = AppSettings()
-    security: SecuritySettings = SecuritySettings()
-    notifications: NotificationSettings = NotificationSettings()
-    rag: RAGSettings = RAGSettings()
-    medical_agent: MedicalAgentSettings = MedicalAgentSettings()
-    claude_agent: ClaudeAgentSettings = ClaudeAgentSettings()
-    performance: PerformanceSettings = PerformanceSettings()
-    visualization: VisualizationSettings = VisualizationSettings()
-    unified_chat: UnifiedChatSettings = UnifiedChatSettings()
-    
+    database: DatabaseSettings = Field(default_factory=DatabaseSettings)
+    ai: AISettings = Field(default_factory=AISettings)
+    app: AppSettings = Field(default_factory=AppSettings)
+    security: SecuritySettings = Field(default_factory=SecuritySettings)
+    notifications: NotificationSettings = Field(default_factory=NotificationSettings)
+    rag: RAGSettings = Field(default_factory=RAGSettings)
+    medical_agent: MedicalAgentSettings = Field(default_factory=MedicalAgentSettings)
+    claude_agent: ClaudeAgentSettings = Field(default_factory=ClaudeAgentSettings)
+    performance: PerformanceSettings = Field(default_factory=PerformanceSettings)
+    visualization: VisualizationSettings = Field(default_factory=VisualizationSettings)
+    unified_chat: UnifiedChatSettings = Field(default_factory=UnifiedChatSettings)
+
     model_config = {
-        "env_file": ".env",
+        "env_file": _ENV_FILE,
         "case_sensitive": False,
         "extra": "allow"  # Permite campos extra
     }
 
-# Global settings instance
-settings = Settings()
+    # ------------------------------------------------------------------
+    # Validacion explicita de credenciales (se invoca en el composition
+    # root o en los adapters, nunca al importar).
+    # ------------------------------------------------------------------
+    def require_database(self) -> "DatabaseSettings":
+        missing = [
+            name for name, value in (
+                ("SUPABASE_URL", self.database.supabase_url),
+                ("SUPABASE_KEY", self.database.supabase_key),
+            ) if not value
+        ]
+        if missing:
+            raise ConfigurationError(missing, "acceso a Supabase")
+        return self.database
+
+    def require_anthropic(self) -> str:
+        key = self.claude_agent.anthropic_api_key or self.rag.anthropic_api_key or self.ai.anthropic_api_key
+        if not key:
+            raise ConfigurationError(["ANTHROPIC_API_KEY"], "acceso a Anthropic")
+        return key
+
+
+@lru_cache(maxsize=1)
+def get_settings() -> Settings:
+    """Devuelve la instancia unica de Settings, construida en el primer uso."""
+    return Settings()
+
+
+def reset_settings_cache() -> None:
+    """Descarta la instancia cacheada (tests que cambian el entorno)."""
+    get_settings.cache_clear()
+
+
+def __getattr__(name: str):
+    """Shim de compatibilidad: ``from config.settings import settings``.
+
+    TEMPORAL (Fase 1): se elimina cuando todos los importadores usen get_settings().
+    """
+    if name == "settings":
+        return get_settings()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+__all__ = [
+    "Settings",
+    "ConfigurationError",
+    "get_settings",
+    "reset_settings_cache",
+    "DatabaseSettings",
+    "AISettings",
+    "AppSettings",
+    "SecuritySettings",
+    "NotificationSettings",
+    "RAGSettings",
+    "MedicalAgentSettings",
+    "ClaudeAgentSettings",
+    "PerformanceSettings",
+    "VisualizationSettings",
+    "UnifiedChatSettings",
+]

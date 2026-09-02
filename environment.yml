@@ -10,6 +10,7 @@ dependencies:
     - streamlit
     - fastapi
     - uvicorn[standard]
+    - sse-starlette
     
     # AI and ML
     - openai
@@ -17,6 +18,8 @@ dependencies:
     - langchain>=0.3.0
     - langchain-community>=0.3.0
     - langchain-anthropic>=0.3.0
+    # TEMPORAL (Fase 1, WP8): bucle agentico legacy
+    - langchain-classic
     - langchain-huggingface>=0.1.0
     - sentence-transformers>=3.0.0
     - tiktoken>=0.7.0
@@ -67,6 +70,7 @@ dependencies:
     # Development and Testing
     - pytest
     - pytest-asyncio
+    - pytest-cov
     - black
     - flake8
     
