@@ -1,5 +1,7 @@
 # Migración de MIMIC-IV-ED a MIMIC-IV Clinical Demo 2.2
 
+> **Nota (Fase 1, sep 2026).** Las referencias a `DatabaseService`, `custom_query` y a la RPC `execute_readonly_query` describen el estado en el momento de la migracion. Desde Fase 1 el acceso clinico es exclusivamente por `chathce.adapters.supabase.MimicClinicalDataProvider` (ADR 0050) y la RPC de SQL libre se elimina con `db/migrations/0002`.
+
 **Fecha:** 1 de septiembre de 2026
 **Estado:** Completada y verificada
 

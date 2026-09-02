@@ -1,0 +1,119 @@
+================================================================================
+  EVALUATION FRAMEWORK - FUNCTIONAL TEST CASES RESULTS
+  20260902 18:21:28
+================================================================================
+
+ENVIRONMENT
+  Python:               3.11.14
+  RAGAS:                0.4.3
+  LangChain:            1.2.7
+  LangChain-Anthropic:  1.3.1
+  Anthropic SDK:        0.77.0
+  Sentence-Transformers:5.2.2
+  Model:                claude-haiku-4-5-20251001
+  Start Time:           20260902 18:21:28
+
+--------------------------------------------------------------------------------
+RESULTS — PER TEST CASE
+--------------------------------------------------------------------------------
+
+  Category: TC-DB
+  ----------------------------------------------------------------------------
+  Test ID          |  Score | Minimo | Status | Criteria Scores
+  -----------------+--------+--------+--------+-------------------------------
+  TC-DB-001        |  0.800 |   0.60 | PASS   | contiene_valor=0.50, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-002        |  0.800 |   0.60 | PASS   | contiene_valor=0.50, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-003        |  0.800 |   0.60 | PASS   | contiene_valor=0.50, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-004        |  0.800 |   0.60 | PASS   | contiene_valor=0.50, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-005        |  0.800 |   0.60 | PASS   | contiene_valor=0.50, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-006        |  0.800 |   0.60 | PASS   | contiene_valor=0.50, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-007        |  0.880 |   0.60 | PASS   | contiene_valor=0.70, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-008        |  0.880 |   0.60 | PASS   | contiene_valor=0.70, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-009        |  0.880 |   0.60 | PASS   | contiene_valor=0.70, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-010        |  0.880 |   0.60 | PASS   | contiene_valor=0.70, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-011        |  0.880 |   0.60 | PASS   | contiene_valor=0.70, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-012        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-013        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-014        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-015        |  0.980 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=0.80
+  TC-DB-016        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-017        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-018        |  0.867 |   0.60 | PASS   | contiene_valor=0.67, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-019        |  0.867 |   0.60 | PASS   | contiene_valor=0.67, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-020        |  0.867 |   0.60 | PASS   | contiene_valor=0.67, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-021        |  0.867 |   0.60 | PASS   | contiene_valor=0.67, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-022        |  0.733 |   0.60 | PASS   | contiene_valor=0.33, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-023        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-024        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-025        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-026        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-027        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-028        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-029        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-030        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-031        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-032        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-033        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-034        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-035        |  0.600 |   0.60 | PASS   | contiene_valor=0.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-036        |  0.980 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=0.80
+  TC-DB-037        |  0.980 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=0.80
+  TC-DB-038        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-039        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-DB-040        |  1.000 |   0.60 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00
+
+  Category: TC-RAG
+  ----------------------------------------------------------------------------
+  Test ID          |  Score | Minimo | Status | Criteria Scores
+  -----------------+--------+--------+--------+-------------------------------
+  TC-RAG-001       |  1.000 |   0.55 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00, fuentes_citadas=1.00
+  TC-RAG-002       |  0.805 |   0.55 | PASS   | contiene_valor=0.50, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00, fuentes_citadas=0.70
+  TC-RAG-003       |  0.955 |   0.55 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00, fuentes_citadas=0.70
+  TC-RAG-004       |  0.955 |   0.55 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00, fuentes_citadas=0.70
+  TC-RAG-005       |  0.955 |   0.55 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00, fuentes_citadas=0.70
+  TC-RAG-006       |  0.940 |   0.55 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00, fuentes_citadas=0.70
+  TC-RAG-007       |  0.740 |   0.50 | PASS   | contiene_valor=0.70, herramienta_correcta=0.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-RAG-008       |  0.955 |   0.55 | PASS   | contiene_valor=1.00, herramienta_correcta=1.00, no_alucinacion=1.00, formato_respuesta=1.00, fuentes_citadas=0.70
+
+  Category: TC-VIZ
+  ----------------------------------------------------------------------------
+  Test ID          |  Score | Minimo | Status | Criteria Scores
+  -----------------+--------+--------+--------+-------------------------------
+  TC-VIZ-001       |  0.650 |   0.55 | PASS   | contiene_valor=1.00, herramienta_correcta=0.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-VIZ-002       |  0.575 |   0.55 | PASS   | contiene_valor=0.70, herramienta_correcta=0.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-VIZ-003       |  0.575 |   0.55 | PASS   | contiene_valor=0.70, herramienta_correcta=0.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-VIZ-004       |  0.650 |   0.55 | PASS   | contiene_valor=1.00, herramienta_correcta=0.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-VIZ-005       |  0.540 |   0.55 | FAIL   | contiene_valor=0.70, herramienta_correcta=0.00, no_alucinacion=1.00, formato_respuesta=1.00
+
+  Category: TC-AGENT
+  ----------------------------------------------------------------------------
+  Test ID          |  Score | Minimo | Status | Criteria Scores
+  -----------------+--------+--------+--------+-------------------------------
+  TC-AGENT-001     |  0.525 |   0.60 | FAIL   | contiene_valor=0.70, herramienta_correcta=0.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-AGENT-002     |  0.700 |   0.55 | PASS   | contiene_valor=1.00, herramienta_correcta=0.00, no_alucinacion=1.00, formato_respuesta=1.00, fuentes_citadas=1.00
+  TC-AGENT-003     |  0.600 |   0.50 | PASS   | contiene_valor=0.70, herramienta_correcta=0.00, no_alucinacion=1.00, formato_respuesta=0.80
+  TC-AGENT-004     |  0.690 |   0.50 | PASS   | contiene_valor=0.70, herramienta_correcta=0.00, no_alucinacion=1.00, formato_respuesta=1.00
+  TC-AGENT-005     |  0.540 |   0.55 | FAIL   | contiene_valor=1.00, herramienta_correcta=0.00, no_alucinacion=1.00, formato_respuesta=0.40
+
+--------------------------------------------------------------------------------
+SUMMARY
+--------------------------------------------------------------------------------
+
+  Metric               |   Score | Threshold | Status
+  ---------------------+---------+-----------+-------
+  TC-DB                |  1.0000 |    0.7000 | PASS
+  TC-RAG               |  1.0000 |    0.7000 | PASS
+  TC-VIZ               |  0.8000 |    0.7000 | PASS
+  TC-AGENT             |  0.6000 |    0.7000 | FAIL
+
+  Overall: FAIL (3/4 metrics above threshold)
+
+--------------------------------------------------------------------------------
+CONCLUSIONS
+--------------------------------------------------------------------------------
+
+  Overall result: FAIL (55/58 test cases passed). Categories below threshold (70%): TC-AGENT. Review agent tool selection and response quality for these categories. Categories meeting threshold: TC-DB, TC-RAG, TC-VIZ.
+
+================================================================================
+  Execution time: 318.2s | Items: 58 | Errors: 0
+================================================================================

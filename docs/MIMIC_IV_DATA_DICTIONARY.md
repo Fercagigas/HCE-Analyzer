@@ -317,7 +317,7 @@ JOIN mimiciv_icu.d_items i ON i.itemid = c.itemid
 WHERE c.stay_id = 30057454 ORDER BY c.charttime
 ```
 
-Reglas SQL en el sistema: solo `SELECT`, prefijo de esquema obligatorio, sin `;` final ni comentarios. El RPC `execute_readonly_query` (search_path `public, mimiciv_hosp, mimiciv_icu`) valida y ejecuta.
+Acceso desde la aplicacion (Fase 1): exclusivamente mediante operaciones allowlisted de `ClinicalDataProvider` (`chathce/adapters/supabase/mimic_clinical_data_provider.py`) con filtro obligatorio por `subject_id`, y agregados mediante las RPC fijas `clinical_*_v1` (`db/migrations/0001`). La antigua RPC `execute_readonly_query` no tiene consumidores y se elimina con `db/migrations/0002` (ADR 0050).
 
 ---
 

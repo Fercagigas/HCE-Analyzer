@@ -1,0 +1,85 @@
+================================================================================
+  EVALUATION FRAMEWORK - RAGAS EVALUATION RESULTS
+  20260902 18:31:40
+================================================================================
+
+ENVIRONMENT
+  Python:               3.11.14
+  RAGAS:                0.4.3
+  LangChain:            1.2.7
+  LangChain-Anthropic:  1.3.1
+  Anthropic SDK:        0.77.0
+  Sentence-Transformers:5.2.2
+  Model:                claude-haiku-4-5-20251001
+  Golden Set:           golden_set_ragas.json (MD5: 5d50e674c1b0644b4b3db54875f87be9)
+  Start Time:           20260902 18:31:40
+
+--------------------------------------------------------------------------------
+RESULTS
+--------------------------------------------------------------------------------
+
+  ID         | Status   | Question (truncated)
+  -----------+----------+-----------------------------------------
+  DB-ADM-001 | OK       | ¿Cuándo ingresó y cuándo fue dado de alta el paciente 100000
+  DB-ADM-002 | OK       | ¿Cuándo ingresó y cuándo fue dado de alta el paciente 100012
+  DB-ADM-003 | OK       | ¿Cuándo ingresó y cuándo fue dado de alta el paciente 100017
+  DB-ADM-004 | OK       | ¿A dónde fue dado de alta el paciente 10002428 tras el ingre
+  DB-ADM-005 | OK       | ¿A dónde fue dado de alta el paciente 10002495 tras el ingre
+  DB-ADM-006 | OK       | ¿A dónde fue dado de alta el paciente 10002930 tras el ingre
+  DB-AGG-001 | OK       | ¿Cuántos pacientes, ingresos hospitalarios y estancias en UC
+  DB-AGG-002 | OK       | ¿Cuáles son los 10 diagnósticos más frecuentes en el conjunt
+  DB-AGG-003 | OK       | ¿Cuáles son los 5 diagnósticos ICD-10 más frecuentes en el c
+  DB-AGG-004 | OK       | ¿Cuáles son los 10 fármacos más prescritos en el conjunto de
+  DB-AGG-005 | OK       | ¿Cómo se distribuyen los ingresos hospitalarios por tipo de 
+  DB-DX-001  | OK       | ¿Cuáles son los diagnósticos codificados del ingreso 2259585
+  DB-DX-002  | OK       | ¿Cuáles son los diagnósticos codificados del ingreso 2459701
+  DB-DX-003  | OK       | ¿Cuáles son los diagnósticos codificados del ingreso 2556303
+  DB-DX-004  | OK       | ¿Qué diagnóstico aparece codificado en primera posición (seq
+  DB-DX-005  | OK       | ¿Qué diagnóstico aparece codificado en primera posición (seq
+  DB-DX-006  | OK       | ¿Qué diagnóstico aparece codificado en primera posición (seq
+  DB-ICU-001 | OK       | ¿En qué unidad ingresó el paciente 10000032 en su estancia d
+  DB-ICU-002 | OK       | ¿En qué unidad ingresó el paciente 10001217 en su estancia d
+  DB-ICU-003 | OK       | ¿En qué unidad ingresó el paciente 10001725 en su estancia d
+  DB-ICU-004 | OK       | ¿Cuál es el último valor de frecuencia cardíaca registrado e
+  DB-ICU-005 | OK       | ¿Cuál es el último valor de frecuencia cardíaca registrado e
+  DB-LAB-001 | OK       | ¿Cuál es el último valor registrado de Potassium para el pac
+  DB-LAB-002 | OK       | ¿Cuál es el último valor registrado de White Blood Cells par
+  DB-LAB-003 | OK       | ¿Cuál es el último valor registrado de Urea Nitrogen para el
+  DB-LAB-004 | OK       | ¿Cuál es el último valor registrado de Hematocrit para el pa
+  DB-LAB-005 | OK       | ¿Cuál es el último valor registrado de PTT para el paciente 
+  DB-LAB-006 | OK       | ¿Cuál es el último valor registrado de Absolute Lymphocyte C
+  DB-MED-001 | OK       | ¿Qué fármacos se prescribieron al paciente 10000032 durante 
+  DB-MED-002 | OK       | ¿Qué fármacos se prescribieron al paciente 10001217 durante 
+  DB-MED-003 | OK       | ¿Qué fármacos se prescribieron al paciente 10001725 durante 
+  DB-MED-004 | OK       | ¿Qué fármacos se prescribieron al paciente 10002428 durante 
+  DB-MED-005 | OK       | ¿Qué fármacos se prescribieron al paciente 10002495 durante 
+  DB-MED-006 | OK       | ¿Qué fármacos se prescribieron al paciente 10002930 durante 
+  DB-PS-001  | OK       | ¿Cuál es el sexo y la edad de referencia del paciente 100000
+  DB-PS-002  | OK       | ¿Cuál es el sexo y la edad de referencia del paciente 100012
+  DB-PS-003  | OK       | ¿Cuál es el sexo y la edad de referencia del paciente 100017
+  DB-PS-004  | OK       | ¿Cuántos ingresos hospitalarios y cuántas estancias en UCI t
+  DB-PS-005  | OK       | ¿Cuántos ingresos hospitalarios y cuántas estancias en UCI t
+  DB-PS-006  | OK       | ¿Cuántos ingresos hospitalarios y cuántas estancias en UCI t
+
+--------------------------------------------------------------------------------
+SUMMARY
+--------------------------------------------------------------------------------
+
+  Metric               |   Score | Threshold | Status
+  ---------------------+---------+-----------+-------
+  Faithfulness         |  0.7765 |    0.8500 | FAIL
+  Answer Relevancy     |  0.3649 |    0.8000 | FAIL
+  Context Precision    |  0.8125 |    0.7500 | PASS
+  Context Recall       |  0.7683 |    0.7000 | PASS
+
+  Overall: FAIL (2/4 metrics above threshold)
+
+--------------------------------------------------------------------------------
+CONCLUSIONS
+--------------------------------------------------------------------------------
+
+  Overall result: FAIL (2/4 metrics above threshold). Processed 40 questions with 0 errors. Faithfulness=0.7765 (threshold 0.85), Answer Relevancy=0.3649 (threshold 0.8), Context Precision=0.8125 (threshold 0.75), Context Recall=0.7683 (threshold 0.7).
+
+================================================================================
+  Execution time: 559.6s | Items: 40 | Errors: 0
+================================================================================

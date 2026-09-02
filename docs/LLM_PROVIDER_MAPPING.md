@@ -1,198 +1,63 @@
-# Mapeo de Proveedores LLM - ChatHCE
+# Proveedor LLM y mapeo — ChatHCE
 
-**Última actualización**: Febrero 2026
+**Última actualización**: 2 de septiembre de 2026 (Fase 1, ADR 0080)
 
-## Resumen
+## Un solo proveedor tras un port
 
-ChatHCE usa **Claude API (Anthropic)** como proveedor único de LLM para todos los servicios, garantizando consistencia y simplicidad.
+Todo el uso de modelos pasa por el port `LLMProvider` (`chathce/ports/llm_provider.py`). La única implementación real es `AnthropicLLMProvider` (`chathce/adapters/anthropic/provider.py`); para tests existe `FakeLLMProvider` (`chathce/adapters/memory/fake_llm_provider.py`).
 
-## Mapeo Servicio → Modelo
+| Consumidor | Modelo(s) | Cómo |
+|---|---|---|
+| `ModelGateway` (chat) | `settings.llm.model_chain` = `claude-haiku-4-5-20251001` → `claude-sonnet-4-5` → `claude-opus-4-0` | Cadena por petición; un reintento por modelo ante errores `retryable`; deadline total 120 s |
+| `QueryAugmenter` (RAG, multi-query / HyDE) | `settings.rag.query_augmentation_model` (por defecto Haiku 4.5) | Mismo `LLMProvider` inyectado; degrada a la consulta original si falla |
+| `/ready` | primer modelo de la cadena | `health(model)` con `models.retrieve` (no gasta tokens), cacheado `API_READY_CACHE_S` |
 
-### 1. Agente del Chat Unificado → Claude Haiku 4.5
+Embeddings (`sentence-transformers/all-MiniLM-L6-v2`) y reranker (`cross-encoder/ms-marco-MiniLM-L-6-v2`) son modelos locales, no LLM.
 
-**Propósito**: Orquestación principal, análisis de intención, tool calling, síntesis de respuestas
-
-| Campo | Valor |
-|-------|-------|
-| Modelo primario | `claude-haiku-4-5-20251001` |
-| Modelo secundario | `claude-sonnet-4-5-20250929` |
-| Modelo terciario | `claude-opus-4-20250514` |
-| Framework | LangChain (AgentExecutor + bind_tools) |
-| Configuración | `settings.claude_agent.*` |
-| Max tokens | 4096 (primario), 8192 (secundario), 4096 (terciario) |
-| Temperature | 0.1 |
-
-**Archivos**:
-- `services/unified_chat/unified_agent.py` - Agente principal
-- `services/medical_agent/llm_manager.py` - ClaudeLLMManager con cadena de fallback
-
-**Cadena de Fallback**:
-```
-Claude Haiku 4.5 (30s timeout)
-    ↓ falla
-Claude Sonnet 4.5 (45s timeout)
-    ↓ falla
-Claude Opus 4 (60s timeout)
-```
-
----
-
-### 2. QueryAugmenter (RAG) → Claude Haiku 4.5
-
-**Propósito**: Augmentación de consultas antes de búsqueda RAG (Multi-Query + HyDE)
-
-| Campo | Valor |
-|-------|-------|
-| Modelo | `claude-haiku-4-5-20251001` |
-| API | Anthropic Python SDK directo (sin LangChain) |
-| Configuración | `settings.rag.query_augmentation_model` |
-| Max tokens | 300 (multi-query), 250 (HyDE) |
-| Temperature | 0.4 (multi-query), 0.2 (HyDE) |
-
-**Archivos**:
-- `services/rag/query_augmenter.py`
-
----
-
-### 3. RAG Service → Claude Haiku 4.5
-
-**Propósito**: Generación de respuestas basadas en documentos clínicos recuperados
-
-| Campo | Valor |
-|-------|-------|
-| Modelo primario | `claude-haiku-4-5-20251001` |
-| Modelo secundario | `claude-sonnet-4-5-20250929` |
-| Modelo terciario | `claude-opus-4-20250514` |
-| Configuración | `settings.rag.*` |
-
-**Archivos**:
-- `services/rag_service.py` - Fachada
-- `services/rag/improved_rag_service.py` - Implementación principal
-
----
-
-### 4. VisualizationAgent → Claude Sonnet 4.5
-
-**Propósito**: Generación de código Python para visualizaciones (solo como fallback cuando templates fallan)
-
-| Campo | Valor |
-|-------|-------|
-| Modelo | `claude-sonnet-4-5-20250929` |
-| Configuración | `settings.visualization.*` |
-| Max tokens | 4000 |
-| Temperature | 0.1 |
-| Carga | Lazy loading (solo se inicializa cuando se necesita) |
-
-**Archivos**:
-- `services/medical_agent/visualization_agent.py`
-- `services/medical_agent/llm_manager.py` → `create_visualization_llm()`
-
-**Nota**: El sistema usa un enfoque template-first. Claude Sonnet solo se invoca si los templates Plotly fallan (~5-10% de los casos).
-
----
-
-### 5. Embeddings → HuggingFace (Local)
-
-**Propósito**: Generación de embeddings para búsqueda vectorial RAG
-
-| Campo | Valor |
-|-------|-------|
-| Modelo | `sentence-transformers/all-MiniLM-L6-v2` |
-| Dimensiones | 384 |
-| Ejecución | Local (CPU/GPU) |
-| Normalización | Habilitada |
-
-**Archivos**:
-- `services/rag/improved_rag_service.py`
-
----
-
-### 6. Reranker → Cross-Encoder (Local)
-
-**Propósito**: Reordenamiento de resultados de búsqueda por relevancia
-
-| Campo | Valor |
-|-------|-------|
-| Modelo | `cross-encoder/ms-marco-MiniLM-L-6-v2` |
-| Ejecución | Local (CPU/GPU) |
-| Fallback | Retorna resultados sin reranking si no disponible |
-
-**Archivos**:
-- `services/rag/reranker.py`
-
-## Resumen Visual
+## Tipos neutrales del port
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                  Claude API (Anthropic)               │
-│                                                       │
-│  ┌─────────────────┐  ┌──────────────────────────┐  │
-│  │ Claude Haiku 4.5│  │ Claude Sonnet 4.5        │  │
-│  │ (Primario)      │  │ (Visualización/Fallback) │  │
-│  │                 │  └──────────────────────────┘  │
-│  │ • Chat Agent    │  ┌──────────────────────────┐  │
-│  │ • QueryAugmenter│  │ Claude Opus 4            │  │
-│  │ • RAG Service   │  │ (Fallback terciario)     │  │
-│  └─────────────────┘  └──────────────────────────┘  │
-└─────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────┐
-│              Modelos Locales (HuggingFace)            │
-│                                                       │
-│  ┌─────────────────────┐  ┌──────────────────────┐  │
-│  │ all-MiniLM-L6-v2   │  │ ms-marco-MiniLM-L-6  │  │
-│  │ (Embeddings)        │  │ (Reranker)           │  │
-│  └─────────────────────┘  └──────────────────────┘  │
-└─────────────────────────────────────────────────────┘
+LLMMessage(role, parts)         parts: TextPart | ToolUsePart(id, name, input) | ToolResultPart(tool_use_id, content, is_error)
+LLMToolSpec(name, description, input_schema)
+generate(messages, tools, system, model, max_tokens, temperature, timeout_s, stream) -> AsyncIterator[LLMEvent]
+LLMEvent: text_delta | tool_use_start | tool_use_end | message_end(stop_reason, usage, model, assistant_parts)
 ```
 
-## Configuración en settings.py
+Errores (`chathce/ports/llm_provider.py`): `LLMRateLimited`, `LLMOverloaded`, `LLMTimeout`, `LLMUnavailable` (retryable) y `LLMAuthError`, `LLMBadRequest` (no retryable).
 
-```python
-# config/settings.py
+## Mapeo Anthropic (`chathce/adapters/anthropic/mapping.py`)
 
-class ClaudeAgentSettings(BaseSettings):
-    anthropic_api_key: str
-    primary_model: str = "claude-haiku-4-5-20251001"
-    primary_model_version: str = "claude-haiku-4-5-20251001"
-    secondary_model: str = "claude-sonnet-4-5-20250929"
-    secondary_model_version: str = "claude-sonnet-4-5-20250929"
-    tertiary_model: str = "claude-opus-4-20250514"
-    tertiary_model_version: str = "claude-opus-4-20250514"
-    max_tokens: int = 4096
-    temperature: float = 0.1
-    max_retries: int = 3
-    retry_delay: float = 1.0
-    backoff_multiplier: float = 2.0
-    timeout_seconds: int = 30
+| Función | Traduce |
+|---|---|
+| `to_anthropic_messages` | `LLMMessage` → bloques `text` / `tool_use` / `tool_result` |
+| `to_anthropic_tools` | `LLMToolSpec` → `{"name","description","input_schema"}` |
+| `from_anthropic_content` | bloques de la respuesta final → `LLMPart` |
+| `map_stop_reason` | `end_turn` / `tool_use` / `max_tokens` / `stop_sequence` |
+| `translate_exception` | `RateLimitError` → `LLMRateLimited` (con `retry-after`), `APIStatusError 529` → `LLMOverloaded`, `APITimeoutError`/`APIConnectionError` → `LLMTimeout`/`LLMUnavailable`, `AuthenticationError` → `LLMAuthError`, `BadRequestError` → `LLMBadRequest` |
 
-class RAGSettings(BaseSettings):
-    anthropic_api_key: str
-    rag_model: str = "claude-haiku-4-5-20251001"
-    query_augmentation_model: str = "claude-haiku-4-5-20251001"
-    query_augmentation_enabled: bool = True
-    query_augmentation_max_queries: int = 3
+`AnthropicLLMProvider` usa `AsyncAnthropic(max_retries=0)` (los reintentos los decide el gateway) y `messages.stream(...)`: acumula `input_json_delta` por índice de bloque y hace `json.loads` en `content_block_stop`; `get_final_message()` aporta `usage` y `stop_reason`.
 
-class VisualizationSettings(BaseSettings):
-    model_name: str = "claude-sonnet-4-5-20250929"
-    max_tokens: int = 4000
-    temperature: float = 0.1
+Versión: `anthropic>=0.77,<1` (`requirements.txt`, `environment.yml`).
+
+## Configuración
+
+```env
+LLM_PROVIDER=anthropic            # anthropic | fake
+LLM_MODEL_CHAIN=["claude-haiku-4-5-20251001","claude-sonnet-4-5","claude-opus-4-0"]
+LLM_MAX_TOKENS=4096
+LLM_TEMPERATURE=0.1
+LLM_REQUEST_TIMEOUT_S=60
+LLM_TOTAL_TIMEOUT_S=120
+LLM_MAX_RETRIES_PER_MODEL=1
+LLM_MAX_ITERATIONS=6
 ```
 
-## ¿Por qué Claude para Todo?
+`ANTHROPIC_API_KEY` es la única credencial; se exige con `Settings.require_anthropic()` en el composition root, no al importar.
 
-- **Razonamiento superior**: Mejor análisis médico complejo
-- **Tool calling nativo**: Soporte integrado para herramientas
-- **Consistencia**: Un solo proveedor simplifica configuración y debugging
-- **Fiabilidad**: API estable con buenos límites de rate
-- **Contexto médico**: Mejor comprensión de terminología clínica
+## Añadir otro proveedor
 
-## Troubleshooting
+1. Implementar `LLMProvider` en `chathce/adapters/<proveedor>/provider.py` con su `mapping.py` (mismos tipos neutrales y misma jerarquía de errores).
+2. Añadir el perfil en `build_container()` (`settings.llm.provider`).
+3. Tests de contrato análogos a `tests/contract/test_anthropic_mapping.py` y live opcional en `tests/integration/`.
 
-| Problema | Causa | Solución |
-|----------|-------|----------|
-| Agente no responde | API key inválida | Verificar `ANTHROPIC_API_KEY` en `.env` |
-| Respuestas lentas | Rate limit | El sistema cambia automáticamente al modelo de fallback |
-| RAG sin resultados | Sin documentos indexados | Subir documentos via Document Manager |
-| Visualización falla | Template no disponible | Fallback automático a Claude Sonnet |
-| Embeddings lentos | Sin GPU | Considerar GPU o reducir batch size |
+El core (`ModelGateway`, `ChatService`, tools) no cambia.

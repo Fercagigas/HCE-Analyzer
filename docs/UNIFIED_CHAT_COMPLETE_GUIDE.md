@@ -1,5 +1,7 @@
 # Guía Completa del Sistema de Chat Unificad
 
+> **Documento historico (pre-Fase 1).** Describe el agente LangChain y el tool de base de datos con SQL libre, ya retirados. La arquitectura vigente esta en `docs/UNIFIED_CHAT_ARCHITECTURE.md` y `docs/ESTADO_ACTUAL.md`; los ejemplos de consulta siguen siendo orientativos si se fija antes el paciente activo.
+
 ---
 
 ## 📑 Tabla de Contenidos

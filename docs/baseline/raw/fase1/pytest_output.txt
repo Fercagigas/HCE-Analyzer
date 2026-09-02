@@ -1,0 +1,235 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.14, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\ferna\Documents\VIU\HCE-Analyzer\HCE-Analyzer
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.12.1, Faker-40.1.2, hypothesis-6.151.9, langsmith-0.6.7, asyncio-1.3.0, cov-7.1.0, timeout-2.4.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 278 items
+
+tests\contract\test_anthropic_mapping.py .....                           [  1%]
+tests\contract\test_mimic_clinical_data_provider.py .................... [  8%]
+........                                                                 [ 11%]
+tests\contract\test_supabase_identity_provider.py .....                  [ 13%]
+tests\contract\test_supabase_knowledge_repository.py ....                [ 15%]
+tests\contract\test_supabase_repositories.py .....                       [ 16%]
+tests\contract\test_supabase_vector_store.py ....                        [ 18%]
+tests\evaluation\test_dry_run.py ....                                    [ 19%]
+tests\evaluation\test_error_resilience.py .                              [ 20%]
+tests\evaluation\test_golden_set.py .............                        [ 24%]
+tests\evaluation\test_retry.py ......                                    [ 26%]
+tests\evaluation\test_scoring.py ..                                      [ 27%]
+tests\evaluation\test_txt_output.py ......                               [ 29%]
+tests\integration\test_anthropic_provider_live.py s                      [ 30%]
+tests\integration\test_api_live.py s                                     [ 30%]
+tests\integration\test_knowledge_repository_live.py s                    [ 30%]
+tests\integration\test_mimic_provider_live.py ssss                       [ 32%]
+tests\security\test_cross_patient_isolation.py ........                  [ 35%]
+tests\security\test_prompt_injection_payloads.py ...................     [ 42%]
+tests\security\test_response_cache_scope.py .                            [ 42%]
+tests\security\test_tool_result_validation.py ..                         [ 43%]
+tests\security\test_tool_schema_surface.py ...                           [ 44%]
+tests\security\test_visualization_security.py ...................        [ 51%]
+tests\unit\adapters\test_memory_adapters.py ......                       [ 53%]
+tests\unit\api\test_chat_endpoints.py ......                             [ 55%]
+tests\unit\api\test_health_and_auth.py ......                            [ 57%]
+tests\unit\application\test_chat_service.py ...........                  [ 61%]
+tests\unit\application\test_rate_limit.py ..                             [ 62%]
+tests\unit\domain\test_audit_and_chat_models.py ......................   [ 70%]
+tests\unit\domain\test_request_context.py .........                      [ 73%]
+tests\unit\domain\test_tool_contracts.py ...............                 [ 78%]
+tests\unit\gateway\test_model_gateway.py ...........                     [ 82%]
+tests\unit\gateway\test_prompt_has_no_schema.py ....                     [ 84%]
+tests\unit\gateway\test_rendering.py .....                               [ 85%]
+tests\unit\gateway\test_tool_registry.py .........                       [ 89%]
+tests\unit\rag\test_parent_child_chunker.py ..                           [ 89%]
+tests\unit\rag\test_reranker.py ..                                       [ 90%]
+tests\unit\test_architecture_boundaries.py ...                           [ 91%]
+tests\unit\test_eval_runner_contract.py ..                               [ 92%]
+tests\unit\test_imports_smoke.py .....                                   [ 94%]
+tests\unit\test_legacy_facade_contract.py ........                       [ 97%]
+tests\unit\ui\test_streamlit_auth_session.py .....                       [ 98%]
+tests\unit\ui\test_streamlit_chat_client.py ...                          [100%]
+
+============================== warnings summary ===============================
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\expressions\parser.py:72: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\expressions\parser.py:85: PyparsingDeprecationWarning: 'escChar' argument is deprecated, use 'esc_char'
+    quoted_identifier = QuotedString('"', escChar="\\", unquoteResults=True)
+
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\expressions\parser.py:85: PyparsingDeprecationWarning: 'unquoteResults' argument is deprecated, use 'unquote_results'
+    quoted_identifier = QuotedString('"', escChar="\\", unquoteResults=True)
+
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:365: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:494: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:498: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:502: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:506: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:538: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:542: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:546: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/contract/test_supabase_vector_store.py::test_hybrid_search_calls_rpc
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:550: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: C:\Users\ferna\Documents\VIU\HCE-Analyzer\HCE-Analyzer\docs\baseline\raw\fase1\junit.xml -
+=============================== tests coverage ================================
+______________ coverage: platform win32, python 3.11.14-final-0 _______________
+
+Name                                                        Stmts   Miss  Cover
+-------------------------------------------------------------------------------
+chathce\__init__.py                                             1      0   100%
+chathce\adapters\__init__.py                                    0      0   100%
+chathce\adapters\anthropic\__init__.py                          0      0   100%
+chathce\adapters\anthropic\mapping.py                          65      6    91%
+chathce\adapters\anthropic\provider.py                         63     30    52%
+chathce\adapters\logging\__init__.py                            0      0   100%
+chathce\adapters\logging\audit_sink.py                         36     16    56%
+chathce\adapters\memory\__init__.py                             4      0   100%
+chathce\adapters\memory\audit.py                               23      2    91%
+chathce\adapters\memory\fake_llm_provider.py                   59      4    93%
+chathce\adapters\memory\postgrest_client.py                   231     22    90%
+chathce\adapters\memory\repositories.py                       173     24    86%
+chathce\adapters\supabase\__init__.py                           0      0   100%
+chathce\adapters\supabase\_common.py                           23      3    87%
+chathce\adapters\supabase\analysis_repository.py               31      4    87%
+chathce\adapters\supabase\client_factory.py                    29     19    34%
+chathce\adapters\supabase\conversation_repository.py           82      4    95%
+chathce\adapters\supabase\dictionaries.py                      67      4    94%
+chathce\adapters\supabase\identity_provider.py                165     34    79%
+chathce\adapters\supabase\knowledge_repository.py              94     11    88%
+chathce\adapters\supabase\mapping.py                           86     13    85%
+chathce\adapters\supabase\mimic_clinical_data_provider.py     278     26    91%
+chathce\adapters\supabase\user_preferences_repository.py       30      4    87%
+chathce\adapters\visualization\__init__.py                      0      0   100%
+chathce\adapters\visualization\plotly_templates.py            133     17    87%
+chathce\api\__init__.py                                         2      0   100%
+chathce\api\app.py                                             55     13    76%
+chathce\api\dependencies.py                                    29      3    90%
+chathce\api\errors.py                                          50      7    86%
+chathce\api\middleware.py                                      43      0   100%
+chathce\api\routers\__init__.py                                 0      0   100%
+chathce\api\routers\chat.py                                    20      0   100%
+chathce\api\routers\health.py                                  37      3    92%
+chathce\api\routers\patients.py                                11      0   100%
+chathce\api\routers\visualizations.py                          16      0   100%
+chathce\api\sse.py                                             12      1    92%
+chathce\application\__init__.py                                 0      0   100%
+chathce\application\audit_events.py                            15      2    87%
+chathce\application\chat_service.py                           159      7    96%
+chathce\application\conversation_service.py                    81     14    83%
+chathce\application\knowledge_service.py                       24      9    62%
+chathce\application\patient_summary_service.py                 10      0   100%
+chathce\application\prompts\__init__.py                         0      0   100%
+chathce\application\prompts\system_prompt.py                   58      0   100%
+chathce\application\rate_limit.py                              49      2    96%
+chathce\application\scope_guard.py                            120     19    84%
+chathce\composition\__init__.py                                 0      0   100%
+chathce\composition\async_runner.py                            46     13    72%
+chathce\composition\container.py                              103     24    77%
+chathce\domain\__init__.py                                      0      0   100%
+chathce\domain\audit.py                                        71      0   100%
+chathce\domain\chat.py                                        122      0   100%
+chathce\domain\clinical.py                                    213      0   100%
+chathce\domain\context.py                                      67      0   100%
+chathce\domain\conversation.py                                 51      1    98%
+chathce\domain\correlation.py                                  24      7    71%
+chathce\domain\errors.py                                       38      2    95%
+chathce\domain\evidence.py                                     46      0   100%
+chathce\domain\identity.py                                     19      0   100%
+chathce\domain\knowledge.py                                    49      0   100%
+chathce\domain\tools.py                                        93      1    99%
+chathce\domain\visualization.py                                17      0   100%
+chathce\gateway\__init__.py                                     0      0   100%
+chathce\gateway\model_gateway.py                              159      8    95%
+chathce\gateway\policy.py                                      43      0   100%
+chathce\gateway\rendering.py                                   35      0   100%
+chathce\gateway\tool_registry.py                              100     10    90%
+chathce\gateway\tools\__init__.py                               4      0   100%
+chathce\gateway\tools\_evidence.py                             28      1    96%
+chathce\gateway\tools\clinical_tools.py                       123     19    85%
+chathce\gateway\tools\knowledge_tool.py                        34      0   100%
+chathce\gateway\tools\visualization_tool.py                    70     14    80%
+chathce\legacy\__init__.py                                      0      0   100%
+chathce\legacy\agent_facade.py                                 35      3    91%
+chathce\legacy\response_mapper.py                              36      7    81%
+chathce\ports\__init__.py                                      10      0   100%
+chathce\ports\analysis_repository.py                            6      0   100%
+chathce\ports\audit_sink.py                                     5      0   100%
+chathce\ports\clinical_data_provider.py                        12      0   100%
+chathce\ports\conversation_repository.py                        6      0   100%
+chathce\ports\identity_provider.py                              6      0   100%
+chathce\ports\knowledge_repository.py                           7      0   100%
+chathce\ports\llm_provider.py                                  96      0   100%
+chathce\ports\user_preferences_repository.py                    5      0   100%
+chathce\ports\visualization_repository.py                       7      0   100%
+chathce\streamlit_adapter\__init__.py                           0      0   100%
+chathce\streamlit_adapter\auth_session.py                     122     19    84%
+chathce\streamlit_adapter\bootstrap.py                         21     21     0%
+chathce\streamlit_adapter\chat_client.py                       28      0   100%
+chathce\streamlit_adapter\legacy_services.py                   70     30    57%
+config\__init__.py                                              2      0   100%
+config\constants.py                                            32      0   100%
+config\logging_config.py                                      116    116     0%
+config\settings.py                                            167      6    96%
+services\__init__.py                                            0      0   100%
+services\auth\__init__.py                                       0      0   100%
+services\auth\session_manager.py                              151    151     0%
+services\cache_manager.py                                     289    289     0%
+services\rag\__init__.py                                        5      0   100%
+services\rag\improved_rag_service.py                          241    206    15%
+services\rag\parent_child_chunker.py                          200    123    38%
+services\rag\query_augmenter.py                                78     78     0%
+services\rag\reranker.py                                       59     21    64%
+services\rag\supabase_vector_store.py                         162    101    38%
+services\supabase_services.py                                  95     95     0%
+services\unified_chat\__init__.py                               4      0   100%
+services\unified_chat\document_manager.py                     170    150    12%
+services\unified_chat\unified_agent.py                         22      6    73%
+src\__init__.py                                                 0      0   100%
+src\core\__init__.py                                            0      0   100%
+src\core\app.py                                               104    104     0%
+src\processors\__init__.py                                      0      0   100%
+src\processors\document_processor.py                          366    323    12%
+ui\__init__.py                                                  0      0   100%
+ui\components\__init__.py                                       0      0   100%
+ui\components\components\__init__.py                            0      0   100%
+ui\components\components\auth_pages.py                         89     89     0%
+ui\components\components\document_manager.py                  340    340     0%
+ui\components\components\footer.py                             45     45     0%
+ui\components\components\sidebar.py                           125    125     0%
+ui\unified_chat_interface.py                                  663    663     0%
+-------------------------------------------------------------------------------
+TOTAL                                                        8016   3534    56%
+Coverage XML written to file docs/baseline/raw/fase1/coverage.xml
+================ 271 passed, 7 skipped, 12 warnings in 49.77s =================
+exit=0

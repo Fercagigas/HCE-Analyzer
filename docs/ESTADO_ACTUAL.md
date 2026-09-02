@@ -1,15 +1,15 @@
 # Estado actual del proyecto ChatHCE
 
-**Última actualización:** 1 de septiembre de 2026
-**Rama principal:** `main`
+**Última actualización:** 2 de septiembre de 2026
+**Rama de trabajo:** `fase1/foundation` (local, pendiente de fusionar en `main`)
 
-Este documento resume, de forma precisa, en qué punto se encuentra el proyecto: qué está hecho, qué acaba de cambiar y qué queda pendiente. Sirve como punto de entrada rápido para retomar el trabajo.
+Este documento resume en qué punto se encuentra el proyecto: qué está hecho, qué acaba de cambiar y qué queda pendiente. Sirve como punto de entrada rápido para retomar el trabajo.
 
 ---
 
 ## 1. Resumen en una frase
 
-ChatHCE es un prototipo Streamlit de capa de inteligencia clínica (chat unificado con Claude + RAG + visualizaciones) que, tras la Fase 0 (baseline, inventario, intended purpose, threat model), acaba de **migrar su fuente de datos clínicos de MIMIC-IV-ED a MIMIC-IV Clinical Demo 2.2**. La transformación hacia arquitectura hospital-ready (FastAPI, Model Gateway, Clinical Data Gateway) sigue pendiente (Fase 1+).
+ChatHCE es una capa de inteligencia clínica (chat con Claude, RAG de guías y visualizaciones) sobre MIMIC-IV Clinical Demo 2.2 que, tras completar la **Fase 1 (Foundation / P0)** del roadmap, dispone de un core `chathce/` independiente de Streamlit y de los SDKs, un Model Gateway propio sobre el SDK `anthropic`, acceso clínico allowlisted con scope estricto de paciente, una API FastAPI autenticada con JWT de Supabase y una suite de tests verde sin credenciales.
 
 ---
 
@@ -17,124 +17,114 @@ ChatHCE es un prototipo Streamlit de capa de inteligencia clínica (chat unifica
 
 | Fase | Estado | Notas |
 |---|---|---|
-| **Fase 0 — Freeze y baseline** | ✅ Completada | Baseline de tests, inventario, mapa de acoplamiento, intended purpose, out-of-scope, matriz de riesgo, threat model. ADRs 0001/0010/0020/0030. |
-| **Migración de datos MIMIC-IV** | ✅ Completada | Fuera de la secuencia estricta del roadmap; prevista por DP-03 ("MIMIC-IV-ED es adapter transitorio"). Ver §4. |
-| **Mitigaciones de seguridad iniciales** | ✅ Integradas | Cierre de superficie web XSRF/CORS + bind localhost (ADR 0060), visualizaciones parametrizadas sin ejecución de código LLM (ADR 0040) con `tests/test_visualization_security.py`, checklist de verificación de Supabase (ADR 0070). |
-| **Fase 1 — Foundation / P0** | ⏳ Pendiente | Separar core de Streamlit, FastAPI, Model Gateway, Clinical Data Gateway tipado, `RequestContext`, eliminación de SQL libre. |
-| Fases 2–9 | ⏳ Pendientes | Seguridad completa, evidencia, frontend React, FHIR/SMART, features AI-first, piloto. |
+| **Fase 0 — Freeze y baseline** | ✅ Completada | Baseline, inventario, mapa de acoplamiento, intended purpose, threat model. ADRs 0001/0010/0020/0030. |
+| **Migración de datos MIMIC-IV** | ✅ Completada | MIMIC-IV-ED → MIMIC-IV Clinical Demo 2.2. Ver `docs/MIGRACION_MIMIC_IV.md`. |
+| **Mitigaciones de seguridad iniciales** | ✅ Integradas | ADR 0040 (visualizaciones sin exec), ADR 0060 (XSRF/CORS), ADR 0070 (checklist Supabase). |
+| **Fase 1 — Foundation / P0** | ✅ Completada en `fase1/foundation` | Core `chathce/`, `RequestContext`, ports y adapters, Model Gateway, Clinical Data Provider allowlisted, FastAPI, Streamlit como adapter, tests por capas. ADRs 0050/0080/0090/0100/0110/0120. Quedan acciones manuales del propietario (§7). |
+| Fases 2–9 | ⏳ Pendientes | RLS por usuario, Evidence Engine, frontend React, FHIR/SMART, features AI-first, piloto. |
 
-Detalle del roadmap: `ROADMAP_HOSPITAL_READY/` y steering `.kiro/steering/roadmap.md`.
+Detalle del roadmap: `ROADMAP_HOSPITAL_READY/` y `.kiro/steering/roadmap.md`.
 
 ---
 
 ## 3. Arquitectura ejecutable actual
 
-Monolito Streamlit (sin FastAPI todavía):
-
 ```
-main.py -> src/core/app.py
-  -> SessionManager -> AuthService ---------> Supabase Auth/public
-  -> UnifiedChatInterface
-       -> UnifiedChatAgent -> ClaudeLLMManager -> Anthropic
-            -> DatabaseTool  -> DatabaseService -> Supabase mimiciv_hosp/mimiciv_icu
-            -> RAGTool       -> ImprovedRAGService -> Supabase rag_chunks (pgvector) + HF
-            -> VisualizationCollaborationTool -> DatabaseService / VisualizationAgent
+Canales
+  main.py -> src/core/app.py -> ui/* -----------------------.
+  python -m uvicorn chathce.api.app:app (FastAPI, JWT) ------+--> chathce.composition.build_container(get_settings())
+  Evaluation/* -> chathce.legacy.LegacyAgentFacade ---------'         |
+                                                                       v
+  chathce.application.ChatService(RequestContext)
+    -> chathce.gateway.ModelGateway --------------> LLMProvider  -> adapters.anthropic (AsyncAnthropic, streaming)
+    -> chathce.gateway.ToolRegistry (12 tools)
+         -> ScopeGuard(ClinicalDataProvider) ----> adapters.supabase.MimicClinicalDataProvider (PostgREST + RPC clinical_*_v1)
+         -> KnowledgeRepository -----------------> adapters.supabase (envuelve services/rag ImprovedRAGService, pgvector)
+         -> VisualizationRepository -------------> adapters.visualization.plotly_templates (figure_json, in-memory)
+    -> ConversationRepository / AnalysisRepository / IdentityProvider -> Supabase public.* / Auth
+    -> AuditSink -> logs/audit/audit.jsonl (sin PHI)
 ```
 
-- **LLM:** Claude Haiku 4.5 (primario) con fallback Sonnet/Opus.
-- **Datos clínicos:** MIMIC-IV Clinical Demo 2.2 en Supabase.
-- **RAG:** pgvector + embeddings/reranker locales (Hugging Face).
-- **Auth/persistencia:** Supabase (`public.*`).
+- **LLM:** cadena `claude-haiku-4-5-20251001` → `claude-sonnet-4-5` → `claude-opus-4-0` por petición, 1 reintento por modelo, deadline total 120 s, máximo 6 iteraciones.
+- **Datos clínicos:** operaciones allowlisted por paciente activo; agregados solo con `purpose=research` (rol `researcher`) vía RPC fijas. No existe SQL libre.
+- **RAG:** pgvector + embeddings/reranker locales; `QueryAugmenter` usa el mismo `LLMProvider`.
+- **Auth:** Supabase Auth. API con Bearer JWT; Streamlit con cookie que solo guarda el refresh token y revalida en cada carga.
+- **Respuesta:** `ChatResponse` con `facts`, `inferences`, `evidence`, `uncertainty`, `tool_calls`, `sources`, `visualizations`, `metadata` (`trace_id`, `request_id`, modelo usado, `prompt_version`).
+
+Documentos: `docs/UNIFIED_CHAT_ARCHITECTURE.md`, `docs/architecture/INVENTORY.md`, `docs/architecture/COUPLING_MAP.md`.
 
 ---
 
-## 4. Migración MIMIC-IV (recién completada)
+## 4. Qué cambió en Fase 1 (resumen por paquete de trabajo)
 
-**De:** MIMIC-IV-ED (urgencias, schema `mimic_ed`, 6 tablas, 222 estancias)
-**A:** MIMIC-IV Clinical Demo 2.2 (hospitalario + UCI, 100 pacientes, 18 tablas, ~1,48M filas)
-
-### Esquemas nuevos en Supabase
-- `mimiciv_hosp` (15 tablas): patients, admissions, transfers, services, diagnoses_icd (+ d_icd_diagnoses), procedures_icd (+ d_icd_procedures), labevents (+ d_labitems), microbiologyevents, omr, prescriptions, pharmacy, emar.
-- `mimiciv_icu` (3 tablas): icustays, chartevents (+ d_items).
-- `mimic_ed` **eliminado**.
-
-### Cambio de modelo de datos
-- Eje del episodio: `hadm_id` (admisión hospitalaria); `stay_id` pasa a ser estancia UCI.
-- Diagnósticos/procedimientos guardan solo códigos ICD → título vía JOIN con diccionarios.
-- Labs/chartevents guardan `itemid` → nombre vía d_labitems/d_items.
-
-### Seguridad (mantiene la posición previa)
-- RLS + política SELECT para `authenticated`; escritura revocada a `anon`/`authenticated`.
-- Esquemas expuestos vía PostgREST; RPC `execute_readonly_query` con search_path a los nuevos esquemas.
-
-### Verificación realizada
-- Conteos por tabla exactos vs CSV origen; integridad referencial OK (0 huérfanos).
-- Smoke test del data service + tool (patient_summary, labs, diagnoses con títulos, custom query por RPC, rechazo del esquema antiguo).
-
-Documentación:
-- Diccionario de datos (columna a columna, 18 tablas): `docs/MIMIC_IV_DATA_DICTIONARY.md`
-- Contexto y cambios de la migración: `docs/MIGRACION_MIMIC_IV.md`
+| WP | Contenido | ADR |
+|---|---|---|
+| 0 | `get_settings()` perezoso; suite verde sin credenciales; `pytest-cov`; baseline `FASE1_WP0_BASELINE.md` | 0120 |
+| 1 | Layout `tests/{unit,contract,integration,security,evaluation}`; fixtures MIMIC grabadas (3 pacientes, 17 tablas); cliente PostgREST en memoria | 0120 |
+| 2 | `chathce/domain` (RequestContext, DTOs, Evidence/Claim, ToolContract/ToolResult, AuditEvent) y `chathce/ports` (9 ports); fakes | 0090 |
+| 3 | `MimicClinicalDataProvider`, `ScopeGuard`, migraciones `db/0001` (RPC agregados) y `db/0002` (retira `execute_readonly_query`) | 0050 |
+| 4 | SQL libre eliminado del tool y del prompt del runtime legacy | 0050 |
+| 5 | Golden set v2 sobre MIMIC-IV (40 preguntas, `ground_truth_operation`, `scope`, `clinical_validation`) y runners adaptados | 0050 |
+| 6 | `LLMProvider`, `AnthropicLLMProvider`, `ModelGateway`, `ToolRegistry`, `render_for_model`, system prompt desde contratos | 0080 |
+| 7 | Repositorios Supabase: identidad, conversación, análisis, preferencias, conocimiento | 0100 / 0110 |
+| 8 | `ChatService`, composition root, 12 tools, fachada legacy; retiro de LangChain del bucle y de `ClaudeLLMManager` | 0080 / 0110 |
+| 9 | FastAPI: `/health`, `/ready`, `POST /api/v1/chat`, `POST /api/v1/chat/stream` (SSE), `GET /api/v1/patients/{id}/summary`, `GET /api/v1/visualizations/{id}` | 0100 |
+| 10 | Streamlit como adapter: cookie revalidada, selector de paciente activo/episodio, modo investigación, render de `figure_json` | 0100 / 0110 |
+| 11 | Suite de seguridad: inyección, cross-patient, scope ausente, validación de resultados, sin caché por usuario | 0090 |
+| 12 | Borrado de módulos muertos (`services/medical_agent/`, `auth_service`, `connection_pool_manager`, `rag_service`, `config/config.py`); deps `anthropic>=0.77,<1`, sin crewai/openai/langchain-classic | 0110 |
+| 13 | ADRs 0050–0120, documentación, baseline `FASE1_BASELINE.md` | — |
 
 ---
 
-## 5. Código tocado por la migración
-
-- `config/settings.py` — `allowed_schemas = ["mimiciv_hosp", "mimiciv_icu"]`.
-- `services/medical_agent/services/database_service.py` — reescrito; mapa `TABLE_SCHEMA` y operaciones clínicas nuevas.
-- `services/unified_chat/tools/database_tool.py` — nuevo contrato/esquema para el LLM y query types.
-- `services/medical_agent/prompt_manager.py` — identidad/contexto/esquema/ejemplos.
-- `services/medical_agent/tools/visualization_collaboration_tool.py` — fuentes de datos/agregados.
-- `services/connection_pool_manager.py` — health check.
-- `utils/validators/mimic_validator.py` — conteos/columnas/integridad.
-- `scripts/load_mimiciv.py` — cargador idempotente (nuevo).
-- Docs: README, CONFIGURACION_SUPABASE_VERIFICADA, UNIFIED_CHAT_ARCHITECTURE, PROMPT_ENGINEERING_GUIDE, UNIFIED_CHAT_COMPLETE_GUIDE, INDEX, MIGRACION_MIMIC_IV (nuevo).
-- Steering: tech.md, structure.md, product.md.
-
----
-
-## 6. Cómo arrancar / operar
+## 5. Cómo arrancar / operar
 
 ```powershell
-conda activate HCE ; python start_app.py            # arrancar app (con verificaciones)
-conda activate HCE ; streamlit run main.py           # arrancar directo
-conda activate HCE ; python -m pytest                # tests
-conda activate HCE ; python scripts/load_mimiciv.py --verify-only   # verificar carga MIMIC-IV
+conda activate HCE ; streamlit run main.py                                                         # UI Streamlit
+conda activate HCE ; python -m uvicorn chathce.api.app:app --host 127.0.0.1 --port 8000 --workers 1  # API
+conda activate HCE ; $env:HCE_DISABLE_DOTENV="1" ; python -m pytest                                 # tests sin credenciales
+conda activate HCE ; $env:HCE_RUN_INTEGRATION="1" ; python -m pytest -m integration                # integración (lee .env)
+conda activate HCE ; python -m Evaluation.run_all_evaluations --dry-run                            # pre-flight de evaluación
+conda activate HCE ; python scripts/load_mimiciv.py --verify-only                                  # verificar carga MIMIC-IV
 ```
 
-Requiere en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY` (service_role), `SECRET_KEY`.
+Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY`. Recomendada: `SUPABASE_CLINICAL_KEY` (rol de solo lectura). Ver `.env.example` para las secciones `CLINICAL_*`, `LLM_*`, `API_*`, `AUDIT_*`.
 
 ---
 
-## 7. Deuda y pendientes conocidos
+## 6. Verificación de cierre de Fase 1
 
-### De la migración
-- **Golden sets de evaluación** (`Evaluation/golden_set_*.json`) siguen siendo de urgencias; hay que regenerarlos con preguntas/SQL del nuevo modelo (tarea de evaluación con diseño clínico).
-- El enriquecimiento de títulos de diagnóstico hace N consultas (una por código); funciona a escala demo, optimizable con un JOIN/`in_`.
-- Dataset descomprimido en `_mimic_iv_extract/` (en `.gitignore`); borrable si no se va a recargar.
+- Suite: **271 tests pasan, 7 se saltan** (integración sin `HCE_RUN_INTEGRATION=1`), 0 fallos, sin credenciales. Cobertura **56 %** sobre `chathce`, `config`, `services`, `ui`, `src` (`docs/baseline/FASE1_BASELINE.md`).
+- Fronteras: `tests/unit/test_architecture_boundaries.py` verifica que `chathce/{domain,ports,application,gateway}` no importan `streamlit`, `supabase`, `postgrest`, `anthropic` ni `langchain*`.
+- Superficie visible al modelo sin SQL ni tablas: `tests/security/test_tool_schema_surface.py`, `tests/unit/gateway/test_prompt_has_no_schema.py`.
+- Sin `exec`/`eval`/`compile` en el runtime: `tests/security/test_visualization_security.py`.
+- Live (solo lectura): provider MIMIC contra Supabase, `AnthropicLLMProvider`, fachada end-to-end con paciente activo (labs devueltas; paciente ajeno rechazado), Streamlit arranca en modo headless. Evaluación live en `docs/baseline/raw/fase1/evaluation/`.
 
-### Del roadmap (Fase 1+)
-- SQL libre (`custom_query`) sigue existiendo como activo de investigación; sustituir por `ClinicalDataProvider` tipado.
-- No hay FastAPI, Model Gateway, `RequestContext` ni aislamiento por tenant/paciente.
-- Suite de tests no está verde sin credenciales (settings exige Supabase en tiempo de importación).
+---
+
+## 7. Acciones pendientes del propietario (no automatizables desde el repo)
+
+1. Aplicar en el SQL Editor de Supabase `db/migrations/0001_clinical_aggregates_v1.sql` (habilita `get_dataset_statistics` y visualizaciones de frecuencias) y `db/migrations/0002_revoke_execute_readonly_query.sql` (elimina la RPC de SQL libre). Anotarlo en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.
+2. Crear un rol/clave de solo lectura sobre `mimiciv_hosp`/`mimiciv_icu` y guardarla como `SUPABASE_CLINICAL_KEY` en `.env`.
+3. Validar clínicamente las 20 preguntas del golden set con `clinical_validation.status="pending"` (`Evaluation/golden_set_ragas.json`).
+4. Opcional: definir fuera del repo `HCE_TEST_USER_EMAIL` / `HCE_TEST_USER_PASSWORD` para los tests live de identidad y API; pegar en `db/migrations/0003` las definiciones de `hybrid_search`/`vector_search`.
+5. Fusionar `fase1/foundation` en `main` tras revisar los commits.
+
+---
+
+## 8. Deuda y pendientes conocidos (Fase 2+)
+
+- **RLS por usuario/paciente** en Supabase; hoy el aislamiento lo aplica `ScopeGuard` en la aplicación y la clave de servicio ignora RLS (ADR 0100).
+- **Evidence Engine**: una `Claim` por frase con `evidence_ids`; hoy una por tool y una `AI_INFERENCE` por respuesta (ADR 0090).
+- **Un solo worker uvicorn** por los modelos locales del RAG; servicio de embeddings separado (ADR 0110).
+- **Streaming en Streamlit** (solo la API emite SSE). **Kill switch** y circuit breaker por modelo (Fase 2).
+- `services/rag/*`, `src/processors/document_processor.py` y gran parte de `ui/` siguen siendo legacy (cobertura 0–38 %); `ui/components/components/document_manager.py` llama directamente a `get_rag_service()`.
+- Cookie de Streamlit legible desde JavaScript (limitación del componente); mitigada con refresh token rotatorio.
+- Ficheros no versionados intencionadamente: `TFM VIU Fernando Cagigas.pdf`, `figures/`.
 
 ### Riesgos Fase 0: estado
-- ✅ **Mitigado** — CORS/XSRF desactivados en Streamlit: cerrados y bind a localhost (ADR 0060).
-- ✅ **Mitigado** — Ejecución de código de visualización generado por LLM: ruta clínica limitada a templates parametrizados (ADR 0040).
-- ⏳ **Vigente** — Restauración de sesión confiando en cookie sin revalidar contra Supabase.
-- ⏳ **Vigente** — Config duplicada `settings.py`/`config.py`; `SECRET_KEY` ausente de `.env.example`.
-- ⏳ **Vigente** — SQL libre controlable por el modelo (ver arriba).
 
----
-
-## 8. Estado git
-
-- `main` sincronizado con `origin/main`; sin PRs abiertos.
-- PRs integrados en esta sesión:
-  - #12 Threat model inicial (ADR 0030)
-  - #13 Checklist de verificación de Supabase (ADR 0070)
-  - #14 Migración MIMIC-IV-ED → MIMIC-IV Clinical Demo 2.2
-  - #15 Cierre de superficie web XSRF/CORS (ADR 0060)
-  - #16 Visualización: métricas en datasets pequeños
-  - (previo) Visualizaciones parametrizadas sin ejecución de código (ADR 0040) + `tests/test_visualization_security.py`
-- Ramas de trabajo locales ya fusionadas eliminadas.
-- Artefactos de tesis (`TFM VIU Fernando Cagigas.pdf`, `figures/`) permanecen sin versionar intencionadamente.
+- ✅ CORS/XSRF desactivados en Streamlit (ADR 0060).
+- ✅ Ejecución de código de visualización generado por LLM (ADR 0040).
+- ✅ SQL libre controlable por el modelo (ADR 0050; la RPC se elimina al aplicar `0002`).
+- ✅ Restauración de sesión sin revalidar (ADR 0100).
+- ✅ Config duplicada y `SECRET_KEY` sin consumidor (ADR 0110; `config/config.py` eliminado).

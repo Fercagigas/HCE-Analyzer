@@ -1,0 +1,661 @@
+2026-09-02 18:26:54,859 [INFO] __main__: Starting functional test cases: 58 total (40 TC-DB, 8 TC-RAG, 5 TC-VIZ, 5 TC-AGENT)
+2026-09-02 18:27:05,647 [INFO] Evaluation.eval_helpers: Instantiating UnifiedChatAgent for evaluation
+2026-09-02 18:27:06,242 [INFO] services.unified_chat.unified_agent: Contenedor chathce construido: {'llm': 'anthropic', 'clinical': 'supabase_mimic', 'persistence': 'supabase'}
+2026-09-02 18:27:06,242 [INFO] __main__: Running TC-DB-001 [TC-DB]: DB-ADM-001 [admission]
+2026-09-02 18:27:07,096 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:07,367 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.22595853&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:07,492 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10000032&hadm_id=eq.22595853&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:07,628 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10000032&hadm_id=eq.22595853&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:07,742 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/procedures_icd?select=%2A&subject_id=eq.10000032&hadm_id=eq.22595853&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:07,842 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/transfers?select=%2A&subject_id=eq.10000032&hadm_id=eq.22595853&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:07,947 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/services?select=%2A&subject_id=eq.10000032&hadm_id=eq.22595853&order=transfertime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:08,064 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10000032&hadm_id=eq.22595853&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:08,208 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_diagnoses?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%2807070%2C29680%2C30981%2C496%2C5715%2C5723%2C78959%2CV1582%29 "HTTP/2 200 OK"
+2026-09-02 18:27:08,691 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_procedures?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%285491%29 "HTTP/2 200 OK"
+2026-09-02 18:27:09,316 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:11,159 [INFO] __main__:   TC-DB-001 → PASS (score=0.800, minimo=0.60)
+2026-09-02 18:27:11,159 [INFO] __main__: Running TC-DB-002 [TC-DB]: DB-ADM-002 [admission]
+2026-09-02 18:27:12,179 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:12,407 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.24597018&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:12,566 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10001217&hadm_id=eq.24597018&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:12,702 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10001217&hadm_id=eq.24597018&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:12,824 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/procedures_icd?select=%2A&subject_id=eq.10001217&hadm_id=eq.24597018&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:12,931 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/transfers?select=%2A&subject_id=eq.10001217&hadm_id=eq.24597018&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:13,017 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/services?select=%2A&subject_id=eq.10001217&hadm_id=eq.24597018&order=transfertime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:13,111 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10001217&hadm_id=eq.24597018&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:13,243 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_diagnoses?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%2804109%2C3051%2C3240%2C340%2C3484%2C3485%2C4019%2C5180%2CV161%2CV168%29 "HTTP/2 200 OK"
+2026-09-02 18:27:13,385 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_procedures?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%280139%2C0331%2C3897%29 "HTTP/2 200 OK"
+2026-09-02 18:27:14,040 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:15,850 [INFO] __main__:   TC-DB-002 → PASS (score=0.800, minimo=0.60)
+2026-09-02 18:27:15,850 [INFO] __main__: Running TC-DB-003 [TC-DB]: DB-ADM-003 [admission]
+2026-09-02 18:27:16,693 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:16,873 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.25563031&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:17,005 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10001725&hadm_id=eq.25563031&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:17,088 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10001725&hadm_id=eq.25563031&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:17,275 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/procedures_icd?select=%2A&subject_id=eq.10001725&hadm_id=eq.25563031&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:17,399 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/transfers?select=%2A&subject_id=eq.10001725&hadm_id=eq.25563031&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:17,552 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/services?select=%2A&subject_id=eq.10001725&hadm_id=eq.25563031&order=transfertime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:17,662 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10001725&hadm_id=eq.25563031&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:17,775 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_diagnoses?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%2830000%2C311%2C31401%2C3331%2C4571%2C49390%2C53081%2C56400%2C5641%2C6185%2C6186%2C7291%2C78052%2C78829%2C9950%2CE9352%2CV1041%29 "HTTP/2 200 OK"
+2026-09-02 18:27:17,867 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_procedures?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%287055%2C7094%2C8696%29 "HTTP/2 200 OK"
+2026-09-02 18:27:18,484 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:20,322 [INFO] __main__:   TC-DB-003 → PASS (score=0.800, minimo=0.60)
+2026-09-02 18:27:20,323 [INFO] __main__: Running TC-DB-004 [TC-DB]: DB-ADM-004 [admission]
+2026-09-02 18:27:21,146 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:21,380 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.20321825&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:21,521 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10002428&hadm_id=eq.20321825&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:21,603 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10002428&hadm_id=eq.20321825&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:21,719 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/procedures_icd?select=%2A&subject_id=eq.10002428&hadm_id=eq.20321825&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:21,807 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/transfers?select=%2A&subject_id=eq.10002428&hadm_id=eq.20321825&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:21,965 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/services?select=%2A&subject_id=eq.10002428&hadm_id=eq.20321825&order=transfertime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:22,106 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10002428&hadm_id=eq.20321825&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:22,237 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_diagnoses?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%2800845%2C1122%2C2449%2C2764%2C27669%2C2859%2C29281%2C4240%2C5119%2C51881%2C5781%2C7102%2C73300%2CE9393%29 "HTTP/2 200 OK"
+2026-09-02 18:27:22,324 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_procedures?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%289390%29 "HTTP/2 200 OK"
+2026-09-02 18:27:22,989 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:24,851 [INFO] __main__:   TC-DB-004 → PASS (score=0.800, minimo=0.60)
+2026-09-02 18:27:24,851 [INFO] __main__: Running TC-DB-005 [TC-DB]: DB-ADM-005 [admission]
+2026-09-02 18:27:25,708 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:25,918 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.24982426&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:26,001 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10002495&hadm_id=eq.24982426&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:26,090 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10002495&hadm_id=eq.24982426&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:26,181 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/procedures_icd?select=%2A&subject_id=eq.10002495&hadm_id=eq.24982426&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:26,286 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/transfers?select=%2A&subject_id=eq.10002495&hadm_id=eq.24982426&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:26,371 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/services?select=%2A&subject_id=eq.10002495&hadm_id=eq.24982426&order=transfertime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:26,483 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10002495&hadm_id=eq.24982426&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:26,573 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_diagnoses?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%28A047%2CB9681%2CE118%2CE785%2CI10%2CI214%2CI2510%2CI252%2CI480%2CI509%2CK219%2CK2960%2CN179%2CR310%2CR410%2CR570%2CR578%2CS3730XA%2CT45515A%2CX58XXXA%2CY92239%2CZ23%2CZ7901%2CZ7902%2CZ86718%2CZ87891%29 "HTTP/2 200 OK"
+2026-09-02 18:27:26,663 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_procedures?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%28027034Z%2C3E1K78Z%2C4A023N6%2C4A023N7%2C5A02210%2CB211YZZ%29 "HTTP/2 200 OK"
+2026-09-02 18:27:27,303 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:29,661 [INFO] __main__:   TC-DB-005 → PASS (score=0.800, minimo=0.60)
+2026-09-02 18:27:29,661 [INFO] __main__: Running TC-DB-006 [TC-DB]: DB-ADM-006 [admission]
+2026-09-02 18:27:30,472 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:30,690 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.20282368&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:30,767 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10002930&hadm_id=eq.20282368&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:30,859 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10002930&hadm_id=eq.20282368&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:30,941 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/procedures_icd?select=%2A&subject_id=eq.10002930&hadm_id=eq.20282368&order=seq_num.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:31,071 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/transfers?select=%2A&subject_id=eq.10002930&hadm_id=eq.20282368&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:31,214 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/services?select=%2A&subject_id=eq.10002930&hadm_id=eq.20282368&order=transfertime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:31,332 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10002930&hadm_id=eq.20282368&order=intime.asc&limit=200 "HTTP/2 200 OK"
+2026-09-02 18:27:31,415 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_diagnoses?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%28B1920%2CB20%2CD696%2CF17210%2CF39%2CM542%2CR45851%2CR51%2CS0990XA%2CW19XXXA%2CY929%2CZ9114%29 "HTTP/2 200 OK"
+2026-09-02 18:27:32,146 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:33,818 [INFO] __main__:   TC-DB-006 → PASS (score=0.800, minimo=0.60)
+2026-09-02 18:27:33,818 [INFO] __main__: Running TC-DB-007 [TC-DB]: DB-AGG-001 [aggregates]
+2026-09-02 18:27:34,463 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:35,038 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/clinical_dataset_summary_v1 "HTTP/2 404 Not Found"
+2026-09-02 18:27:36,108 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:37,525 [INFO] __main__:   TC-DB-007 → PASS (score=0.880, minimo=0.60)
+2026-09-02 18:27:37,525 [INFO] __main__: Running TC-DB-008 [TC-DB]: DB-AGG-002 [aggregates]
+2026-09-02 18:27:38,531 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:38,756 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/clinical_top_diagnoses_v1 "HTTP/2 404 Not Found"
+2026-09-02 18:27:39,440 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:40,857 [INFO] __main__:   TC-DB-008 → PASS (score=0.880, minimo=0.60)
+2026-09-02 18:27:40,857 [INFO] __main__: Running TC-DB-009 [TC-DB]: DB-AGG-003 [aggregates]
+2026-09-02 18:27:41,730 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:42,152 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/clinical_top_diagnoses_v1 "HTTP/2 404 Not Found"
+2026-09-02 18:27:42,777 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:44,287 [INFO] __main__:   TC-DB-009 → PASS (score=0.880, minimo=0.60)
+2026-09-02 18:27:44,287 [INFO] __main__: Running TC-DB-010 [TC-DB]: DB-AGG-004 [aggregates]
+2026-09-02 18:27:45,066 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:45,938 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/clinical_top_drugs_v1 "HTTP/2 404 Not Found"
+2026-09-02 18:27:46,680 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:48,491 [INFO] __main__:   TC-DB-010 → PASS (score=0.880, minimo=0.60)
+2026-09-02 18:27:48,491 [INFO] __main__: Running TC-DB-011 [TC-DB]: DB-AGG-005 [aggregates]
+2026-09-02 18:27:49,348 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:50,031 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/clinical_admission_type_distribution_v1 "HTTP/2 404 Not Found"
+2026-09-02 18:27:50,759 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:52,482 [INFO] __main__:   TC-DB-011 → PASS (score=0.880, minimo=0.60)
+2026-09-02 18:27:52,482 [INFO] __main__: Running TC-DB-012 [TC-DB]: DB-DX-001 [diagnoses]
+2026-09-02 18:27:53,528 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:53,873 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.22595853&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:53,981 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032&hadm_id=eq.22595853&order=hadm_id.asc%2Cseq_num.asc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:27:55,622 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:57,465 [INFO] __main__:   TC-DB-012 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:27:57,465 [INFO] __main__: Running TC-DB-013 [TC-DB]: DB-DX-002 [diagnoses]
+2026-09-02 18:27:58,218 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:27:58,564 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.24597018&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:27:58,638 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217&hadm_id=eq.24597018&order=hadm_id.asc%2Cseq_num.asc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:27:59,308 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:01,043 [INFO] __main__:   TC-DB-013 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:28:01,043 [INFO] __main__: Running TC-DB-014 [TC-DB]: DB-DX-003 [diagnoses]
+2026-09-02 18:28:02,056 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:02,577 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.25563031&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:28:02,679 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725&hadm_id=eq.25563031&order=hadm_id.asc%2Cseq_num.asc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:28:03,471 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:07,445 [INFO] __main__:   TC-DB-014 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:28:07,445 [INFO] __main__: Running TC-DB-015 [TC-DB]: DB-DX-004 [diagnoses]
+2026-09-02 18:28:08,471 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:09,098 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.20321825&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:28:09,201 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10002428&subject_id=eq.10002428&hadm_id=eq.20321825&order=hadm_id.asc%2Cseq_num.asc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:28:10,062 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:11,389 [INFO] __main__:   TC-DB-015 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:28:11,389 [INFO] __main__: Running TC-DB-016 [TC-DB]: DB-DX-005 [diagnoses]
+2026-09-02 18:28:12,314 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:13,012 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.24982426&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:28:13,133 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495&hadm_id=eq.24982426&order=hadm_id.asc%2Cseq_num.asc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:28:14,088 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:15,670 [INFO] __main__:   TC-DB-016 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:28:15,670 [INFO] __main__: Running TC-DB-017 [TC-DB]: DB-DX-006 [diagnoses]
+2026-09-02 18:28:16,582 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:16,969 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.20282368&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:28:17,063 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930&hadm_id=eq.20282368&order=hadm_id.asc%2Cseq_num.asc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:28:18,609 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:19,993 [INFO] __main__:   TC-DB-017 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:28:19,993 [INFO] __main__: Running TC-DB-018 [TC-DB]: DB-ICU-001 [icu]
+2026-09-02 18:28:20,991 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:21,362 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:28:22,149 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:23,390 [INFO] __main__:   TC-DB-018 → PASS (score=0.867, minimo=0.60)
+2026-09-02 18:28:23,390 [INFO] __main__: Running TC-DB-019 [TC-DB]: DB-ICU-002 [icu]
+2026-09-02 18:28:24,167 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:24,371 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:28:25,127 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:26,471 [INFO] __main__:   TC-DB-019 → PASS (score=0.867, minimo=0.60)
+2026-09-02 18:28:26,471 [INFO] __main__: Running TC-DB-020 [TC-DB]: DB-ICU-003 [icu]
+2026-09-02 18:28:27,443 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:27,790 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:28:28,542 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:29,933 [INFO] __main__:   TC-DB-020 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:28:29,933 [INFO] __main__: Running TC-DB-021 [TC-DB]: DB-ICU-004 [icu]
+2026-09-02 18:28:30,825 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:31,827 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=subject_id%2Chadm_id%2Cstay_id&stay_id=eq.33987268&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:28:31,951 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_items?select=itemid%2Clabel%2Ccategory%2Cunitname%2Cparam_type&order=itemid.asc&offset=0&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:28:32,146 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_items?select=itemid%2Clabel%2Ccategory%2Cunitname%2Cparam_type&order=itemid.asc&offset=1000&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:28:32,354 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_items?select=itemid%2Clabel%2Ccategory%2Cunitname%2Cparam_type&order=itemid.asc&offset=2000&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:28:32,492 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_items?select=itemid%2Clabel%2Ccategory%2Cunitname%2Cparam_type&order=itemid.asc&offset=3000&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:28:32,625 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_items?select=itemid%2Clabel%2Ccategory%2Cunitname%2Cparam_type&order=itemid.asc&offset=4000&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:28:32,743 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/chartevents?select=%2A&subject_id=eq.10002428&stay_id=eq.33987268&itemid=in.%28220045%2C220047%2C220046%29&order=charttime.desc&limit=2 "HTTP/2 200 OK"
+2026-09-02 18:28:33,553 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:34,961 [INFO] __main__:   TC-DB-021 → PASS (score=0.733, minimo=0.60)
+2026-09-02 18:28:34,961 [INFO] __main__: Running TC-DB-022 [TC-DB]: DB-ICU-005 [icu]
+2026-09-02 18:28:35,666 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:36,965 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=subject_id%2Chadm_id%2Cstay_id&stay_id=eq.36753294&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:28:37,122 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/chartevents?select=%2A&subject_id=eq.10002495&stay_id=eq.36753294&itemid=in.%28220045%2C220047%2C220046%29&order=charttime.desc&limit=2 "HTTP/2 200 OK"
+2026-09-02 18:28:37,916 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:39,338 [INFO] __main__:   TC-DB-022 → PASS (score=0.867, minimo=0.60)
+2026-09-02 18:28:39,338 [INFO] __main__: Running TC-DB-023 [TC-DB]: DB-LAB-001 [labs]
+2026-09-02 18:28:40,195 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:40,631 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_labitems?select=itemid%2Clabel%2Cfluid%2Ccategory&order=itemid.asc&offset=0&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:28:40,743 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_labitems?select=itemid%2Clabel%2Cfluid%2Ccategory&order=itemid.asc&offset=1000&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:28:40,852 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032&itemid=in.%2850833%2C50971%2C52610%2C51800%2C51064%2C51097%2C52046%2C50847%2C51057%2C51041%2C50822%2C51822%2C52452%29&order=charttime.desc&limit=2 "HTTP/2 200 OK"
+2026-09-02 18:28:41,628 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:42,779 [INFO] __main__:   TC-DB-023 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:28:42,779 [INFO] __main__: Running TC-DB-024 [TC-DB]: DB-LAB-002 [labs]
+2026-09-02 18:28:43,410 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:44,123 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217&itemid=in.%2851301%2C51755%2C51756%29&order=charttime.desc&limit=2 "HTTP/2 200 OK"
+2026-09-02 18:28:44,686 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:45,889 [INFO] __main__:   TC-DB-024 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:28:45,889 [INFO] __main__: Running TC-DB-025 [TC-DB]: DB-LAB-003 [labs]
+2026-09-02 18:28:46,551 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:47,290 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725&itemid=in.%2851006%2C52647%2C51804%2C51104%2C51951%2C50851%2C51922%2C51045%2C51825%29&order=charttime.desc&limit=2 "HTTP/2 200 OK"
+2026-09-02 18:28:48,068 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:49,162 [INFO] __main__:   TC-DB-025 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:28:49,163 [INFO] __main__: Running TC-DB-026 [TC-DB]: DB-LAB-004 [labs]
+2026-09-02 18:28:49,965 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:50,433 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10002428&subject_id=eq.10002428&itemid=in.%2851221%2C51480%2C51638%2C51639%2C52028%2C52257%2C51115%2C51445%2C50810%2C51369%2C51422%29&order=charttime.desc&limit=2 "HTTP/2 200 OK"
+2026-09-02 18:28:51,041 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:52,303 [INFO] __main__:   TC-DB-026 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:28:52,303 [INFO] __main__: Running TC-DB-027 [TC-DB]: DB-LAB-005 [labs]
+2026-09-02 18:28:53,135 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:54,357 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495&itemid=in.%2851275%2C52923%2C52166%2C52167%2C52165%29&order=charttime.desc&limit=2 "HTTP/2 200 OK"
+2026-09-02 18:28:55,160 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:56,584 [INFO] __main__:   TC-DB-027 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:28:56,584 [INFO] __main__: Running TC-DB-028 [TC-DB]: DB-LAB-006 [labs]
+2026-09-02 18:28:57,645 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:28:59,095 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:00,286 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930&itemid=in.%2851133%2C52769%2C53132%29&order=charttime.desc&limit=2 "HTTP/2 200 OK"
+2026-09-02 18:29:00,991 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:02,383 [INFO] __main__:   TC-DB-028 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:29:02,383 [INFO] __main__: Running TC-DB-029 [TC-DB]: DB-MED-001 [medications]
+2026-09-02 18:29:03,343 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:03,692 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.22595853&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:03,806 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032&hadm_id=eq.22595853&order=starttime.desc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:29:04,650 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:08,499 [INFO] __main__:   TC-DB-029 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:29:08,500 [INFO] __main__: Running TC-DB-030 [TC-DB]: DB-MED-002 [medications]
+2026-09-02 18:29:09,301 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:09,534 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.24597018&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:09,651 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217&hadm_id=eq.24597018&order=starttime.desc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:29:10,258 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:15,377 [INFO] __main__:   TC-DB-030 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:29:15,377 [INFO] __main__: Running TC-DB-031 [TC-DB]: DB-MED-003 [medications]
+2026-09-02 18:29:16,259 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:16,802 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.25563031&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:16,928 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725&hadm_id=eq.25563031&order=starttime.desc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:29:17,760 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:23,153 [INFO] __main__:   TC-DB-031 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:29:23,153 [INFO] __main__: Running TC-DB-032 [TC-DB]: DB-MED-004 [medications]
+2026-09-02 18:29:24,210 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:24,745 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.20321825&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:24,835 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10002428&subject_id=eq.10002428&hadm_id=eq.20321825&order=starttime.desc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:29:25,894 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:32,149 [INFO] __main__:   TC-DB-032 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:29:32,149 [INFO] __main__: Running TC-DB-033 [TC-DB]: DB-MED-005 [medications]
+2026-09-02 18:29:32,982 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:33,440 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.24982426&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:33,788 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495&hadm_id=eq.24982426&order=starttime.desc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:29:34,704 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:39,039 [INFO] __main__:   TC-DB-033 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:29:39,039 [INFO] __main__: Running TC-DB-034 [TC-DB]: DB-MED-006 [medications]
+2026-09-02 18:29:39,854 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:40,219 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=subject_id%2Chadm_id&hadm_id=eq.20282368&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:40,362 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930&hadm_id=eq.20282368&order=starttime.desc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:29:41,051 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:42,678 [INFO] __main__:   TC-DB-034 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:29:42,679 [INFO] __main__: Running TC-DB-035 [TC-DB]: DB-PS-001 [patient_summary]
+2026-09-02 18:29:43,500 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:43,780 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/patients?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:43,884 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=race%2Cadmittime&subject_id=eq.10000032&subject_id=eq.10000032&order=admittime.desc&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:43,973 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032&order=admittime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:29:44,119 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032&order=hadm_id.asc%2Cseq_num.asc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:29:44,319 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_diagnoses?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%2807044%2C07054%2C07071%2C2761%2C2767%2C2875%2C45829%2C78791%2C7994%2CV08%2CV462%29 "HTTP/2 200 OK"
+2026-09-02 18:29:44,465 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032&order=charttime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:29:44,659 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032&order=starttime.desc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:29:44,798 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:29:45,010 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032 "HTTP/2 200 OK"
+2026-09-02 18:29:45,301 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10000032&subject_id=eq.10000032 "HTTP/2 200 OK"
+2026-09-02 18:29:45,445 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=icd_code%2Cicd_version&subject_id=eq.10000032&subject_id=eq.10000032&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:29:45,661 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=drug&subject_id=eq.10000032&subject_id=eq.10000032&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:29:46,419 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:48,824 [INFO] __main__:   TC-DB-035 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:29:48,824 [INFO] __main__: Running TC-DB-036 [TC-DB]: DB-PS-002 [patient_summary]
+2026-09-02 18:29:49,726 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:50,118 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/patients?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:50,292 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=race%2Cadmittime&subject_id=eq.10001217&subject_id=eq.10001217&order=admittime.desc&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:50,435 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217&order=admittime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:29:50,647 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217&order=hadm_id.asc%2Cseq_num.asc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:29:50,919 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_diagnoses?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%2804102%2C04184%29 "HTTP/2 200 OK"
+2026-09-02 18:29:51,135 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217&order=charttime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:29:51,287 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217&order=starttime.desc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:29:51,454 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:29:51,579 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217 "HTTP/2 200 OK"
+2026-09-02 18:29:51,729 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10001217&subject_id=eq.10001217 "HTTP/2 200 OK"
+2026-09-02 18:29:51,972 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=icd_code%2Cicd_version&subject_id=eq.10001217&subject_id=eq.10001217&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:29:52,176 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=drug&subject_id=eq.10001217&subject_id=eq.10001217&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:29:52,898 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:53,528 [INFO] __main__:   TC-DB-036 → PASS (score=0.980, minimo=0.60)
+2026-09-02 18:29:53,528 [INFO] __main__: Running TC-DB-037 [TC-DB]: DB-PS-003 [patient_summary]
+2026-09-02 18:29:54,478 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:54,685 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/patients?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:54,801 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=race%2Cadmittime&subject_id=eq.10001725&subject_id=eq.10001725&order=admittime.desc&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:54,900 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725&order=admittime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:29:54,989 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725&order=hadm_id.asc%2Cseq_num.asc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:29:55,106 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725&order=charttime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:29:55,218 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725&order=starttime.desc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:29:55,333 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:29:55,448 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725 "HTTP/2 200 OK"
+2026-09-02 18:29:55,551 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10001725&subject_id=eq.10001725 "HTTP/2 200 OK"
+2026-09-02 18:29:55,664 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=icd_code%2Cicd_version&subject_id=eq.10001725&subject_id=eq.10001725&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:29:55,752 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=drug&subject_id=eq.10001725&subject_id=eq.10001725&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:29:56,638 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:57,763 [INFO] __main__:   TC-DB-037 → PASS (score=0.980, minimo=0.60)
+2026-09-02 18:29:57,763 [INFO] __main__: Running TC-DB-038 [TC-DB]: DB-PS-004 [patient_summary]
+2026-09-02 18:29:58,917 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:29:59,225 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/patients?select=%2A&subject_id=eq.10002428&subject_id=eq.10002428&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:59,328 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=race%2Cadmittime&subject_id=eq.10002428&subject_id=eq.10002428&order=admittime.desc&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:29:59,446 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10002428&subject_id=eq.10002428&order=admittime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:29:59,539 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10002428&subject_id=eq.10002428&order=hadm_id.asc%2Cseq_num.asc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:29:59,634 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_diagnoses?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%2803843%2C1123%2C2720%2C4280%2C42843%2C5990%2C6930%2C99591%29 "HTTP/2 200 OK"
+2026-09-02 18:29:59,752 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10002428&subject_id=eq.10002428&order=charttime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:29:59,921 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10002428&subject_id=eq.10002428&order=starttime.desc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:30:00,016 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10002428&subject_id=eq.10002428&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:30:00,119 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10002428&subject_id=eq.10002428 "HTTP/2 200 OK"
+2026-09-02 18:30:00,224 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10002428&subject_id=eq.10002428 "HTTP/2 200 OK"
+2026-09-02 18:30:00,331 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=icd_code%2Cicd_version&subject_id=eq.10002428&subject_id=eq.10002428&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:30:00,426 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=drug&subject_id=eq.10002428&subject_id=eq.10002428&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:30:01,190 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:06,028 [INFO] __main__:   TC-DB-038 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:30:06,028 [INFO] __main__: Running TC-DB-039 [TC-DB]: DB-PS-005 [patient_summary]
+2026-09-02 18:30:07,120 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:07,580 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/patients?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:07,589 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495&order=intime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:30:07,687 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=race%2Cadmittime&subject_id=eq.10002495&subject_id=eq.10002495&order=admittime.desc&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:07,806 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495&order=admittime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:30:07,887 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495&order=hadm_id.asc%2Cseq_num.asc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:30:07,976 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495&order=charttime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:30:08,090 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495&order=starttime.desc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:30:08,188 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:30:08,305 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495 "HTTP/2 200 OK"
+2026-09-02 18:30:08,393 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10002495&subject_id=eq.10002495 "HTTP/2 200 OK"
+2026-09-02 18:30:08,487 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=icd_code%2Cicd_version&subject_id=eq.10002495&subject_id=eq.10002495&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:30:08,586 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=drug&subject_id=eq.10002495&subject_id=eq.10002495&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:30:09,304 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:11,443 [INFO] __main__:   TC-DB-039 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:30:11,443 [INFO] __main__: Running TC-DB-040 [TC-DB]: DB-PS-006 [patient_summary]
+2026-09-02 18:30:13,533 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:13,992 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/patients?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:13,999 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:30:14,130 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=race%2Cadmittime&subject_id=eq.10002930&subject_id=eq.10002930&order=admittime.desc&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:14,235 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930&order=admittime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:30:14,380 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930&order=hadm_id.asc%2Cseq_num.asc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:30:14,482 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_diagnoses?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%2830001%2C30500%2C30560%2C3559%2CE162%2CF10129%2CF1099%2CF1490%2CF1994%2CF209%2CR4182%2CV1552%2CV620%29 "HTTP/2 200 OK"
+2026-09-02 18:30:14,602 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930&order=charttime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:30:14,714 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930&order=starttime.desc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:30:14,812 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:30:14,911 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930 "HTTP/2 200 OK"
+2026-09-02 18:30:14,989 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10002930&subject_id=eq.10002930 "HTTP/2 200 OK"
+2026-09-02 18:30:15,126 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=icd_code%2Cicd_version&subject_id=eq.10002930&subject_id=eq.10002930&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:30:15,248 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=drug&subject_id=eq.10002930&subject_id=eq.10002930&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:30:17,181 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:19,256 [INFO] __main__:   TC-DB-040 → PASS (score=1.000, minimo=0.60)
+2026-09-02 18:30:19,256 [INFO] __main__: Running TC-RAG-001 [TC-RAG]: Clinical protocol search: sepsis
+2026-09-02 18:30:19,892 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:20,620 [INFO] services.rag.improved_rag_service: ParentChildChunker initialized
+2026-09-02 18:30:20,642 [INFO] sentence_transformers.SentenceTransformer: Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2026-09-02 18:30:22,831 [INFO] services.rag.improved_rag_service: Embeddings initialized (device=cuda)
+2026-09-02 18:30:22,840 [INFO] services.rag.supabase_vector_store: SupabaseVectorStore: cliente inicializado
+2026-09-02 18:30:22,841 [INFO] services.rag.improved_rag_service: SupabaseVectorStore initialized
+2026-09-02 18:30:22,841 [INFO] services.rag.reranker: Loading cross-encoder model: cross-encoder/ms-marco-MiniLM-L-6-v2
+2026-09-02 18:30:24,559 [INFO] services.rag.reranker: Cross-encoder model loaded successfully: cross-encoder/ms-marco-MiniLM-L-6-v2
+2026-09-02 18:30:24,559 [INFO] services.rag.improved_rag_service: Reranker initialized (available: True)
+2026-09-02 18:30:24,560 [INFO] root: 🚀 GPU detectada: NVIDIA GeForce RTX 4060 Laptop GPU (CUDA 13.0)
+2026-09-02 18:30:24,566 [INFO] src.processors.document_processor: Docling initialized successfully (device: cuda)
+2026-09-02 18:30:24,566 [INFO] src.processors.document_processor: Text splitters initialized
+2026-09-02 18:30:24,566 [INFO] services.rag.improved_rag_service: DocumentProcessor initialized
+2026-09-02 18:30:24,566 [INFO] services.rag.improved_rag_service: ImprovedRAGService initialized with Supabase pgvector (collection 'clinical_guidelines')
+2026-09-02 18:30:25,733 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:30:25,735 [INFO] services.rag.supabase_vector_store: Hybrid search returned 40 results
+Batches:   0%|          | 0/2 [00:00<?, ?it/s]Batches:  50%|█████     | 1/2 [00:01<00:01,  1.03s/it]Batches: 100%|██████████| 2/2 [00:01<00:00,  1.82it/s]Batches: 100%|██████████| 2/2 [00:01<00:00,  1.61it/s]
+2026-09-02 18:30:26,979 [INFO] services.rag.reranker: Reranked 40 documents, returning top 10. Score range: [-6.1429, 1.4806]
+2026-09-02 18:30:27,265 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_28&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:27,376 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_20&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:27,469 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_158&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:27,537 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_587&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:27,602 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_586&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:27,667 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_157&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:27,721 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_116&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:27,776 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_574&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:27,825 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_38&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:27,825 [INFO] services.rag.improved_rag_service: Search completed: 9 results
+2026-09-02 18:30:28,521 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:29,541 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:30:29,542 [INFO] services.rag.supabase_vector_store: Hybrid search returned 20 results
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.00it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.00it/s]
+2026-09-02 18:30:30,045 [INFO] services.rag.reranker: Reranked 20 documents, returning top 5. Score range: [2.4762, 5.1696]
+2026-09-02 18:30:30,102 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_14&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:30,210 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_653&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:30,294 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_158&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:30,354 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_461&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:30,355 [INFO] services.rag.improved_rag_service: Search completed: 4 results
+2026-09-02 18:30:31,051 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:35,489 [INFO] __main__:   TC-RAG-001 → PASS (score=1.000, minimo=0.55)
+2026-09-02 18:30:35,489 [INFO] __main__: Running TC-RAG-002 [TC-RAG]: Medication guideline: vancomycin
+2026-09-02 18:30:36,169 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:37,078 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:30:37,080 [INFO] services.rag.supabase_vector_store: Hybrid search returned 40 results
+Batches:   0%|          | 0/2 [00:00<?, ?it/s]Batches:  50%|█████     | 1/2 [00:00<00:00,  1.50it/s]Batches: 100%|██████████| 2/2 [00:00<00:00,  2.75it/s]Batches: 100%|██████████| 2/2 [00:00<00:00,  2.45it/s]
+2026-09-02 18:30:37,901 [INFO] services.rag.reranker: Reranked 40 documents, returning top 10. Score range: [-4.3693, 1.4611]
+2026-09-02 18:30:37,970 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_0&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:38,277 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_17&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:38,340 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_25&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:38,400 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_209&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:38,455 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_48&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:38,502 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_2&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:38,547 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_50&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:38,608 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_2&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:38,653 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_21&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:38,706 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_49&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:38,707 [INFO] services.rag.improved_rag_service: Search completed: 10 results
+2026-09-02 18:30:39,559 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:40,906 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:30:40,907 [INFO] services.rag.supabase_vector_store: Hybrid search returned 20 results
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.99it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.99it/s]
+2026-09-02 18:30:41,415 [INFO] services.rag.reranker: Reranked 20 documents, returning top 5. Score range: [-6.4743, 2.7359]
+2026-09-02 18:30:41,510 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_653&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:41,583 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_110&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:41,635 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_12&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:41,689 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_76&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:41,739 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_73&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:41,739 [INFO] services.rag.improved_rag_service: Search completed: 5 results
+2026-09-02 18:30:42,454 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:43,484 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:30:43,486 [INFO] services.rag.supabase_vector_store: Hybrid search returned 20 results
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.76it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.76it/s]
+2026-09-02 18:30:44,057 [INFO] services.rag.reranker: Reranked 20 documents, returning top 5. Score range: [0.2013, 5.1612]
+2026-09-02 18:30:44,107 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_115&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:44,167 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_578&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:44,237 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_116&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:44,282 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_574&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:44,328 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_588&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:44,328 [INFO] services.rag.improved_rag_service: Search completed: 5 results
+2026-09-02 18:30:45,141 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:49,356 [INFO] __main__:   TC-RAG-002 → PASS (score=0.850, minimo=0.55)
+2026-09-02 18:30:49,357 [INFO] __main__: Running TC-RAG-003 [TC-RAG]: Emergency procedure query
+2026-09-02 18:30:50,252 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:51,216 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:30:51,218 [INFO] services.rag.supabase_vector_store: Hybrid search returned 40 results
+Batches:   0%|          | 0/2 [00:00<?, ?it/s]Batches:  50%|█████     | 1/2 [00:00<00:00,  1.36it/s]Batches: 100%|██████████| 2/2 [00:00<00:00,  2.48it/s]Batches: 100%|██████████| 2/2 [00:00<00:00,  2.21it/s]
+2026-09-02 18:30:52,127 [INFO] services.rag.reranker: Reranked 40 documents, returning top 10. Score range: [-1.8899, 3.5816]
+2026-09-02 18:30:52,177 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_124&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:52,228 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_208&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:52,276 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_394&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:52,325 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_393&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:52,374 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_7&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:52,423 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_2&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:52,471 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_25&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:52,523 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_21&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:52,573 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_1&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:52,622 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_17&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:52,623 [INFO] services.rag.improved_rag_service: Search completed: 10 results
+2026-09-02 18:30:53,303 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:56,866 [INFO] __main__:   TC-RAG-003 → PASS (score=0.955, minimo=0.55)
+2026-09-02 18:30:56,866 [INFO] __main__: Running TC-RAG-004 [TC-RAG]: Multi-document synthesis
+2026-09-02 18:30:57,532 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:30:58,430 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:30:58,434 [INFO] services.rag.supabase_vector_store: Hybrid search returned 40 results
+Batches:   0%|          | 0/2 [00:00<?, ?it/s]Batches:  50%|█████     | 1/2 [00:00<00:00,  1.25it/s]Batches: 100%|██████████| 2/2 [00:01<00:00,  2.23it/s]Batches: 100%|██████████| 2/2 [00:01<00:00,  1.99it/s]
+2026-09-02 18:30:59,440 [INFO] services.rag.reranker: Reranked 40 documents, returning top 20. Score range: [-5.7504, 2.3414]
+2026-09-02 18:30:59,490 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_613&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:59,537 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_609&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:59,587 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_614&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:59,632 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_25&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:59,690 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_15&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:59,737 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_606&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:59,790 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_55&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:59,833 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_607&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:59,893 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_10&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:59,935 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_608&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:30:59,979 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_2&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:00,031 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_133&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:00,154 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_122&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:00,197 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_132&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:00,256 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_622&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:00,303 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_18&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:00,367 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_80&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:00,367 [INFO] services.rag.improved_rag_service: Search completed: 17 results
+2026-09-02 18:31:00,993 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:03,375 [INFO] __main__:   TC-RAG-004 → PASS (score=0.955, minimo=0.55)
+2026-09-02 18:31:03,375 [INFO] __main__: Running TC-RAG-005 [TC-RAG]: Specialty-filtered search
+2026-09-02 18:31:04,024 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:05,001 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:31:05,009 [INFO] services.rag.supabase_vector_store: Hybrid search returned 40 results
+Batches:   0%|          | 0/2 [00:00<?, ?it/s]Batches:  50%|█████     | 1/2 [00:00<00:00,  1.11it/s]Batches: 100%|██████████| 2/2 [00:01<00:00,  2.13it/s]Batches: 100%|██████████| 2/2 [00:01<00:00,  1.87it/s]
+2026-09-02 18:31:06,081 [INFO] services.rag.reranker: Reranked 40 documents, returning top 10. Score range: [3.0904, 5.5425]
+2026-09-02 18:31:06,136 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_21&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:06,187 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_272&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:06,231 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_263&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:06,275 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_257&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:06,322 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_34&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:06,369 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_253&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:06,421 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_571&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:06,421 [INFO] services.rag.improved_rag_service: Search completed: 7 results
+2026-09-02 18:31:07,093 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:10,026 [INFO] __main__:   TC-RAG-005 → PASS (score=0.955, minimo=0.55)
+2026-09-02 18:31:10,026 [INFO] __main__: Running TC-RAG-006 [TC-RAG]: Source citation verification
+2026-09-02 18:31:10,889 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:12,137 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:31:12,139 [INFO] services.rag.supabase_vector_store: Hybrid search returned 40 results
+Batches:   0%|          | 0/2 [00:00<?, ?it/s]Batches:  50%|█████     | 1/2 [00:00<00:00,  1.05it/s]Batches: 100%|██████████| 2/2 [00:01<00:00,  1.97it/s]Batches: 100%|██████████| 2/2 [00:01<00:00,  1.74it/s]
+2026-09-02 18:31:13,290 [INFO] services.rag.reranker: Reranked 40 documents, returning top 10. Score range: [-4.1692, 1.0178]
+2026-09-02 18:31:13,340 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_271&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:13,394 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_124&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:13,441 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_129&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:13,486 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_128&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:13,529 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_169&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:13,572 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_8&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:13,631 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_154&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:13,676 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_123&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:13,721 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_121&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:13,770 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_255&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:13,770 [INFO] services.rag.improved_rag_service: Search completed: 10 results
+2026-09-02 18:31:14,514 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:15,411 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:31:15,413 [INFO] services.rag.supabase_vector_store: Hybrid search returned 20 results
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.71it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.71it/s]
+2026-09-02 18:31:15,785 [INFO] services.rag.reranker: Reranked 20 documents, returning top 5. Score range: [-4.9651, 4.4074]
+2026-09-02 18:31:15,826 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_2&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:15,873 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_25&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:15,923 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_89&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:15,968 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_48&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:16,022 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_600&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:16,022 [INFO] services.rag.improved_rag_service: Search completed: 5 results
+2026-09-02 18:31:16,839 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:18,087 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:31:18,088 [INFO] services.rag.supabase_vector_store: Hybrid search returned 20 results
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.30it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.30it/s]
+2026-09-02 18:31:18,862 [INFO] services.rag.reranker: Reranked 20 documents, returning top 5. Score range: [-7.2710, -0.9003]
+2026-09-02 18:31:18,909 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_2&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:18,961 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_2&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:19,007 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_25&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:19,053 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_14&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:19,105 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_48&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:19,106 [INFO] services.rag.improved_rag_service: Search completed: 5 results
+2026-09-02 18:31:19,949 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:22,475 [INFO] __main__:   TC-RAG-006 → PASS (score=1.000, minimo=0.55)
+2026-09-02 18:31:22,475 [INFO] __main__: Running TC-RAG-007 [TC-RAG]: Out-of-domain question handling
+2026-09-02 18:31:23,167 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:25,148 [INFO] __main__:   TC-RAG-007 → PASS (score=0.740, minimo=0.50)
+2026-09-02 18:31:25,148 [INFO] __main__: Running TC-RAG-008 [TC-RAG]: Spanish medical terminology query
+2026-09-02 18:31:25,806 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:26,647 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:31:26,652 [INFO] services.rag.supabase_vector_store: Hybrid search returned 40 results
+Batches:   0%|          | 0/2 [00:00<?, ?it/s]Batches:  50%|█████     | 1/2 [00:00<00:00,  1.01it/s]Batches: 100%|██████████| 2/2 [00:01<00:00,  1.87it/s]Batches: 100%|██████████| 2/2 [00:01<00:00,  1.66it/s]
+2026-09-02 18:31:27,862 [INFO] services.rag.reranker: Reranked 40 documents, returning top 10. Score range: [2.4155, 5.7708]
+2026-09-02 18:31:27,908 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_276&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:27,953 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_286&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:28,004 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_277&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:28,052 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_287&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:28,101 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_290&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:28,149 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_288&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:28,237 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_653&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:28,302 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_289&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:28,303 [INFO] services.rag.improved_rag_service: Search completed: 8 results
+2026-09-02 18:31:28,992 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:33,725 [INFO] __main__:   TC-RAG-008 → PASS (score=0.955, minimo=0.55)
+2026-09-02 18:31:33,725 [INFO] __main__: Running TC-VIZ-001 [TC-VIZ]: Vital signs timeline for patient 10014729
+2026-09-02 18:31:34,472 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:35,455 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:31:36,186 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:38,246 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=subject_id%2Chadm_id%2Cstay_id&stay_id=eq.33558396&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:38,382 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/chartevents?select=%2A&subject_id=eq.10014729&stay_id=eq.33558396&itemid=in.%28220045%2C220047%2C220046%29&order=charttime.desc&limit=201 "HTTP/2 200 OK"
+2026-09-02 18:31:39,551 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:41,770 [INFO] __main__:   TC-VIZ-001 → PASS (score=0.750, minimo=0.55)
+2026-09-02 18:31:41,770 [INFO] __main__: Running TC-VIZ-002 [TC-VIZ]: Diagnosis distribution bar chart
+2026-09-02 18:31:42,507 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:43,579 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/clinical_top_diagnoses_v1 "HTTP/2 404 Not Found"
+2026-09-02 18:31:44,354 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:46,912 [INFO] __main__:   TC-VIZ-002 → PASS (score=0.575, minimo=0.55)
+2026-09-02 18:31:46,912 [INFO] __main__: Running TC-VIZ-003 [TC-VIZ]: Medication frequency chart
+2026-09-02 18:31:47,521 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:48,326 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/clinical_top_drugs_v1 "HTTP/2 404 Not Found"
+2026-09-02 18:31:49,064 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:50,674 [INFO] __main__:   TC-VIZ-003 → PASS (score=0.575, minimo=0.55)
+2026-09-02 18:31:50,674 [INFO] __main__: Running TC-VIZ-004 [TC-VIZ]: Multi-metric comparison chart
+2026-09-02 18:31:51,340 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:52,160 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:31:52,753 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:54,882 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=subject_id%2Chadm_id%2Cstay_id&stay_id=eq.33558396&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:54,896 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=subject_id%2Chadm_id%2Cstay_id&stay_id=eq.33558396&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:31:55,033 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/chartevents?select=%2A&subject_id=eq.10014729&stay_id=eq.33558396&itemid=in.%28220045%2C220047%2C220046%29&order=charttime.desc&limit=201 "HTTP/2 200 OK"
+2026-09-02 18:31:55,074 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/chartevents?select=%2A&subject_id=eq.10014729&stay_id=eq.33558396&itemid=in.%28226253%2C229862%29&order=charttime.desc&limit=201 "HTTP/2 200 OK"
+2026-09-02 18:31:55,780 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:58,197 [INFO] __main__:   TC-VIZ-004 → PASS (score=1.000, minimo=0.55)
+2026-09-02 18:31:58,197 [INFO] __main__: Running TC-VIZ-005 [TC-VIZ]: Custom visualization request
+2026-09-02 18:31:58,852 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:31:59,467 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/clinical_admission_type_distribution_v1 "HTTP/2 404 Not Found"
+2026-09-02 18:32:00,180 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:02,084 [INFO] __main__:   TC-VIZ-005 → FAIL (score=0.540, minimo=0.55)
+2026-09-02 18:32:02,084 [INFO] __main__: Running TC-AGENT-001 [TC-AGENT]: Automatic tool selection based on query intent
+2026-09-02 18:32:02,854 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:03,375 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/clinical_dataset_summary_v1 "HTTP/2 404 Not Found"
+2026-09-02 18:32:04,112 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:05,708 [INFO] __main__:   TC-AGENT-001 → PASS (score=0.925, minimo=0.60)
+2026-09-02 18:32:05,708 [INFO] __main__: Running TC-AGENT-002 [TC-AGENT]: Multi-tool orchestration: database + RAG
+2026-09-02 18:32:06,533 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:07,859 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/patients?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:07,882 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729&order=charttime.desc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:32:07,973 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=race%2Cadmittime&subject_id=eq.10014729&subject_id=eq.10014729&order=admittime.desc&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:08,072 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729&order=admittime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:32:08,165 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729&order=hadm_id.asc%2Cseq_num.asc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:32:08,283 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/d_icd_diagnoses?select=icd_code%2Cicd_version%2Clong_title&icd_code=in.%2804112%2C33812%2C34600%2C5109%2C51189%2C6822%2C9010%2C9962%2C99832%2C99859%2CE8120%2CE8495%2CE8497%2CE8782%2CE8798%2CV1204%2CV151%29 "HTTP/2 200 OK"
+2026-09-02 18:32:08,391 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729&order=charttime.desc&limit=21 "HTTP/2 200 OK"
+2026-09-02 18:32:08,521 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729&order=starttime.desc&limit=31 "HTTP/2 200 OK"
+2026-09-02 18:32:08,622 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729&order=intime.desc&limit=11 "HTTP/2 200 OK"
+2026-09-02 18:32:08,719 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/admissions?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729 "HTTP/2 200 OK"
+2026-09-02 18:32:08,877 [INFO] httpx: HTTP Request: HEAD https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/icustays?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729 "HTTP/2 200 OK"
+2026-09-02 18:32:09,016 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/diagnoses_icd?select=icd_code%2Cicd_version&subject_id=eq.10014729&subject_id=eq.10014729&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:32:09,097 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/prescriptions?select=drug&subject_id=eq.10014729&subject_id=eq.10014729&limit=1000 "HTTP/2 200 OK"
+2026-09-02 18:32:10,108 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:12,362 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:32:12,385 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:32:12,386 [INFO] services.rag.supabase_vector_store: Hybrid search returned 20 results
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]2026-09-02 18:32:12,389 [INFO] httpx: HTTP Request: POST https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rpc/hybrid_search "HTTP/2 200 OK"
+2026-09-02 18:32:12,390 [INFO] services.rag.supabase_vector_store: Hybrid search returned 20 results
+
+Batches:   0%|          | 0/1 [00:00<?, ?it/s][A2026-09-02 18:32:12,405 [INFO] services.rag.supabase_vector_store: Hybrid search returned 20 results
+
+
+Batches:   0%|          | 0/1 [00:00<?, ?it/s][A[A
+
+Batches: 100%|██████████| 1/1 [00:00<00:00,  1.11it/s][A[ABatches: 100%|██████████| 1/1 [00:00<00:00,  1.11it/s]
+2026-09-02 18:32:13,313 [INFO] services.rag.reranker: Reranked 20 documents, returning top 5. Score range: [1.5125, 4.5155]
+2026-09-02 18:32:13,378 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_597&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+Batches: 100%|██████████| 1/1 [00:01<00:00,  1.05s/it]Batches: 100%|██████████| 1/1 [00:01<00:00,  1.05s/it]
+2026-09-02 18:32:13,443 [INFO] services.rag.reranker: Reranked 20 documents, returning top 5. Score range: [0.4188, 4.4629]
+
+Batches: 100%|██████████| 1/1 [00:01<00:00,  1.04s/it][ABatches: 100%|██████████| 1/1 [00:01<00:00,  1.04s/it]
+2026-09-02 18:32:13,449 [INFO] services.rag.reranker: Reranked 20 documents, returning top 5. Score range: [-3.1675, 0.1982]
+2026-09-02 18:32:13,451 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_497&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,515 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_553&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,517 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_523&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,569 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_a1a022f4-aa43-424a-a248-707da915ad48_90&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,637 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_518&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,637 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_460&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,639 [INFO] services.rag.improved_rag_service: Search completed: 4 results
+2026-09-02 18:32:13,642 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_307&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,707 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_522&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,840 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_15&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,841 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_19&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,917 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_18&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,929 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_9cc6aa3e-f52e-4ec5-8eb0-943af6cd68a0_519&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,931 [INFO] services.rag.improved_rag_service: Search completed: 5 results
+2026-09-02 18:32:13,989 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/rag_chunks?select=chunk_id%2Ccontent%2Cmetadata%2Cfilename&chunk_id=eq.parent_ddbd2a07-8519-47ab-84eb-32c756d44cbf_3&is_parent=eq.True&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:13,990 [INFO] services.rag.improved_rag_service: Search completed: 5 results
+2026-09-02 18:32:14,990 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:32,286 [INFO] __main__:   TC-AGENT-002 → PASS (score=1.000, minimo=0.55)
+2026-09-02 18:32:32,286 [INFO] __main__: Running TC-AGENT-003 [TC-AGENT]: Context maintenance across conversation turns
+2026-09-02 18:32:32,944 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:34,345 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:35,191 [INFO] __main__:   TC-AGENT-003 → PASS (score=0.900, minimo=0.50)
+2026-09-02 18:32:35,191 [INFO] __main__: Running TC-AGENT-004 [TC-AGENT]: Error recovery: graceful handling of invalid patient ID
+2026-09-02 18:32:35,995 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:36,229 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/patients?select=%2A&subject_id=eq.99999999&subject_id=eq.99999999&limit=1 "HTTP/2 200 OK"
+2026-09-02 18:32:37,032 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:38,665 [INFO] __main__:   TC-AGENT-004 → PASS (score=0.940, minimo=0.50)
+2026-09-02 18:32:38,665 [INFO] __main__: Running TC-AGENT-005 [TC-AGENT]: Response language consistency: always Spanish
+2026-09-02 18:32:39,524 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:40,390 [INFO] httpx: HTTP Request: GET https://uoqvzaeuvylmvtkhaovm.supabase.co/rest/v1/labevents?select=%2A&subject_id=eq.10014729&subject_id=eq.10014729&order=charttime.desc&limit=51 "HTTP/2 200 OK"
+2026-09-02 18:32:41,338 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-02 18:32:46,975 [INFO] __main__:   TC-AGENT-005 → PASS (score=0.790, minimo=0.55)
+2026-09-02 18:32:46,983 [INFO] __main__: Results written to: docs/baseline/raw/fase1/evaluation/test_cases_results_20260902_183246.txt
+----------------------------------------------------------------------
+  FUNCTIONAL TEST CASES SUMMARY
+----------------------------------------------------------------------
+  Category     | Passed | Total |  Score | Threshold | Status
+  -------------+--------+-------+--------+-----------+-------
+  TC-DB        |     40 |    40 |   1.00 |      0.70 | PASS
+  TC-RAG       |      8 |     8 |   1.00 |      0.70 | PASS
+  TC-VIZ       |      4 |     5 |   0.80 |      0.70 | PASS
+  TC-AGENT     |      5 |     5 |   1.00 |      0.70 | PASS
+
+  Overall: PASS (57/58 test cases passed)
+----------------------------------------------------------------------
+exit=0

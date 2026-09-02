@@ -439,6 +439,23 @@ Esta es la corrección más probable. Rotar no sustituye RLS, mínimo privilegio
 | Corpus/RAG | Suspender upload/borrado/retrieval compartido | Registro aprobado, RBAC knowledge-manager, tenant scope y retirada probada |
 | Caché/procesos | Limitar a demo/usuario único o desactivar el entorno compartido | Scope completo de caché, borrado y pruebas cross-user/tenant |
 
+## Cambios de Fase 1 que afectan a esta checklist
+
+Estado a 2 de septiembre de 2026 (rama `fase1/foundation`, ADR 0050 y 0100):
+
+- **RPC de SQL libre**: el runtime ya no tiene ningun consumidor de `public.execute_readonly_query(text)`. Debe eliminarse con `db/migrations/0002_revoke_execute_readonly_query.sql` (pendiente de aplicar por el propietario). Hasta entonces, el item "RPC insegura" sigue abierto en la base de datos aunque este cerrado en el codigo.
+- **RPC nuevas**: `clinical_dataset_summary_v1`, `clinical_top_diagnoses_v1`, `clinical_top_drugs_v1`, `clinical_admission_type_distribution_v1` (`db/migrations/0001_clinical_aggregates_v1.sql`). `LANGUAGE sql STABLE SECURITY INVOKER`, `search_path` fijo, `statement_timeout 10s`, limite <= 200, `REVOKE ... FROM PUBLIC, anon`. Verificar tras aplicar: existen, `SECURITY INVOKER`, sin `EXECUTE` para `anon`.
+- **Claves por funcion**: `SUPABASE_KEY` (auth y `public.*`), `SUPABASE_CLINICAL_KEY` (rol de solo lectura sobre `mimiciv_hosp`/`mimiciv_icu`, solo `MimicClinicalDataProvider`; pendiente de crear), `SUPABASE_SERVICE_ROLE_KEY` (solo scripts de carga). El paso 2 de la rotacion ("acceso `mimic_ed`") debe leerse como acceso a `mimiciv_*` a traves de `SUPABASE_CLINICAL_KEY`.
+- **Aislamiento por paciente**: lo aplica la aplicacion (`ScopeGuard` + filtro `subject_id` en cada consulta). RLS por usuario/paciente sigue pendiente (Fase 2); la clave de servicio ignora RLS.
+- **Prueba permitir/denegar (paso 7)**: usar `tests/security/test_cross_patient_isolation.py` (offline) y `tests/integration/test_mimic_provider_live.py` (live, solo lectura) como evidencia reproducible.
+
+Registro de aplicacion de migraciones (rellenar por el propietario, sin valores de claves):
+
+| Migracion | Fecha | Entorno | Verificacion |
+|---|---|---|---|
+| `0001_clinical_aggregates_v1.sql` | pendiente | | |
+| `0002_revoke_execute_readonly_query.sql` | pendiente | | |
+
 ## Referencias
 
 - Internas: `docs/security/THREAT_MODEL.md:259-272`, `docs/architecture/INVENTORY.md:121-192`, `ROADMAP_HOSPITAL_READY/05-identity-authorization-multitenancy.md` y `ROADMAP_HOSPITAL_READY/06-privacy-phi-security.md`.

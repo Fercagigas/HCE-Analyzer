@@ -1,112 +1,80 @@
-# ✅ Configuración de Supabase - Verificada
+# Configuración de Supabase
 
-> Actualizado tras la migración a **MIMIC-IV Clinical Demo 2.2**. Ver `docs/MIGRACION_MIMIC_IV.md`.
+> Actualizado al cierre de Fase 1. Datos: **MIMIC-IV Clinical Demo 2.2** (ver `docs/MIGRACION_MIMIC_IV.md`). Verificación operativa y de seguridad: `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md` (ADR 0070).
 
-## 📋 Resumen de Configuración
+## Esquemas
 
-### Esquemas de Base de Datos
-- **Esquema `public`:** Tablas de aplicación (usuarios, sesiones, chat, RAG)
-- **Esquema `mimiciv_hosp`:** Módulo hospitalario de MIMIC-IV (datos médicos)
-- **Esquema `mimiciv_icu`:** Módulo UCI de MIMIC-IV
-- **Función RPC:** `execute_readonly_query(text)` en esquema `public` (SELECT-only)
-- **IMPORTANTE:** Las tablas clínicas están en `mimiciv_hosp` / `mimiciv_icu`, NO en `public`. El esquema `mimic_ed` fue eliminado.
+- **`public`**: tablas de aplicación (`users`, `chat_sessions`, `chat_messages`, `clinical_documents`, `analyses`, `user_preferences`, `rag_chunks`) y funciones RPC.
+- **`mimiciv_hosp`** (15 tablas) y **`mimiciv_icu`** (3 tablas): datos clínicos. El esquema `mimic_ed` fue eliminado.
+- PostgREST expone `public, graphql_public, mimiciv_hosp, mimiciv_icu`.
 
-### Tablas Disponibles
+### Conteos de referencia
 
-#### Esquema `mimiciv_hosp`
-| Tabla | Filas |
-|---|---:|
-| patients | 100 |
-| admissions | 275 |
-| transfers | 1190 |
-| services | 319 |
-| diagnoses_icd | 4506 |
-| d_icd_diagnoses | 109775 |
-| procedures_icd | 722 |
-| d_icd_procedures | 85257 |
-| labevents | 107727 |
-| d_labitems | 1622 |
-| microbiologyevents | 2899 |
-| omr | 2964 |
-| prescriptions | 18087 |
-| pharmacy | 15306 |
-| emar | 35835 |
+| Esquema | Tabla | Filas |
+|---|---|---:|
+| mimiciv_hosp | patients | 100 |
+| mimiciv_hosp | admissions | 275 |
+| mimiciv_hosp | transfers | 1190 |
+| mimiciv_hosp | services | 319 |
+| mimiciv_hosp | diagnoses_icd | 4506 |
+| mimiciv_hosp | d_icd_diagnoses | 109775 |
+| mimiciv_hosp | procedures_icd | 722 |
+| mimiciv_hosp | d_icd_procedures | 85257 |
+| mimiciv_hosp | labevents | 107727 |
+| mimiciv_hosp | d_labitems | 1622 |
+| mimiciv_hosp | microbiologyevents | 2899 |
+| mimiciv_hosp | omr | 2964 |
+| mimiciv_hosp | prescriptions | 18087 |
+| mimiciv_hosp | pharmacy | 15306 |
+| mimiciv_hosp | emar | 35835 |
+| mimiciv_icu | icustays | 140 |
+| mimiciv_icu | chartevents | 668862 |
+| mimiciv_icu | d_items | 4014 |
 
-#### Esquema `mimiciv_icu`
-| Tabla | Filas |
-|---|---:|
-| icustays | 140 |
-| chartevents | 668862 |
-| d_items | 4014 |
+## Funciones RPC
 
-#### Esquema `public` (tablas de aplicación)
-- `users`, `chat_sessions`, `chat_messages`, `clinical_documents`, `analyses`, `user_preferences`, `rag_chunks`
+| Función | Estado | Fichero |
+|---|---|---|
+| `clinical_dataset_summary_v1()` | Requerida (Fase 1) | `db/migrations/0001_clinical_aggregates_v1.sql` |
+| `clinical_top_diagnoses_v1(p_limit, p_icd_version)` | Requerida | idem |
+| `clinical_top_drugs_v1(p_limit)` | Requerida | idem |
+| `clinical_admission_type_distribution_v1()` | Requerida | idem |
+| `execute_readonly_query(text)` | **Debe eliminarse** | `db/migrations/0002_revoke_execute_readonly_query.sql` |
+| `hybrid_search`, `vector_search` (RAG) | Existentes, sin versionar | plantilla `db/migrations/0003_rag_search_functions_snapshot.sql` |
 
-## 🔧 Función RPC: execute_readonly_query
+Las RPC `clinical_*_v1` son `LANGUAGE sql STABLE SECURITY INVOKER`, con `search_path` fijo, `statement_timeout` de 10 s y límite acotado a 200. La RPC de SQL libre ya no tiene ningún consumidor en el código; su eliminación cierra el riesgo en la base de datos. Ambas migraciones se aplican en el SQL Editor (ver `db/README.md`).
 
-```sql
-CREATE OR REPLACE FUNCTION public.execute_readonly_query(query_text text)
-RETURNS jsonb
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, mimiciv_hosp, mimiciv_icu  -- ✅ Busca en los esquemas clínicos
+## Patrón de acceso desde la aplicación
+
+El runtime **no** usa el cliente Supabase directamente para datos clínicos. Todo pasa por `chathce.adapters.supabase.MimicClinicalDataProvider`, que:
+
+- usa `.schema("mimiciv_hosp"|"mimiciv_icu").table(...)` con `select` explícito;
+- añade siempre `.eq("subject_id", ctx.patient_id)` (defensa en profundidad además de `ScopeGuard`);
+- pide `limit + 1` para marcar `truncated`;
+- resuelve etiquetas contra diccionarios (`d_labitems`, `d_items`, `d_icd_*`) cacheados en memoria;
+- llama a las RPC `clinical_*_v1` para agregados, solo con `purpose=research`.
+
+Los scripts (`scripts/load_mimiciv.py`, `scripts/record_mimic_fixtures.py`) sí usan el cliente directamente, con `SUPABASE_SERVICE_ROLE_KEY` o `SUPABASE_KEY`, y nunca forman parte del runtime.
+
+## Claves por función
+
+| Variable | Rol | Uso |
+|---|---|---|
+| `SUPABASE_KEY` | hoy `service_role` (objetivo: bajo privilegio) | Auth, `public.*`, RAG |
+| `SUPABASE_CLINICAL_KEY` | rol de solo lectura sobre `mimiciv_*` (pendiente de crear) | `MimicClinicalDataProvider` |
+| `SUPABASE_SERVICE_ROLE_KEY` | `service_role` | Solo scripts de carga |
+
+## Seguridad
+
+- RLS habilitado en `mimiciv_hosp` / `mimiciv_icu`; política `SELECT` para `authenticated`; escritura revocada a `anon`/`authenticated`.
+- El aislamiento por paciente lo aplica la aplicación (`ScopeGuard`, ADR 0090); RLS por usuario/paciente queda para Fase 2 (ADR 0100).
+- El `service_role` ignora RLS: por eso el objetivo es separar claves por función y sustituir `SUPABASE_KEY` por una clave de bajo privilegio (checklist, item de rotación).
+
+## Verificación rápida
+
+```powershell
+conda activate HCE ; python scripts/load_mimiciv.py --verify-only
+conda activate HCE ; $env:HCE_RUN_INTEGRATION="1" ; python -m pytest tests/integration/test_mimic_provider_live.py -q
 ```
 
-- Solo permite `SELECT`; bloquea DROP/DELETE/INSERT/UPDATE/ALTER/CREATE/TRUNCATE/GRANT/REVOKE.
-- Está en `public` pero puede acceder a `mimiciv_hosp` / `mimiciv_icu` vía `search_path`.
-
-## 🧭 Patrones de acceso
-
-### Python Client con `.schema()` (recomendado)
-```python
-# Datos hospitalarios
-supabase.schema('mimiciv_hosp').table('admissions').select('*').eq('subject_id', 10000032).execute()
-# Datos UCI
-supabase.schema('mimiciv_icu').table('chartevents').select('*').eq('stay_id', 30057454).execute()
-# Datos de aplicación (esquema public por defecto)
-supabase.table('chat_sessions').select('*').execute()
-```
-
-### RPC (para SQL con JOINs)
-```python
-# El RPC maneja el search_path; usa nombres con o sin prefijo de esquema
-supabase.rpc('execute_readonly_query', {
-    'query_text': (
-        "SELECT d.long_title, COUNT(*) AS n "
-        "FROM mimiciv_hosp.diagnoses_icd x "
-        "JOIN mimiciv_hosp.d_icd_diagnoses d "
-        "ON d.icd_code = x.icd_code AND d.icd_version = x.icd_version "
-        "GROUP BY d.long_title ORDER BY n DESC LIMIT 10"
-    )
-}).execute()
-```
-
-Reglas del RPC: sin punto y coma final, sin comentarios SQL, solo SELECT.
-
-## 🔒 Seguridad
-
-- RLS habilitado en todas las tablas de `mimiciv_hosp` / `mimiciv_icu`.
-- Política `SELECT` para el rol `authenticated`; escritura revocada a `anon`/`authenticated`.
-- Esquemas expuestos vía PostgREST (`pgrst.db_schemas = public, graphql_public, mimiciv_hosp, mimiciv_icu`).
-- El `service_role` (usado por el cargador) tiene permisos completos sobre los esquemas clínicos.
-
-## 🧪 Verificación rápida
-
-```python
-# Acceso hospitalario
-r = supabase.schema('mimiciv_hosp').table('patients').select('subject_id', count='exact').limit(1).execute()
-print('patients:', r.count)   # 100
-
-# RPC
-r = supabase.rpc('execute_readonly_query', {'query_text': 'SELECT COUNT(*) AS total FROM mimiciv_hosp.admissions'}).execute()
-print('admissions:', r.data)  # 275
-```
-
-O bien: `conda activate HCE ; python scripts/load_mimiciv.py --verify-only`
-
-## ✅ Configuración verificada
-
-- Esquemas `mimiciv_hosp` y `mimiciv_icu` cargados con conteos exactos.
-- `mimic_ed` eliminado.
-- RPC `execute_readonly_query` con search_path a los esquemas nuevos.
-- El data service usa `.schema('mimiciv_hosp'|'mimiciv_icu')` según la tabla (mapa `TABLE_SCHEMA`).
+El segundo comando ejecuta el provider real en solo lectura; los tests de agregados se saltan hasta que `0001` esté aplicada.
