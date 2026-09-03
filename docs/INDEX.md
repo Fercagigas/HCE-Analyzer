@@ -7,6 +7,7 @@
 ## 🧭 Estado del proyecto
 
 - **[ESTADO_ACTUAL.md](ESTADO_ACTUAL.md)** - En qué punto estamos: fase, arquitectura, verificación de cierre de Fase 1, acciones pendientes del propietario (empezar aquí)
+- **[APRENDIZAJES_FASE1.md](APRENDIZAJES_FASE1.md)** - Clase magistral de la Fase 1: qué se tuvo en cuenta, qué se construyó y por qué, lecciones de evaluación y de proceso
 - **[../ROADMAP_HOSPITAL_READY/README.md](../ROADMAP_HOSPITAL_READY/README.md)** - Roadmap hospital-ready con estado por documento; fases en `15-implementation-phases.md`
 
 ---

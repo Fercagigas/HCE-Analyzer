@@ -26,6 +26,7 @@ docs/
 ├── INDEX.md                              # Índice de documentación
 ├── README.md                             # Este archivo
 ├── ESTADO_ACTUAL.md                      # Fase, arquitectura, verificación y pendientes
+├── APRENDIZAJES_FASE1.md                 # Clase magistral: decisiones, razones y lecciones de Fase 1
 │
 ├── UNIFIED_CHAT_ARCHITECTURE.md          # Arquitectura del chat (core chathce/, gateway, tools, canales)
 ├── UNIFIED_CHAT_TOOL_CREATION.md         # Crear herramientas (ToolContract + handler)
