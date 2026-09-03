@@ -1,5 +1,18 @@
 # 09 — Evidence Engine, citations y calidad de evidencia
 
+## Estado a 2 de septiembre de 2026 (cierre de Fase 1)
+
+Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencias: ADRs en `docs/decisions/`, evidencia en `docs/baseline/FASE1_BASELINE.md`.
+
+| Tarea | Estado | Evidencia / nota |
+|---|---|---|
+| P0.1 Modelo de afirmaciones | ✅ | `ClaimType` = OBSERVED_FACT, GUIDELINE_STATEMENT, CALCULATION, AI_INFERENCE, UNKNOWN (`chathce/domain/evidence.py`) |
+| P0.2 Evidence object | ✅ | `Evidence` con id, tipo, sistema origen, recurso, paciente/episodio, timestamp, valor/unidades, `Provenance(tool_name, tool_use_id, trace_id, retrieved_at, provider)` |
+| P0.3 Claim-to-evidence mapping | 🟡 | Una `Claim` por resultado de tool con sus `evidence_ids` y una `AI_INFERENCE` por respuesta; mapeo por afirmación es el Evidence Engine (Fase 3) |
+| P0.4 Source viewer | ⏳ | La API expone `evidence`; el visor es Fase 4 |
+| P0.5 No unsupported claims | 🟡 | Reglas en el prompt y `uncertainty` en la respuesta; verificación automática pendiente |
+| P1.1 – P1.4 | ⏳ | Fase 3 |
+
 ## Objetivo
 Convertir la trazabilidad en una característica central de ChatHCE.
 

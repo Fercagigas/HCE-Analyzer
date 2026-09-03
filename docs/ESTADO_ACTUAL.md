@@ -1,7 +1,7 @@
 # Estado actual del proyecto ChatHCE
 
 **Última actualización:** 2 de septiembre de 2026
-**Rama de trabajo:** `fase1/foundation` (local, pendiente de fusionar en `main`)
+**Rama principal:** `main` (Fase 1 fusionada desde `fase1/foundation` el 2 de septiembre de 2026)
 
 Este documento resume en qué punto se encuentra el proyecto: qué está hecho, qué acaba de cambiar y qué queda pendiente. Sirve como punto de entrada rápido para retomar el trabajo.
 
@@ -20,7 +20,7 @@ ChatHCE es una capa de inteligencia clínica (chat con Claude, RAG de guías y v
 | **Fase 0 — Freeze y baseline** | ✅ Completada | Baseline, inventario, mapa de acoplamiento, intended purpose, threat model. ADRs 0001/0010/0020/0030. |
 | **Migración de datos MIMIC-IV** | ✅ Completada | MIMIC-IV-ED → MIMIC-IV Clinical Demo 2.2. Ver `docs/MIGRACION_MIMIC_IV.md`. |
 | **Mitigaciones de seguridad iniciales** | ✅ Integradas | ADR 0040 (visualizaciones sin exec), ADR 0060 (XSRF/CORS), ADR 0070 (checklist Supabase). |
-| **Fase 1 — Foundation / P0** | ✅ Completada en `fase1/foundation` | Core `chathce/`, `RequestContext`, ports y adapters, Model Gateway, Clinical Data Provider allowlisted, FastAPI, Streamlit como adapter, tests por capas. ADRs 0050/0080/0090/0100/0110/0120. Quedan acciones manuales del propietario (§7). |
+| **Fase 1 — Foundation / P0** | ✅ Completada (en `main`) | Core `chathce/`, `RequestContext`, ports y adapters, Model Gateway, Clinical Data Provider allowlisted, FastAPI, Streamlit como adapter, tests por capas. ADRs 0050/0080/0090/0100/0110/0120. Quedan acciones manuales del propietario (§7). |
 | Fases 2–9 | ⏳ Pendientes | RLS por usuario, Evidence Engine, frontend React, FHIR/SMART, features AI-first, piloto. |
 
 Detalle del roadmap: `ROADMAP_HOSPITAL_READY/` y `.kiro/steering/roadmap.md`.
@@ -107,7 +107,7 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 2. Crear un rol/clave de solo lectura sobre `mimiciv_hosp`/`mimiciv_icu` y guardarla como `SUPABASE_CLINICAL_KEY` en `.env`.
 3. Validar clínicamente las 20 preguntas del golden set con `clinical_validation.status="pending"` (`Evaluation/golden_set_ragas.json`).
 4. Opcional: definir fuera del repo `HCE_TEST_USER_EMAIL` / `HCE_TEST_USER_PASSWORD` para los tests live de identidad y API; pegar en `db/migrations/0003` las definiciones de `hybrid_search`/`vector_search`.
-5. Fusionar `fase1/foundation` en `main` tras revisar los commits.
+5. Estado del roadmap por documento: `ROADMAP_HOSPITAL_READY/README.md` (columna Estado) y bloque «Estado a 2 de septiembre de 2026» en cada documento.
 
 ---
 

@@ -1,5 +1,19 @@
 # 01 — Product Scope, Intended Use y límites
 
+## Estado a 2 de septiembre de 2026 (cierre de Fase 1)
+
+Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencias: ADRs en `docs/decisions/`, evidencia en `docs/baseline/FASE1_BASELINE.md`.
+
+| Tarea | Estado | Evidencia / nota |
+|---|---|---|
+| P0.1 Intended purpose | ✅ | `docs/product/INTENDED_PURPOSE.md` (Fase 0) |
+| P0.2 Claims de producto | ✅ | `INTENDED_PURPOSE.md` y `.kiro/steering/product.md`; revisar tras `docs/product/COMPETITIVE_POSITIONING.md` |
+| P0.3 Actores | ✅ | `INTENDED_PURPOSE.md`; en código solo existen los roles `researcher` y usuario autenticado (ADR 0090) |
+| P0.4 Matriz acción/riesgo | ✅ | `docs/product/RISK_CAPABILITY_MATRIX.md` |
+| P0.5 Principios de UX | ✅ documentados · 🟡 aplicados | Paciente activo siempre visible en la barra lateral; hechos e inferencias separados en `ChatResponse` pero la UI Streamlit aún los muestra como texto |
+
+Siguiente paso: reclasificar en la matriz las tools de Fase 1 (12 tools read-only, agregados solo en `research`) y los features de `10-ai-features.md` antes de Fase 6.
+
 ## Objetivo
 
 Definir ChatHCE como **Clinical AI Intelligence Layer**, no como una HCE alternativa.

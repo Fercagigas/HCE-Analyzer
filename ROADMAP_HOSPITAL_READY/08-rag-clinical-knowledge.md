@@ -1,5 +1,22 @@
 # 08 — RAG como Clinical Knowledge System
 
+## Estado a 2 de septiembre de 2026 (cierre de Fase 1)
+
+Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencias: ADRs en `docs/decisions/`, evidencia en `docs/baseline/FASE1_BASELINE.md`.
+
+| Tarea | Estado | Evidencia / nota |
+|---|---|---|
+| P0.1 Metadata obligatoria | 🟡 | `filename`, `page`, `specialty`, `doc_type`, `chunk_id`. Faltan versión, vigencia, estado, aprobación, tenant |
+| P0.2 Solo contenido aprobado | ⏳ | |
+| P0.3 Version resolution | ⏳ | |
+| P0.4 Secure ingestion pipeline | ⏳ | Ingesta legacy (`services/unified_chat/document_manager.py`) sin scan ni aprobación |
+| P0.5 Tenant isolation | ⏳ | `rag_chunks` global |
+| P0.6 Retrieval provenance | ✅ | `Source` y `Evidence(type=guideline_document)` con documento, página, score y `evidence_id` |
+| P1.1 Hybrid retrieval | ✅ | Legacy vigente (`hybrid_search` + reranker) envuelto por `KnowledgeRepository` |
+| P1.2 – P1.4 | ⏳ | |
+
+Pendiente detectado en la evaluación de Fase 1: el agente no siempre invoca `search_clinical_documents` en preguntas de guías, y tres preguntas del golden set RAG carecen de `contexts` (`docs/baseline/FASE1_BASELINE.md` §3). El RAG sigue siendo código legacy fuera de `chathce/` (ADR 0110).
+
 ## Objetivo
 Pasar de "PDFs + embeddings" a una base de conocimiento clínico gobernada.
 

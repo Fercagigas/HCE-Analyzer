@@ -1,5 +1,7 @@
 # Implementación de Memoria Conversacional en ChatHCE
 
+> **Documento histórico (pre-Fase 1).** Describe la memoria conversacional del agente LangChain (`_get_conversation_context`, reinyección de datos de tools). Desde Fase 1 el historial lo gestiona `chathce/application/conversation_service.py`: replay resumido (texto más lista de tools usadas) sin reinyectar datos de tools de turnos anteriores, para que un cambio de paciente en la sesión no filtre datos (ADR 0080, 0090).
+
 **Fecha**: 2 de Diciembre, 2025  
 **Versión**: 2.1.0  
 **Estado**: ✅ Implementado y Probado

@@ -1,5 +1,11 @@
 # 10 — Features AI-first diferenciadoras
 
+## Estado a 2 de septiembre de 2026 (cierre de Fase 1)
+
+Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencias: ADRs en `docs/decisions/`, evidencia en `docs/baseline/FASE1_BASELINE.md`.
+
+Todas las features de este documento siguen ⏳ (Fase 6). Fase 1 deja la base que necesitan: `RequestContext` con paciente y episodio, DTOs clínicos con `evidence_id`, `PatientSummaryService`, `ClinicalDataProvider` con series temporales de laboratorio y UCI, y `ChatResponse` con hechos e inferencias separados. Antes de activar cualquiera hay que clasificarla en `docs/product/RISK_CAPABILITY_MATRIX.md` y disponer del Evidence Engine (Fase 3).
+
 ## Objetivo
 No competir con Oracle/Epic almacenando información; transformar información fragmentada en comprensión clínica navegable.
 

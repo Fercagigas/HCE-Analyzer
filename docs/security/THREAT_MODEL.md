@@ -1,6 +1,6 @@
 # Threat model inicial de ChatHCE
 
-Estado: baseline de Fase 0; describe el sistema actual, no una autorización de despliegue
+Estado: baseline de Fase 0 con revisión de cierre de Fase 1 (sección «Estado tras Fase 1»); describe el sistema, no una autorización de despliegue
 
 Fecha: 2026-09-01
 
@@ -270,6 +270,35 @@ Estas preguntas no requieren cambiar las decisiones DP-01 a DP-08, pero sí evid
 8. qué datos reales contiene la instancia Supabase usada en cada entorno.
 
 Un control externo solo podrá descontarse del riesgo cuando esté documentado, probado y vinculado al despliegue. Ninguna de estas incertidumbres se interpreta como control existente.
+
+## Estado tras Fase 1 (2 de septiembre de 2026)
+
+El cuerpo del documento conserva la fotografía de Fase 0. Esta sección registra qué cambió con la rama `fase1/foundation` (ADRs 0050, 0080, 0090, 0100, 0110, 0120) y qué sigue abierto. Evidencia: `docs/baseline/FASE1_BASELINE.md`.
+
+| Prioridad | Riesgos | Estado | Qué lo mitiga / qué falta |
+|---:|---|---|---|
+| 1 | C-01 | ✅ Mitigado | Cookie solo con refresh token, revalidación contra Supabase en cada carga, API con Bearer JWT (ADR 0100) |
+| 1 | C-03 | 🟡 Parcial | Repositorios reciben `RequestContext` y filtran por usuario; sin RLS por usuario en Supabase |
+| 1 | AI-06 | ✅ Mitigado en aplicación | `ScopeGuard` + `RequestContext` obligatorio; historial sin datos de tools; sin caché de respuestas; tests offline y live en verde. RLS pendiente como segunda barrera |
+| 1 | AI-07 | 🟡 Parcial | `tenant_id` en contexto y auditoría; aislamiento real multi-tenant no existe (Fase 2) |
+| 2 | AI-04, AI-08, AI-11 | ✅ Código · ⏳ BD | Sin SQL libre ni esquema en prompt; operaciones allowlisted con límite ≤200 y agregados solo con `purpose=research` (ADR 0050). La RPC `execute_readonly_query` sigue existiendo hasta aplicar `db/migrations/0002` |
+| 3 | AI-13 | ✅ Mitigado | Plantillas parametrizadas, sin `exec` (ADR 0040); test AST |
+| 4 | C-06 | 🟡 Parcial | Auditoría sin PHI, logs sin prompts ni SQL, caché de respuestas eliminada. Minimización antes del modelo pendiente |
+| 4 | AI-05 | 🟡 Parcial | Solo datos del paciente activo llegan al modelo; límites de filas. Política de egreso y minimización de campos pendientes (Fase 2) |
+| 5 | AI-03 | 🟡 Parcial | Resultados y documentos delimitados como `untrusted_data`; test offline de inyección indirecta. Sin caso live |
+| 5 | AI-09, AI-10, C-08 | ⏳ Vigentes | Ingesta documental legacy sin roles, scan ni aprobación |
+| 6 | C-02 | ✅ Mitigado | ADR 0060; CORS restrictivo y cabeceras en la API. CSP pendiente |
+| 7 | C-04, C-11 | 🟡 Parcial | Claves por función definidas (`SUPABASE_KEY`, `SUPABASE_CLINICAL_KEY`, `SUPABASE_SERVICE_ROLE_KEY`); la clave de solo lectura aún no está creada; RLS por usuario pendiente |
+| 8 | C-07 | ✅ Mitigado | `trace_id`/`request_id` extremo a extremo; `AuditEvent` por petición, llamada LLM, tool y rechazo |
+| 8 | C-09, AI-12 | 🟡 Parcial | Timeouts por tool/llamada/total, reintento acotado, rate limit por usuario. Circuit breaker y kill switch pendientes |
+
+Cambios en la superficie: el confín TB-02 (UI como identidad) desaparece; TB-04 pasa a ser `ScopeGuard(ClinicalDataProvider) ↔ Supabase` sin SQL; TB-07 (executor) deja de existir; aparece TB-10 `cliente HTTP ↔ FastAPI` (Bearer JWT, CORS, correlación). El activo A-05 ya no contiene esquema ni reglas SQL; A-10 dispone de `Evidence`, `Claim` y `AuditEvent` uniformes.
+
+Cobertura de pruebas actualizada: 52 tests de seguridad offline y 18 payloads live (5 categorías, 18/18) sustituyen a las 13 definiciones no ejecutables de Fase 0. Los verificadores live siguen basados en palabras clave más allowlist de tools; los tests offline inspeccionan rechazos reales (`error_code=scope_refused`) y eventos de auditoría.
+
+Incertidumbres cerradas: la RPC de SQL libre no tiene consumidores en código (sigue pendiente su eliminación en la base de datos). Siguen abiertas las relativas a privilegios de las claves desplegadas, RLS, topología, retención del proveedor LLM y corpus indexado.
+
+Mientras no se cierren los elementos ⏳ y 🟡 de prioridad 1 a 7, se mantiene la restricción a entorno de investigación controlado, un solo tenant, datos desidentificados y usuarios autorizados.
 
 ## Mantenimiento del modelo
 
