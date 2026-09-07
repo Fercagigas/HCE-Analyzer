@@ -1,0 +1,12 @@
+Comando:
+  $env:HCE_DISABLE_DOTENV='1'; $env:PYTEST_DISABLE_PLUGIN_AUTOLOAD='1'; python -m pytest -p pytest_asyncio.plugin tests/security tests/unit/test_eval_runner_contract.py -q
+
+Resultado:
+  tests/security/: 78 passed in 21.40s
+  tests/unit/test_eval_runner_contract.py: 2 passed in 1.29s
+  total verificado: 80 passed
+
+Desglose relevante:
+  tests/security/: 78 passed
+  tests/unit/test_eval_runner_contract.py: 2 passed
+  violaciones criticas: 0

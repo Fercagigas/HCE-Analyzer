@@ -1,0 +1,109 @@
+name: Security suite
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  offline-security:
+    name: Offline security gate
+    runs-on: ubuntu-latest
+    env:
+      HCE_DISABLE_DOTENV: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Instalar dependencias de test
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+      - name: Ejecutar gate adversarial sin credenciales
+        id: pytest
+        shell: bash
+        run: |
+          set +e
+          python -m pytest tests/security --junitxml=security-suite-junit.xml | tee security-suite-output.txt
+          status=${PIPESTATUS[0]}
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+      - name: Publicar resumen
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Security gate offline"
+            echo
+            echo "- Resultado de pytest: `${{ steps.pytest.outputs.status || 'no disponible' }}`"
+            echo "- Credenciales: no cargadas (`HCE_DISABLE_DOTENV=1`)."
+            echo "- Gate: una violacion de seguridad, incluidas las **critical**, falla este job."
+            echo
+            echo "### Ultimas lineas"
+            echo '```text'
+            tail -n 30 security-suite-output.txt 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Subir resultados de la suite
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-suite-${{ github.run_id }}
+          path: |
+            security-suite-junit.xml
+            security-suite-output.txt
+          if-no-files-found: warn
+
+  offline-full-suite:
+    name: Offline full suite (informative)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      HCE_DISABLE_DOTENV: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Instalar dependencias de test
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+      - name: Ejecutar suite completa sin credenciales
+        id: pytest-full
+        shell: bash
+        run: |
+          set +e
+          python -m pytest tests --junitxml=full-suite-junit.xml | tee full-suite-output.txt
+          status=${PIPESTATUS[0]}
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+      - name: Publicar resumen de la suite completa
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Suite offline completa (informativa)"
+            echo
+            echo "- Resultado de pytest: `${{ steps.pytest-full.outputs.status || 'no disponible' }}`"
+            echo "- Este job no bloquea el gate adversarial; sus fallos quedan visibles para seguimiento."
+            echo
+            echo '```text'
+            tail -n 30 full-suite-output.txt 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Subir resultados de la suite completa
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-suite-${{ github.run_id }}
+          path: |
+            full-suite-junit.xml
+            full-suite-output.txt
+          if-no-files-found: warn

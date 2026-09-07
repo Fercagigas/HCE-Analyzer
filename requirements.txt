@@ -61,6 +61,7 @@ json5
 pytest
 pytest-asyncio
 pytest-cov
+hypothesis
 black
 flake8
 
