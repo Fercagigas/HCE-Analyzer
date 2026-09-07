@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 from typing import Any, AsyncIterator, Dict, List, Optional, Sequence, Tuple
 
 from chathce.application.audit_events import emit_safely, make_audit_event
+from chathce.application.ai_kill_switch import AIGenerationGate
 from chathce.application.conversation_service import ConversationService, to_llm_history
 from chathce.application.prompts.system_prompt import build_system_prompt
 from chathce.application.rate_limit import RateLimiter
@@ -72,6 +73,7 @@ class ChatService:
         rate_limiter: Optional[RateLimiter] = None,
         audit: Optional[Any] = None,
         config: Optional[ChatServiceConfig] = None,
+        ai_gate: Optional[AIGenerationGate] = None,
     ):
         self._gateway = gateway
         self._registry = registry
@@ -80,6 +82,7 @@ class ChatService:
         self._rate_limiter = rate_limiter or RateLimiter()
         self._audit = audit
         self._config = config or ChatServiceConfig()
+        self._ai_gate = ai_gate or AIGenerationGate()
 
     # ------------------------------------------------------------------
     async def handle_chat(self, request: ChatRequest, ctx: RequestContext, *, persist: bool = True) -> ChatResponse:
@@ -113,6 +116,24 @@ class ChatService:
         started = time.perf_counter()
         with bind_context(ctx):
             await emit_safely(self._audit, make_audit_event(ctx, action=AuditAction.chat_started, outcome="success", component="chat_service"))
+
+            ai_status = self._ai_gate.status()
+            if ai_status.changed:
+                await emit_safely(self._audit, make_audit_event(
+                    ctx, action=AuditAction.ai_kill_switch_changed, outcome="success", component="chat_service",
+                    attributes={"reason": ai_status.source},
+                ))
+            if not ai_status.enabled:
+                error = ErrorInfo(code="AI_DISABLED", message="La generacion por IA esta deshabilitada temporalmente.",
+                                  suggestions=["Contacte con el equipo responsable si necesita asistencia."])
+                response = self._failure(ctx, request, error, started)
+                await emit_safely(self._audit, make_audit_event(
+                    ctx, action=AuditAction.ai_kill_switch_rejected, outcome="refused", component="chat_service",
+                    error_code=error.code, attributes={"reason": ai_status.source},
+                ))
+                yield ErrorEvent(error=error, trace_id=ctx.trace_id, request_id=ctx.request_id)
+                yield CompleteEvent(response=response)
+                return
 
             # --- validacion y rate limit -------------------------------------
             error = self._validate(request, ctx)

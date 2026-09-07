@@ -23,6 +23,7 @@ from chathce.adapters.memory import (
 )
 from chathce.adapters.memory.postgrest_client import InMemoryPostgrestClient, register_clinical_aggregate_rpcs
 from chathce.application.chat_service import ChatService, ChatServiceConfig
+from chathce.application.ai_kill_switch import AIGenerationGate
 from chathce.application.conversation_service import ConversationService
 from chathce.application.knowledge_service import KnowledgeService
 from chathce.application.patient_summary_service import PatientSummaryService
@@ -54,6 +55,7 @@ class Container:
     patient_summary_service: PatientSummaryService
     knowledge_service: KnowledgeService
     rate_limiter: RateLimiter
+    ai_gate: AIGenerationGate
     runner: AsyncRunner = field(default_factory=AsyncRunner)
     profile: dict = field(default_factory=dict)
 
@@ -146,6 +148,8 @@ def build_container(settings: Any, *, llm_provider: Any = None, clinical_provide
         model_chain=list(settings.llm.model_chain), max_tokens=settings.llm.max_tokens, temperature=settings.llm.temperature,
         request_timeout_s=settings.llm.request_timeout_s, total_timeout_s=settings.llm.total_timeout_s,
         max_retries_per_model=settings.llm.max_retries_per_model, max_iterations=settings.llm.max_iterations,
+        provider_name=settings.llm.provider, circuit_breaker_failure_threshold=settings.llm.circuit_breaker_failure_threshold,
+        circuit_breaker_recovery_s=settings.llm.circuit_breaker_recovery_s,
     ), audit=audit)
 
     security = settings.security
@@ -155,8 +159,9 @@ def build_container(settings: Any, *, llm_provider: Any = None, clinical_provide
         lockout_s=float(security.lockout_duration_seconds),
     ))
     conversation_service = ConversationService(conversations if (persist is not False) else None, analyses)
+    ai_gate = AIGenerationGate(enabled=settings.llm.ai_enabled, state_file=settings.llm.ai_kill_switch_file)
     chat_service = ChatService(gateway, registry, conversation_service, visualizations, rate_limiter=rate_limiter, audit=audit,
-                               config=ChatServiceConfig(max_message_length=security.max_message_length))
+                               config=ChatServiceConfig(max_message_length=security.max_message_length), ai_gate=ai_gate)
 
     return Container(
         settings=settings, audit=audit, llm_provider=llm_provider, clinical_provider=guarded, identity=identity,
@@ -164,4 +169,5 @@ def build_container(settings: Any, *, llm_provider: Any = None, clinical_provide
         visualizations=visualizations, registry=registry, gateway=gateway, chat_service=chat_service,
         conversation_service=conversation_service, patient_summary_service=PatientSummaryService(guarded),
         knowledge_service=KnowledgeService(knowledge, audit), rate_limiter=rate_limiter, profile=profile,
+        ai_gate=ai_gate,
     )

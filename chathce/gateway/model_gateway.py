@@ -13,7 +13,7 @@ import asyncio
 import random
 import time
 from dataclasses import dataclass, field
-from typing import Any, AsyncIterator, Awaitable, Callable, List, Optional, Sequence, Union
+from typing import Any, AsyncIterator, Awaitable, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 from chathce.application.audit_events import emit_safely, make_audit_event
 from chathce.domain.audit import AuditAction
@@ -36,6 +36,7 @@ from chathce.ports.llm_provider import (
     LLMProviderError,
     LLMTextDelta,
     LLMTimeout,
+    LLMUnavailable,
     LLMToolUseStart,
     LLMUsage,
     TextPart,
@@ -60,6 +61,9 @@ class GatewayConfig:
     max_iterations: int = 6
     backoff_base_s: float = 1.0
     backoff_max_s: float = 8.0
+    provider_name: str = "unknown"
+    circuit_breaker_failure_threshold: int = 3
+    circuit_breaker_recovery_s: float = 30.0
 
 
 @dataclass
@@ -87,6 +91,53 @@ class _Attempt:
         self.text: str = ""
 
 
+@dataclass
+class _CircuitState:
+    failures: int = 0
+    state: str = "closed"
+    opened_at: float = 0.0
+
+
+class ModelCircuitBreaker:
+    """Circuit breaker en memoria, aislado por proveedor y modelo."""
+
+    def __init__(self, *, provider_name: str, failure_threshold: int, recovery_s: float,
+                 clock: Callable[[], float] = time.monotonic):
+        self._provider_name = provider_name
+        self._threshold = failure_threshold
+        self._recovery_s = recovery_s
+        self._clock = clock
+        self._states: Dict[Tuple[str, str], _CircuitState] = {}
+
+    def allow(self, model: str) -> Tuple[bool, Optional[Tuple[str, str]]]:
+        state = self._states.setdefault((self._provider_name, model), _CircuitState())
+        if state.state != "open":
+            return True, None
+        if self._clock() - state.opened_at < self._recovery_s:
+            return False, None
+        state.state = "half_open"
+        return True, ("open", "half_open")
+
+    def success(self, model: str) -> Optional[Tuple[str, str]]:
+        state = self._states.setdefault((self._provider_name, model), _CircuitState())
+        previous = state.state
+        state.failures = 0
+        state.state = "closed"
+        return (previous, "closed") if previous != "closed" else None
+
+    def failure(self, model: str) -> Optional[Tuple[str, str]]:
+        state = self._states.setdefault((self._provider_name, model), _CircuitState())
+        previous = state.state
+        state.failures += 1
+        if state.state == "half_open" or state.failures >= self._threshold:
+            state.state = "open"
+            state.opened_at = self._clock()
+        return (previous, state.state) if previous != state.state else None
+
+    def state_for(self, model: str) -> str:
+        return self._states.get((self._provider_name, model), _CircuitState()).state
+
+
 class ModelGateway:
     def __init__(
         self,
@@ -97,6 +148,7 @@ class ModelGateway:
         audit: Optional[Any] = None,
         sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
         stream: bool = True,
+        circuit_breaker: Optional[ModelCircuitBreaker] = None,
     ):
         if not config.model_chain:
             raise ValueError("model_chain no puede estar vacia")
@@ -106,6 +158,11 @@ class ModelGateway:
         self._audit = audit
         self._sleep = sleep
         self._stream = stream
+        self._circuit_breaker = circuit_breaker or ModelCircuitBreaker(
+            provider_name=config.provider_name or getattr(provider, "provider_name", type(provider).__name__),
+            failure_threshold=config.circuit_breaker_failure_threshold,
+            recovery_s=config.circuit_breaker_recovery_s,
+        )
 
     # ------------------------------------------------------------------
     async def run(
@@ -193,6 +250,16 @@ class ModelGateway:
         cfg = self._config
         while True:
             model = cfg.model_chain[state["model_index"]]
+            allowed, transition = self._circuit_breaker.allow(model)
+            if transition:
+                await self._audit_circuit_transition(ctx, model, transition, prompt_version)
+            if not allowed:
+                error = LLMUnavailable("El circuito del modelo esta abierto temporalmente")
+                if state["model_index"] + 1 >= len(cfg.model_chain):
+                    raise error
+                async for event in self._fallback(ctx, state, iteration, prompt_version, model):
+                    yield event
+                continue
             retries = 0
             while True:
                 remaining = deadline - time.monotonic()
@@ -236,6 +303,9 @@ class ModelGateway:
                         latency_ms=int((time.perf_counter() - started) * 1000),
                         attributes={"iteration": iteration, "stop_reason": attempt.end.stop_reason},
                     ))
+                    transition = self._circuit_breaker.success(model)
+                    if transition:
+                        await self._audit_circuit_transition(ctx, model, transition, prompt_version)
                     return
 
                 await emit_safely(self._audit, make_audit_event(
@@ -244,6 +314,9 @@ class ModelGateway:
                     latency_ms=int((time.perf_counter() - started) * 1000), error_code=error.code,
                     error_class=error.__class__.__name__, attributes={"iteration": iteration},
                 ))
+                transition = self._circuit_breaker.failure(model)
+                if transition:
+                    await self._audit_circuit_transition(ctx, model, transition, prompt_version)
                 if not error.retryable:
                     raise error
                 if retries < cfg.max_retries_per_model:
@@ -255,16 +328,28 @@ class ModelGateway:
 
             if state["model_index"] + 1 >= len(cfg.model_chain):
                 raise error
-            previous = model
-            state["model_index"] += 1
-            state["fallback_used"] = True
-            nxt = cfg.model_chain[state["model_index"]]
-            await emit_safely(self._audit, make_audit_event(
-                ctx, action=AuditAction.llm_fallback, outcome="success", component="gateway",
-                model_requested=cfg.model_chain[0], model_used=nxt, prompt_version=prompt_version,
-                attributes={"fallback_from": previous, "fallback_to": nxt, "iteration": iteration},
-            ))
-            yield StatusEvent(stage="fallback", message=f"Cambiando al modelo alternativo {nxt}", model=nxt, iteration=iteration)
+            async for event in self._fallback(ctx, state, iteration, prompt_version, model):
+                yield event
+
+    async def _fallback(self, ctx, state, iteration, prompt_version, previous):
+        cfg = self._config
+        state["model_index"] += 1
+        state["fallback_used"] = True
+        nxt = cfg.model_chain[state["model_index"]]
+        await emit_safely(self._audit, make_audit_event(
+            ctx, action=AuditAction.llm_fallback, outcome="success", component="gateway",
+            model_requested=cfg.model_chain[0], model_used=nxt, prompt_version=prompt_version,
+            attributes={"fallback_from": previous, "fallback_to": nxt, "iteration": iteration},
+        ))
+        yield StatusEvent(stage="fallback", message=f"Cambiando al modelo alternativo {nxt}", model=nxt, iteration=iteration)
+
+    async def _audit_circuit_transition(self, ctx, model, transition, prompt_version):
+        previous, current = transition
+        await emit_safely(self._audit, make_audit_event(
+            ctx, action=AuditAction.llm_circuit_breaker, outcome="success", component="gateway",
+            model_requested=self._config.model_chain[0], model_used=model, prompt_version=prompt_version,
+            attributes={"provider": self._config.provider_name, "reason": f"{previous}_to_{current}"},
+        ))
 
 
 def _summary(result: ToolResult) -> ToolCallSummary:

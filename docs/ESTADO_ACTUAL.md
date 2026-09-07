@@ -116,7 +116,7 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 - **RLS por usuario/paciente** en Supabase; hoy el aislamiento lo aplica `ScopeGuard` en la aplicación y la clave de servicio ignora RLS (ADR 0100).
 - **Evidence Engine**: una `Claim` por frase con `evidence_ids`; hoy una por tool y una `AI_INFERENCE` por respuesta (ADR 0090).
 - **Un solo worker uvicorn** por los modelos locales del RAG; servicio de embeddings separado (ADR 0110).
-- **Streaming en Streamlit** (solo la API emite SSE). **Kill switch** y circuit breaker por modelo (Fase 2).
+- **Streaming en Streamlit** (solo la API emite SSE). **Kill switch** y circuit breaker por modelo completados (ADR 0140).
 - `services/rag/*`, `src/processors/document_processor.py` y gran parte de `ui/` siguen siendo legacy (cobertura 0–38 %); `ui/components/components/document_manager.py` llama directamente a `get_rag_service()`.
 - Cookie de Streamlit legible desde JavaScript (limitación del componente); mitigada con refresh token rotatorio.
 - Ficheros no versionados intencionadamente: `TFM VIU Fernando Cagigas.pdf`, `figures/`.
