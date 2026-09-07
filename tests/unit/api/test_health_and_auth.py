@@ -45,5 +45,5 @@ async def test_invalid_token_is_rejected(client):
 async def test_http_requests_are_audited_without_phi(client, api):
     await client.post("/api/v1/chat", json={"message": "dato sensible"}, headers=auth())
     events = [e for e in api.container.audit.events if e.action.value == "http_request"]
-    assert events and events[-1].attributes["route_template"] == "/api/v1/chat" and events[-1].user_id == "clin-1"
+    assert events and events[-1].attributes["route_template"] == "/api/v1/chat" and events[-1].user_id.startswith("TOKEN_")
     assert "dato sensible" not in "".join(e.model_dump_json() for e in api.container.audit.events)

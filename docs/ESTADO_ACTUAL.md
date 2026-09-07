@@ -118,6 +118,7 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 - **Evidence Engine**: una `Claim` por frase con `evidence_ids`; hoy una por tool y una `AI_INFERENCE` por respuesta (ADR 0090).
 - **Un solo worker uvicorn** por los modelos locales del RAG; servicio de embeddings separado (ADR 0110).
 - **Streaming en Streamlit** (solo la API emite SSE). **Kill switch** y circuit breaker por modelo completados (ADR 0140).
+- **PHI antes del modelo**: minimización por DTO, pseudonimización por sesión y detector configurable completados (ADR 0160); DLP externo y política de egreso por proveedor siguen pendientes.
 - `services/rag/*`, `src/processors/document_processor.py` y gran parte de `ui/` siguen siendo legacy (cobertura 0–38 %); `ui/components/components/document_manager.py` llama directamente a `get_rag_service()`.
 - Cookie de Streamlit legible desde JavaScript (limitación del componente); mitigada con refresh token rotatorio.
 - Ficheros no versionados intencionadamente: `TFM VIU Fernando Cagigas.pdf`, `figures/`.

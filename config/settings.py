@@ -89,6 +89,7 @@ class SecuritySettings(BaseSettings):
     burst_limit: int = Field(5, env="BURST_LIMIT")
     burst_window_seconds: float = Field(10.0, env="BURST_WINDOW_SECONDS")
     lockout_duration_seconds: int = Field(900, env="LOCKOUT_DURATION_SECONDS")
+    phi_detection_mode: str = Field("redact", env="PHI_DETECTION_MODE")  # observe | redact | block
 
     model_config = {
         "env_file": _ENV_FILE,

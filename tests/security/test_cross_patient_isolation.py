@@ -97,7 +97,7 @@ async def test_authorized_patient_queries_pass_and_are_audited(guarded):
     assert summary.patient.subject_id == A
     event = audit.events[-1]
     assert event.action.value == "clinical_query" and event.outcome == "success"
-    assert event.patient_id == str(A) and event.operation == "get_patient_summary"
+    assert event.patient_id.startswith("PATIENT_") and event.operation == "get_patient_summary"
     assert "labs" in event.data_categories
     assert audit.phi_findings() == []
 

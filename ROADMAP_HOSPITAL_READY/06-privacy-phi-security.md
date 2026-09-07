@@ -7,13 +7,13 @@ Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencia
 | Tarea | Estado | Evidencia / nota |
 |---|---|---|
 | P0.1 Data flow inventory | 🟡 | `docs/architecture/INVENTORY.md` §3 (qué sale hacia Anthropic y Supabase); formalizar por campo pendiente |
-| P0.2 Data minimisation gateway | ⏳ | Hoy el modelo recibe los DTOs completos del paciente activo (dataset desidentificado) |
-| P0.3 PHI/PII detection | ⏳ | Solo existe un escáner de PHI en el sink de auditoría de tests |
-| P0.4 Tokenización/pseudonimización | ⏳ | |
+| P0.2 Data minimisation gateway | ✅ | Catálogo por DTO y frontera única antes del prompt (`ADR 0160`) |
+| P0.3 PHI/PII detection | ✅ | DNI/NIE, teléfonos, emails y nombres marcados; modos observe/redact/block (`ADR 0160`) |
+| P0.4 Tokenización/pseudonimización | ✅ | Tokens HMAC estables por sesión para paciente, episodio y registros (`ADR 0160`) |
 | P0.5 LLM data policy | ⏳ | Un único proveedor; política por modelo/región pendiente |
 | P0.6 Encryption | 🟡 | TLS; secretos fuera del repo; clave clinica `clinical_readonly` y verificacion fail-closed preparadas (ADR 0130), pendientes de aplicar y rotar por el propietario |
 | P0.6b Superficie de BD endurecida | ✅ | SQL libre eliminado de Supabase (`execute_readonly_query`, `exec_sql`); funciones `SECURITY DEFINER` de triggers con `EXECUTE` revocado a `anon`/`authenticated` y `search_path` fijo (`db/migrations/0002`–`0004`, 2026-09-02). Security advisor sin avisos de funciones. Ver `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md` |
-| P0.7 Logging seguro | ✅ | `AuditEvent` sin mensajes, resultados, emails ni tokens; logs de aplicación sin prompts (ADR 0090) |
+| P0.7 Logging seguro | ✅ | `AuditEvent` sin mensajes, resultados, emails ni tokens; prueba PHI sintético en auditoría y prompt (`ADR 0160`) |
 | P0.8 Browser security | 🟡 | XSRF/CORS activos en Streamlit (ADR 0060); CORS restrictivo y cabeceras de seguridad en la API; CSP y cookie HttpOnly pendientes (la cookie de Streamlit solo guarda el refresh token) |
 | P1.1 – P1.3 | ⏳ | Fase 2/7 |
 

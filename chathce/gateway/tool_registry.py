@@ -13,6 +13,7 @@ from chathce.application.audit_events import emit_safely, make_audit_event
 from chathce.domain.audit import AuditAction
 from chathce.domain.context import RequestContext
 from chathce.domain.errors import DomainError, NotFound, ProviderUnavailable, PurposeNotAllowed, ScopeViolation, ToolTimeout
+from chathce.domain.phi import PhiDetectionMode, PhiMinimizer
 from chathce.domain.tools import ToolContract, ToolResult
 from chathce.gateway.policy import ToolPolicy
 from chathce.gateway.rendering import render_for_model
@@ -42,11 +43,13 @@ def _error_code_for(exc: DomainError) -> str:
 
 
 class ToolRegistry:
-    def __init__(self, *, policy: Optional[ToolPolicy] = None, audit: Optional[Any] = None, max_visible_chars: int = 12000):
+    def __init__(self, *, policy: Optional[ToolPolicy] = None, audit: Optional[Any] = None, max_visible_chars: int = 12000,
+                 phi_detection_mode: PhiDetectionMode | str = PhiDetectionMode.redact):
         self._tools: Dict[str, Tool] = {}
         self._policy = policy or ToolPolicy()
         self._audit = audit
         self._max_visible_chars = max_visible_chars
+        self._phi_detection_mode = PhiDetectionMode(phi_detection_mode)
 
     # ------------------------------------------------------------------
     def register(self, tool: Tool) -> None:
@@ -133,7 +136,15 @@ class ToolRegistry:
                       started: float, *, refused: bool = False) -> ToolResult:
         elapsed = int((time.perf_counter() - started) * 1000)
         result = result.model_copy(update={"elapsed_ms": elapsed})
-        result = result.model_copy(update={"model_visible_text": render_for_model(result, max_chars=self._max_visible_chars)})
+        minimizer = PhiMinimizer(session_id=ctx.session_id, mode=self._phi_detection_mode)
+        minimized = minimizer.minimize(result.data)
+        result = result.model_copy(update={"data": minimized})
+        visible = minimizer.inspect_text(render_for_model(result, max_chars=self._max_visible_chars))
+        if visible.blocked and self._phi_detection_mode == PhiDetectionMode.block:
+            visible_text = '<tool_data status="blocked" trust="untrusted_data">[contenido bloqueado por PHI]</tool_data>'
+        else:
+            visible_text = visible.text
+        result = result.model_copy(update={"model_visible_text": visible_text})
         if refused:
             action, outcome = AuditAction.tool_refused, "refused"
         elif result.success:

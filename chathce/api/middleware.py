@@ -14,6 +14,7 @@ from starlette.responses import Response
 
 from chathce.application.audit_events import emit_safely
 from chathce.domain.audit import AuditAction, AuditEvent
+from chathce.domain.phi import PhiMinimizer
 
 _ID_PATTERN = re.compile(r"^[A-Za-z0-9._:-]{8,128}$")
 
@@ -41,10 +42,11 @@ class CorrelationMiddleware(BaseHTTPMiddleware):
             latency = int((time.perf_counter() - started) * 1000)
             route = request.scope.get("route")
             template = getattr(route, "path", request.url.path)
+            minimizer = PhiMinimizer(session_id=request.state.trace_id)
             await emit_safely(self._audit, AuditEvent(
                 event_id=uuid.uuid4().hex, timestamp=datetime.now(timezone.utc), action=AuditAction.http_request,
                 outcome="success" if status < 400 else "failure", component="api", tenant_id=self._tenant,
-                user_id=getattr(request.state, "user_id", None), trace_id=request.state.trace_id,
+                user_id=minimizer.pseudonymize(getattr(request.state, "user_id", None), "user_id"), trace_id=request.state.trace_id,
                 request_id=request.state.request_id, channel="api", latency_ms=latency,
                 attributes={"method": request.method, "route_template": str(template)[:200], "status": status},
             ))
