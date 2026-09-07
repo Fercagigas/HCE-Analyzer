@@ -8,9 +8,13 @@ for the medical conversation agent with comprehensive error handling.
 import logging
 import re
 import time
+from collections import Counter
+from contextlib import contextmanager
 from typing import Dict, Any, Optional, List
+import httpx
 import pandas as pd
 from supabase import create_client, Client
+from supabase.lib.client_options import SyncClientOptions
 from config.settings import settings
 from services.connection_pool_manager import connection_pool_manager
 import asyncio
@@ -142,6 +146,10 @@ class DatabaseService:
     
     # Schema name for MIMIC-IV-ED tables (exposed in Supabase API settings)
     SCHEMA_NAME = 'mimic_ed'
+
+    QUERY_TIMEOUT_SECONDS = 30
+    MAX_TYPED_RESULT_ROWS = 200
+    AGGREGATION_SCAN_LIMIT = 1000
     
     # Dangerous SQL keywords to prevent
     DANGEROUS_KEYWORDS = {
@@ -182,7 +190,10 @@ class DatabaseService:
         try:
             self.supabase = create_client(
                 settings.database.supabase_url,
-                settings.database.supabase_key
+                settings.database.supabase_key,
+                options=SyncClientOptions(
+                    postgrest_client_timeout=self.QUERY_TIMEOUT_SECONDS
+                ),
             )
             
             # Test connection with a simple query
@@ -208,14 +219,30 @@ class DatabaseService:
         except Exception as e:
             raise ConnectionError(f"Connection test failed: {str(e)}")
     
+    @contextmanager
     def _get_connection(self):
-        """Get a database connection, either from pool or direct connection."""
+        """Yield a connection whose PostgREST transport enforces the query timeout."""
         if self._use_connection_pool:
-            return connection_pool_manager.get_db_connection()
-        else:
-            # Fallback to direct connection
-            self._ensure_connection_healthy()
-            return self._direct_connection_context()
+            with connection_pool_manager.get_db_connection() as connection:
+                self._configure_query_timeout(connection)
+                yield connection
+            return
+
+        self._ensure_connection_healthy()
+        with self._direct_connection_context() as connection:
+            self._configure_query_timeout(connection)
+            yield connection
+
+    def _configure_query_timeout(self, connection: Client) -> None:
+        """Apply a real HTTP deadline to provider requests, including pooled clients."""
+        try:
+            connection.postgrest.session.timeout = httpx.Timeout(
+                self.QUERY_TIMEOUT_SECONDS
+            )
+        except Exception as exc:
+            raise ConnectionError(
+                "Unable to enforce the database query timeout"
+            ) from exc
     
     def _direct_connection_context(self):
         """Context manager for direct connection (fallback)."""
@@ -934,12 +961,13 @@ class DatabaseService:
     
     @retry_on_failure(max_retries=2, delay=0.5, backoff=2.0)
     @timeout_handler(timeout_seconds=30)
-    def get_vital_signs(self, stay_id: int) -> List[Dict]:
+    def get_vital_signs(self, stay_id: int, limit: int = 100) -> List[Dict]:
         """
         Get vital signs for a specific stay.
         
         Args:
             stay_id: Stay identifier
+            limit: Maximum number of measurements returned
             
         Returns:
             List of vital sign measurements
@@ -952,10 +980,16 @@ class DatabaseService:
             # Validate input
             if not isinstance(stay_id, int) or stay_id <= 0:
                 raise ValidationError(f"Invalid stay ID: {stay_id}. Stay ID must be a positive integer.")
+            if not isinstance(limit, int) or not 1 <= limit <= self.MAX_TYPED_RESULT_ROWS:
+                raise ValidationError(
+                    f"limit must be between 1 and {self.MAX_TYPED_RESULT_ROWS}"
+                )
             
             # Ensure connection is healthy
             self._ensure_connection_healthy()
-            vitals_df = self.get_table_data('vitalsign', {'stay_id': stay_id})
+            vitals_df = self.get_table_data(
+                'vitalsign', {'stay_id': stay_id}, limit=limit
+            )
             
             if not vitals_df.empty:
                 # Sort by charttime
@@ -1241,65 +1275,177 @@ class DatabaseService:
             logger.error(f"Failed to get diagnoses for stay {stay_id}: {e}")
             raise
     
+    def _validate_typed_limit(self, limit: int) -> int:
+        """Validate limits shared by all model-facing typed operations."""
+        if not isinstance(limit, int) or not 1 <= limit <= self.MAX_TYPED_RESULT_ROWS:
+            raise ValidationError(
+                f"limit must be between 1 and {self.MAX_TYPED_RESULT_ROWS}"
+            )
+        return limit
+
+    def _scope_filters(
+        self,
+        subject_id: Optional[int],
+        stay_id: Optional[int],
+    ) -> Dict[str, int]:
+        """Build a mandatory patient/encounter filter for a typed operation."""
+        if subject_id is None and stay_id is None:
+            raise ValidationError("A patient or encounter scope is required")
+        filters: Dict[str, int] = {}
+        if subject_id is not None:
+            if not isinstance(subject_id, int) or subject_id <= 0:
+                raise ValidationError("subject_id must be a positive integer")
+            filters["subject_id"] = subject_id
+        if stay_id is not None:
+            if not isinstance(stay_id, int) or stay_id <= 0:
+                raise ValidationError("stay_id must be a positive integer")
+            filters["stay_id"] = stay_id
+        return filters
+
     @retry_on_failure(max_retries=2, delay=0.5)
-    def execute_custom_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
-        """
-        Execute a custom SQL query (SELECT only for security).
-        
-        Args:
-            query: SQL SELECT query string
-            params: Optional query parameters (not used with Supabase RPC)
-            
-        Returns:
-            List of result dictionaries
-            
-        Raises:
-            ValidationError: If query is invalid or unsafe
-            DatabaseError: If query execution fails
-        """
-        try:
-            # Sanitize query: remove trailing semicolons (Supabase RPC doesn't accept them)
-            query = query.strip()
-            while query.endswith(';'):
-                query = query[:-1].strip()
-            
-            # Validate query is SELECT only
-            query_upper = query.upper()
-            if not query_upper.startswith('SELECT'):
-                raise ValidationError("Only SELECT queries are allowed")
-            
-            # Check for dangerous keywords
-            dangerous_keywords = ['DROP', 'DELETE', 'UPDATE', 'INSERT', 'ALTER', 'CREATE', 'TRUNCATE', 'EXEC', 'EXECUTE']
-            for keyword in dangerous_keywords:
-                if keyword in query_upper:
-                    raise ValidationError(f"Query contains forbidden keyword: {keyword}")
-            
-            logger.info(f"Executing custom query: {query[:200]}...")
-            
-            # Get connection (either from pool or direct)
-            with self._get_connection() as supabase_client:
-                # Use Supabase RPC to execute raw SQL
-                # Note: This requires a stored procedure in Supabase
-                result = supabase_client.rpc('execute_readonly_query', {'query_text': query}).execute()
-                
-                if hasattr(result, 'data') and result.data:
-                    logger.info(f"Custom query returned {len(result.data)} rows")
-                    return result.data
-                else:
-                    logger.info("Custom query returned no results")
-                    return []
-                
-        except ValidationError:
-            raise
-        except Exception as e:
-            error_msg = f"Custom query execution failed: {str(e)}"
-            logger.error(error_msg)
-            
-            # If RPC doesn't exist, provide helpful error
-            if 'function' in str(e).lower() and 'does not exist' in str(e).lower():
-                raise DatabaseError(
-                    "Custom SQL queries require a stored procedure in Supabase. "
-                    "Please use specific query methods (patient_summary, stay_details, etc.) instead."
+    @timeout_handler(timeout_seconds=30)
+    def get_scoped_diagnoses(
+        self,
+        subject_id: Optional[int] = None,
+        stay_id: Optional[int] = None,
+        icd_code: Optional[str] = None,
+        icd_title: Optional[str] = None,
+        limit: int = 100,
+    ) -> List[Dict[str, Any]]:
+        """Return diagnoses only inside an explicit patient/encounter scope."""
+        validated_limit = self._validate_typed_limit(limit)
+        filters = self._scope_filters(subject_id, stay_id)
+        if icd_code:
+            if not re.match(r"^[A-Za-z0-9.]+$", icd_code):
+                raise ValidationError("Invalid ICD code format")
+            filters["icd_code"] = icd_code
+
+        diagnoses_df = self.get_table_data(
+            "diagnosis", filters=filters, limit=validated_limit
+        )
+        if icd_title and not diagnoses_df.empty:
+            diagnoses_df = diagnoses_df[
+                diagnoses_df["icd_title"].str.contains(
+                    icd_title, case=False, na=False, regex=False
                 )
-            
-            raise DatabaseError(error_msg)
+            ]
+        return diagnoses_df.to_dict("records") if not diagnoses_df.empty else []
+
+    @retry_on_failure(max_retries=2, delay=0.5)
+    @timeout_handler(timeout_seconds=30)
+    def get_scoped_medications(
+        self,
+        subject_id: Optional[int] = None,
+        stay_id: Optional[int] = None,
+        limit: int = 100,
+    ) -> List[Dict[str, Any]]:
+        """Return medication records only inside an explicit scope."""
+        validated_limit = self._validate_typed_limit(limit)
+        filters = self._scope_filters(subject_id, stay_id)
+        records: List[Dict[str, Any]] = []
+        for table_name in ("medrecon", "pyxis"):
+            table_df = self.get_table_data(
+                table_name, filters=filters, limit=validated_limit
+            )
+            if not table_df.empty:
+                table_records = table_df.to_dict("records")
+                for record in table_records:
+                    record["source"] = table_name
+                records.extend(table_records)
+        records.sort(key=lambda item: item.get("charttime", ""), reverse=True)
+        return records[:validated_limit]
+
+    @retry_on_failure(max_retries=2, delay=0.5)
+    @timeout_handler(timeout_seconds=30)
+    def get_scoped_triage(
+        self,
+        subject_id: Optional[int] = None,
+        stay_id: Optional[int] = None,
+        limit: int = 100,
+    ) -> List[Dict[str, Any]]:
+        """Return triage records only inside an explicit scope."""
+        validated_limit = self._validate_typed_limit(limit)
+        filters = self._scope_filters(subject_id, stay_id)
+        triage_df = self.get_table_data(
+            "triage", filters=filters, limit=validated_limit
+        )
+        return triage_df.to_dict("records") if not triage_df.empty else []
+
+    def _aggregation_scan_limit(self) -> int:
+        """Bound source rows used by fixed MIMIC research aggregates."""
+        return min(
+            self.AGGREGATION_SCAN_LIMIT,
+            max(1, settings.medical_agent.max_result_rows),
+        )
+
+    def _frequency_aggregate(
+        self,
+        table_name: str,
+        column_name: str,
+        top_n: int,
+    ) -> Dict[str, Any]:
+        """Calculate a fixed, bounded frequency distribution."""
+        validated_top_n = self._validate_typed_limit(top_n)
+        scan_limit = self._aggregation_scan_limit()
+        source_df = self.get_table_data(
+            table_name,
+            columns=[column_name],
+            limit=scan_limit,
+        )
+        values = [] if source_df.empty else [
+            value for value in source_df[column_name].tolist() if not pd.isna(value)
+        ]
+        groups = [
+            {column_name: value, "count": count}
+            for value, count in Counter(values).most_common(validated_top_n)
+        ]
+        return {
+            "groups": groups,
+            "source_rows": len(source_df),
+            "scan_limit": scan_limit,
+            "source_truncated": len(source_df) >= scan_limit,
+        }
+
+    @retry_on_failure(max_retries=2, delay=0.5)
+    @timeout_handler(timeout_seconds=30)
+    def get_dataset_summary(self) -> Dict[str, Any]:
+        """Return bounded dataset counts without exposing patient rows."""
+        scan_limit = self._aggregation_scan_limit()
+        stays_df = self.get_table_data(
+            "edstays",
+            columns=["subject_id", "stay_id"],
+            limit=scan_limit,
+        )
+        return {
+            "unique_patients": (
+                int(stays_df["subject_id"].nunique()) if not stays_df.empty else 0
+            ),
+            "total_stays": int(len(stays_df)),
+            "scan_limit": scan_limit,
+            "source_truncated": len(stays_df) >= scan_limit,
+        }
+
+    @retry_on_failure(max_retries=2, delay=0.5)
+    @timeout_handler(timeout_seconds=30)
+    def get_diagnosis_frequency(self, top_n: int = 10) -> Dict[str, Any]:
+        """Return a bounded diagnosis-title frequency aggregate."""
+        return self._frequency_aggregate("diagnosis", "icd_title", top_n)
+
+    @retry_on_failure(max_retries=2, delay=0.5)
+    @timeout_handler(timeout_seconds=30)
+    def get_medication_frequency(self, top_n: int = 10) -> Dict[str, Any]:
+        """Return a bounded dispensed-medication frequency aggregate."""
+        return self._frequency_aggregate("pyxis", "name", top_n)
+
+    @retry_on_failure(max_retries=2, delay=0.5)
+    @timeout_handler(timeout_seconds=30)
+    def get_acuity_distribution(self) -> Dict[str, Any]:
+        """Return the fixed, bounded acuity distribution."""
+        result = self._frequency_aggregate("triage", "acuity", 10)
+        result["groups"].sort(
+            key=lambda item: (
+                item["acuity"] is None,
+                item["acuity"] if item["acuity"] is not None else 0,
+            )
+        )
+        return result

@@ -126,12 +126,12 @@ class UnifiedChatAgent:
         
         The system prompt is structured in the following order:
         1. IDENTIDAD DEL SISTEMA - ChatHCE identity and purpose
-        2. CONTEXTO OPERATIVO - MIMIC-IV-ED dataset info (222 patients, 6 tables)
+        2. CONTEXTO OPERATIVO - MIMIC-IV-ED research dataset and access boundaries
         3. HERRAMIENTAS DISPONIBLES - Tools documentation (query_mimic_database, search_clinical_documents, request_visualization)
         4. DIRECTIVAS ANTI-ALUCINACIÓN - Prohibitions, missing data handling, source citation, uncertainty acknowledgment
         5. IDIOMA Y TERMINOLOGÍA - Spanish language, medical terminology
-        6. Base de Datos MIMIC-IV-ED - Database schema
-        7. Herramientas Disponibles - Detailed tool descriptions with SQL rules
+        6. Contrato clínico MIMIC-IV-ED - Typed data operations and scope
+        7. Herramientas Disponibles - Detailed allowlisted tool contracts
         8. Formato de Respuesta - Response format guidelines
         9. Guías Clínicas - Clinical reference values
         10. GUÍAS DE SELECCIÓN DE HERRAMIENTAS - When to use each tool
@@ -176,9 +176,16 @@ class UnifiedChatAgent:
 - Diagnósticos de urgencias de un paciente específico
 - Medicamentos administrados en urgencias
 - Información demográfica de pacientes de urgencias
-- Análisis estadísticos de datos de urgencias
+- Análisis estadísticos únicamente mediante dataset_summary, diagnosis_frequency, medication_frequency o acuity_distribution
 - Tiempos de estancia en urgencias
 - Disposición de pacientes (alta, ingreso, traslado)
+
+## LÍMITES OBLIGATORIOS DE query_mimic_database:
+- Nunca construyas ni solicites SQL, nombres de tablas o filtros genéricos.
+- patient_summary requiere subject_id; encounter_summary y vital_signs requieren stay_id.
+- diagnoses, medications y triage requieren subject_id o stay_id.
+- Las operaciones dataset-wide permitidas solo devuelven agregaciones fijas; no enumeres pacientes o estancias de una cohorte.
+- Si falta el ámbito requerido o no existe una operación allowlisted, solicita el identificador o explica la limitación.
 
 ## Cuándo usar search_clinical_documents:
 **REGLA FUNDAMENTAL**: Si la pregunta NO contiene un subject_id o stay_id específico de paciente, SIEMPRE invoca search_clinical_documents antes de responder desde tu conocimiento general.
@@ -870,6 +877,21 @@ Si request_visualization falla, continúa con análisis textual sin interrumpir 
             # Add subject_id if available
             if 'subject_id' in tool_input:
                 summary_parts.append(f"Paciente: {tool_input['subject_id']}")
+
+            if 'stay_id' in tool_input:
+                summary_parts.append(f"Estancia: {tool_input['stay_id']}")
+
+            if isinstance(observation, dict) and observation.get('scope'):
+                scope = observation['scope']
+                if isinstance(scope, dict):
+                    summary_parts.append(
+                        f"Ámbito aplicado: {scope.get('scope_type', 'desconocido')}"
+                    )
+
+            if isinstance(observation, dict) and observation.get('truncated'):
+                summary_parts.append(
+                    f"Resultado truncado al límite {observation.get('limit')}"
+                )
             
             # Try to extract key data points from observation
             if isinstance(observation, dict):

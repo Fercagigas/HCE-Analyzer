@@ -1,759 +1,321 @@
-"""
-Database Tool for Unified Chat System
-
-This module provides a Claude-compatible tool for querying the MIMIC-IV-ED database.
-It supports multiple query types with comprehensive validation and error handling.
-"""
+"""Allowlisted MIMIC-IV-ED database tool for the unified chat agent."""
 
 import logging
-import re
-from typing import Dict, Any, Optional, List
-from pydantic import BaseModel, Field
+from typing import Any, Dict, List, Literal, Optional, Union, get_args
 
+from pydantic import BaseModel, ConfigDict, Field
+
+from services.medical_agent.services.database_service import (
+    DatabaseError,
+    DatabaseService,
+    ValidationError,
+)
 from services.medical_agent.tools.claude_adapter import ClaudeToolAdapter
-from services.medical_agent.services.database_service import DatabaseService, DatabaseError, ValidationError
 
 logger = logging.getLogger(__name__)
 
 
+QueryType = Literal[
+    "patient_summary",
+    "encounter_summary",
+    "vital_signs",
+    "diagnoses",
+    "medications",
+    "triage",
+    "dataset_summary",
+    "diagnosis_frequency",
+    "medication_frequency",
+    "acuity_distribution",
+]
+
+
 class DatabaseToolInput(BaseModel):
-    """Input schema for database tool."""
-    query_type: str = Field(
-        description="Type of query: patient_summary, vital_signs, diagnoses, medications, custom"
+    """Allowlisted input contract exposed to the model."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    query_type: QueryType = Field(
+        description="Allowlisted clinical or MIMIC research operation"
     )
     subject_id: Optional[int] = Field(
-        None, 
-        description="Patient identifier (required for patient_summary, medications)"
+        None,
+        description="Patient identifier; required for patient-scoped operations",
     )
     stay_id: Optional[int] = Field(
-        None, 
-        description="Stay identifier (required for vital_signs)"
+        None,
+        description="Encounter identifier; required for encounter-scoped operations",
     )
     icd_code: Optional[str] = Field(
-        None, 
-        description="ICD code for diagnosis search"
+        None,
+        max_length=20,
+        description="Optional ICD code used only to narrow a scoped diagnosis query",
     )
     icd_title: Optional[str] = Field(
-        None, 
-        description="ICD title search term for diagnosis search"
+        None,
+        max_length=100,
+        description="Optional title used only to narrow a scoped diagnosis query",
     )
-    table_name: Optional[str] = Field(
-        None, 
-        description="Table name for direct table queries (diagnosis, edstays, triage, vitalsign, medrecon, pyxis)"
+    limit: int = Field(
+        100,
+        ge=1,
+        le=200,
+        description="Maximum returned rows or aggregate groups (default 100, max 200)",
     )
-    filters: Optional[Dict[str, Any]] = Field(
-        None, 
-        description="Filters to apply to table queries (e.g., {'subject_id': 10014729})"
-    )
-    custom_query: Optional[str] = Field(
-        None, 
-        description="Custom SQL SELECT query (only for query_type='custom')"
-    )
-    params: Optional[Dict[str, Any]] = Field(
-        None, 
-        description="Parameters for custom queries"
-    )
-    limit: Optional[int] = Field(
-        None, 
-        description="Maximum number of rows to return (default: 1000, max: 5000)"
-    )
+
+
+class DatabaseScope(BaseModel):
+    """Scope attached to every successful database result."""
+
+    scope_type: Literal[
+        "patient", "encounter", "patient_and_encounter", "dataset_aggregate"
+    ]
+    subject_id: Optional[int] = None
+    stay_id: Optional[int] = None
+
+
+class DatabaseToolOutput(BaseModel):
+    """Explicit top-level output contract for database operations."""
+
+    success: bool
+    query_type: Optional[QueryType] = None
+    permissions: Literal["read_only"] = "read_only"
+    scope: Optional[DatabaseScope] = None
+    data: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None
+    count: int = 0
+    limit: int = 0
+    timeout_seconds: int = 30
+    truncated: bool = False
+    error: Optional[str] = None
 
 
 class DatabaseTool(ClaudeToolAdapter):
-    """
-    Database tool for querying MIMIC-IV-ED dataset.
-    
-    This tool provides secure, read-only access to the MIMIC-IV-ED emergency
-    department database with comprehensive validation and error handling.
-    """
-    
-    # Maximum query complexity (number of conditions)
-    MAX_QUERY_CONDITIONS = 10
-    
-    # Maximum row limit
-    MAX_ROW_LIMIT = 5000
-    DEFAULT_ROW_LIMIT = 1000
-    
+    """Read MIMIC through fixed operations with deterministic scope enforcement."""
+
+    MAX_ROW_LIMIT = 200
+    DEFAULT_ROW_LIMIT = 100
+    TIMEOUT_SECONDS = 30
+
+    PATIENT_OR_ENCOUNTER_OPERATIONS = {"diagnoses", "medications", "triage"}
+    DATASET_AGGREGATE_OPERATIONS = {
+        "dataset_summary",
+        "diagnosis_frequency",
+        "medication_frequency",
+        "acuity_distribution",
+    }
+
     def __init__(self):
-        """Initialize the database tool."""
-        # Initialize database service
-        try:
-            self.db_service = DatabaseService()
-            logger.info("DatabaseService initialized successfully")
-        except Exception as e:
-            logger.error(f"Failed to initialize DatabaseService: {e}")
-            raise
-        
-        # Initialize the adapter with tool metadata
+        self.db_service = DatabaseService()
         super().__init__(
             tool_name="query_mimic_database",
-            tool_description="""Query the MIMIC-IV-ED database for patient data, vital signs, diagnoses, medications, and clinical information.
+            tool_description="""Read MIMIC-IV-ED through allowlisted operations only.
 
-Use this tool when the user asks about:
-- Specific patients (by subject_id or stay_id)
-- Vital signs and trends
-- Diagnoses and ICD codes
-- Medications and administration
-- Emergency department visits
-- Statistical analysis of clinical data
+PATIENT/ENCOUNTER OPERATIONS:
+- patient_summary: requires subject_id.
+- encounter_summary and vital_signs: require stay_id.
+- diagnoses, medications and triage: require subject_id or stay_id. Optional ICD filters only narrow diagnoses inside that scope.
 
-DATABASE SCHEMA (mimic_ed schema — use ONLY these exact column names):
+CONTROLLED RESEARCH AGGREGATES:
+- dataset_summary, diagnosis_frequency, medication_frequency and acuity_distribution.
+- These return counts or bounded groups only; they never enumerate a cohort's patient rows.
 
-TABLE: edstays
-  subject_id INT, stay_id INT, hadm_id INT, intime TIMESTAMP, outtime TIMESTAMP,
-  gender VARCHAR, race VARCHAR, arrival_transport VARCHAR, disposition VARCHAR
-
-TABLE: triage
-  subject_id INT, stay_id INT, temperature FLOAT, heartrate FLOAT, resprate FLOAT,
-  o2sat FLOAT, sbp FLOAT, dbp FLOAT, pain VARCHAR, acuity FLOAT, chiefcomplaint TEXT
-
-TABLE: vitalsign
-  subject_id INT, stay_id INT, charttime TIMESTAMP, temperature FLOAT, heartrate FLOAT,
-  resprate FLOAT, o2sat FLOAT, sbp FLOAT, dbp FLOAT, rhythm VARCHAR, pain VARCHAR
-
-TABLE: diagnosis
-  subject_id INT, stay_id INT, seq_num INT, icd_code VARCHAR, icd_title TEXT, icd_version INT
-
-TABLE: medrecon  (habitual medications — what the patient takes at home)
-  subject_id INT, stay_id INT, charttime TIMESTAMP, name VARCHAR, gsn VARCHAR,
-  ndc VARCHAR, etc_rn INT, etccode VARCHAR, etcdescription TEXT
-
-TABLE: pyxis  (medications dispensed in the ED)
-  subject_id INT, stay_id INT, charttime TIMESTAMP, name VARCHAR, gsn_rn INT, gsn VARCHAR
-
-CRITICAL: For medications always use column "name" (NOT drugname, medication, drug, med_name).
-CRITICAL: For custom queries always prefix tables with schema: mimic_ed.edstays, mimic_ed.pyxis, etc.
-
-QUERY TYPES:
-
-1. patient_summary: Complete patient summary with demographics, stays, diagnoses, vital signs, and medications
-   Required: subject_id
-   Example: {"query_type": "patient_summary", "subject_id": 10014729}
-
-2. vital_signs: Vital signs measurements for a specific stay
-   Required: stay_id
-   Example: {"query_type": "vital_signs", "stay_id": 37887480}
-
-3. diagnoses: Search diagnoses by ICD code or title
-   Required: icd_code OR icd_title
-   Example: {"query_type": "diagnoses", "icd_code": "431"}
-   Example: {"query_type": "diagnoses", "icd_title": "pneumonia"}
-
-4. medications: Medication history for a patient
-   Required: subject_id
-   Example: {"query_type": "medications", "subject_id": 10014729}
-
-5. custom: Custom SQL SELECT query — MUST use exact column names from schema above
-   Required: custom_query
-   Example: {"query_type": "custom", "custom_query": "SELECT name, charttime FROM mimic_ed.pyxis WHERE subject_id = 10014729 ORDER BY charttime"}
-   Example: {"query_type": "custom", "custom_query": "SELECT icd_code, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10014729"}
-
-   DATASET-WIDE QUERIES (no subject_id filter needed):
-   - List all unique patients:
-     {"query_type": "custom", "custom_query": "SELECT DISTINCT subject_id FROM mimic_ed.edstays ORDER BY subject_id"}
-   - List unique patients with gender and race:
-     {"query_type": "custom", "custom_query": "SELECT DISTINCT subject_id, gender, race FROM mimic_ed.edstays ORDER BY subject_id"}
-   - Count visits per patient:
-     {"query_type": "custom", "custom_query": "SELECT subject_id, COUNT(stay_id) as total_visitas FROM mimic_ed.edstays GROUP BY subject_id ORDER BY total_visitas DESC"}
-   - Top 10 most frequent diagnoses:
-     {"query_type": "custom", "custom_query": "SELECT icd_title, COUNT(*) as frecuencia FROM mimic_ed.diagnosis GROUP BY icd_title ORDER BY frecuencia DESC LIMIT 10"}
-   - Distribution by disposition:
-     {"query_type": "custom", "custom_query": "SELECT disposition, COUNT(*) as total FROM mimic_ed.edstays GROUP BY disposition ORDER BY total DESC"}
-
-IMPORTANT:
-- Always provide required parameters for each query type
-- Patient IDs (subject_id) and stay IDs (stay_id) must be positive integers
-- Custom queries are validated for security (no INSERT, UPDATE, DELETE, DROP, etc.)
-- Results are limited to prevent performance issues
-- All responses are formatted for clinical interpretation""",
-            args_schema=DatabaseToolInput
+CONTRACT:
+- Permission: read_only.
+- Patient/encounter scope is enforced in code, not by prompt instructions.
+- Returned rows/groups: default 100, hard maximum 200.
+- Provider request timeout: 30 seconds.
+- Output: {success, query_type, permissions, scope, data, count, limit, timeout_seconds, truncated, error}.
+- Arbitrary SQL, table names, generic filters and write operations are not accepted.""",
+            args_schema=DatabaseToolInput,
         )
-        
-        logger.info("DatabaseTool initialized successfully")
-    
+        logger.info("DatabaseTool initialized with allowlisted operations")
+
     def execute(
         self,
-        query_type: str,
+        query_type: QueryType,
         subject_id: Optional[int] = None,
         stay_id: Optional[int] = None,
         icd_code: Optional[str] = None,
         icd_title: Optional[str] = None,
-        table_name: Optional[str] = None,
-        filters: Optional[Dict[str, Any]] = None,
-        custom_query: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
-        limit: Optional[int] = None
+        limit: int = DEFAULT_ROW_LIMIT,
     ) -> Dict[str, Any]:
-        """
-        Execute database query with routing logic.
-        
-        Args:
-            query_type: Type of query to execute
-            subject_id: Patient identifier
-            stay_id: Stay identifier
-            icd_code: ICD code for diagnosis search
-            icd_title: ICD title search term
-            table_name: Table name for direct queries
-            filters: Filters for table queries
-            custom_query: Custom SQL query
-            params: Parameters for custom queries
-            limit: Row limit
-            
-        Returns:
-            Dict with success status, data, and metadata
-        """
+        """Execute one allowlisted read operation."""
         try:
-            logger.info(f"Executing database query: type={query_type}")
-            
-            # Validate and execute based on query type
-            if query_type == "patient_summary":
-                return self._execute_patient_summary(subject_id)
-                
-            elif query_type == "vital_signs":
-                return self._execute_vital_signs(stay_id)
-                
-            elif query_type == "diagnoses":
-                return self._execute_diagnoses(icd_code, icd_title, subject_id, stay_id, filters, limit)
-                
-            elif query_type == "medications":
-                return self._execute_medications(subject_id, stay_id, limit)
-                
-            elif query_type == "custom":
-                return self._execute_custom(custom_query, params, limit)
-                
-            else:
-                return {
-                    'success': False,
-                    'error': f"Tipo de consulta no reconocido: '{query_type}'. Tipos válidos: patient_summary, vital_signs, diagnoses, medications, custom",
-                    'data': None
-                }
-                
-        except ValidationError as e:
-            logger.warning(f"Validation error in database query: {e}")
-            return {
-                'success': False,
-                'error': f"Error de validación: {str(e)}",
-                'data': None
-            }
-        except DatabaseError as e:
-            logger.error(f"Database error in query execution: {e}")
-            return {
-                'success': False,
-                'error': f"Error de base de datos: {str(e)}",
-                'data': None
-            }
-        except Exception as e:
-            logger.error(f"Unexpected error in database query: {e}", exc_info=True)
-            return {
-                'success': False,
-                'error': f"Error inesperado: {str(e)}",
-                'data': None
-            }
-    
-    def _execute_patient_summary(self, subject_id: Optional[int]) -> Dict[str, Any]:
-        """
-        Execute patient summary query.
-        
-        Args:
-            subject_id: Patient identifier
-            
-        Returns:
-            Dict with patient summary data
-        """
-        # Validate required parameters
-        if not subject_id:
-            raise ValidationError("subject_id es requerido para patient_summary")
-        
-        if not isinstance(subject_id, int) or subject_id <= 0:
-            raise ValidationError(f"subject_id debe ser un entero positivo, recibido: {subject_id}")
-        
-        # Execute query
-        logger.info(f"Fetching patient summary for subject_id={subject_id}")
-        result = self.db_service.get_patient_summary(subject_id)
-        
-        return {
-            'success': True,
-            'data': result,
-            'query_type': 'patient_summary',
-            'parameters': {'subject_id': subject_id}
-        }
-    
-    def _execute_vital_signs(self, stay_id: Optional[int]) -> Dict[str, Any]:
-        """
-        Execute vital signs query.
-        
-        Args:
-            stay_id: Stay identifier
-            
-        Returns:
-            Dict with vital signs data
-        """
-        # Validate required parameters
-        if not stay_id:
-            raise ValidationError("stay_id es requerido para vital_signs")
-        
-        if not isinstance(stay_id, int) or stay_id <= 0:
-            raise ValidationError(f"stay_id debe ser un entero positivo, recibido: {stay_id}")
-        
-        # Execute query
-        logger.info(f"Fetching vital signs for stay_id={stay_id}")
-        result = self.db_service.get_vital_signs(stay_id)
-        
-        return {
-            'success': True,
-            'data': result,
-            'query_type': 'vital_signs',
-            'parameters': {'stay_id': stay_id},
-            'count': len(result) if isinstance(result, list) else 0
-        }
-    
-    def _execute_diagnoses(
-        self,
-        icd_code: Optional[str],
-        icd_title: Optional[str],
-        subject_id: Optional[int],
-        stay_id: Optional[int],
-        filters: Optional[Dict],
-        limit: Optional[int]
-    ) -> Dict[str, Any]:
-        """
-        Execute diagnoses query.
-        
-        Args:
-            icd_code: ICD code to search
-            icd_title: ICD title to search
-            subject_id: Optional patient filter
-            stay_id: Optional stay filter
-            filters: Optional additional filters
-            limit: Row limit
-            
-        Returns:
-            Dict with diagnosis data
-        """
-        # Validate that at least one search criterion is provided
-        if not icd_code and not icd_title and not subject_id and not stay_id and not filters:
-            raise ValidationError(
-                "Se requiere al menos un criterio de búsqueda: icd_code, icd_title, subject_id, stay_id, o filters"
-            )
-        
-        # Use search_diagnoses if ICD code or title provided
-        if icd_code or icd_title:
-            logger.info(f"Searching diagnoses: icd_code={icd_code}, icd_title={icd_title}")
-            result = self.db_service.search_diagnoses(icd_code=icd_code, icd_title=icd_title)
-        else:
-            # Use table query with filters
-            query_filters = filters or {}
-            if subject_id:
-                query_filters['subject_id'] = subject_id
-            if stay_id:
-                query_filters['stay_id'] = stay_id
-            
-            logger.info(f"Querying diagnosis table with filters: {query_filters}")
-            result_df = self.db_service.get_table_data(
-                'diagnosis',
-                filters=query_filters,
-                limit=self._get_validated_limit(limit)
-            )
-            result = result_df.to_dict('records') if not result_df.empty else []
-        
-        return {
-            'success': True,
-            'data': result,
-            'query_type': 'diagnoses',
-            'parameters': {
-                'icd_code': icd_code,
-                'icd_title': icd_title,
-                'subject_id': subject_id,
-                'stay_id': stay_id
-            },
-            'count': len(result) if isinstance(result, list) else 0
-        }
-    
-    def _execute_medications(
-        self,
-        subject_id: Optional[int],
-        stay_id: Optional[int],
-        limit: Optional[int]
-    ) -> Dict[str, Any]:
-        """
-        Execute medications query.
-        
-        Args:
-            subject_id: Patient identifier
-            stay_id: Optional stay identifier
-            limit: Row limit
-            
-        Returns:
-            Dict with medication data
-        """
-        # Validate required parameters
-        if not subject_id and not stay_id:
-            raise ValidationError("subject_id o stay_id es requerido para medications")
-        
-        # Execute query based on available parameters
-        if subject_id:
-            if not isinstance(subject_id, int) or subject_id <= 0:
-                raise ValidationError(f"subject_id debe ser un entero positivo, recibido: {subject_id}")
-            
-            logger.info(f"Fetching medication history for subject_id={subject_id}")
-            result = self.db_service.get_medication_history(subject_id)
-            
-            # Apply limit if specified
-            if limit and isinstance(result, list):
-                validated_limit = self._get_validated_limit(limit)
-                result = result[:validated_limit]
-        else:
-            # Query by stay_id using table data
-            if not isinstance(stay_id, int) or stay_id <= 0:
-                raise ValidationError(f"stay_id debe ser un entero positivo, recibido: {stay_id}")
-            
-            logger.info(f"Fetching medications for stay_id={stay_id}")
-            result_df = self.db_service.get_table_data(
-                'medrecon',
-                filters={'stay_id': stay_id},
-                limit=self._get_validated_limit(limit)
-            )
-            result = result_df.to_dict('records') if not result_df.empty else []
-        
-        return {
-            'success': True,
-            'data': result,
-            'query_type': 'medications',
-            'parameters': {'subject_id': subject_id, 'stay_id': stay_id},
-            'count': len(result) if isinstance(result, list) else 0
-        }
-    
-    def _execute_custom(
-        self,
-        custom_query: Optional[str],
-        params: Optional[Dict],
-        limit: Optional[int]
-    ) -> Dict[str, Any]:
-        """
-        Execute custom SQL query with safety validation.
-        
-        Args:
-            custom_query: SQL query string
-            params: Query parameters
-            limit: Row limit
-            
-        Returns:
-            Dict with query results
-        """
-        # Validate required parameters
-        if not custom_query:
-            raise ValidationError("custom_query es requerido para consultas personalizadas")
-        
-        if not isinstance(custom_query, str):
-            raise ValidationError("custom_query debe ser una cadena de texto")
-        
-        # Additional safety validation
-        self._validate_custom_query(custom_query)
-        
-        # Execute query
-        logger.info(f"Executing custom query: {custom_query[:100]}...")
-        result = self.db_service.execute_custom_query(custom_query, params or {})
-        
-        # Apply limit if specified
-        if limit and isinstance(result, list):
             validated_limit = self._get_validated_limit(limit)
-            result = result[:validated_limit]
-        
-        return {
-            'success': True,
-            'data': result,
-            'query_type': 'custom',
-            'parameters': {'query': custom_query[:100] + '...' if len(custom_query) > 100 else custom_query},
-            'count': len(result) if isinstance(result, list) else 0
-        }
-    
-    TAUTOLOGY_PATTERNS = [
-        r'\bOR\s+1\s*=\s*1\b',                    # OR 1=1
-        r"\bOR\s+'[^']*'\s*=\s*'[^']*'\b",        # OR 'a'='a', OR 'x'='x'
-        r'\bOR\s+"[^"]*"\s*=\s*"[^"]*"\b',        # OR "a"="a"
-        r'\bOR\s+TRUE\b',                          # OR TRUE/true
-        r'\bOR\s+1\b',                             # OR 1 (bare truthy)
-        r'\bOR\s*\(\s*1\s*=\s*1\s*\)',             # OR (1=1)
-        r'\bOR\s+\d+\s*=\s*\d+\b',                # OR 2=2, OR 0=0
-        r'\bOR\s+\d+\s*<>\s*0\b',                  # OR 1<>0
-        r'\bOR\s+NOT\s+0\b',                       # OR NOT 0
-        r'--\s',                                    # SQL comment injection
-        r'/\*.*?\*/',                               # Block comment injection
-    ]
-
-    def _detect_tautology(self, query: str) -> bool:
-        """Detect SQL tautology patterns in WHERE clause."""
-        query_upper = query.upper()
-        for pattern in self.TAUTOLOGY_PATTERNS:
-            if re.search(pattern, query_upper, re.IGNORECASE):
-                return True
-        return False
-
-    def _validate_custom_query(self, query: str) -> None:
-        """
-        Validate custom query for safety with defense-in-depth.
-        Also checks for known incorrect column names and suggests corrections.
-
-        Args:
-            query: SQL query string
-
-        Raises:
-            ValidationError: If query is unsafe or uses non-existent columns
-        """
-        if self._detect_tautology(query):
-            raise ValidationError(
-                "Consulta contiene patrón de tautología SQL no permitido (ej: OR 1=1). "
-                "Este patrón puede ser usado para inyección SQL."
+            scope = self._validate_scope(query_type, subject_id, stay_id)
+            logger.info(
+                "Executing allowlisted database operation: type=%s scope=%s",
+                query_type,
+                scope.scope_type,
             )
 
-        if not query or not query.strip():
-            raise ValidationError("La consulta no puede estar vacía.")
-
-        # Limit query length to prevent DoS
-        if len(query) > 2000:
-            raise ValidationError(
-                "La consulta excede el límite de 2000 caracteres."
-            )
-
-        query_upper = query.upper().strip()
-
-        # Must be a SELECT query
-        if not query_upper.startswith('SELECT'):
-            raise ValidationError(
-                "Solo se permiten consultas SELECT. No se permiten INSERT, UPDATE, DELETE, DROP, etc."
-            )
-
-        # Block dangerous DDL/DML keywords anywhere in query
-        blocked_keywords = [
-            'INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER', 'CREATE',
-            'TRUNCATE', 'GRANT', 'REVOKE', 'COPY', 'VACUUM', 'ANALYZE',
-            'COMMENT', 'SECURITY', 'OWNER', 'SET ROLE', 'RESET ROLE',
-        ]
-        for keyword in blocked_keywords:
-            # Use word boundary check to avoid false positives
-            pattern = r'\b' + keyword + r'\b'
-            if re.search(pattern, query_upper):
-                raise ValidationError(
-                    f"Operación '{keyword}' no permitida. Solo se permiten consultas SELECT."
+            if query_type == "patient_summary":
+                data = self.db_service.get_patient_summary(subject_id)
+            elif query_type == "encounter_summary":
+                data = self.db_service.get_stay_details(stay_id)
+            elif query_type == "vital_signs":
+                data = self.db_service.get_vital_signs(stay_id, limit=validated_limit)
+            elif query_type == "diagnoses":
+                data = self.db_service.get_scoped_diagnoses(
+                    subject_id=subject_id,
+                    stay_id=stay_id,
+                    icd_code=icd_code,
+                    icd_title=icd_title,
+                    limit=validated_limit,
                 )
-
-        # Check for dangerous patterns (injection, file access, multi-statement)
-        dangerous_patterns = [
-            r'\bINTO\s+OUTFILE\b',
-            r'\bLOAD_FILE\b',
-            r'\bINTO\s+DUMPFILE\b',
-            r'\bEXEC\b',
-            r'\bEXECUTE\b',
-            r'\bSYSTEM\b',
-            r'\bSHELL\b',
-            r'\bPG_SLEEP\b',
-            r'\bPG_READ_FILE\b',
-            r'\bPG_WRITE_FILE\b',
-            r'\bDBLINK\b',
-            r'\bCOPY\s+TO\b',
-            r'\bCOPY\s+FROM\b',
-            r'\bLO_IMPORT\b',
-            r'\bLO_EXPORT\b',
-            r'\bCURRENT_SETTING\b',
-            r'\bSET\s+SESSION\b',
-            r'\bSET\s+LOCAL\b',
-            r';',  # Block ALL semicolons (no multi-statement)
-            r'--',  # Block SQL comments
-            r'/\*',  # Block block comments
-        ]
-
-        for pattern in dangerous_patterns:
-            if re.search(pattern, query_upper):
-                raise ValidationError(
-                    "Consulta contiene patrón no permitido. "
-                    "Las consultas deben ser SELECT simples sin comentarios ni múltiples sentencias."
+            elif query_type == "medications":
+                data = self.db_service.get_scoped_medications(
+                    subject_id=subject_id,
+                    stay_id=stay_id,
+                    limit=validated_limit,
                 )
-
-        # Block subqueries that could modify data
-        if re.search(r'\(\s*SELECT.*FROM\s+(?:pg_|information_schema)', query_upper):
-            raise ValidationError(
-                "No se permiten consultas a tablas del sistema."
-            )
-
-        # --- Column name validation ---
-        # Map of incorrect column names → correct column name + table context
-        WRONG_COLUMNS: Dict[str, str] = {
-            'DRUGNAME':       'name (en pyxis o medrecon)',
-            'DRUG_NAME':      'name (en pyxis o medrecon)',
-            'MEDICATION':     'name (en pyxis o medrecon)',
-            'MEDICATION_NAME':'name (en pyxis o medrecon)',
-            'MED_NAME':       'name (en pyxis o medrecon)',
-            'DRUG':           'name (en pyxis o medrecon)',
-            'MEDICINE':       'name (en pyxis o medrecon)',
-            'AGE':            'no existe columna age; calcula desde intime si es necesario',
-            'DOB':            'no existe columna dob en MIMIC-IV-ED',
-            'BIRTH_DATE':     'no existe columna birth_date en MIMIC-IV-ED',
-            'DEATH_DATE':     'no existe columna death_date en MIMIC-IV-ED',
-            'PATIENT_ID':     'subject_id (en edstays, triage, vitalsign, diagnosis, medrecon, pyxis)',
-            'VISIT_ID':       'stay_id',
-            'ENCOUNTER_ID':   'stay_id',
-            'ADMISSION_ID':   'hadm_id (en edstays)',
-            'DIAGNOSIS_CODE': 'icd_code (en diagnosis)',
-            'DIAGNOSIS_NAME': 'icd_title (en diagnosis)',
-            'VITAL_SIGNS':    'tabla vitalsign (columnas: heartrate, sbp, dbp, o2sat, temperature, resprate)',
-            'HEART_RATE':     'heartrate (en vitalsign o triage)',
-            'BLOOD_PRESSURE': 'sbp y dbp (en vitalsign o triage)',
-            'OXYGEN_SAT':     'o2sat (en vitalsign o triage)',
-            'RESP_RATE':      'resprate (en vitalsign o triage)',
-            'CHIEF_COMPLAINT':'chiefcomplaint (en triage)',
-            'COMPLAINT':      'chiefcomplaint (en triage)',
-            'ARRIVAL_MODE':   'arrival_transport (en edstays)',
-            'TRANSPORT':      'arrival_transport (en edstays)',
-            'DISCHARGE':      'disposition (en edstays)',
-            'DISCHARGE_DISPOSITION': 'disposition (en edstays)',
-        }
-
-        for wrong_col, correction in WRONG_COLUMNS.items():
-            # Match as a word boundary to avoid false positives inside longer names
-            if re.search(r'\b' + wrong_col + r'\b', query_upper):
-                raise ValidationError(
-                    f"Columna '{wrong_col.lower()}' no existe en MIMIC-IV-ED. "
-                    f"Usa en su lugar: {correction}. "
-                    f"Consulta el schema completo en la descripción de la herramienta."
+            elif query_type == "triage":
+                data = self.db_service.get_scoped_triage(
+                    subject_id=subject_id,
+                    stay_id=stay_id,
+                    limit=validated_limit,
                 )
+            elif query_type == "dataset_summary":
+                data = self.db_service.get_dataset_summary()
+            elif query_type == "diagnosis_frequency":
+                data = self.db_service.get_diagnosis_frequency(top_n=validated_limit)
+            elif query_type == "medication_frequency":
+                data = self.db_service.get_medication_frequency(top_n=validated_limit)
+            elif query_type == "acuity_distribution":
+                data = self.db_service.get_acuity_distribution()
+            else:
+                raise ValidationError(f"Operación no permitida: '{query_type}'")
 
-        # Check query complexity (number of conditions)
-        condition_count = (
-            query_upper.count(' WHERE ') + 
-            query_upper.count(' AND ') + 
-            query_upper.count(' OR ')
-        )
-        if condition_count > self.MAX_QUERY_CONDITIONS:
-            raise ValidationError(
-                f"Consulta demasiado compleja. Máximo {self.MAX_QUERY_CONDITIONS} condiciones permitidas."
-            )
-        
-        # Verify only allowed tables are referenced
-        allowed_tables = {
-            'EDSTAYS', 'TRIAGE', 'VITALSIGN', 'DIAGNOSIS',
-            'MEDRECON', 'PYXIS'
-        }
-        table_pattern = r'(?:FROM|JOIN)\s+(?:mimic_ed\.)?(\w+)'
-        tables_found = re.findall(table_pattern, query_upper)
-        for table in tables_found:
-            if table not in allowed_tables:
+            capped_data, truncated = self._cap_output(data, validated_limit)
+            return DatabaseToolOutput(
+                success=True,
+                query_type=query_type,
+                scope=scope,
+                data=capped_data,
+                count=self._count_output(capped_data),
+                limit=validated_limit,
+                timeout_seconds=self.TIMEOUT_SECONDS,
+                truncated=truncated,
+            ).model_dump()
+        except ValidationError as exc:
+            logger.warning("Database operation rejected: %s", exc)
+            return self._error_output(query_type, f"Error de validación: {exc}")
+        except DatabaseError as exc:
+            logger.error("Database operation failed: %s", exc)
+            return self._error_output(query_type, f"Error de base de datos: {exc}")
+        except Exception as exc:
+            logger.error("Unexpected database tool error: %s", exc, exc_info=True)
+            return self._error_output(query_type, f"Error inesperado: {exc}")
+
+    def _validate_scope(
+        self,
+        query_type: str,
+        subject_id: Optional[int],
+        stay_id: Optional[int],
+    ) -> DatabaseScope:
+        if subject_id is not None and (
+            not isinstance(subject_id, int) or subject_id <= 0
+        ):
+            raise ValidationError("subject_id debe ser un entero positivo")
+        if stay_id is not None and (not isinstance(stay_id, int) or stay_id <= 0):
+            raise ValidationError("stay_id debe ser un entero positivo")
+
+        if query_type == "patient_summary":
+            if subject_id is None:
+                raise ValidationError("subject_id es obligatorio para patient_summary")
+            return DatabaseScope(scope_type="patient", subject_id=subject_id)
+
+        if query_type in {"encounter_summary", "vital_signs"}:
+            if stay_id is None:
+                raise ValidationError(f"stay_id es obligatorio para {query_type}")
+            return DatabaseScope(scope_type="encounter", stay_id=stay_id)
+
+        if query_type in self.PATIENT_OR_ENCOUNTER_OPERATIONS:
+            if subject_id is None and stay_id is None:
                 raise ValidationError(
-                    f"Tabla '{table}' no permitida. "
-                    f"Solo se permiten tablas MIMIC-IV-ED: {', '.join(sorted(allowed_tables))}."
+                    f"{query_type} requiere subject_id o stay_id; "
+                    "no se permiten listados dataset-wide"
                 )
-        
-        logger.debug("Custom query validation passed")
-    
-    def _get_validated_limit(self, limit: Optional[int]) -> int:
-        """
-        Validate and return row limit.
-        
-        Args:
-            limit: Requested limit
-            
-        Returns:
-            Validated limit value
-        """
-        if limit is None:
-            return self.DEFAULT_ROW_LIMIT
-        
+            if subject_id is not None and stay_id is not None:
+                return DatabaseScope(
+                    scope_type="patient_and_encounter",
+                    subject_id=subject_id,
+                    stay_id=stay_id,
+                )
+            if subject_id is not None:
+                return DatabaseScope(scope_type="patient", subject_id=subject_id)
+            return DatabaseScope(scope_type="encounter", stay_id=stay_id)
+
+        if query_type in self.DATASET_AGGREGATE_OPERATIONS:
+            if subject_id is not None or stay_id is not None:
+                raise ValidationError(
+                    f"{query_type} es una agregación fija y no acepta scope de paciente"
+                )
+            return DatabaseScope(scope_type="dataset_aggregate")
+
+        raise ValidationError(f"Operación no permitida: '{query_type}'")
+
+    def _cap_output(self, data: Any, limit: int) -> tuple[Any, bool]:
+        """Cap top-level rows and list fields contained in summary objects."""
+        if isinstance(data, list):
+            return data[:limit], len(data) > limit
+        if isinstance(data, dict):
+            capped: Dict[str, Any] = {}
+            truncated = False
+            for key, value in data.items():
+                if isinstance(value, list):
+                    capped[key] = value[:limit]
+                    truncated = truncated or len(value) > limit
+                else:
+                    capped[key] = value
+            return capped, truncated
+        raise ValidationError("La operación devolvió un tipo de datos no permitido")
+
+    def _get_validated_limit(self, limit: int) -> int:
         if not isinstance(limit, int) or limit <= 0:
-            logger.warning(f"Invalid limit value: {limit}, using default")
-            return self.DEFAULT_ROW_LIMIT
-        
+            raise ValidationError("limit debe ser un entero positivo")
         if limit > self.MAX_ROW_LIMIT:
-            logger.warning(f"Limit {limit} exceeds maximum, capping at {self.MAX_ROW_LIMIT}")
-            return self.MAX_ROW_LIMIT
-        
+            raise ValidationError(f"limit no puede superar {self.MAX_ROW_LIMIT}")
         return limit
-    
+
+    def _count_output(self, data: Any) -> int:
+        if isinstance(data, list):
+            return len(data)
+        if isinstance(data, dict) and isinstance(data.get("groups"), list):
+            return len(data["groups"])
+        return 1 if data else 0
+
+    def _error_output(self, query_type: str, error: str) -> Dict[str, Any]:
+        safe_query_type = query_type if query_type in get_args(QueryType) else None
+        return DatabaseToolOutput(
+            success=False,
+            query_type=safe_query_type,
+            error=error,
+            timeout_seconds=self.TIMEOUT_SECONDS,
+        ).model_dump()
+
     def format_output(self, output_data: Any) -> str:
-        """
-        Format output for Claude consumption.
-        
-        Args:
-            output_data: Output from tool execution
-            
-        Returns:
-            Formatted output string
-        """
-        if isinstance(output_data, dict):
-            if not output_data.get('success', False):
-                # Format error response
-                return f"❌ Error: {output_data.get('error', 'Unknown error')}"
-            
-            # Format successful response
-            data = output_data.get('data')
-            query_type = output_data.get('query_type', 'unknown')
-            count = output_data.get('count', 0)
-            
-            lines = [f"✅ Consulta exitosa: {query_type}"]
-            
-            if count > 0:
-                lines.append(f"📊 Registros encontrados: {count}")
-            
-            # Format data based on type
-            if isinstance(data, dict):
-                lines.append("\n📋 Datos:")
-                lines.append(self._format_dict_data(data))
-            elif isinstance(data, list):
-                lines.append("\n📋 Datos:")
-                lines.append(self._format_list_data(data))
-            else:
-                lines.append(f"\n📋 Datos: {data}")
-            
-            return "\n".join(lines)
-        
-        return str(output_data)
-    
-    def _format_dict_data(self, data: Dict, indent: int = 0) -> str:
-        """Format dictionary data for display."""
-        lines = []
-        indent_str = "  " * indent
-        
-        for key, value in data.items():
-            if isinstance(value, dict):
-                lines.append(f"{indent_str}{key}:")
-                lines.append(self._format_dict_data(value, indent + 1))
-            elif isinstance(value, list) and value and isinstance(value[0], dict):
-                lines.append(f"{indent_str}{key}: ({len(value)} items)")
-                for i, item in enumerate(value[:3], 1):  # Show first 3 items
-                    lines.append(f"{indent_str}  {i}.")
-                    lines.append(self._format_dict_data(item, indent + 2))
-                if len(value) > 3:
-                    lines.append(f"{indent_str}  ... y {len(value) - 3} más")
-            elif isinstance(value, list):
-                lines.append(f"{indent_str}{key}: {value}")
-            else:
-                lines.append(f"{indent_str}{key}: {value}")
-        
-        return "\n".join(lines)
-    
-    def _format_list_data(self, data: List, max_items: int = 10) -> str:
-        """Format list data for display."""
-        if not data:
-            return "  No hay datos disponibles"
-        
-        lines = []
-        for i, item in enumerate(data[:max_items], 1):
-            if isinstance(item, dict):
-                lines.append(f"  {i}.")
-                lines.append(self._format_dict_data(item, indent=2))
-            else:
-                lines.append(f"  {i}. {item}")
-        
-        if len(data) > max_items:
-            lines.append(f"  ... y {len(data) - max_items} registros más")
-        
+        """Format the validated output for the model without exposing internals."""
+        if not isinstance(output_data, dict):
+            return str(output_data)
+        if not output_data.get("success"):
+            return f"❌ {output_data.get('error', 'Error desconocido')}"
+
+        scope = output_data.get("scope") or {}
+        lines = [
+            f"✅ Operación completada: {output_data.get('query_type')}",
+            f"Ámbito: {scope.get('scope_type', 'desconocido')}",
+            f"Registros/grupos: {output_data.get('count', 0)}",
+        ]
+        if scope.get("subject_id"):
+            lines.append(f"Paciente: {scope['subject_id']}")
+        if scope.get("stay_id"):
+            lines.append(f"Estancia: {scope['stay_id']}")
+        if output_data.get("truncated"):
+            lines.append(f"⚠️ Resultado truncado al límite {output_data.get('limit')}")
+        lines.append(f"Datos: {output_data.get('data')}")
         return "\n".join(lines)
 
 
-# Convenience function to create the tool
 def create_database_tool() -> DatabaseTool:
-    """
-    Create a database tool instance.
-    
-    Returns:
-        DatabaseTool instance
-    """
+    """Create the allowlisted database tool."""
     return DatabaseTool()

@@ -152,28 +152,15 @@ Mi función es ayudar a profesionales de la salud a analizar datos clínicos del
         """
         context = """# CONTEXTO OPERATIVO
 
-## Dataset: MIMIC-IV-ED (Emergency Department Demo)
-Opero exclusivamente con el dataset de demostración MIMIC-IV-ED, que contiene datos anonimizados de pacientes del Servicio de Urgencias.
+## Dataset: MIMIC-IV-ED Demo
+Opero exclusivamente con datos anonimizados de urgencias preparados para investigación y educación. Esta versión no se utiliza para decisiones asistenciales reales.
 
-### Características del Dataset
-- **Pacientes únicos**: 222 pacientes
-- **Tipo de datos**: Datos de urgencias hospitalarias (Emergency Department)
-- **Naturaleza**: Dataset de demostración para investigación y educación
-- **Anonimización**: Todos los datos están completamente anonimizados
-
-### Tablas Disponibles (SOLO estas 6 tablas existen)
-1. **edstays** (222 filas): Estancias en urgencias - información de entrada/salida, género, raza, disposición
-2. **triage** (222 filas): Datos de triaje inicial - signos vitales de entrada, nivel de acuidad, queja principal
-3. **vitalsign** (1,038 filas): Signos vitales durante la estancia - mediciones temporales
-4. **diagnosis** (545 filas): Diagnósticos asignados - códigos ICD-9/ICD-10
-5. **medrecon** (2,764 filas): Reconciliación de medicamentos - medicamentos habituales del paciente
-6. **pyxis** (1,082 filas): Dispensación de medicamentos - medicamentos administrados en urgencias
-
-### Limitaciones Importantes
-- NO existe tabla de pacientes separada ('patients')
-- NO hay columnas de edad ('age') ni fecha de nacimiento ('dob')
-- Los datos son SOLO del Servicio de Urgencias, no de otras áreas hospitalarias
-- NO tengo acceso a información fuera de este dataset"""
+## Acceso a datos
+- Solo puedo solicitar operaciones clínicas predefinidas y de solo lectura.
+- Las consultas de paciente requieren subject_id o stay_id según la operación.
+- Los análisis de todo el dataset se limitan a agregaciones fijas que devuelven conteos o distribuciones acotadas.
+- No puedo construir SQL, elegir tablas, enviar filtros genéricos ni enumerar cohortes completas.
+- Si una pregunta no cabe en una operación disponible, debo indicarlo; nunca debo intentar ampliar el acceso."""
         
         return context
     
@@ -189,20 +176,20 @@ Opero exclusivamente con el dataset de demostración MIMIC-IV-ED, que contiene d
         tools_doc = """# HERRAMIENTAS DISPONIBLES
 
 ## 1. query_mimic_database
-**Propósito**: Ejecutar consultas SQL en la base de datos MIMIC-IV-ED para obtener datos de pacientes.
+**Propósito**: Recuperar datos MIMIC mediante operaciones allowlisted de solo lectura.
 
-**Capacidades**:
-- Consultar información de estancias en urgencias (edstays)
-- Obtener signos vitales de triaje y durante la estancia
-- Buscar diagnósticos por paciente o código ICD
-- Consultar medicamentos habituales y administrados
-- Realizar análisis estadísticos sobre los datos
+**Operaciones con ámbito obligatorio**:
+- patient_summary: requiere subject_id.
+- encounter_summary y vital_signs: requieren stay_id.
+- diagnoses, medications y triage: requieren subject_id o stay_id.
 
-**Cuándo usar**:
-- Consultas sobre pacientes específicos (con subject_id o stay_id)
-- Datos numéricos de signos vitales
-- Información de diagnósticos y medicamentos
-- Análisis de tiempos de estancia y disposiciones
+**Agregaciones de investigación permitidas**:
+- dataset_summary: conteos generales, sin filas de pacientes.
+- diagnosis_frequency: frecuencia acotada de diagnósticos.
+- medication_frequency: frecuencia acotada de medicamentos dispensados.
+- acuity_distribution: distribución acotada de acuidad.
+
+No existe una operación SQL ni se aceptan nombres de tablas, filtros genéricos o instrucciones de escritura.
 
 ## 2. search_clinical_documents
 **Propósito**: Buscar información en documentos clínicos indexados mediante RAG (Retrieval-Augmented Generation).
@@ -242,17 +229,14 @@ Debes invocar esta herramienta SIEMPRE que el usuario use alguno de estos patron
 
 Ejemplos few-shot:
 
-Usuario: "Genera una gráfica de los signos vitales del paciente 10014729"
-→ DEBES llamar a request_visualization con chart_type="line",
-  data_source="vitalsign", subject_id=10014729
+Usuario: "Genera una gráfica de los signos vitales de la estancia 37887480"
+→ Primero llama a query_mimic_database con query_type="vital_signs" y stay_id=37887480; después usa esos datos en request_visualization.
 
 Usuario: "Muestra un gráfico de barras con los diagnósticos más frecuentes"
-→ DEBES llamar a request_visualization con chart_type="bar",
-  data_source="diagnosis"
+→ Primero llama a query_mimic_database con query_type="diagnosis_frequency"; después usa la agregación devuelta en request_visualization.
 
 Usuario: "Crea un histograma de la distribución de acuidad de triaje"
-→ DEBES llamar a request_visualization con chart_type="histogram",
-  data_source="triage", metrics=["acuity"]"""
+→ Primero llama a query_mimic_database con query_type="acuity_distribution"; después usa la agregación devuelta en request_visualization."""
         
         # Invalidate caches to force regeneration with updated tool documentation
         self.tool_descriptions_cache = None
@@ -543,106 +527,17 @@ Ejemplos de respuesta correcta ante preguntas sobre el sistema:
         if self.schema_cache is not None:
             return self.schema_cache
         
-        schema = """# Base de Datos MIMIC-IV-ED
+        schema = """# Contrato clínico MIMIC-IV-ED
 
-**Esquema:** mimic_ed (SIEMPRE usa el prefijo mimic_ed. en las consultas SQL directas)
+`query_mimic_database` no expone ni utiliza el esquema físico de la base de datos. Los datos se solicitan mediante operaciones tipadas:
 
-## ⚠️ IMPORTANTE - Limitaciones del Dataset
-- NO existe tabla 'patients' - solo datos de emergencias
-- NO hay columna 'age' o 'dob' - solo intime/outtime
-- NO hay datos demográficos completos - solo gender y race en edstays
-- Dataset de DEMOSTRACIÓN con 222 pacientes únicos
+- Resumen de paciente: demografía disponible, estancias, diagnósticos, signos vitales resumidos y medicación.
+- Resumen de encuentro: estancia, triaje, diagnósticos, serie de signos vitales y medicación.
+- Signos vitales: serie temporal acotada de una estancia.
+- Diagnósticos, medicación y triaje: registros acotados a un paciente o encuentro explícito.
+- Agregaciones de investigación: conteos generales y distribuciones fijas, sin enumeración de cohortes.
 
-## Tablas Disponibles (SOLO estas 6 tablas existen)
-
-### 1. edstays (Estancias en Emergencias) - 222 filas
-**Columnas EXACTAS:**
-- subject_id (INTEGER, NOT NULL) - ID del paciente
-- hadm_id (NUMERIC, NULLABLE) - ID admisión hospitalaria (22% nulos)
-- stay_id (INTEGER, NOT NULL, PK) - ID único de estancia
-- intime (VARCHAR, NOT NULL) - Fecha/hora entrada (formato: YYYY-MM-DD HH:MM:SS)
-- outtime (VARCHAR, NOT NULL) - Fecha/hora salida
-- gender (VARCHAR, NOT NULL) - Género (M/F)
-- race (VARCHAR, NOT NULL) - Raza/etnia (12 valores únicos)
-- arrival_transport (VARCHAR, NOT NULL) - Medio llegada (AMBULANCE, WALK IN, etc.)
-- disposition (VARCHAR, NOT NULL) - Disposición final (ADMITTED, HOME, etc.)
-
-### 2. triage (Triaje Inicial) - 222 filas
-**Columnas EXACTAS:**
-- subject_id (INTEGER, NOT NULL)
-- stay_id (INTEGER, NOT NULL, PK)
-- temperature (NUMERIC, NULLABLE) - 11.7% nulos
-- heartrate (NUMERIC, NULLABLE) - 10.8% nulos
-- resprate (NUMERIC, NULLABLE) - 10.4% nulos
-- o2sat (NUMERIC, NULLABLE) - 10.8% nulos
-- sbp (NUMERIC, NULLABLE) - Presión sistólica, 10.4% nulos
-- dbp (NUMERIC, NULLABLE) - Presión diastólica, 10.4% nulos
-- pain (VARCHAR, NULLABLE) - Nivel dolor, 9.5% nulos
-- acuity (NUMERIC, NULLABLE) - Urgencia 1-4, 6.8% nulos
-- chiefcomplaint (VARCHAR, NOT NULL) - Queja principal
-
-### 3. vitalsign (Signos Vitales) - 1,038 filas
-**Columnas EXACTAS:**
-- subject_id (INTEGER, NOT NULL)
-- stay_id (INTEGER, NOT NULL)
-- charttime (VARCHAR, NOT NULL) - Timestamp medición
-- temperature (NUMERIC, NULLABLE) - 44.2% nulos
-- heartrate (NUMERIC, NULLABLE) - 2.9% nulos
-- resprate (NUMERIC, NULLABLE) - 4.6% nulos
-- o2sat (NUMERIC, NULLABLE) - 6.5% nulos
-- sbp (NUMERIC, NULLABLE) - 3.9% nulos
-- dbp (NUMERIC, NULLABLE) - 3.9% nulos
-- rhythm (VARCHAR, NULLABLE) - Ritmo cardíaco, 96.8% nulos
-- pain (VARCHAR, NULLABLE) - 29.1% nulos
-
-### 4. diagnosis (Diagnósticos) - 545 filas
-**Columnas EXACTAS:**
-- subject_id (INTEGER, NOT NULL)
-- stay_id (INTEGER, NOT NULL)
-- seq_num (SMALLINT, NOT NULL) - Secuencia diagnóstico (1-9)
-- icd_code (VARCHAR, NOT NULL) - Código ICD-9 o ICD-10
-- icd_version (SMALLINT, NOT NULL) - Versión ICD (9 o 10)
-- icd_title (VARCHAR, NOT NULL) - Descripción diagnóstico
-
-### 5. medrecon (Reconciliación Medicamentos) - 2,764 filas
-**Columnas EXACTAS:**
-- subject_id (INTEGER, NOT NULL)
-- stay_id (INTEGER, NOT NULL)
-- charttime (VARCHAR, NOT NULL)
-- name (VARCHAR, NOT NULL) - Nombre medicamento
-- gsn (INTEGER, NOT NULL) - Generic Sequence Number
-- ndc (BIGINT, NOT NULL) - National Drug Code
-- etc_rn (SMALLINT, NOT NULL)
-- etccode (NUMERIC, NULLABLE) - 0.14% nulos
-- etcdescription (VARCHAR, NULLABLE) - Clasificación terapéutica, 0.14% nulos
-
-### 6. pyxis (Dispensación Medicamentos) - 1,082 filas
-**Columnas EXACTAS:**
-- subject_id (INTEGER, NOT NULL)
-- stay_id (INTEGER, NOT NULL)
-- charttime (VARCHAR, NOT NULL)
-- med_rn (SMALLINT, NOT NULL)
-- name (VARCHAR, NOT NULL) - Nombre medicamento
-- gsn_rn (SMALLINT, NOT NULL)
-- gsn (NUMERIC, NULLABLE) - 2.96% nulos
-
-## Relaciones Clave
-- **subject_id**: Identifica al paciente (puede tener múltiples estancias)
-- **stay_id**: Identifica una estancia específica (clave primaria en edstays y triage)
-- Todas las tablas se relacionan mediante subject_id y stay_id
-
-## ❌ Tablas que NO EXISTEN (no intentes usarlas)
-- patients (no hay tabla de pacientes separada)
-- admissions (no hay tabla de admisiones)
-- demographics (datos demográficos están en edstays)
-- prescriptions (usa medrecon o pyxis para medicamentos)
-
-## ❌ Columnas que NO EXISTEN (no intentes usarlas)
-- age (no hay columna de edad en ninguna tabla)
-- dob (no hay fecha de nacimiento)
-- birth_date (no existe)
-- death_date (no existe)
-- Los únicos campos de tiempo son: intime, outtime, charttime"""
+Cada resultado declara su scope, permiso de solo lectura, límite, timeout y si fue truncado. Si falta subject_id o stay_id en una operación clínica, la herramienta la bloquea. No existe acceso SQL genérico."""
         
         self.schema_cache = schema
         return schema
@@ -659,65 +554,31 @@ Ejemplos de respuesta correcta ante preguntas sobre el sistema:
         
         descriptions = """# Herramientas Disponibles
 
-## 1. database_query_tool
-Ejecuta consultas SQL en la base de datos MIMIC-IV-ED.
+## 1. query_mimic_database
+Recupera datos mediante operaciones allowlisted. Nunca acepta SQL ni acceso directo a tablas.
 
-**Uso:**
-- Consultas de pacientes: información demográfica, estancias
-- Signos vitales: tendencias, valores anormales
-- Diagnósticos: búsqueda por código ICD o descripción
-- Medicamentos: reconciliación y dispensación
-- Análisis estadísticos: agregaciones, conteos
+**Operaciones y scope:**
+- patient_summary: subject_id obligatorio.
+- encounter_summary: stay_id obligatorio.
+- vital_signs: stay_id obligatorio.
+- diagnoses, medications, triage: subject_id o stay_id obligatorio.
+- dataset_summary, diagnosis_frequency, medication_frequency, acuity_distribution: agregaciones fijas de investigación; no devuelven listados de pacientes.
 
-**Parámetros:**
-- query_type: Tipo de consulta (patient_summary, vital_signs, diagnoses, medications, custom)
-- subject_id: ID del paciente (opcional)
-- stay_id: ID de la estancia (opcional)
-- sql: Consulta SQL personalizada (para query_type="custom")
+**Contrato:**
+- Permiso read_only.
+- Máximo 200 filas o grupos; 100 por defecto.
+- Timeout de proveedor de 30 segundos.
+- Salida: success, query_type, permissions, scope, data, count, limit, timeout_seconds, truncated y error.
 
-**CRÍTICO - Reglas SQL Obligatorias:**
-1. ❌ NUNCA uses punto y coma (;) al final de las queries
-2. ✅ SIEMPRE usa el prefijo de esquema mimic_ed. (ej: mimic_ed.edstays)
-3. ❌ NUNCA incluyas comentarios SQL (-- texto)
-4. ❌ NUNCA uses tablas que no existen (patients, admissions, demographics, prescriptions)
-5. ❌ NUNCA uses columnas que no existen (age, dob, birth_date, death_date)
-6. ❌ NUNCA hagas JOIN con tablas inexistentes
-7. ❌ NUNCA uses funciones de fecha con columnas inexistentes (AGE(dob))
-8. ✅ SIEMPRE verifica que la columna existe en el esquema antes de usarla
-9. ✅ USA solo las 6 tablas listadas: edstays, diagnosis, triage, vitalsign, medrecon, pyxis
-10. ✅ USA solo las columnas exactas listadas para cada tabla
-
-**Ejemplos CORRECTOS:**
-```sql
-SELECT * FROM mimic_ed.edstays LIMIT 10
-SELECT subject_id, gender FROM mimic_ed.edstays WHERE gender = 'F'
-SELECT DISTINCT subject_id FROM mimic_ed.edstays ORDER BY subject_id
-SELECT DISTINCT subject_id, gender, race FROM mimic_ed.edstays ORDER BY subject_id
-SELECT subject_id, COUNT(stay_id) as total_visitas FROM mimic_ed.edstays GROUP BY subject_id ORDER BY total_visitas DESC
-SELECT e.stay_id, t.acuity FROM mimic_ed.edstays e JOIN mimic_ed.triage t ON e.stay_id = t.stay_id
-SELECT COUNT(*) as total FROM mimic_ed.diagnosis
-SELECT icd_title, COUNT(*) as frecuencia FROM mimic_ed.diagnosis GROUP BY icd_title ORDER BY frecuencia DESC LIMIT 10
-SELECT name, COUNT(*) as freq FROM mimic_ed.medrecon GROUP BY name ORDER BY freq DESC LIMIT 10
+**Ejemplos:**
+```
+{"query_type": "patient_summary", "subject_id": 10014729}
+{"query_type": "vital_signs", "stay_id": 37887480, "limit": 100}
+{"query_type": "diagnoses", "subject_id": 10014729, "icd_title": "sepsis"}
+{"query_type": "diagnosis_frequency", "limit": 10}
 ```
 
-**Ejemplos INCORRECTOS (NO HACER):**
-```sql
-SELECT * FROM mimic_ed.edstays;  -- ❌ tiene punto y coma
-SELECT * FROM edstays  -- ❌ falta prefijo de esquema mimic_ed.
-SELECT age FROM mimic_ed.edstays  -- ❌ columna 'age' no existe
-SELECT * FROM patients  -- ❌ tabla 'patients' no existe
-SELECT * FROM mimic_ed.edstays -- comentario  -- ❌ tiene comentario SQL
-SELECT subject_id FROM mimic_ed.edstays WHERE age < 18  -- ❌ columna 'age' no existe
-SELECT e.*, p.dob FROM mimic_ed.edstays e JOIN patients p ON e.subject_id = p.subject_id  -- ❌ tabla 'patients' no existe
-```
-
-**Ejemplos INCORRECTOS (NO HACER):**
-- SELECT * FROM edstays; (falta prefijo mimic_ed. y tiene punto y coma)
-- SELECT age FROM mimic_ed.edstays (columna 'age' no existe)
-- SELECT * FROM patients (tabla 'patients' no existe)
-- SELECT * FROM mimic_ed.edstays -- comentario (tiene comentario)
-
-**Retorna:** JSON con resultados de la consulta
+Si una consulta de paciente no aporta subject_id/stay_id, no la sustituyas por una consulta global: solicita el identificador o explica la limitación.
 
 ## 2. request_visualization
 Solicita al agente de visualización la creación de gráficos de datos clínicos.
@@ -728,26 +589,7 @@ Solicita al agente de visualización la creación de gráficos de datos clínico
 - Distribuciones de diagnósticos o medicamentos
 - Gráficos de dispersión para correlaciones
 
-**Parámetros:**
-- visualization_type: Tipo (timeline, comparison, bar, distribution, scatter)
-- stay_id: ID de la estancia (para datos de un paciente específico)
-- subject_id: ID del paciente (alternativa a stay_id)
-- metrics: Lista de métricas (ej: ['temperature', 'heartrate'])
-- data_source: Tabla fuente (vitalsign, diagnosis, medrecon, pyxis, edstays)
-- title: Título del gráfico (opcional)
-- requirements: Requisitos adicionales en lenguaje natural (opcional)
-
-**Ejemplos:**
-```
-# Línea temporal de signos vitales de un paciente
-{{"visualization_type": "timeline", "stay_id": 37887480, "metrics": ["temperature", "heartrate"], "data_source": "vitalsign"}}
-
-# Top-10 diagnósticos más frecuentes en TODO el dataset (sin subject_id)
-{{"visualization_type": "bar", "data_source": "diagnosis", "title": "10 Diagnósticos Más Frecuentes"}}
-
-# Medicamentos más administrados en TODO el dataset (sin subject_id)
-{{"visualization_type": "bar", "data_source": "pyxis", "title": "Medicamentos Más Administrados"}}
-```
+Usa exclusivamente los datos ya devueltos por query_mimic_database. No solicites tablas ni fuentes físicas a la herramienta de visualización.
 
 **Retorna:** Gráfico en formato base64 o mensaje de error"""
         
@@ -1015,9 +857,9 @@ Solicita al agente de visualización la creación de gráficos de datos clínico
         """
         condensed_descriptions = {
             'database_query_tool': (
-                "Ejecuta consultas SQL en MIMIC-IV-ED. "
-                "Parámetros: query_type, subject_id, stay_id, sql. "
-                "Retorna: JSON con resultados."
+                "Ejecuta operaciones MIMIC allowlisted y de solo lectura. "
+                "Parámetros: query_type, subject_id, stay_id, filtros ICD acotados y limit. "
+                "No acepta SQL, tablas ni filtros genéricos."
             ),
             'request_visualization': (
                 "Solicita visualizaciones al agente de visualización. "
