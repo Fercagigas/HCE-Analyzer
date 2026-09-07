@@ -81,7 +81,7 @@ de investigación, y la RPC eliminada cierra el riesgo en la base de datos y no 
 
 ## Pendientes
 
-- Aplicar `0001` y `0002` en Supabase y anotarlo en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.
+- ~~Aplicar `0001` y `0002` en Supabase~~ **Hecho (2026-09-02).** Ambas migraciones aplicadas y verificadas: los cuatro agregados `clinical_*_v1` existen y `execute_readonly_query` fue eliminada. Registrado en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.
 - Crear la clave de solo lectura `SUPABASE_CLINICAL_KEY` para el provider (ADR 0100).
 - RLS por usuario/paciente en Supabase (Fase 2); hoy el aislamiento se aplica en la aplicación.
 - Ampliar operaciones (microbiología, OMR, procedimientos) cuando un caso de uso lo exija.
