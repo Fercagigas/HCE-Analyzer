@@ -62,6 +62,7 @@ class MimicClinicalDataProvider:
         aggregate_limit: int = 50,
         timeout_s: float = 30.0,
         dictionaries: Optional[Dictionaries] = None,
+        verify_readonly_key: bool = False,
     ):
         self._client = client
         self.source_name = source_name
@@ -71,6 +72,8 @@ class MimicClinicalDataProvider:
         self._timeout = timeout_s
         self._dict = dictionaries or Dictionaries(client)
         self._map = RowMapper(source_name)
+        self._verify_readonly_key = verify_readonly_key
+        self._readonly_checked = False
 
     # ------------------------------------------------------------------
     # infraestructura
@@ -83,6 +86,7 @@ class MimicClinicalDataProvider:
 
     async def _run(self, fn: Callable[[], T], *, what: str) -> T:
         try:
+            await self._ensure_readonly_key()
             return await asyncio.wait_for(asyncio.to_thread(fn), timeout=self._timeout)
         except asyncio.TimeoutError as exc:
             raise ToolTimeout(f"Tiempo de espera agotado ({self._timeout:.0f}s) en {what}") from exc
@@ -90,6 +94,24 @@ class MimicClinicalDataProvider:
             raise
         except Exception as exc:  # noqa: BLE001 - traducimos cualquier error del SDK
             raise ProviderUnavailable(self._sanitize(exc, what)) from exc
+
+    async def _ensure_readonly_key(self) -> None:
+        """Falla cerrada si la comprobacion SQL detecta privilegios de escritura."""
+        if not self._verify_readonly_key or self._readonly_checked:
+            return
+        try:
+            response = await asyncio.wait_for(
+                asyncio.to_thread(lambda: self._client.rpc("clinical_key_is_readonly_v1", {}).execute()),
+                timeout=self._timeout,
+            )
+            rows = response.data or []
+            if not rows or not bool(rows[0].get("is_readonly")):
+                raise ProviderUnavailable("La clave clinica tiene permisos de escritura o no pudo verificarse; acceso bloqueado.")
+        except ProviderUnavailable:
+            raise
+        except Exception as exc:  # RPC ausente o permisos insuficientes: no degradar a clave elevada.
+            raise ProviderUnavailable("No se pudo verificar que la clave clinica sea de solo lectura; acceso bloqueado.") from exc
+        self._readonly_checked = True
 
     @staticmethod
     def _sanitize(exc: Exception, what: str) -> str:

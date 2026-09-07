@@ -89,3 +89,19 @@ async def test_user_preferences_merge_defaults_and_upsert(client):
     assert await repo.save(ctx, {"theme": "dark", "max_context_messages": 5}) is True
     loaded = await repo.load(ctx)
     assert loaded["theme"] == "dark" and loaded["max_context_messages"] == 5 and loaded["show_sources"] is True
+
+
+async def test_repositories_resolve_a_client_from_the_request_context(client):
+    """El adapter no reutiliza una clave elevada: recibe un cliente ligado al JWT."""
+    seen = []
+
+    def rls_client(ctx):
+        seen.append((ctx.user_id, ctx.access_token))
+        return client
+
+    repo = SupabaseConversationRepository(rls_client)
+    owner = RequestContext(user_id="owner", channel=Channel.api, access_token="jwt-owner")
+    other = RequestContext(user_id="other", channel=Channel.api, access_token="jwt-other")
+    session = await repo.create_session(owner, title="privado")
+    assert await repo.get_session(other, session_id=session.session_id) is None
+    assert seen and {token for _, token in seen} == {"jwt-owner", "jwt-other"}

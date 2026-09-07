@@ -11,13 +11,13 @@ Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencia
 | P0.3 RBAC | 🟡 | Rol `researcher` habilita `purpose=research`; roles clinician/reviewer/admin/auditor/knowledge-manager pendientes |
 | P0.4 ABAC contextual | 🟡 | `RequestContext` lleva paciente, episodio y propósito; relación asistencial y servicio pendientes |
 | P0.5 Autorización antes del LLM | ✅ | `ScopeGuard`/`ToolPolicy` rechazan antes de consultar; el modelo solo recibe datos del paciente activo |
-| P0.6 Context isolation | ✅ | `RequestContext(tenant_id, user_id, patient_id, encounter_id, session_id, trace_id, request_id, purpose, roles, channel)` obligatorio (ADR 0090) |
-| P0.7 Tests de cross-patient leakage | 🟡 | Offline: `tests/security/test_cross_patient_isolation.py`, historial sin datos de tools, sin caché de respuestas. Live: 3 payloads cross-patient y 2 scope-missing en verde. Pendientes: tabs paralelas, background jobs, cross-tenant |
+| P0.6 Context isolation | 🟡 | `RequestContext` obligatorio y RLS por ownership/JWT en producto (ADR 0130); falta integrar la relacion asistencial/paciente en todos los flujos clinicos |
+| P0.7 Tests de cross-patient leakage | 🟡 | Offline: `tests/security/test_cross_patient_isolation.py` y repositorios RLS con cliente ligado a JWT; pendiente aplicar/validar RLS live, tabs paralelas, jobs y cross-tenant |
 | P1.1 Multi-tenant isolation | ⏳ | `tenant_id="default"` en todo el sistema; sin aislamiento real |
 | P1.2 Break-glass | ⏳ | |
 | P1.3 Session lifecycle | 🟡 | Revalidación en cada carga, refresh rotatorio, logout; invalidación al cambiar contexto SMART pendiente |
 
-Riesgo abierto: la clave de servicio de Supabase ignora RLS; el aislamiento lo aplica la aplicación. RLS por usuario/paciente es el primer gate de Fase 2.
+Riesgo abierto: la migracion RLS y la clave clinica readonly requieren aplicacion manual del propietario; la relacion asistencial/paciente aun no esta integrada en todos los flujos.
 
 ## Tareas
 

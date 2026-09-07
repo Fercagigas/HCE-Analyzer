@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from chathce.adapters.supabase._common import parse_dt, run_blocking, sanitize_error
+from chathce.adapters.supabase.rls_client import client_for
 from chathce.domain.context import RequestContext
 from chathce.domain.conversation import ConversationSession, MessageMetadata, StoredMessage
 from chathce.domain.errors import NotFound, ProviderUnavailable
@@ -51,7 +52,7 @@ class SupabaseConversationRepository:
             raise ProviderUnavailable(f"Persistencia de conversaciones no disponible ({what}): {sanitize_error(exc)}") from exc
 
     def _owned_row(self, ctx: RequestContext, session_id: str) -> Dict[str, Any]:
-        result = self._client.table("chat_sessions").select("*").eq("id", session_id).eq("user_id", ctx.user_id).limit(1).execute()
+        result = client_for(self._client, ctx).table("chat_sessions").select("*").eq("id", session_id).eq("user_id", ctx.user_id).limit(1).execute()
         rows = result.data or []
         if not rows:
             raise NotFound("Sesión no encontrada o no autorizada")
@@ -61,7 +62,7 @@ class SupabaseConversationRepository:
     async def create_session(self, ctx: RequestContext, *, title: str) -> ConversationSession:
         def do():
             record = {"user_id": ctx.user_id, "title": title, "created_at": _now(), "updated_at": _now()}
-            result = self._client.table("chat_sessions").insert(record).execute()
+            result = client_for(self._client, ctx).table("chat_sessions").insert(record).execute()
             if not result.data:
                 raise ProviderUnavailable("No se pudo crear la sesión")
             return _session(result.data[0])
@@ -71,7 +72,7 @@ class SupabaseConversationRepository:
     async def list_sessions(self, ctx: RequestContext, *, limit: int = 3) -> List[ConversationSession]:
         def do():
             result = (
-                self._client.table("chat_sessions").select("*").eq("user_id", ctx.user_id)
+                client_for(self._client, ctx).table("chat_sessions").select("*").eq("user_id", ctx.user_id)
                 .order("updated_at", desc=True).limit(min(limit, MAX_SESSIONS_PER_USER)).execute()
             )
             return [_session(r) for r in (result.data or [])]
@@ -93,7 +94,7 @@ class SupabaseConversationRepository:
                 self._owned_row(ctx, session_id)
             except NotFound:
                 return False
-            result = self._client.table("chat_sessions").delete().eq("id", session_id).eq("user_id", ctx.user_id).execute()
+            result = client_for(self._client, ctx).table("chat_sessions").delete().eq("id", session_id).eq("user_id", ctx.user_id).execute()
             return bool(result.data)
 
         return await self._run(do, "borrado de sesion")
@@ -101,7 +102,7 @@ class SupabaseConversationRepository:
     async def rename_session(self, ctx: RequestContext, *, session_id: str, title: str) -> bool:
         def do():
             result = (
-                self._client.table("chat_sessions").update({"title": title, "updated_at": _now()})
+                client_for(self._client, ctx).table("chat_sessions").update({"title": title, "updated_at": _now()})
                 .eq("id", session_id).eq("user_id", ctx.user_id).execute()
             )
             return bool(result.data)
@@ -117,7 +118,7 @@ class SupabaseConversationRepository:
                 "metadata": (metadata or MessageMetadata()).model_dump(mode="json", exclude_none=True),
                 "created_at": _now(),
             }
-            result = self._client.table("chat_messages").insert(record).execute()
+            result = client_for(self._client, ctx).table("chat_messages").insert(record).execute()
             if not result.data:
                 raise ProviderUnavailable("No se pudo guardar el mensaje")
             return _message(result.data[0])
@@ -128,7 +129,7 @@ class SupabaseConversationRepository:
         def do():
             self._owned_row(ctx, session_id)
             result = (
-                self._client.table("chat_messages").select("id, session_id, content, role, metadata, created_at")
+                client_for(self._client, ctx).table("chat_messages").select("id, session_id, content, role, metadata, created_at")
                 .eq("session_id", session_id).order("created_at", desc=False).execute()
             )
             return [_message(r) for r in (result.data or [])]

@@ -66,7 +66,7 @@ Documentos: `docs/UNIFIED_CHAT_ARCHITECTURE.md`, `docs/architecture/INVENTORY.md
 | 4 | SQL libre eliminado del tool y del prompt del runtime legacy | 0050 |
 | 5 | Golden set v2 sobre MIMIC-IV (40 preguntas, `ground_truth_operation`, `scope`, `clinical_validation`) y runners adaptados | 0050 |
 | 6 | `LLMProvider`, `AnthropicLLMProvider`, `ModelGateway`, `ToolRegistry`, `render_for_model`, system prompt desde contratos | 0080 |
-| 7 | Repositorios Supabase: identidad, conversación, análisis, preferencias, conocimiento | 0100 / 0110 |
+| 7 | Repositorios Supabase: identidad, conversación, análisis, preferencias, conocimiento; cliente por JWT/RLS preparado para producto | 0100 / 0110 / 0130 |
 | 8 | `ChatService`, composition root, 12 tools, fachada legacy; retiro de LangChain del bucle y de `ClaudeLLMManager` | 0080 / 0110 |
 | 9 | FastAPI: `/health`, `/ready`, `POST /api/v1/chat`, `POST /api/v1/chat/stream` (SSE), `GET /api/v1/patients/{id}/summary`, `GET /api/v1/visualizations/{id}` | 0100 |
 | 10 | Streamlit como adapter: cookie revalidada, selector de paciente activo/episodio, modo investigación, render de `figure_json` | 0100 / 0110 |
@@ -103,8 +103,8 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 
 ## 7. Acciones pendientes del propietario (no automatizables desde el repo)
 
-1. ~~Aplicar `db/migrations/0001` y `0002` en Supabase~~ **Hecho (2026-09-02).** Aplicadas vía MCP y verificadas: 4 agregados `clinical_*_v1` presentes y `execute_readonly_query` eliminada. Además se eliminó una segunda superficie de SQL libre, `public.exec_sql(text)` (`db/migrations/0003_drop_exec_sql.sql`), detectada por el security advisor. Registrado en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.
-2. Crear un rol/clave de solo lectura sobre `mimiciv_hosp`/`mimiciv_icu` y guardarla como `SUPABASE_CLINICAL_KEY` en `.env`.
+1. ~~Aplicar `db/migrations/0001`, `0002` y `0003` en Supabase~~ **Hecho (2026-09-02).** Aplicadas y verificadas: 4 agregados `clinical_*_v1` presentes y las RPC de SQL libre `execute_readonly_query` y `exec_sql` eliminadas. Para un entorno nuevo, aplicar en orden `0001`, `0002`, `0003` y `0004` siguiendo `docs/security/SUPABASE_RUNBOOK_FASE2.md`.
+2. Aplicar `0004_rls_usuario_paciente_y_clinical_readonly.sql`; crear/rotar la clave del rol `clinical_readonly` y configurar `SUPABASE_CLINICAL_KEY` y `SUPABASE_ANON_KEY` fuera del repo; verificar la RPC fail-closed.
 3. Validar clínicamente las 20 preguntas del golden set con `clinical_validation.status="pending"` (`Evaluation/golden_set_ragas.json`).
 4. **Avisos de seguridad de Supabase que requieren el dashboard** (no automatizables por SQL/MCP): activar *Leaked Password Protection* (Auth → Password security), habilitar más *MFA options* (Auth → MFA) y aplicar el *upgrade de Postgres* pendiente de parches (Platform → Upgrade, implica downtime). Detalle en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.
 5. Opcional: definir fuera del repo `HCE_TEST_USER_EMAIL` / `HCE_TEST_USER_PASSWORD` para los tests live de identidad y API; versionar en una migración las definiciones de `hybrid_search`/`vector_search`.
@@ -114,7 +114,7 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 
 ## 8. Deuda y pendientes conocidos (Fase 2+)
 
-- **RLS por usuario/paciente** en Supabase; hoy el aislamiento lo aplica `ScopeGuard` en la aplicación y la clave de servicio ignora RLS (ADR 0100).
+- **RLS por usuario/paciente**: migracion y adapters con JWT preparados (ADR 0130), pendientes de aplicar y validar live; la relacion asistencial completa sigue pendiente.
 - **Evidence Engine**: una `Claim` por frase con `evidence_ids`; hoy una por tool y una `AI_INFERENCE` por respuesta (ADR 0090).
 - **Un solo worker uvicorn** por los modelos locales del RAG; servicio de embeddings separado (ADR 0110).
 - **Streaming en Streamlit** (solo la API emite SSE). **Kill switch** y circuit breaker por modelo (Fase 2).

@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict
 
 from chathce.adapters.supabase._common import run_blocking
+from chathce.adapters.supabase.rls_client import client_for
 from chathce.domain.context import RequestContext
 
 DEFAULT_PREFERENCES: Dict[str, Any] = {
@@ -26,7 +27,7 @@ class SupabaseUserPreferencesRepository:
 
     async def load(self, ctx: RequestContext) -> Dict[str, Any]:
         def do():
-            result = self._client.table("user_preferences").select("*").eq("user_id", ctx.user_id).limit(1).execute()
+            result = client_for(self._client, ctx).table("user_preferences").select("*").eq("user_id", ctx.user_id).limit(1).execute()
             merged = dict(DEFAULT_PREFERENCES)
             if result.data:
                 merged.update(result.data[0].get("preferences") or {})
@@ -40,7 +41,7 @@ class SupabaseUserPreferencesRepository:
     async def save(self, ctx: RequestContext, preferences: Dict[str, Any]) -> bool:
         def do():
             record = {"user_id": ctx.user_id, "preferences": preferences, "updated_at": datetime.now(timezone.utc).isoformat()}
-            self._client.table("user_preferences").upsert(record, on_conflict="user_id").execute()
+            client_for(self._client, ctx).table("user_preferences").upsert(record, on_conflict="user_id").execute()
             return True
 
         try:
