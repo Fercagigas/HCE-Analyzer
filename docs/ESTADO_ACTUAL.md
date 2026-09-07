@@ -103,10 +103,10 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 
 ## 7. Acciones pendientes del propietario (no automatizables desde el repo)
 
-1. Aplicar en el SQL Editor de Supabase `db/migrations/0001_clinical_aggregates_v1.sql` (habilita `get_dataset_statistics` y visualizaciones de frecuencias) y `db/migrations/0002_revoke_execute_readonly_query.sql` (elimina la RPC de SQL libre). Anotarlo en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.
+1. ~~Aplicar `db/migrations/0001` y `0002` en Supabase~~ **Hecho (2026-09-02).** Aplicadas vía MCP y verificadas: 4 agregados `clinical_*_v1` presentes y `execute_readonly_query` eliminada. Además se eliminó una segunda superficie de SQL libre, `public.exec_sql(text)` (`db/migrations/0003_drop_exec_sql.sql`), detectada por el security advisor. Registrado en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.
 2. Crear un rol/clave de solo lectura sobre `mimiciv_hosp`/`mimiciv_icu` y guardarla como `SUPABASE_CLINICAL_KEY` en `.env`.
 3. Validar clínicamente las 20 preguntas del golden set con `clinical_validation.status="pending"` (`Evaluation/golden_set_ragas.json`).
-4. Opcional: definir fuera del repo `HCE_TEST_USER_EMAIL` / `HCE_TEST_USER_PASSWORD` para los tests live de identidad y API; pegar en `db/migrations/0003` las definiciones de `hybrid_search`/`vector_search`.
+4. Opcional: definir fuera del repo `HCE_TEST_USER_EMAIL` / `HCE_TEST_USER_PASSWORD` para los tests live de identidad y API; pegar en `db/migrations/0004` las definiciones de `hybrid_search`/`vector_search`.
 5. Estado del roadmap por documento: `ROADMAP_HOSPITAL_READY/README.md` (columna Estado) y bloque «Estado a 2 de septiembre de 2026» en cada documento.
 
 ---
@@ -125,6 +125,6 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 
 - ✅ CORS/XSRF desactivados en Streamlit (ADR 0060).
 - ✅ Ejecución de código de visualización generado por LLM (ADR 0040).
-- ✅ SQL libre controlable por el modelo (ADR 0050; la RPC se elimina al aplicar `0002`).
+- ✅ SQL libre controlable por el modelo (ADR 0050). Cerrado en código y en base de datos: RPC `execute_readonly_query` y `exec_sql` eliminadas de Supabase el 2026-09-02 (`db/migrations/0002` y `0003`).
 - ✅ Restauración de sesión sin revalidar (ADR 0100).
 - ✅ Config duplicada y `SECRET_KEY` sin consumidor (ADR 0110; `config/config.py` eliminado).

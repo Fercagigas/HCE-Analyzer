@@ -443,8 +443,9 @@ Esta es la corrección más probable. Rotar no sustituye RLS, mínimo privilegio
 
 Estado a 2 de septiembre de 2026 (rama `fase1/foundation`, ADR 0050 y 0100):
 
-- **RPC de SQL libre**: el runtime ya no tiene ningun consumidor de `public.execute_readonly_query(text)`. Debe eliminarse con `db/migrations/0002_revoke_execute_readonly_query.sql` (pendiente de aplicar por el propietario). Hasta entonces, el item "RPC insegura" sigue abierto en la base de datos aunque este cerrado en el codigo.
-- **RPC nuevas**: `clinical_dataset_summary_v1`, `clinical_top_diagnoses_v1`, `clinical_top_drugs_v1`, `clinical_admission_type_distribution_v1` (`db/migrations/0001_clinical_aggregates_v1.sql`). `LANGUAGE sql STABLE SECURITY INVOKER`, `search_path` fijo, `statement_timeout 10s`, limite <= 200, `REVOKE ... FROM PUBLIC, anon`. Verificar tras aplicar: existen, `SECURITY INVOKER`, sin `EXECUTE` para `anon`.
+- **RPC de SQL libre**: ✅ **eliminada de la base de datos** el 2026-09-02 aplicando `db/migrations/0002_revoke_execute_readonly_query.sql`. Verificado: `select proname from pg_proc where proname='execute_readonly_query'` devuelve 0 filas. El riesgo "RPC insegura" queda cerrado en código y en base de datos.
+- **Segunda RPC de SQL libre (`public.exec_sql(text)`)**: ✅ **eliminada** el 2026-09-02 (`db/migrations/0003_drop_exec_sql.sql`). Era `SECURITY DEFINER` con `EXECUTE sql` arbitrario (no solo SELECT), ejecutable por `anon`/`authenticated`, sin consumidores en el código; detectada por el security advisor. Verificado: 0 filas en `pg_proc`.
+- **RPC nuevas**: ✅ **aplicadas** el 2026-09-02 con `db/migrations/0001_clinical_aggregates_v1.sql`: `clinical_dataset_summary_v1`, `clinical_top_diagnoses_v1`, `clinical_top_drugs_v1`, `clinical_admission_type_distribution_v1`. `LANGUAGE sql STABLE SECURITY INVOKER`, `search_path` fijo, `statement_timeout 10s`, limite <= 200, `REVOKE ... FROM PUBLIC, anon`, `GRANT EXECUTE ... TO authenticated, service_role`. Verificado: las cuatro existen y `clinical_top_diagnoses_v1(3)` devuelve resultados.
 - **Claves por funcion**: `SUPABASE_KEY` (auth y `public.*`), `SUPABASE_CLINICAL_KEY` (rol de solo lectura sobre `mimiciv_hosp`/`mimiciv_icu`, solo `MimicClinicalDataProvider`; pendiente de crear), `SUPABASE_SERVICE_ROLE_KEY` (solo scripts de carga). El paso 2 de la rotacion ("acceso `mimic_ed`") debe leerse como acceso a `mimiciv_*` a traves de `SUPABASE_CLINICAL_KEY`.
 - **Aislamiento por paciente**: lo aplica la aplicacion (`ScopeGuard` + filtro `subject_id` en cada consulta). RLS por usuario/paciente sigue pendiente (Fase 2); la clave de servicio ignora RLS.
 - **Prueba permitir/denegar (paso 7)**: usar `tests/security/test_cross_patient_isolation.py` (offline) y `tests/integration/test_mimic_provider_live.py` (live, solo lectura) como evidencia reproducible.
@@ -453,8 +454,9 @@ Registro de aplicacion de migraciones (rellenar por el propietario, sin valores 
 
 | Migracion | Fecha | Entorno | Verificacion |
 |---|---|---|---|
-| `0001_clinical_aggregates_v1.sql` | pendiente | | |
-| `0002_revoke_execute_readonly_query.sql` | pendiente | | |
+| `0001_clinical_aggregates_v1.sql` | 2026-09-02 | Supabase (proyecto uoqvzaeuvylmvtkhaovm) | 4 funciones `clinical_*_v1` presentes; `clinical_top_diagnoses_v1(3)` OK |
+| `0002_revoke_execute_readonly_query.sql` | 2026-09-02 | Supabase (proyecto uoqvzaeuvylmvtkhaovm) | `execute_readonly_query` ausente (0 filas en pg_proc) |
+| `0003_drop_exec_sql.sql` | 2026-09-02 | Supabase (proyecto uoqvzaeuvylmvtkhaovm) | `exec_sql` ausente (0 filas en pg_proc) |
 
 ## Referencias
 
