@@ -174,7 +174,11 @@ def create_allowlisted_visualization(
                 f"Tipo de visualización no permitido: {visualization_type}. Tipos permitidos: {allowed}"
             )
         data = _validated_data(data)
-        if requested_type == "distribution" and _default_category_column(data):
+        if (
+            requested_type == "distribution"
+            and not metrics
+            and _default_category_column(data)
+        ):
             normalized_type = "bar"
         if normalized_type in {"timeline", "comparison"}:
             selected_time = time_column or _default_time_column(data)

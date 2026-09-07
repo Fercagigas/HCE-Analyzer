@@ -107,6 +107,23 @@ def test_categorical_distribution_uses_frequency_bars(executor_module):
     assert isinstance(result["figure"].data[0], go.Bar)
 
 
+def test_numeric_distribution_ignores_incidental_category(executor_module):
+    data = pd.DataFrame({
+        "acuity": [1, 2, 2, 3],
+        "chief_complaint": ["pain", "fever", "pain", "dyspnea"],
+    })
+
+    result = executor_module.create_allowlisted_visualization(
+        "distribution",
+        data,
+        metrics=["acuity"],
+    )
+
+    assert result["success"] is True
+    assert result["visualization_type"] == "histogram"
+    assert isinstance(result["figure"].data[0], go.Histogram)
+
+
 @pytest.mark.parametrize("chart_type", ["scatter", "3d_scatter", "sankey", "custom"])
 def test_non_allowlisted_types_fail_closed(executor_module, chart_type):
     data = pd.DataFrame({"x": [1, 2], "y": [3, 4]})
