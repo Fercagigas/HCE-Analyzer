@@ -1,5 +1,22 @@
 # 02 — Frontend: Clinical AI Workspace
 
+## Estado a 2 de septiembre de 2026 (cierre de Fase 1)
+
+Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencias: ADRs en `docs/decisions/`, evidencia en `docs/baseline/FASE1_BASELINE.md`.
+
+| Tarea | Estado | Evidencia / nota |
+|---|---|---|
+| P0.1 Aplicación React independiente | ⏳ | Fase 4. Streamlit ya es solo adapter de presentación (`chathce/streamlit_adapter`, ADR 0110): el core no depende de la UI |
+| P0.2 Tres modos | ⏳ | Fase 4/5 |
+| P0.3 Patient Context Header | 🟡 | Selector "Paciente activo" y "Episodio" en Streamlit (ADR 0090); cabecera clínica completa pendiente |
+| P0.4 Navegación AI-first | ⏳ | Fase 4 |
+| P0.5 Chat contextual global | ⏳ | El contrato de API (`/api/v1/chat`, SSE) ya lo soporta |
+| P1.1 Respuestas estructuradas | 🟡 | `ChatResponse` expone `facts`, `inferences`, `evidence`, `uncertainty`, `visualizations`; componentes React pendientes |
+| P1.2 Claim-level evidence UX | ⏳ | Depende de Evidence Engine (Fase 3) |
+| P1.3 – P1.6 | ⏳ | Fase 4 |
+
+Lo que Fase 1 deja listo para este documento: API JSON + SSE autenticada con JWT, `figure_json` para visualizaciones, `evidence_ids` en cada dato clínico.
+
 ## Decisión
 
 Retirar Streamlit del producto clínico final. Mantenerlo opcionalmente para investigación/evaluación interna.

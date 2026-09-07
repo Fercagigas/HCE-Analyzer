@@ -1,0 +1,41 @@
+{
+  "args": [
+    10003046
+  ],
+  "kwargs": {},
+  "method": "get_patient_diagnoses",
+  "result": [
+    {
+      "hadm_id": 26048429,
+      "icd_code": "1505",
+      "icd_version": 9,
+      "long_title": "Malignant neoplasm of lower third of esophagus",
+      "seq_num": 1,
+      "subject_id": 10003046
+    },
+    {
+      "hadm_id": 26048429,
+      "icd_code": "2762",
+      "icd_version": 9,
+      "long_title": "Acidosis",
+      "seq_num": 2,
+      "subject_id": 10003046
+    },
+    {
+      "hadm_id": 26048429,
+      "icd_code": "53085",
+      "icd_version": 9,
+      "long_title": "Barrett's esophagus",
+      "seq_num": 3,
+      "subject_id": 10003046
+    },
+    {
+      "hadm_id": 26048429,
+      "icd_code": "53081",
+      "icd_version": 9,
+      "long_title": "Esophageal reflux",
+      "seq_num": 4,
+      "subject_id": 10003046
+    }
+  ]
+}

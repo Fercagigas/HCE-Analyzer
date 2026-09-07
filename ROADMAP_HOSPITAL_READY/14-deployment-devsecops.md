@@ -1,5 +1,11 @@
 # 14 — Deployment y DevSecOps hospitalario
 
+## Estado a 2 de septiembre de 2026 (cierre de Fase 1)
+
+Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencias: ADRs en `docs/decisions/`, evidencia en `docs/baseline/FASE1_BASELINE.md`.
+
+Sin cambios en Fase 1 (todo ⏳). Estado operativo actual: ejecución local con `.env`, Streamlit en `localhost:8501` y FastAPI con `uvicorn --workers 1` en `127.0.0.1:8000` (un solo worker por el singleton del RAG, ADR 0110); dependencias con versiones mínimas en `requirements.txt`/`environment.yml`, sin lockfile ni contenedores. La suite de tests corre sin credenciales y es apta para CI (P1.3) cuando exista pipeline.
+
 ## Objetivo
 Que ChatHCE pueda desplegarse de forma reproducible, aislada, actualizable y auditable.
 

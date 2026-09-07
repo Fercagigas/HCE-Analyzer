@@ -1,0 +1,62 @@
+[
+  {
+    "icd_code": "0139",
+    "icd_version": 9,
+    "long_title": "Other incision of brain"
+  },
+  {
+    "icd_code": "027034Z",
+    "icd_version": 10,
+    "long_title": "Dilation of Coronary Artery, One Artery with Drug-eluting Intraluminal Device, Percutaneous Approach"
+  },
+  {
+    "icd_code": "0331",
+    "icd_version": 9,
+    "long_title": "Spinal tap"
+  },
+  {
+    "icd_code": "3897",
+    "icd_version": 9,
+    "long_title": "Central venous catheter placement with guidance"
+  },
+  {
+    "icd_code": "3E1K78Z",
+    "icd_version": 10,
+    "long_title": "Irrigation of Genitourinary Tract using Irrigating Substance, Via Natural or Artificial Opening"
+  },
+  {
+    "icd_code": "4242",
+    "icd_version": 9,
+    "long_title": "Total esophagectomy"
+  },
+  {
+    "icd_code": "4639",
+    "icd_version": 9,
+    "long_title": "Other enterostomy"
+  },
+  {
+    "icd_code": "4A023N6",
+    "icd_version": 10,
+    "long_title": "Measurement of Cardiac Sampling and Pressure, Right Heart, Percutaneous Approach"
+  },
+  {
+    "icd_code": "4A023N7",
+    "icd_version": 10,
+    "long_title": "Measurement of Cardiac Sampling and Pressure, Left Heart, Percutaneous Approach"
+  },
+  {
+    "icd_code": "5A02210",
+    "icd_version": 10,
+    "long_title": "Assistance with Cardiac Output using Balloon Pump, Continuous"
+  },
+  {
+    "icd_code": "966",
+    "icd_version": 9,
+    "long_title": "Enteral infusion of concentrated nutritional substances"
+  },
+  {
+    "icd_code": "B211YZZ",
+    "icd_version": 10,
+    "long_title": "Fluoroscopy of Multiple Coronary Arteries using Other Contrast"
+  }
+]

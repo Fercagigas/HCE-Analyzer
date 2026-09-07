@@ -7,7 +7,7 @@ Validates: Requirements 12.4
 
 from unittest.mock import MagicMock, patch
 
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 
@@ -94,7 +94,7 @@ def test_property_19_non_dry_run_calls_process_message():
         max_size=20,
     )
 )
-@settings(max_examples=100)
+@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 def test_property_19_dry_run_never_calls_process_message(questions):
     """**Validates: Requirements 12.4**
 
@@ -117,7 +117,7 @@ def test_property_19_dry_run_never_calls_process_message(questions):
         max_size=10,
     )
 )
-@settings(max_examples=50)
+@settings(max_examples=50, suppress_health_check=[HealthCheck.too_slow])
 def test_property_19_dry_run_vs_live_call_count(questions):
     """**Validates: Requirements 12.4**
 

@@ -1,485 +1,1157 @@
 {
   "metadata": {
-    "version": "1.0",
-    "fecha_generacion": "2026-03-12T11:30:00Z",
-    "total_preguntas": 40,
-    "distribucion": {
-      "patient_summary": 8,
-      "vital_signs": 8,
-      "diagnoses": 8,
-      "medications": 8,
-      "triage": 4,
-      "cross_table": 4
+    "data_snapshot": {
+      "admissions": 275,
+      "diagnoses": 4506,
+      "icu_stays": 140,
+      "lab_events": 107727,
+      "patients": 100,
+      "prescriptions": 18087
     },
+    "dataset": "MIMIC-IV Clinical Database Demo 2.2 (mimiciv_hosp, mimiciv_icu)",
+    "distribucion": {
+      "admission": 6,
+      "aggregates": 5,
+      "diagnoses": 6,
+      "icu": 5,
+      "labs": 6,
+      "medications": 6,
+      "patient_summary": 6
+    },
+    "fecha_generacion": "2026-09-02T14:56:49+00:00",
+    "generador": {
+      "commit": "92fd8a7",
+      "n_patients": 8,
+      "script": "scripts/build_golden_set_mimiciv.py",
+      "seed": 42
+    },
+    "operaciones_referenciadas": [
+      "admission_type_distribution",
+      "get_admission_details",
+      "get_dataset_summary",
+      "get_patient",
+      "get_patient_summary",
+      "list_conditions",
+      "list_icu_observations",
+      "list_icu_stays",
+      "list_lab_observations",
+      "list_medications",
+      "top_diagnoses",
+      "top_drugs"
+    ],
+    "requiere_validacion_clinica": [
+      "DB-AGG-002",
+      "DB-AGG-003",
+      "DB-AGG-004",
+      "DB-DX-004",
+      "DB-DX-005",
+      "DB-DX-006",
+      "DB-ICU-004",
+      "DB-ICU-005",
+      "DB-LAB-001",
+      "DB-LAB-002",
+      "DB-LAB-003",
+      "DB-LAB-004",
+      "DB-LAB-005",
+      "DB-LAB-006",
+      "DB-MED-001",
+      "DB-MED-002",
+      "DB-MED-003",
+      "DB-MED-004",
+      "DB-MED-005",
+      "DB-MED-006"
+    ],
+    "subject_ids_usados": [
+      10000032,
+      10001217,
+      10001725,
+      10002428,
+      10002495,
+      10002930
+    ],
+    "total_preguntas": 40,
     "umbrales_ragas": {
-      "faithfulness": 0.85,
       "answer_relevancy": 0.8,
       "context_precision": 0.75,
-      "context_recall": 0.7
+      "context_recall": 0.7,
+      "faithfulness": 0.85
     },
-    "tablas_referenciadas": [
-      "edstays",
-      "triage",
-      "vitalsign",
-      "diagnosis",
-      "medrecon",
-      "pyxis"
-    ]
+    "version": "2.0"
   },
   "questions": [
     {
-      "id": "DB-PS-001",
-      "question": "¿Cuál es el género y la raza del paciente 10014729?",
-      "ground_truth": "El paciente 10014729 es de género femenino (F) y raza WHITE - OTHER EUROPEAN.",
-      "ground_truth_sql": "SELECT subject_id, gender, race FROM mimic_ed.edstays WHERE subject_id = 10014729 LIMIT 1",
+      "category": "admission",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "edstays: subject_id=10014729, gender=F, race=WHITE - OTHER EUROPEAN"
+        "{\"hadm_id\":22595853,\"subject_id\":10000032,\"admittime\":\"2180-05-06T22:23:00\",\"dischtime\":\"2180-05-07T17:15:00\",\"admission_type\":\"URGENT\",\"admission_location\":\"TRANSFER FROM HOSPITAL\",\"discharge_location\":\"HOME\",\"insurance\":\"Other\",\"race\":\"WHITE\",\"hospital_expire_flag\":false,\"length_of_stay_days\":0.786}"
       ],
-      "category": "patient_summary"
+      "expected_tool": "get_admission_details",
+      "ground_truth": "El ingreso 22595853 del paciente 10000032 comenzó el 06/05/2180 22:23 y terminó el 07/05/2180 17:15; el tipo de ingreso fue URGENT con procedencia TRANSFER FROM HOSPITAL.",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 22595853
+        },
+        "operation": "get_admission_details"
+      },
+      "id": "DB-ADM-001",
+      "question": "¿Cuándo ingresó y cuándo fue dado de alta el paciente 10000032 en su ingreso 22595853, y de qué tipo fue el ingreso?",
+      "scope": {
+        "hadm_id": 22595853,
+        "stay_id": null,
+        "subject_id": 10000032
+      }
     },
     {
-      "id": "DB-PS-002",
-      "question": "¿Cuál fue la disposición final del paciente 10014729 en su visita a urgencias?",
-      "ground_truth": "La disposición final del paciente 10014729 fue ADMITTED (ingresado al hospital) en su estancia stay_id=37887480.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, disposition FROM mimic_ed.edstays WHERE subject_id = 10014729",
+      "category": "admission",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "edstays: subject_id=10014729, stay_id=37887480, disposition=ADMITTED"
+        "{\"hadm_id\":24597018,\"subject_id\":10001217,\"admittime\":\"2157-11-18T22:56:00\",\"dischtime\":\"2157-11-25T18:00:00\",\"admission_type\":\"EW EMER.\",\"admission_location\":\"EMERGENCY ROOM\",\"discharge_location\":\"HOME HEALTH CARE\",\"insurance\":\"Other\",\"race\":\"WHITE\",\"hospital_expire_flag\":false,\"length_of_stay_days\":6.794}"
       ],
-      "category": "patient_summary"
+      "expected_tool": "get_admission_details",
+      "ground_truth": "El ingreso 24597018 del paciente 10001217 comenzó el 18/11/2157 22:56 y terminó el 25/11/2157 18:00; el tipo de ingreso fue EW EMER. con procedencia EMERGENCY ROOM.",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 24597018
+        },
+        "operation": "get_admission_details"
+      },
+      "id": "DB-ADM-002",
+      "question": "¿Cuándo ingresó y cuándo fue dado de alta el paciente 10001217 en su ingreso 24597018, y de qué tipo fue el ingreso?",
+      "scope": {
+        "hadm_id": 24597018,
+        "stay_id": null,
+        "subject_id": 10001217
+      }
     },
     {
-      "id": "DB-PS-003",
-      "question": "¿Cuánto tiempo estuvo el paciente 10014729 en urgencias?",
-      "ground_truth": "El paciente 10014729 estuvo en urgencias desde el 2125-03-19 12:36:00 hasta el 2125-03-19 16:59:47, aproximadamente 4 horas y 24 minutos.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, intime, outtime FROM mimic_ed.edstays WHERE subject_id = 10014729",
+      "category": "admission",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "edstays: subject_id=10014729, stay_id=37887480, intime=2125-03-19 12:36:00, outtime=2125-03-19 16:59:47"
+        "{\"hadm_id\":25563031,\"subject_id\":10001725,\"admittime\":\"2110-04-11T15:08:00\",\"dischtime\":\"2110-04-14T15:00:00\",\"admission_type\":\"EW EMER.\",\"admission_location\":\"PACU\",\"discharge_location\":\"HOME\",\"insurance\":\"Other\",\"race\":\"WHITE\",\"hospital_expire_flag\":false,\"length_of_stay_days\":2.994}"
       ],
-      "category": "patient_summary"
+      "expected_tool": "get_admission_details",
+      "ground_truth": "El ingreso 25563031 del paciente 10001725 comenzó el 11/04/2110 15:08 y terminó el 14/04/2110 15:00; el tipo de ingreso fue EW EMER. con procedencia PACU.",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 25563031
+        },
+        "operation": "get_admission_details"
+      },
+      "id": "DB-ADM-003",
+      "question": "¿Cuándo ingresó y cuándo fue dado de alta el paciente 10001725 en su ingreso 25563031, y de qué tipo fue el ingreso?",
+      "scope": {
+        "hadm_id": 25563031,
+        "stay_id": null,
+        "subject_id": 10001725
+      }
     },
     {
-      "id": "DB-PS-004",
-      "question": "¿Cuántas visitas a urgencias tiene registradas el paciente 10018328?",
-      "ground_truth": "El paciente 10018328 tiene 2 visitas registradas en urgencias: stay_id 34176810 (2154-02-05, disposición ADMITTED) y stay_id 32103106 (2154-08-03, disposición HOME).",
-      "ground_truth_sql": "SELECT subject_id, stay_id, intime, outtime, disposition FROM mimic_ed.edstays WHERE subject_id = 10018328 ORDER BY intime",
+      "category": "admission",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "edstays: subject_id=10018328, stay_id=34176810, intime=2154-02-05 17:09:00, disposition=ADMITTED",
-        "edstays: subject_id=10018328, stay_id=32103106, intime=2154-08-03 15:31:00, disposition=HOME"
+        "{\"hadm_id\":20321825,\"subject_id\":10002428,\"admittime\":\"2156-04-30T20:35:00\",\"dischtime\":\"2156-05-03T16:36:00\",\"admission_type\":\"EW EMER.\",\"admission_location\":\"EMERGENCY ROOM\",\"discharge_location\":\"CHRONIC/LONG TERM ACUTE CARE\",\"insurance\":\"Medicare\",\"race\":\"WHITE\",\"hospital_expire_flag\":false,\"length_of_stay_days\":2.834}"
       ],
-      "category": "patient_summary"
+      "expected_tool": "get_admission_details",
+      "ground_truth": "Tras el ingreso 20321825, el paciente 10002428 fue dado de alta a CHRONIC/LONG TERM ACUTE CARE; el ingreso duró 2.8 días (30/04/2156 20:35 a 03/05/2156 16:36).",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 20321825
+        },
+        "operation": "get_admission_details"
+      },
+      "id": "DB-ADM-004",
+      "question": "¿A dónde fue dado de alta el paciente 10002428 tras el ingreso 20321825 y cuántos días duró el ingreso?",
+      "scope": {
+        "hadm_id": 20321825,
+        "stay_id": null,
+        "subject_id": 10002428
+      }
     },
     {
-      "id": "DB-PS-005",
-      "question": "¿Cuál es el género y la disposición del paciente 10026255 en sus visitas a urgencias?",
-      "ground_truth": "El paciente 10026255 es de género masculino (M). Tuvo 2 visitas: stay_id 37844627 (2200-09-17, disposición ADMITTED) y stay_id 34236274 (2201-07-07, disposición ADMITTED).",
-      "ground_truth_sql": "SELECT subject_id, stay_id, gender, disposition, intime FROM mimic_ed.edstays WHERE subject_id = 10026255 ORDER BY intime",
+      "category": "admission",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "edstays: subject_id=10026255, stay_id=37844627, gender=M, disposition=ADMITTED, intime=2200-09-17",
-        "edstays: subject_id=10026255, stay_id=34236274, gender=M, disposition=ADMITTED, intime=2201-07-07"
+        "{\"hadm_id\":24982426,\"subject_id\":10002495,\"admittime\":\"2141-05-22T20:17:00\",\"dischtime\":\"2141-05-29T17:41:00\",\"admission_type\":\"URGENT\",\"admission_location\":\"TRANSFER FROM HOSPITAL\",\"discharge_location\":\"SKILLED NURSING FACILITY\",\"insurance\":\"Medicare\",\"race\":\"UNKNOWN\",\"hospital_expire_flag\":false,\"length_of_stay_days\":6.892}"
       ],
-      "category": "patient_summary"
+      "expected_tool": "get_admission_details",
+      "ground_truth": "Tras el ingreso 24982426, el paciente 10002495 fue dado de alta a SKILLED NURSING FACILITY; el ingreso duró 6.9 días (22/05/2141 20:17 a 29/05/2141 17:41).",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 24982426
+        },
+        "operation": "get_admission_details"
+      },
+      "id": "DB-ADM-005",
+      "question": "¿A dónde fue dado de alta el paciente 10002495 tras el ingreso 24982426 y cuántos días duró el ingreso?",
+      "scope": {
+        "hadm_id": 24982426,
+        "stay_id": null,
+        "subject_id": 10002495
+      }
     },
     {
-      "id": "DB-PS-006",
-      "question": "¿Cuántas visitas a urgencias tiene el paciente 10014354?",
-      "ground_truth": "El paciente 10014354 tiene 23 visitas registradas en urgencias, siendo el paciente con más visitas en el dataset.",
-      "ground_truth_sql": "SELECT subject_id, COUNT(stay_id) as total_visitas FROM mimic_ed.edstays WHERE subject_id = 10014354 GROUP BY subject_id",
+      "category": "admission",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "edstays: subject_id=10014354, total_visitas=23"
+        "{\"hadm_id\":20282368,\"subject_id\":10002930,\"admittime\":\"2201-03-23T19:15:00\",\"dischtime\":\"2201-03-26T14:24:00\",\"admission_type\":\"EU OBSERVATION\",\"admission_location\":\"PHYSICIAN REFERRAL\",\"discharge_location\":null,\"insurance\":\"Medicare\",\"race\":\"BLACK/AFRICAN AMERICAN\",\"hospital_expire_flag\":false,\"length_of_stay_days\":2.798}"
       ],
-      "category": "patient_summary"
+      "expected_tool": "get_admission_details",
+      "ground_truth": "Tras el ingreso 20282368, el paciente 10002930 fue dado de alta a None; el ingreso duró 2.8 días (23/03/2201 19:15 a 26/03/2201 14:24).",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 20282368
+        },
+        "operation": "get_admission_details"
+      },
+      "id": "DB-ADM-006",
+      "question": "¿A dónde fue dado de alta el paciente 10002930 tras el ingreso 20282368 y cuántos días duró el ingreso?",
+      "scope": {
+        "hadm_id": 20282368,
+        "stay_id": null,
+        "subject_id": 10002930
+      }
     },
     {
-      "id": "DB-PS-007",
-      "question": "¿Cuál es la raza y el medio de transporte de llegada del paciente 10014729?",
-      "ground_truth": "El paciente 10014729 es de raza WHITE - OTHER EUROPEAN y llegó a urgencias caminando (WALK IN).",
-      "ground_truth_sql": "SELECT subject_id, race, arrival_transport FROM mimic_ed.edstays WHERE subject_id = 10014729",
+      "category": "aggregates",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "edstays: subject_id=10014729, race=WHITE - OTHER EUROPEAN, arrival_transport=WALK IN"
+        "{\"patients\":100,\"admissions\":275,\"icu_stays\":140,\"diagnoses\":4506,\"lab_events\":107727,\"prescriptions\":18087,\"source\":\"mimic-iv-demo-2.2\"}"
       ],
-      "category": "patient_summary"
+      "expected_tool": "get_dataset_statistics",
+      "ground_truth": "El conjunto de datos contiene 100 pacientes, 275 ingresos hospitalarios y 140 estancias en UCI, con 4506 diagnósticos codificados, 107727 resultados de laboratorio y 18087 prescripciones.",
+      "ground_truth_operation": {
+        "arguments": {},
+        "operation": "get_dataset_summary"
+      },
+      "id": "DB-AGG-001",
+      "question": "¿Cuántos pacientes, ingresos hospitalarios y estancias en UCI contiene el conjunto de datos?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": null
+      }
     },
     {
-      "id": "DB-PS-008",
-      "question": "¿Cuántos pacientes únicos hay en el dataset MIMIC-IV-ED y cuántas estancias totales?",
-      "ground_truth": "El dataset MIMIC-IV-ED contiene 64 pacientes únicos con un total de 222 estancias en urgencias.",
-      "ground_truth_sql": "SELECT COUNT(DISTINCT subject_id) as total_pacientes, COUNT(stay_id) as total_estancias FROM mimic_ed.edstays",
+      "category": "aggregates",
+      "clinical_validation": {
+        "notes": "Validar la redaccion de los titulos ICD largos (abreviaturas clinicas).",
+        "required": true,
+        "status": "pending"
+      },
       "contexts": [
-        "edstays: total_pacientes=64, total_estancias=222"
+        "{\"operation\":\"top_diagnoses\",\"buckets\":[{\"key\":\"4019\",\"label\":\"Unspecified essential hypertension\",\"count\":68},{\"key\":\"E785\",\"label\":\"Hyperlipidemia, unspecified\",\"count\":57},{\"key\":\"2724\",\"label\":\"Other and unspecified hyperlipidemia\",\"count\":55},{\"key\":\"E039\",\"label\":\"Hypothyroidism, unspecified\",\"count\":47},{\"key\":\"Z794\",\"label\":\"Long term (current) use of insulin\",\"count\":37},{\"key\":\"Z87891\",\"label\":\"Personal history of nicotine dependence\",\"count\":35},{\"key\":\"42731\",\"label\":\"Atrial fibrillation\",\"count\":34},{\"key\":\"25000\",\"label\":\"Diabetes mellitus without mention of complication, type II or unspecified type, not stated as uncontrolled\",\"count\":33},{\"key\":\"I2510\",\"label\":\"Atherosclerotic heart disease of native coronary artery without angina pectoris\",\"count\":33},{\"key\":\"F329\",\"label\":\"Major depressive disorder, single episode, unspecified\",\"count\":32}],\"total_rows\":431,\"limit\":10,\"truncated\":true,\"source\":\"mimic-iv-demo-2.2\"}"
       ],
-      "category": "patient_summary"
+      "expected_tool": "get_dataset_statistics",
+      "ground_truth": "Los 10 diagnósticos codificados más frecuentes, con su número de apariciones, son: Unspecified essential hypertension (68); Hyperlipidemia, unspecified (57); Other and unspecified hyperlipidemia (55); Hypothyroidism, unspecified (47); Long term (current) use of insulin (37); Personal history of nicotine dependence (35); Atrial fibrillation (34); Diabetes mellitus without mention of complication, type II or unspecified type, not stated as uncontrolled (33); Atherosclerotic heart disease of native coronary artery without angina pectoris (33); Major depressive disorder, single episode, unspecified (32).",
+      "ground_truth_operation": {
+        "arguments": {
+          "limit": 10
+        },
+        "operation": "top_diagnoses"
+      },
+      "id": "DB-AGG-002",
+      "question": "¿Cuáles son los 10 diagnósticos más frecuentes en el conjunto de datos?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": null
+      }
     },
     {
-      "id": "DB-VS-001",
-      "question": "¿Cuál fue la frecuencia cardíaca máxima registrada para el paciente 10014729 durante su estancia?",
-      "ground_truth": "La frecuencia cardíaca máxima del paciente 10014729 (stay_id=37887480) fue de 128 lpm, registrada el 2125-03-19 13:07:00.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, MAX(heartrate) as max_heartrate FROM mimic_ed.vitalsign WHERE subject_id = 10014729 GROUP BY subject_id, stay_id",
+      "category": "aggregates",
+      "clinical_validation": {
+        "notes": "Validar la redaccion de los titulos ICD largos.",
+        "required": true,
+        "status": "pending"
+      },
       "contexts": [
-        "vitalsign: subject_id=10014729, stay_id=37887480, max_heartrate=128.0"
+        "{\"operation\":\"top_diagnoses\",\"buckets\":[{\"key\":\"E785\",\"label\":\"Hyperlipidemia, unspecified\",\"count\":57},{\"key\":\"E039\",\"label\":\"Hypothyroidism, unspecified\",\"count\":47},{\"key\":\"Z794\",\"label\":\"Long term (current) use of insulin\",\"count\":37},{\"key\":\"Z87891\",\"label\":\"Personal history of nicotine dependence\",\"count\":35},{\"key\":\"I2510\",\"label\":\"Atherosclerotic heart disease of native coronary artery without angina pectoris\",\"count\":33}],\"total_rows\":209,\"limit\":5,\"truncated\":true,\"source\":\"mimic-iv-demo-2.2\"}"
       ],
-      "category": "vital_signs"
+      "expected_tool": "get_dataset_statistics",
+      "ground_truth": "Los 5 diagnósticos ICD-10 más frecuentes son: Hyperlipidemia, unspecified (57); Hypothyroidism, unspecified (47); Long term (current) use of insulin (37); Personal history of nicotine dependence (35); Atherosclerotic heart disease of native coronary artery without angina pectoris (33).",
+      "ground_truth_operation": {
+        "arguments": {
+          "icd_version": 10,
+          "limit": 5
+        },
+        "operation": "top_diagnoses"
+      },
+      "id": "DB-AGG-003",
+      "question": "¿Cuáles son los 5 diagnósticos ICD-10 más frecuentes en el conjunto de datos?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": null
+      }
     },
     {
-      "id": "DB-VS-002",
-      "question": "¿Cuáles son los signos vitales registrados en la estancia 37887480?",
-      "ground_truth": "En la estancia 37887480 (paciente 10014729) se registraron 6 mediciones de signos vitales. La frecuencia cardíaca varió entre 106 y 128 lpm. La presión sistólica varió entre 93 y 132 mmHg. La saturación de oxígeno fue de 97-100%. El ritmo cardíaco fue Sinus Tachycardia en la mayoría de registros.",
-      "ground_truth_sql": "SELECT charttime, temperature, heartrate, resprate, o2sat, sbp, dbp, rhythm, pain FROM mimic_ed.vitalsign WHERE stay_id = 37887480 ORDER BY charttime",
+      "category": "aggregates",
+      "clinical_validation": {
+        "notes": "Validar que se hable de prescripciones (no de administraciones).",
+        "required": true,
+        "status": "pending"
+      },
       "contexts": [
-        "vitalsign: stay_id=37887480, charttime=2125-03-19 13:07:00, heartrate=128.0, sbp=132.0, dbp=96.0, o2sat=100.0, rhythm=Sinus Tachycardia",
-        "vitalsign: stay_id=37887480, charttime=2125-03-19 13:22:00, heartrate=124.0, sbp=93.0, dbp=65.0, o2sat=100.0",
-        "vitalsign: stay_id=37887480, charttime=2125-03-19 18:28:00, temperature=98.9, heartrate=106.0, sbp=115.0, dbp=70.0, o2sat=100.0, rhythm=Sinus Tachycardia, pain=5"
+        "{\"operation\":\"top_drugs\",\"buckets\":[{\"key\":\"Insulin\",\"label\":null,\"count\":915},{\"key\":\"0.9% Sodium Chloride\",\"label\":null,\"count\":810},{\"key\":\"Potassium Chloride\",\"label\":null,\"count\":610},{\"key\":\"Sodium Chloride 0.9%  Flush\",\"label\":null,\"count\":585},{\"key\":\"Furosemide\",\"label\":null,\"count\":510},{\"key\":\"5% Dextrose\",\"label\":null,\"count\":492},{\"key\":\"Bag\",\"label\":null,\"count\":454},{\"key\":\"Magnesium Sulfate\",\"label\":null,\"count\":402},{\"key\":\"Metoprolol Tartrate\",\"label\":null,\"count\":371},{\"key\":\"Acetaminophen\",\"label\":null,\"count\":344}],\"total_rows\":5493,\"limit\":10,\"truncated\":true,\"source\":\"mimic-iv-demo-2.2\"}"
       ],
-      "category": "vital_signs"
+      "expected_tool": "get_dataset_statistics",
+      "ground_truth": "Los 10 fármacos con más prescripciones son: Insulin (915); 0.9% Sodium Chloride (810); Potassium Chloride (610); Sodium Chloride 0.9%  Flush (585); Furosemide (510); 5% Dextrose (492); Bag (454); Magnesium Sulfate (402); Metoprolol Tartrate (371); Acetaminophen (344).",
+      "ground_truth_operation": {
+        "arguments": {
+          "limit": 10
+        },
+        "operation": "top_drugs"
+      },
+      "id": "DB-AGG-004",
+      "question": "¿Cuáles son los 10 fármacos más prescritos en el conjunto de datos?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": null
+      }
     },
     {
-      "id": "DB-VS-003",
-      "question": "¿Cuál fue la presión arterial sistólica máxima del paciente 10022281 durante su estancia?",
-      "ground_truth": "La presión arterial sistólica máxima del paciente 10022281 (stay_id=39346340) fue de 177 mmHg, registrada el 2125-06-16 20:31:00.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, MAX(sbp) as max_sbp FROM mimic_ed.vitalsign WHERE subject_id = 10022281 GROUP BY subject_id, stay_id",
+      "category": "aggregates",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "vitalsign: subject_id=10022281, stay_id=39346340, max_sbp=177.0"
+        "{\"operation\":\"admission_type_distribution\",\"buckets\":[{\"key\":\"EW EMER.\",\"label\":null,\"count\":104},{\"key\":\"OBSERVATION ADMIT\",\"label\":null,\"count\":45},{\"key\":\"URGENT\",\"label\":null,\"count\":38},{\"key\":\"EU OBSERVATION\",\"label\":null,\"count\":30},{\"key\":\"SURGICAL SAME DAY ADMISSION\",\"label\":null,\"count\":18},{\"key\":\"DIRECT EMER.\",\"label\":null,\"count\":15},{\"key\":\"ELECTIVE\",\"label\":null,\"count\":13},{\"key\":\"DIRECT OBSERVATION\",\"label\":null,\"count\":7},{\"key\":\"AMBULATORY OBSERVATION\",\"label\":null,\"count\":5}],\"total_rows\":275,\"limit\":50,\"truncated\":false,\"source\":\"mimic-iv-demo-2.2\"}"
       ],
-      "category": "vital_signs"
+      "expected_tool": "get_dataset_statistics",
+      "ground_truth": "La distribución de ingresos por tipo es: EW EMER. (104); OBSERVATION ADMIT (45); URGENT (38); EU OBSERVATION (30); SURGICAL SAME DAY ADMISSION (18); DIRECT EMER. (15); ELECTIVE (13); DIRECT OBSERVATION (7); AMBULATORY OBSERVATION (5).",
+      "ground_truth_operation": {
+        "arguments": {},
+        "operation": "admission_type_distribution"
+      },
+      "id": "DB-AGG-005",
+      "question": "¿Cómo se distribuyen los ingresos hospitalarios por tipo de ingreso en el conjunto de datos?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": null
+      }
     },
     {
-      "id": "DB-VS-004",
-      "question": "¿Cuántas mediciones de signos vitales tiene el paciente 10026255 en su estancia 34236274?",
-      "ground_truth": "El paciente 10026255 en la estancia 34236274 tiene 8 mediciones de signos vitales registradas. Se observó fibrilación auricular (Atrial Fibrillation) en varios registros.",
-      "ground_truth_sql": "SELECT COUNT(*) as total_mediciones FROM mimic_ed.vitalsign WHERE stay_id = 34236274",
+      "category": "diagnoses",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "vitalsign: stay_id=34236274, total_mediciones=8",
-        "vitalsign: stay_id=34236274, charttime=2201-07-07 16:14:00, heartrate=142.0, sbp=132.0, o2sat=92.0, rhythm=Atrial Fibrillation",
-        "vitalsign: stay_id=34236274, charttime=2201-07-07 18:55:00, heartrate=98.0, sbp=124.0, o2sat=98.0, rhythm=Sinus Rhythm"
+        "[{\"subject_id\": 10000032, \"hadm_id\": 22595853, \"seq_num\": 1, \"icd_code\": \"5723\", \"icd_version\": 9, \"title\": \"Portal hypertension\"}, {\"subject_id\": 10000032, \"hadm_id\": 22595853, \"seq_num\": 2, \"icd_code\": \"78959\", \"icd_version\": 9, \"title\": \"Other ascites\"}, {\"subject_id\": 10000032, \"hadm_id\": 22595853, \"seq_num\": 3, \"icd_code\": \"5715\", \"icd_version\": 9, \"title\": \"Cirrhosis of liver without mention of alcohol\"}, {\"subject_id\": 10000032, \"hadm_id\": 22595853, \"seq_num\": 4, \"icd_code\": \"07070\", \"icd_version\": 9, \"title\": \"Unspecified viral hepatitis C without hepatic coma\"}, {\"subject_id\": 10000032, \"hadm_id\": 22595853, \"seq_num\": 5, \"icd_code\": \"496\", \"icd_version\": 9, \"title\": \"Chronic airway obstruction, not elsewhere classified\"}, {\"subject_id\": 10000032, \"hadm_id\": 22595853, \"seq_num\": 6, \"icd_code\": \"29680\", \"icd_version\": 9, \"title\": \"Bipolar disorder, unspecified\"}, {\"subject_id\": 10000032, \"hadm_id\": 22595853, \"seq_num\": 7, \"icd_code\": \"30981\", \"icd_version\": 9, \"title\": \"Posttraumatic stress disorder\"}, {\"subject_id\": 10000032, \"hadm_id\": 22595853, \"seq_num\": 8, \"icd_code\": \"V1582\", \"icd_version\": 9, \"title\": \"Personal history of tobacco use\"}]"
       ],
-      "category": "vital_signs"
-    },
-    {
-      "id": "DB-VS-005",
-      "question": "¿Cuál fue la temperatura corporal del paciente 10014729 durante su estancia en urgencias?",
-      "ground_truth": "El paciente 10014729 tuvo 2 registros de temperatura: 98.9°F (2125-03-19 18:28:00) y 99.8°F (2125-03-19 16:23:00). En el triaje inicial se registró 99.1°F.",
-      "ground_truth_sql": "SELECT charttime, temperature FROM mimic_ed.vitalsign WHERE subject_id = 10014729 AND temperature IS NOT NULL ORDER BY charttime",
-      "contexts": [
-        "vitalsign: subject_id=10014729, charttime=2125-03-19 16:23:00, temperature=99.8",
-        "vitalsign: subject_id=10014729, charttime=2125-03-19 18:28:00, temperature=98.9"
-      ],
-      "category": "vital_signs"
-    },
-    {
-      "id": "DB-VS-006",
-      "question": "¿Cuál fue la saturación de oxígeno mínima del paciente 10015272 durante su estancia?",
-      "ground_truth": "La saturación de oxígeno mínima del paciente 10015272 (stay_id=33473053) fue de 96%, registrada el 2137-06-12 16:55:00.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, MIN(o2sat) as min_o2sat FROM mimic_ed.vitalsign WHERE subject_id = 10015272 GROUP BY subject_id, stay_id",
-      "contexts": [
-        "vitalsign: subject_id=10015272, stay_id=33473053, min_o2sat=96.0"
-      ],
-      "category": "vital_signs"
-    },
-    {
-      "id": "DB-VS-007",
-      "question": "¿Cuál fue la evolución de la presión arterial sistólica del paciente 10020187 en su estancia 30689793?",
-      "ground_truth": "El paciente 10020187 en la estancia 30689793 presentó presiones sistólicas muy elevadas al inicio (197 mmHg a las 23:50, 195 mmHg a las 23:52) que fueron disminuyendo progresivamente hasta 96-116 mmHg al final de la estancia.",
-      "ground_truth_sql": "SELECT charttime, sbp, dbp FROM mimic_ed.vitalsign WHERE stay_id = 30689793 ORDER BY charttime",
-      "contexts": [
-        "vitalsign: stay_id=30689793, charttime=2169-01-14 23:28:00, sbp=168.0, dbp=82.0",
-        "vitalsign: stay_id=30689793, charttime=2169-01-14 23:50:00, sbp=197.0, dbp=107.0",
-        "vitalsign: stay_id=30689793, charttime=2169-01-15 04:01:00, sbp=116.0, dbp=67.0"
-      ],
-      "category": "vital_signs"
-    },
-    {
-      "id": "DB-VS-008",
-      "question": "¿Cuál fue la frecuencia cardíaca promedio del paciente 10018328 en su estancia 34176810?",
-      "ground_truth": "El paciente 10018328 en la estancia 34176810 tuvo una frecuencia cardíaca promedio de aproximadamente 66.2 lpm, con valores entre 62 y 74 lpm.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, AVG(heartrate) as avg_heartrate, MIN(heartrate) as min_hr, MAX(heartrate) as max_hr FROM mimic_ed.vitalsign WHERE stay_id = 34176810 GROUP BY subject_id, stay_id",
-      "contexts": [
-        "vitalsign: stay_id=34176810, avg_heartrate=66.2, min_heartrate=62.0, max_heartrate=74.0"
-      ],
-      "category": "vital_signs"
-    },
-    {
+      "expected_tool": "get_diagnoses",
+      "ground_truth": "El ingreso 22595853 del paciente 10000032 tiene 8 diagnósticos codificados. Los cinco primeros por orden de secuencia son: 5723 (Portal hypertension); 78959 (Other ascites); 5715 (Cirrhosis of liver without mention of alcohol); 07070 (Unspecified viral hepatitis C without hepatic coma); 496 (Chronic airway obstruction, not elsewhere classified).",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 22595853,
+          "subject_id": 10000032
+        },
+        "operation": "list_conditions"
+      },
       "id": "DB-DX-001",
-      "question": "¿Cuál es el diagnóstico principal del paciente 10014729?",
-      "ground_truth": "El diagnóstico principal (seq_num=1) del paciente 10014729 es SEPTICEMIA NOS con código ICD-9: 0389.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, seq_num, icd_code, icd_version, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10014729 ORDER BY seq_num",
-      "contexts": [
-        "diagnosis: subject_id=10014729, stay_id=37887480, seq_num=1, icd_code=0389, icd_version=9, icd_title=SEPTICEMIA NOS",
-        "diagnosis: subject_id=10014729, stay_id=37887480, seq_num=2, icd_code=99592, icd_version=9, icd_title=SEVERE SEPSIS",
-        "diagnosis: subject_id=10014729, stay_id=37887480, seq_num=4, icd_code=78552, icd_version=9, icd_title=SEPTIC SHOCK"
-      ],
-      "category": "diagnoses"
+      "question": "¿Cuáles son los diagnósticos codificados del ingreso 22595853 del paciente 10000032?",
+      "scope": {
+        "hadm_id": 22595853,
+        "stay_id": null,
+        "subject_id": 10000032
+      }
     },
     {
+      "category": "diagnoses",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
+      "contexts": [
+        "[{\"subject_id\": 10001217, \"hadm_id\": 24597018, \"seq_num\": 1, \"icd_code\": \"3240\", \"icd_version\": 9, \"title\": \"Intracranial abscess\"}, {\"subject_id\": 10001217, \"hadm_id\": 24597018, \"seq_num\": 2, \"icd_code\": \"3484\", \"icd_version\": 9, \"title\": \"Compression of brain\"}, {\"subject_id\": 10001217, \"hadm_id\": 24597018, \"seq_num\": 3, \"icd_code\": \"3485\", \"icd_version\": 9, \"title\": \"Cerebral edema\"}, {\"subject_id\": 10001217, \"hadm_id\": 24597018, \"seq_num\": 4, \"icd_code\": \"5180\", \"icd_version\": 9, \"title\": \"Pulmonary collapse\"}, {\"subject_id\": 10001217, \"hadm_id\": 24597018, \"seq_num\": 5, \"icd_code\": \"340\", \"icd_version\": 9, \"title\": \"Multiple sclerosis\"}, {\"subject_id\": 10001217, \"hadm_id\": 24597018, \"seq_num\": 6, \"icd_code\": \"04109\", \"icd_version\": 9, \"title\": \"Streptococcus infection in conditions classified elsewhere and of unspecified site, other streptococcus\"}, {\"subject_id\": 10001217, \"hadm_id\": 24597018, \"seq_num\": 7, \"icd_code\": \"3051\", \"icd_version\": 9, \"title\": \"Tobacco use disorder\"}, {\"subject_id\": 10001217, \"hadm_id\": 24597018, \"seq_num\": 8, \"icd_code\": \"4019\", \"icd_version\": 9, \"title\": \"Unspecified essential hypertension\"}, {\"subject_id\": 10001217, \"hadm_id\": 24597018, \"seq_num\": 9, \"icd_code\": \"V168\", \"icd_version\": 9, \"title\": \"Family history of other specified malignant neoplasm\"}, {\"subject_id\": 10001217, \"hadm_id\": 24597018, \"seq_num\": 10, \"icd_code\": \"V161\", \"icd_version\": 9, \"title\": \"Family history of malignant neoplasm of trachea, bronchus, and lung\"}]"
+      ],
+      "expected_tool": "get_diagnoses",
+      "ground_truth": "El ingreso 24597018 del paciente 10001217 tiene 10 diagnósticos codificados. Los cinco primeros por orden de secuencia son: 3240 (Intracranial abscess); 3484 (Compression of brain); 3485 (Cerebral edema); 5180 (Pulmonary collapse); 340 (Multiple sclerosis).",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 24597018,
+          "subject_id": 10001217
+        },
+        "operation": "list_conditions"
+      },
       "id": "DB-DX-002",
-      "question": "¿Cuántos diagnósticos tiene el paciente 10014729 en su estancia en urgencias?",
-      "ground_truth": "El paciente 10014729 tiene 4 diagnósticos en su estancia (stay_id=37887480): SEPTICEMIA NOS (0389), SEVERE SEPSIS (99592), ADV EFF MEDICINAL NOS (E9479), y SEPTIC SHOCK (78552).",
-      "ground_truth_sql": "SELECT subject_id, stay_id, COUNT(*) as total_diagnosticos FROM mimic_ed.diagnosis WHERE subject_id = 10014729 GROUP BY subject_id, stay_id",
-      "contexts": [
-        "diagnosis: subject_id=10014729, stay_id=37887480, total_diagnosticos=4",
-        "diagnosis: icd_code=0389, icd_title=SEPTICEMIA NOS",
-        "diagnosis: icd_code=99592, icd_title=SEVERE SEPSIS",
-        "diagnosis: icd_code=78552, icd_title=SEPTIC SHOCK"
-      ],
-      "category": "diagnoses"
+      "question": "¿Cuáles son los diagnósticos codificados del ingreso 24597018 del paciente 10001217?",
+      "scope": {
+        "hadm_id": 24597018,
+        "stay_id": null,
+        "subject_id": 10001217
+      }
     },
     {
+      "category": "diagnoses",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
+      "contexts": [
+        "[{\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 1, \"icd_code\": \"78829\", \"icd_version\": 9, \"title\": \"Other specified retention of urine\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 2, \"icd_code\": \"9950\", \"icd_version\": 9, \"title\": \"Other anaphylactic reaction\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 3, \"icd_code\": \"6185\", \"icd_version\": 9, \"title\": \"Prolapse of vaginal vault after hysterectomy\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 4, \"icd_code\": \"49390\", \"icd_version\": 9, \"title\": \"Asthma, unspecified type, unspecified\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 5, \"icd_code\": \"53081\", \"icd_version\": 9, \"title\": \"Esophageal reflux\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 6, \"icd_code\": \"30000\", \"icd_version\": 9, \"title\": \"Anxiety state, unspecified\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 7, \"icd_code\": \"311\", \"icd_version\": 9, \"title\": \"Depressive disorder, not elsewhere classified\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 8, \"icd_code\": \"7291\", \"icd_version\": 9, \"title\": \"Myalgia and myositis, unspecified\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 9, \"icd_code\": \"5641\", \"icd_version\": 9, \"title\": \"Irritable bowel syndrome\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 10, \"icd_code\": \"6186\", \"icd_version\": 9, \"title\": \"Vaginal enterocele, congenital or acquired\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 11, \"icd_code\": \"V1041\", \"icd_version\": 9, \"title\": \"Personal history of malignant neoplasm of cervix uteri\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 12, \"icd_code\": \"31401\", \"icd_version\": 9, \"title\": \"Attention deficit disorder with hyperactivity\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 13, \"icd_code\": \"V1582\", \"icd_version\": 9, \"title\": \"Personal history of tobacco use\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 14, \"icd_code\": \"4571\", \"icd_version\": 9, \"title\": \"Other lymphedema\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 15, \"icd_code\": \"3331\", \"icd_version\": 9, \"title\": \"Essential and other specified forms of tremor\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 16, \"icd_code\": \"56400\", \"icd_version\": 9, \"title\": \"Constipation, unspecified\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 17, \"icd_code\": \"E9352\", \"icd_version\": 9, \"title\": \"Other opiates and related narcotics causing adverse effects in therapeutic use\"}, {\"subject_id\": 10001725, \"hadm_id\": 25563031, \"seq_num\": 18, \"icd_code\": \"78052\", \"icd_version\": 9, \"title\": \"Insomnia, unspecified\"}]"
+      ],
+      "expected_tool": "get_diagnoses",
+      "ground_truth": "El ingreso 25563031 del paciente 10001725 tiene 18 diagnósticos codificados. Los cinco primeros por orden de secuencia son: 78829 (Other specified retention of urine); 9950 (Other anaphylactic reaction); 6185 (Prolapse of vaginal vault after hysterectomy); 49390 (Asthma, unspecified type, unspecified); 53081 (Esophageal reflux).",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 25563031,
+          "subject_id": 10001725
+        },
+        "operation": "list_conditions"
+      },
       "id": "DB-DX-003",
-      "question": "¿Cuál es el diagnóstico principal del paciente 10018328 en su primera visita a urgencias?",
-      "ground_truth": "El diagnóstico principal del paciente 10018328 en su primera visita (stay_id=34176810) es Syncope and collapse con código ICD-10: R55.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, seq_num, icd_code, icd_version, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10018328 AND stay_id = 34176810 ORDER BY seq_num",
-      "contexts": [
-        "diagnosis: subject_id=10018328, stay_id=34176810, seq_num=1, icd_code=R55, icd_version=10, icd_title=Syncope and collapse"
-      ],
-      "category": "diagnoses"
+      "question": "¿Cuáles son los diagnósticos codificados del ingreso 25563031 del paciente 10001725?",
+      "scope": {
+        "hadm_id": 25563031,
+        "stay_id": null,
+        "subject_id": 10001725
+      }
     },
     {
+      "category": "diagnoses",
+      "clinical_validation": {
+        "notes": "Confirmar si seq_num 1 puede presentarse como 'diagnóstico principal' o solo como primera posición de secuencia.",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 1, \"icd_code\": \"51881\", \"icd_version\": 9, \"title\": \"Acute respiratory failure\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 2, \"icd_code\": \"2764\", \"icd_version\": 9, \"title\": \"Mixed acid-base balance disorder\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 3, \"icd_code\": \"00845\", \"icd_version\": 9, \"title\": \"Intestinal infection due to Clostridium difficile\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 4, \"icd_code\": \"29281\", \"icd_version\": 9, \"title\": \"Drug-induced delirium\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 5, \"icd_code\": \"5119\", \"icd_version\": 9, \"title\": \"Unspecified pleural effusion\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 6, \"icd_code\": \"1122\", \"icd_version\": 9, \"title\": \"Candidiasis of other urogenital sites\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 7, \"icd_code\": \"5781\", \"icd_version\": 9, \"title\": \"Blood in stool\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 8, \"icd_code\": \"27669\", \"icd_version\": 9, \"title\": \"Other fluid overload\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 9, \"icd_code\": \"7102\", \"icd_version\": 9, \"title\": \"Sicca syndrome\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 10, \"icd_code\": \"E9393\", \"icd_version\": 9, \"title\": \"Other antipsychotics, neuroleptics, and major tranquilizers causing adverse effects in therapeutic use\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 11, \"icd_code\": \"2859\", \"icd_version\": 9, \"title\": \"Anemia, unspecified\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 12, \"icd_code\": \"73300\", \"icd_version\": 9, \"title\": \"Osteoporosis, unspecified\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 13, \"icd_code\": \"4019\", \"icd_version\": 9, \"title\": \"Unspecified essential hypertension\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 14, \"icd_code\": \"2449\", \"icd_version\": 9, \"title\": \"Unspecified acquired hypothyroidism\"}, {\"subject_id\": 10002428, \"hadm_id\": 20321825, \"seq_num\": 15, \"icd_code\": \"4240\", \"icd_version\": 9, \"title\": \"Mitral valve disorders\"}]"
+      ],
+      "expected_tool": "get_diagnoses",
+      "ground_truth": "En el ingreso 20321825 del paciente 10002428, el diagnóstico codificado en primera posición es 51881 (ICD-9): Acute respiratory failure.",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 20321825,
+          "subject_id": 10002428
+        },
+        "operation": "list_conditions"
+      },
       "id": "DB-DX-004",
-      "question": "¿Qué pacientes tienen diagnóstico de sepsis en el dataset MIMIC-IV-ED?",
-      "ground_truth": "Los pacientes con diagnóstico de sepsis son: 10014729 (SEVERE SEPSIS, código 99592), 10020944 (SEPSIS, código 99591), 10039708 (Sepsis unspecified organism, código A419), y 10019003 (Sepsis unspecified organism, código A419).",
-      "ground_truth_sql": "SELECT subject_id, stay_id, icd_code, icd_title FROM mimic_ed.diagnosis WHERE icd_title ILIKE '%sepsis%' OR icd_title ILIKE '%SEPSIS%' ORDER BY subject_id",
-      "contexts": [
-        "diagnosis: subject_id=10014729, stay_id=37887480, icd_code=99592, icd_title=SEVERE SEPSIS",
-        "diagnosis: subject_id=10020944, stay_id=39738665, icd_code=99591, icd_title=SEPSIS",
-        "diagnosis: subject_id=10039708, stay_id=34918384, icd_code=A419, icd_title=Sepsis, unspecified organism",
-        "diagnosis: subject_id=10019003, stay_id=31254712, icd_code=A419, icd_title=Sepsis, unspecified organism"
-      ],
-      "category": "diagnoses"
+      "question": "¿Qué diagnóstico aparece codificado en primera posición (seq_num 1) en el ingreso 20321825 del paciente 10002428?",
+      "scope": {
+        "hadm_id": 20321825,
+        "stay_id": null,
+        "subject_id": 10002428
+      }
     },
     {
+      "category": "diagnoses",
+      "clinical_validation": {
+        "notes": "Confirmar si seq_num 1 puede presentarse como 'diagnóstico principal' o solo como primera posición de secuencia.",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 1, \"icd_code\": \"I214\", \"icd_version\": 10, \"title\": \"Non-ST elevation (NSTEMI) myocardial infarction\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 2, \"icd_code\": \"R570\", \"icd_version\": 10, \"title\": \"Cardiogenic shock\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 3, \"icd_code\": \"I509\", \"icd_version\": 10, \"title\": \"Heart failure, unspecified\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 4, \"icd_code\": \"R578\", \"icd_version\": 10, \"title\": \"Other shock\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 5, \"icd_code\": \"A047\", \"icd_version\": 10, \"title\": \"Enterocolitis due to Clostridium difficile\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 6, \"icd_code\": \"N179\", \"icd_version\": 10, \"title\": \"Acute kidney failure, unspecified\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 7, \"icd_code\": \"S3730XA\", \"icd_version\": 10, \"title\": \"Unspecified injury of urethra, initial encounter\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 8, \"icd_code\": \"I2510\", \"icd_version\": 10, \"title\": \"Atherosclerotic heart disease of native coronary artery without angina pectoris\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 9, \"icd_code\": \"E118\", \"icd_version\": 10, \"title\": \"Type 2 diabetes mellitus with unspecified complications\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 10, \"icd_code\": \"X58XXXA\", \"icd_version\": 10, \"title\": \"Exposure to other specified factors, initial encounter\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 11, \"icd_code\": \"Y92239\", \"icd_version\": 10, \"title\": \"Unspecified place in hospital as the place of occurrence of the external cause\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 12, \"icd_code\": \"I10\", \"icd_version\": 10, \"title\": \"Essential (primary) hypertension\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 13, \"icd_code\": \"E785\", \"icd_version\": 10, \"title\": \"Hyperlipidemia, unspecified\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 14, \"icd_code\": \"T45515A\", \"icd_version\": 10, \"title\": \"Adverse effect of anticoagulants, initial encounter\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 15, \"icd_code\": \"Z86718\", \"icd_version\": 10, \"title\": \"Personal history of other venous thrombosis and embolism\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 16, \"icd_code\": \"Z7901\", \"icd_version\": 10, \"title\": \"Long term (current) use of anticoagulants\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 17, \"icd_code\": \"R310\", \"icd_version\": 10, \"title\": \"Gross hematuria\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 18, \"icd_code\": \"Z7902\", \"icd_version\": 10, \"title\": \"Long term (current) use of antithrombotics/antiplatelets\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 19, \"icd_code\": \"I480\", \"icd_version\": 10, \"title\": \"Paroxysmal atrial fibrillation\"}, {\"subject_id\": 10002495, \"hadm_id\": 24982426, \"seq_num\": 20, \"icd_code\": \"Z23\", \"icd_version\": 10, \"title\": \"Encounter for immunization\"}]"
+      ],
+      "expected_tool": "get_diagnoses",
+      "ground_truth": "En el ingreso 24982426 del paciente 10002495, el diagnóstico codificado en primera posición es I214 (ICD-10): Non-ST elevation (NSTEMI) myocardial infarction.",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 24982426,
+          "subject_id": 10002495
+        },
+        "operation": "list_conditions"
+      },
       "id": "DB-DX-005",
-      "question": "¿Cuál es el diagnóstico del paciente 10015272 en urgencias?",
-      "ground_truth": "El diagnóstico del paciente 10015272 (stay_id=33473053) es Other pulmonary embolism without acute cor pulmonale con código ICD-10: I2699.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, icd_code, icd_version, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10015272",
-      "contexts": [
-        "diagnosis: subject_id=10015272, stay_id=33473053, icd_code=I2699, icd_version=10, icd_title=Other pulmonary embolism without acute cor pulmonale"
-      ],
-      "category": "diagnoses"
+      "question": "¿Qué diagnóstico aparece codificado en primera posición (seq_num 1) en el ingreso 24982426 del paciente 10002495?",
+      "scope": {
+        "hadm_id": 24982426,
+        "stay_id": null,
+        "subject_id": 10002495
+      }
     },
     {
+      "category": "diagnoses",
+      "clinical_validation": {
+        "notes": "Confirmar si seq_num 1 puede presentarse como 'diagnóstico principal' o solo como primera posición de secuencia.",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 1, \"icd_code\": \"F39\", \"icd_version\": 10, \"title\": \"Unspecified mood [affective] disorder\"}, {\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 2, \"icd_code\": \"R45851\", \"icd_version\": 10, \"title\": \"Suicidal ideations\"}, {\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 3, \"icd_code\": \"M542\", \"icd_version\": 10, \"title\": \"Cervicalgia\"}, {\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 4, \"icd_code\": \"B20\", \"icd_version\": 10, \"title\": \"Human immunodeficiency virus [HIV] disease\"}, {\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 5, \"icd_code\": \"Z9114\", \"icd_version\": 10, \"title\": \"Patient's other noncompliance with medication regimen\"}, {\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 6, \"icd_code\": \"F17210\", \"icd_version\": 10, \"title\": \"Nicotine dependence, cigarettes, uncomplicated\"}, {\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 7, \"icd_code\": \"R51\", \"icd_version\": 10, \"title\": \"Headache\"}, {\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 8, \"icd_code\": \"W19XXXA\", \"icd_version\": 10, \"title\": \"Unspecified fall, initial encounter\"}, {\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 9, \"icd_code\": \"Y929\", \"icd_version\": 10, \"title\": \"Unspecified place or not applicable\"}, {\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 10, \"icd_code\": \"B1920\", \"icd_version\": 10, \"title\": \"Unspecified viral hepatitis C without hepatic coma\"}, {\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 11, \"icd_code\": \"S0990XA\", \"icd_version\": 10, \"title\": \"Unspecified injury of head, initial encounter\"}, {\"subject_id\": 10002930, \"hadm_id\": 20282368, \"seq_num\": 12, \"icd_code\": \"D696\", \"icd_version\": 10, \"title\": \"Thrombocytopenia, unspecified\"}]"
+      ],
+      "expected_tool": "get_diagnoses",
+      "ground_truth": "En el ingreso 20282368 del paciente 10002930, el diagnóstico codificado en primera posición es F39 (ICD-10): Unspecified mood [affective] disorder.",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 20282368,
+          "subject_id": 10002930
+        },
+        "operation": "list_conditions"
+      },
       "id": "DB-DX-006",
-      "question": "¿Cuál es el diagnóstico más frecuente en el dataset MIMIC-IV-ED?",
-      "ground_truth": "El diagnóstico más frecuente en el dataset es HYPERTENSION NOS con 21 registros, seguido de Long term (current) use of insulin con 19 registros.",
-      "ground_truth_sql": "SELECT icd_title, COUNT(*) as frecuencia FROM mimic_ed.diagnosis GROUP BY icd_title ORDER BY frecuencia DESC LIMIT 5",
-      "contexts": [
-        "diagnosis: icd_title=HYPERTENSION NOS, frecuencia=21",
-        "diagnosis: icd_title=Long term (current) use of insulin, frecuencia=19",
-        "diagnosis: icd_title=Essential (primary) hypertension, frecuencia=13"
-      ],
-      "category": "diagnoses"
+      "question": "¿Qué diagnóstico aparece codificado en primera posición (seq_num 1) en el ingreso 20282368 del paciente 10002930?",
+      "scope": {
+        "hadm_id": 20282368,
+        "stay_id": null,
+        "subject_id": 10002930
+      }
     },
     {
-      "id": "DB-DX-007",
-      "question": "¿Cuáles son los diagnósticos del paciente 10026255 en su estancia 37844627?",
-      "ground_truth": "El paciente 10026255 en la estancia 37844627 tiene 3 diagnósticos: TRAUM PNEUMOTHORAX-CLOSE (código 8600), FRACTURE THREE RIBS-CLOS (código 80703), y UNSPECIFIED FALL (código E8889).",
-      "ground_truth_sql": "SELECT subject_id, stay_id, seq_num, icd_code, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10026255 AND stay_id = 37844627 ORDER BY seq_num",
+      "category": "icu",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "diagnosis: subject_id=10026255, stay_id=37844627, seq_num=1, icd_code=8600, icd_title=TRAUM PNEUMOTHORAX-CLOSE",
-        "diagnosis: subject_id=10026255, stay_id=37844627, seq_num=2, icd_code=80703, icd_title=FRACTURE THREE RIBS-CLOS",
-        "diagnosis: subject_id=10026255, stay_id=37844627, seq_num=3, icd_code=E8889, icd_title=UNSPECIFIED FALL"
+        "{\"stay_id\":39553978,\"hadm_id\":29079034,\"subject_id\":10000032,\"first_careunit\":\"Medical Intensive Care Unit (MICU)\",\"last_careunit\":\"Medical Intensive Care Unit (MICU)\",\"intime\":\"2180-07-23T14:00:00\",\"outtime\":\"2180-07-23T23:50:47\",\"los_days\":0.410266203703704}"
       ],
-      "category": "diagnoses"
+      "expected_tool": "get_icu_stays",
+      "ground_truth": "La estancia de UCI 39553978 del paciente 10000032 comenzó en Medical Intensive Care Unit (MICU) el 23/07/2180 14:00, terminó el 23/07/2180 23:50 en Medical Intensive Care Unit (MICU) y duró 0.41 días.",
+      "ground_truth_operation": {
+        "arguments": {
+          "subject_id": 10000032
+        },
+        "operation": "list_icu_stays"
+      },
+      "id": "DB-ICU-001",
+      "question": "¿En qué unidad ingresó el paciente 10000032 en su estancia de UCI 39553978 y cuánto duró?",
+      "scope": {
+        "hadm_id": 29079034,
+        "stay_id": 39553978,
+        "subject_id": 10000032
+      }
     },
     {
-      "id": "DB-DX-008",
-      "question": "¿Cuál es el diagnóstico del paciente 10014354 en su estancia 33222885?",
-      "ground_truth": "El diagnóstico del paciente 10014354 en la estancia 33222885 es Urinary tract infection, site not specified con código ICD-10: N390.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, seq_num, icd_code, icd_version, icd_title FROM mimic_ed.diagnosis WHERE subject_id = 10014354 AND stay_id = 33222885",
+      "category": "icu",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "diagnosis: subject_id=10014354, stay_id=33222885, seq_num=1, icd_code=N390, icd_version=10, icd_title=Urinary tract infection, site not specified"
+        "{\"stay_id\":34592300,\"hadm_id\":27703517,\"subject_id\":10001217,\"first_careunit\":\"Surgical Intensive Care Unit (SICU)\",\"last_careunit\":\"Surgical Intensive Care Unit (SICU)\",\"intime\":\"2157-12-19T15:42:24\",\"outtime\":\"2157-12-20T14:27:41\",\"los_days\":0.948113425925926}"
       ],
-      "category": "diagnoses"
+      "expected_tool": "get_icu_stays",
+      "ground_truth": "La estancia de UCI 34592300 del paciente 10001217 comenzó en Surgical Intensive Care Unit (SICU) el 19/12/2157 15:42, terminó el 20/12/2157 14:27 en Surgical Intensive Care Unit (SICU) y duró 0.95 días.",
+      "ground_truth_operation": {
+        "arguments": {
+          "subject_id": 10001217
+        },
+        "operation": "list_icu_stays"
+      },
+      "id": "DB-ICU-002",
+      "question": "¿En qué unidad ingresó el paciente 10001217 en su estancia de UCI 34592300 y cuánto duró?",
+      "scope": {
+        "hadm_id": 27703517,
+        "stay_id": 34592300,
+        "subject_id": 10001217
+      }
     },
     {
+      "category": "icu",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
+      "contexts": [
+        "{\"stay_id\":31205490,\"hadm_id\":25563031,\"subject_id\":10001725,\"first_careunit\":\"Medical/Surgical Intensive Care Unit (MICU/SICU)\",\"last_careunit\":\"Medical/Surgical Intensive Care Unit (MICU/SICU)\",\"intime\":\"2110-04-11T15:52:22\",\"outtime\":\"2110-04-12T23:59:56\",\"los_days\":1.33858796296296}"
+      ],
+      "expected_tool": "get_icu_stays",
+      "ground_truth": "La estancia de UCI 31205490 del paciente 10001725 comenzó en Medical/Surgical Intensive Care Unit (MICU/SICU) el 11/04/2110 15:52, terminó el 12/04/2110 23:59 en Medical/Surgical Intensive Care Unit (MICU/SICU) y duró 1.34 días.",
+      "ground_truth_operation": {
+        "arguments": {
+          "subject_id": 10001725
+        },
+        "operation": "list_icu_stays"
+      },
+      "id": "DB-ICU-003",
+      "question": "¿En qué unidad ingresó el paciente 10001725 en su estancia de UCI 31205490 y cuánto duró?",
+      "scope": {
+        "hadm_id": 25563031,
+        "stay_id": 31205490,
+        "subject_id": 10001725
+      }
+    },
+    {
+      "category": "icu",
+      "clinical_validation": {
+        "notes": "Validar el mapeo de 'frecuencia cardíaca' al item 'Heart Rate' de d_items.",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"stay_id\": 33987268, \"subject_id\": 10002428, \"hadm_id\": 28662225, \"itemid\": 220045, \"label\": \"Heart Rate\", \"category\": \"Routine Vital Signs\", \"param_type\": \"Numeric\", \"charttime\": \"2156-04-17T15:00:00\", \"value\": \"97\", \"valuenum\": 97.0, \"valueuom\": \"bpm\"}, {\"stay_id\": 33987268, \"subject_id\": 10002428, \"hadm_id\": 28662225, \"itemid\": 220045, \"label\": \"Heart Rate\", \"category\": \"Routine Vital Signs\", \"param_type\": \"Numeric\", \"charttime\": \"2156-04-17T14:00:00\", \"value\": \"92\", \"valuenum\": 92.0, \"valueuom\": \"bpm\"}, {\"stay_id\": 33987268, \"subject_id\": 10002428, \"hadm_id\": 28662225, \"itemid\": 220045, \"label\": \"Heart Rate\", \"category\": \"Routine Vital Signs\", \"param_type\": \"Numeric\", \"charttime\": \"2156-04-17T13:00:00\", \"value\": \"92\", \"valuenum\": 92.0, \"valueuom\": \"bpm\"}, {\"stay_id\": 33987268, \"subject_id\": 10002428, \"hadm_id\": 28662225, \"itemid\": 220045, \"label\": \"Heart Rate\", \"category\": \"Routine Vital Signs\", \"param_type\": \"Numeric\", \"charttime\": \"2156-04-17T12:00:00\", \"value\": \"100\", \"valuenum\": 100.0, \"valueuom\": \"bpm\"}, {\"stay_id\": 33987268, \"subject_id\": 10002428, \"hadm_id\": 28662225, \"itemid\": 220045, \"label\": \"Heart Rate\", \"category\": \"Routine Vital Signs\", \"param_type\": \"Numeric\", \"charttime\": \"2156-04-17T11:00:00\", \"value\": \"97\", \"valuenum\": 97.0, \"valueuom\": \"bpm\"}]"
+      ],
+      "expected_tool": "get_icu_observations",
+      "ground_truth": "El último valor de Heart Rate registrado en la estancia 33987268 es 97 bpm el 17/04/2156 15:00.",
+      "ground_truth_operation": {
+        "arguments": {
+          "label_contains": "Heart Rate",
+          "limit": 5,
+          "stay_id": 33987268
+        },
+        "operation": "list_icu_observations"
+      },
+      "id": "DB-ICU-004",
+      "question": "¿Cuál es el último valor de frecuencia cardíaca registrado en la estancia de UCI 33987268 del paciente 10002428?",
+      "scope": {
+        "hadm_id": 28662225,
+        "stay_id": 33987268,
+        "subject_id": 10002428
+      }
+    },
+    {
+      "category": "icu",
+      "clinical_validation": {
+        "notes": "Validar el mapeo de 'frecuencia cardíaca' al item 'Heart Rate' de d_items.",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"stay_id\": 36753294, \"subject_id\": 10002495, \"hadm_id\": 24982426, \"itemid\": 220045, \"label\": \"Heart Rate\", \"category\": \"Routine Vital Signs\", \"param_type\": \"Numeric\", \"charttime\": \"2141-05-27T21:00:00\", \"value\": \"89\", \"valuenum\": 89.0, \"valueuom\": \"bpm\"}, {\"stay_id\": 36753294, \"subject_id\": 10002495, \"hadm_id\": 24982426, \"itemid\": 220046, \"label\": \"Heart rate Alarm - High\", \"category\": \"Alarms\", \"param_type\": \"Numeric\", \"charttime\": \"2141-05-27T20:00:00\", \"value\": \"130\", \"valuenum\": 130.0, \"valueuom\": \"bpm\"}, {\"stay_id\": 36753294, \"subject_id\": 10002495, \"hadm_id\": 24982426, \"itemid\": 220047, \"label\": \"Heart Rate Alarm - Low\", \"category\": \"Alarms\", \"param_type\": \"Numeric\", \"charttime\": \"2141-05-27T20:00:00\", \"value\": \"50\", \"valuenum\": 50.0, \"valueuom\": \"bpm\"}, {\"stay_id\": 36753294, \"subject_id\": 10002495, \"hadm_id\": 24982426, \"itemid\": 220045, \"label\": \"Heart Rate\", \"category\": \"Routine Vital Signs\", \"param_type\": \"Numeric\", \"charttime\": \"2141-05-27T20:00:00\", \"value\": \"86\", \"valuenum\": 86.0, \"valueuom\": \"bpm\"}, {\"stay_id\": 36753294, \"subject_id\": 10002495, \"hadm_id\": 24982426, \"itemid\": 220045, \"label\": \"Heart Rate\", \"category\": \"Routine Vital Signs\", \"param_type\": \"Numeric\", \"charttime\": \"2141-05-27T19:00:00\", \"value\": \"85\", \"valuenum\": 85.0, \"valueuom\": \"bpm\"}]"
+      ],
+      "expected_tool": "get_icu_observations",
+      "ground_truth": "El último valor de Heart Rate registrado en la estancia 36753294 es 89 bpm el 27/05/2141 21:00.",
+      "ground_truth_operation": {
+        "arguments": {
+          "label_contains": "Heart Rate",
+          "limit": 5,
+          "stay_id": 36753294
+        },
+        "operation": "list_icu_observations"
+      },
+      "id": "DB-ICU-005",
+      "question": "¿Cuál es el último valor de frecuencia cardíaca registrado en la estancia de UCI 36753294 del paciente 10002495?",
+      "scope": {
+        "hadm_id": 24982426,
+        "stay_id": 36753294,
+        "subject_id": 10002495
+      }
+    },
+    {
+      "category": "labs",
+      "clinical_validation": {
+        "notes": "Validar la interpretacion de 'flag' y del rango de referencia en la redaccion.",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"labevent_id\": 609, \"subject_id\": 10000032, \"hadm_id\": null, \"itemid\": 50971, \"label\": \"Potassium\", \"fluid\": \"Blood\", \"category\": \"Chemistry\", \"charttime\": \"2180-08-10T12:00:00\", \"value\": \"5.3\", \"valuenum\": 5.3, \"valueuom\": \"mEq/L\", \"ref_range_lower\": 3.3, \"ref_range_upper\": 5.1, \"flag\": \"abnormal\"}, {\"labevent_id\": 581, \"subject_id\": 10000032, \"hadm_id\": 25742920, \"itemid\": 50971, \"label\": \"Potassium\", \"fluid\": \"Blood\", \"category\": \"Chemistry\", \"charttime\": \"2180-08-07T06:15:00\", \"value\": \"5.4\", \"valuenum\": 5.4, \"valueuom\": \"mEq/L\", \"ref_range_lower\": 3.3, \"ref_range_upper\": 5.1, \"flag\": \"abnormal\"}, {\"labevent_id\": 565, \"subject_id\": 10000032, \"hadm_id\": 25742920, \"itemid\": 50971, \"label\": \"Potassium\", \"fluid\": \"Blood\", \"category\": \"Chemistry\", \"charttime\": \"2180-08-07T00:59:00\", \"value\": \"___\", \"valuenum\": 5.3, \"valueuom\": \"mEq/L\", \"ref_range_lower\": 3.3, \"ref_range_upper\": 5.1, \"flag\": \"abnormal\"}, {\"labevent_id\": 556, \"subject_id\": 10000032, \"hadm_id\": 25742920, \"itemid\": 50971, \"label\": \"Potassium\", \"fluid\": \"Blood\", \"category\": \"Chemistry\", \"charttime\": \"2180-08-06T15:40:00\", \"value\": \"___\", \"valuenum\": 6.9, \"valueuom\": \"mEq/L\", \"ref_range_lower\": 3.3, \"ref_range_upper\": 5.1, \"flag\": \"abnormal\"}, {\"labevent_id\": 552, \"subject_id\": 10000032, \"hadm_id\": 25742920, \"itemid\": 50971, \"label\": \"Potassium\", \"fluid\": \"Blood\", \"category\": \"Chemistry\", \"charttime\": \"2180-08-06T06:36:00\", \"value\": \"___\", \"valuenum\": 6.3, \"valueuom\": \"mEq/L\", \"ref_range_lower\": 3.3, \"ref_range_upper\": 5.1, \"flag\": \"abnormal\"}]"
+      ],
+      "expected_tool": "get_labs",
+      "ground_truth": "El último valor registrado de Potassium para el paciente 10000032 es 5.3 mEq/L (marcado como anormal), con fecha 10/08/2180 12:00; rango de referencia 3.3-5.1.",
+      "ground_truth_operation": {
+        "arguments": {
+          "label_contains": "Potassium",
+          "limit": 5,
+          "subject_id": 10000032
+        },
+        "operation": "list_lab_observations"
+      },
+      "id": "DB-LAB-001",
+      "question": "¿Cuál es el último valor registrado de Potassium para el paciente 10000032?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10000032
+      }
+    },
+    {
+      "category": "labs",
+      "clinical_validation": {
+        "notes": "Validar la interpretacion de 'flag' y del rango de referencia en la redaccion.",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"labevent_id\": 9297, \"subject_id\": 10001217, \"hadm_id\": 27703517, \"itemid\": 51301, \"label\": \"White Blood Cells\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2157-12-24T03:59:00\", \"value\": \"8.8\", \"valuenum\": 8.8, \"valueuom\": \"K/uL\", \"ref_range_lower\": 4.0, \"ref_range_upper\": 11.0, \"flag\": null}, {\"labevent_id\": 9266, \"subject_id\": 10001217, \"hadm_id\": 27703517, \"itemid\": 51301, \"label\": \"White Blood Cells\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2157-12-23T04:30:00\", \"value\": \"7.2\", \"valuenum\": 7.2, \"valueuom\": \"K/uL\", \"ref_range_lower\": 4.0, \"ref_range_upper\": 11.0, \"flag\": null}, {\"labevent_id\": 9256, \"subject_id\": 10001217, \"hadm_id\": 27703517, \"itemid\": 51301, \"label\": \"White Blood Cells\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2157-12-21T04:40:00\", \"value\": \"8.4\", \"valuenum\": 8.4, \"valueuom\": \"K/uL\", \"ref_range_lower\": 4.0, \"ref_range_upper\": 11.0, \"flag\": null}, {\"labevent_id\": 9237, \"subject_id\": 10001217, \"hadm_id\": 27703517, \"itemid\": 51301, \"label\": \"White Blood Cells\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2157-12-20T01:45:00\", \"value\": \"8.4\", \"valuenum\": 8.4, \"valueuom\": \"K/uL\", \"ref_range_lower\": 4.0, \"ref_range_upper\": 11.0, \"flag\": null}, {\"labevent_id\": 9178, \"subject_id\": 10001217, \"hadm_id\": 27703517, \"itemid\": 51301, \"label\": \"White Blood Cells\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2157-12-19T04:50:00\", \"value\": \"5.4\", \"valuenum\": 5.4, \"valueuom\": \"K/uL\", \"ref_range_lower\": 4.0, \"ref_range_upper\": 11.0, \"flag\": null}]"
+      ],
+      "expected_tool": "get_labs",
+      "ground_truth": "El último valor registrado de White Blood Cells para el paciente 10001217 es 8.8 K/uL, con fecha 24/12/2157 03:59; rango de referencia 4-11.",
+      "ground_truth_operation": {
+        "arguments": {
+          "label_contains": "White Blood Cells",
+          "limit": 5,
+          "subject_id": 10001217
+        },
+        "operation": "list_lab_observations"
+      },
+      "id": "DB-LAB-002",
+      "question": "¿Cuál es el último valor registrado de White Blood Cells para el paciente 10001217?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10001217
+      }
+    },
+    {
+      "category": "labs",
+      "clinical_validation": {
+        "notes": "Validar la interpretacion de 'flag' y del rango de referencia en la redaccion.",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"labevent_id\": 13206, \"subject_id\": 10001725, \"hadm_id\": null, \"itemid\": 51006, \"label\": \"Urea Nitrogen\", \"fluid\": \"Blood\", \"category\": \"Chemistry\", \"charttime\": \"2114-08-28T10:20:00\", \"value\": \"12\", \"valuenum\": 12.0, \"valueuom\": \"mg/dL\", \"ref_range_lower\": 6.0, \"ref_range_upper\": 20.0, \"flag\": null}, {\"labevent_id\": 13195, \"subject_id\": 10001725, \"hadm_id\": null, \"itemid\": 51006, \"label\": \"Urea Nitrogen\", \"fluid\": \"Blood\", \"category\": \"Chemistry\", \"charttime\": \"2114-05-29T10:06:00\", \"value\": \"10\", \"valuenum\": 10.0, \"valueuom\": \"mg/dL\", \"ref_range_lower\": 6.0, \"ref_range_upper\": 20.0, \"flag\": null}, {\"labevent_id\": 13168, \"subject_id\": 10001725, \"hadm_id\": null, \"itemid\": 51006, \"label\": \"Urea Nitrogen\", \"fluid\": \"Blood\", \"category\": \"Chemistry\", \"charttime\": \"2113-12-23T13:00:00\", \"value\": \"15\", \"valuenum\": 15.0, \"valueuom\": \"mg/dL\", \"ref_range_lower\": 6.0, \"ref_range_upper\": 20.0, \"flag\": null}, {\"labevent_id\": 13151, \"subject_id\": 10001725, \"hadm_id\": null, \"itemid\": 51006, \"label\": \"Urea Nitrogen\", \"fluid\": \"Blood\", \"category\": \"Chemistry\", \"charttime\": \"2113-11-20T12:00:00\", \"value\": \"13\", \"valuenum\": 13.0, \"valueuom\": \"mg/dL\", \"ref_range_lower\": 6.0, \"ref_range_upper\": 20.0, \"flag\": null}, {\"labevent_id\": 13089, \"subject_id\": 10001725, \"hadm_id\": null, \"itemid\": 51006, \"label\": \"Urea Nitrogen\", \"fluid\": \"Blood\", \"category\": \"Chemistry\", \"charttime\": \"2113-10-08T15:04:00\", \"value\": \"18\", \"valuenum\": 18.0, \"valueuom\": \"mg/dL\", \"ref_range_lower\": 6.0, \"ref_range_upper\": 20.0, \"flag\": null}]"
+      ],
+      "expected_tool": "get_labs",
+      "ground_truth": "El último valor registrado de Urea Nitrogen para el paciente 10001725 es 12 mg/dL, con fecha 28/08/2114 10:20; rango de referencia 6-20.",
+      "ground_truth_operation": {
+        "arguments": {
+          "label_contains": "Urea Nitrogen",
+          "limit": 5,
+          "subject_id": 10001725
+        },
+        "operation": "list_lab_observations"
+      },
+      "id": "DB-LAB-003",
+      "question": "¿Cuál es el último valor registrado de Urea Nitrogen para el paciente 10001725?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10001725
+      }
+    },
+    {
+      "category": "labs",
+      "clinical_validation": {
+        "notes": "Validar la interpretacion de 'flag' y del rango de referencia en la redaccion.",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"labevent_id\": 29017, \"subject_id\": 10002428, \"hadm_id\": null, \"itemid\": 51221, \"label\": \"Hematocrit\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2160-07-15T20:00:00\", \"value\": \"34.8\", \"valuenum\": 34.8, \"valueuom\": \"%\", \"ref_range_lower\": 34.0, \"ref_range_upper\": 45.0, \"flag\": null}, {\"labevent_id\": 28996, \"subject_id\": 10002428, \"hadm_id\": 28295257, \"itemid\": 51221, \"label\": \"Hematocrit\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2160-04-17T06:20:00\", \"value\": \"32.7\", \"valuenum\": 32.7, \"valueuom\": \"%\", \"ref_range_lower\": 34.0, \"ref_range_upper\": 45.0, \"flag\": \"abnormal\"}, {\"labevent_id\": 28978, \"subject_id\": 10002428, \"hadm_id\": 28295257, \"itemid\": 51221, \"label\": \"Hematocrit\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2160-04-16T06:20:00\", \"value\": \"31.6\", \"valuenum\": 31.6, \"valueuom\": \"%\", \"ref_range_lower\": 34.0, \"ref_range_upper\": 45.0, \"flag\": \"abnormal\"}, {\"labevent_id\": 28952, \"subject_id\": 10002428, \"hadm_id\": 28295257, \"itemid\": 51221, \"label\": \"Hematocrit\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2160-04-15T06:00:00\", \"value\": \"31.4\", \"valuenum\": 31.4, \"valueuom\": \"%\", \"ref_range_lower\": 34.0, \"ref_range_upper\": 45.0, \"flag\": \"abnormal\"}, {\"labevent_id\": 28942, \"subject_id\": 10002428, \"hadm_id\": 28295257, \"itemid\": 51221, \"label\": \"Hematocrit\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2160-04-14T20:00:00\", \"value\": \"33.6\", \"valuenum\": 33.6, \"valueuom\": \"%\", \"ref_range_lower\": 34.0, \"ref_range_upper\": 45.0, \"flag\": \"abnormal\"}]"
+      ],
+      "expected_tool": "get_labs",
+      "ground_truth": "El último valor registrado de Hematocrit para el paciente 10002428 es 34.8 %, con fecha 15/07/2160 20:00; rango de referencia 34-45.",
+      "ground_truth_operation": {
+        "arguments": {
+          "label_contains": "Hematocrit",
+          "limit": 5,
+          "subject_id": 10002428
+        },
+        "operation": "list_lab_observations"
+      },
+      "id": "DB-LAB-004",
+      "question": "¿Cuál es el último valor registrado de Hematocrit para el paciente 10002428?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10002428
+      }
+    },
+    {
+      "category": "labs",
+      "clinical_validation": {
+        "notes": "Validar la interpretacion de 'flag' y del rango de referencia en la redaccion.",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"labevent_id\": 32683, \"subject_id\": 10002495, \"hadm_id\": 24982426, \"itemid\": 51275, \"label\": \"PTT\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2141-05-29T05:50:00\", \"value\": \"27.3\", \"valuenum\": 27.3, \"valueuom\": \"sec\", \"ref_range_lower\": 25.0, \"ref_range_upper\": 36.5, \"flag\": null}, {\"labevent_id\": 32620, \"subject_id\": 10002495, \"hadm_id\": 24982426, \"itemid\": 51275, \"label\": \"PTT\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2141-05-28T06:00:00\", \"value\": \"25.9\", \"valuenum\": 25.9, \"valueuom\": \"sec\", \"ref_range_lower\": 25.0, \"ref_range_upper\": 36.5, \"flag\": null}, {\"labevent_id\": 32585, \"subject_id\": 10002495, \"hadm_id\": 24982426, \"itemid\": 51275, \"label\": \"PTT\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2141-05-27T05:29:00\", \"value\": \"___\", \"valuenum\": 24.3, \"valueuom\": \"sec\", \"ref_range_lower\": 25.0, \"ref_range_upper\": 36.5, \"flag\": \"abnormal\"}, {\"labevent_id\": 32582, \"subject_id\": 10002495, \"hadm_id\": 24982426, \"itemid\": 51275, \"label\": \"PTT\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2141-05-26T09:21:00\", \"value\": \"62.5\", \"valuenum\": 62.5, \"valueuom\": \"sec\", \"ref_range_lower\": 25.0, \"ref_range_upper\": 36.5, \"flag\": \"abnormal\"}, {\"labevent_id\": 32541, \"subject_id\": 10002495, \"hadm_id\": 24982426, \"itemid\": 51275, \"label\": \"PTT\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2141-05-26T00:05:00\", \"value\": \"60.1\", \"valuenum\": 60.1, \"valueuom\": \"sec\", \"ref_range_lower\": 25.0, \"ref_range_upper\": 36.5, \"flag\": \"abnormal\"}]"
+      ],
+      "expected_tool": "get_labs",
+      "ground_truth": "El último valor registrado de PTT para el paciente 10002495 es 27.3 sec, con fecha 29/05/2141 05:50; rango de referencia 25-36.5.",
+      "ground_truth_operation": {
+        "arguments": {
+          "label_contains": "PTT",
+          "limit": 5,
+          "subject_id": 10002495
+        },
+        "operation": "list_lab_observations"
+      },
+      "id": "DB-LAB-005",
+      "question": "¿Cuál es el último valor registrado de PTT para el paciente 10002495?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10002495
+      }
+    },
+    {
+      "category": "labs",
+      "clinical_validation": {
+        "notes": "Validar la interpretacion de 'flag' y del rango de referencia en la redaccion.",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"labevent_id\": 39822, \"subject_id\": 10002930, \"hadm_id\": null, \"itemid\": 51133, \"label\": \"Absolute Lymphocyte Count\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2201-08-12T10:40:00\", \"value\": \"1.88\", \"valuenum\": 1.88, \"valueuom\": \"K/uL\", \"ref_range_lower\": 1.2, \"ref_range_upper\": 3.7, \"flag\": null}, {\"labevent_id\": 39849, \"subject_id\": 10002930, \"hadm_id\": null, \"itemid\": 52769, \"label\": \"Absolute Lymphocyte Count\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2201-08-12T10:40:00\", \"value\": \"1880\", \"valuenum\": 1880.0, \"valueuom\": \"#/uL\", \"ref_range_lower\": null, \"ref_range_upper\": null, \"flag\": null}, {\"labevent_id\": 39736, \"subject_id\": 10002930, \"hadm_id\": null, \"itemid\": 51133, \"label\": \"Absolute Lymphocyte Count\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2201-03-23T16:20:00\", \"value\": \"0.99\", \"valuenum\": 0.99, \"valueuom\": \"K/uL\", \"ref_range_lower\": 1.2, \"ref_range_upper\": 3.7, \"flag\": \"abnormal\"}, {\"labevent_id\": 39688, \"subject_id\": 10002930, \"hadm_id\": null, \"itemid\": 52769, \"label\": \"Absolute Lymphocyte Count\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2201-03-01T09:29:00\", \"value\": \"792\", \"valuenum\": 792.0, \"valueuom\": \"#/uL\", \"ref_range_lower\": null, \"ref_range_upper\": null, \"flag\": null}, {\"labevent_id\": 39655, \"subject_id\": 10002930, \"hadm_id\": null, \"itemid\": 51133, \"label\": \"Absolute Lymphocyte Count\", \"fluid\": \"Blood\", \"category\": \"Hematology\", \"charttime\": \"2201-03-01T09:29:00\", \"value\": \"0.79\", \"valuenum\": 0.79, \"valueuom\": \"K/uL\", \"ref_range_lower\": 1.2, \"ref_range_upper\": 3.7, \"flag\": \"abnormal\"}]"
+      ],
+      "expected_tool": "get_labs",
+      "ground_truth": "El último valor registrado de Absolute Lymphocyte Count para el paciente 10002930 es 1.88 K/uL, con fecha 12/08/2201 10:40; rango de referencia 1.2-3.7.",
+      "ground_truth_operation": {
+        "arguments": {
+          "label_contains": "Absolute Lymphocyte Count",
+          "limit": 5,
+          "subject_id": 10002930
+        },
+        "operation": "list_lab_observations"
+      },
+      "id": "DB-LAB-006",
+      "question": "¿Cuál es el último valor registrado de Absolute Lymphocyte Count para el paciente 10002930?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10002930
+      }
+    },
+    {
+      "category": "medications",
+      "clinical_validation": {
+        "notes": "Confirmar que 'prescrito' (prescriptions) no se presente como 'administrado' (emar).",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Furosemide\", \"starttime\": \"2180-05-08T08:00:00\", \"stoptime\": \"2180-05-07T22:00:00\", \"dose_val_rx\": \"40\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Spironolactone\", \"starttime\": \"2180-05-08T08:00:00\", \"stoptime\": \"2180-05-07T22:00:00\", \"dose_val_rx\": \"50\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Ipratropium Bromide Neb\", \"starttime\": \"2180-05-07T02:00:00\", \"stoptime\": \"2180-05-07T22:00:00\", \"dose_val_rx\": \"1\", \"dose_unit_rx\": \"NEB\", \"route\": \"IH\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Raltegravir\", \"starttime\": \"2180-05-07T01:00:00\", \"stoptime\": \"2180-05-07T22:00:00\", \"dose_val_rx\": \"400\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Furosemide\", \"starttime\": \"2180-05-07T01:00:00\", \"stoptime\": \"2180-05-07T09:00:00\", \"dose_val_rx\": \"20\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Acetaminophen\", \"starttime\": \"2180-05-07T01:00:00\", \"stoptime\": \"2180-05-07T22:00:00\", \"dose_val_rx\": \"500\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Nicotine Patch\", \"starttime\": \"2180-05-07T01:00:00\", \"stoptime\": \"2180-05-07T22:00:00\", \"dose_val_rx\": \"14\", \"dose_unit_rx\": \"mg\", \"route\": \"TD\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Spironolactone\", \"starttime\": \"2180-05-07T01:00:00\", \"stoptime\": \"2180-05-07T09:00:00\", \"dose_val_rx\": \"50\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Potassium Chloride\", \"starttime\": \"2180-05-07T01:00:00\", \"stoptime\": \"2180-05-07T01:00:00\", \"dose_val_rx\": \"40\", \"dose_unit_rx\": \"mEq\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Albuterol Inhaler\", \"starttime\": \"2180-05-07T01:00:00\", \"stoptime\": \"2180-05-07T22:00:00\", \"dose_val_rx\": \"2\", \"dose_unit_rx\": \"PUFF\", \"route\": \"IH\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Emtricitabine-Tenofovir (Truvada)\", \"starttime\": \"2180-05-07T01:00:00\", \"stoptime\": \"2180-05-07T22:00:00\", \"dose_val_rx\": \"1\", \"dose_unit_rx\": \"TAB\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Influenza Vaccine Quadrivalent\", \"starttime\": \"2180-05-07T00:00:00\", \"stoptime\": \"2180-05-07T22:00:00\", \"dose_val_rx\": \"0.5\", \"dose_unit_rx\": \"mL\", \"route\": \"IM\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Heparin\", \"starttime\": \"2180-05-07T00:00:00\", \"stoptime\": \"2180-05-07T22:00:00\", \"dose_val_rx\": \"5000\", \"dose_unit_rx\": \"UNIT\", \"route\": \"SC\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10000032, \"hadm_id\": 22595853, \"drug\": \"Sodium Chloride 0.9%  Flush\", \"starttime\": \"2180-05-07T00:00:00\", \"stoptime\": \"2180-05-07T22:00:00\", \"dose_val_rx\": \"3\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}]"
+      ],
+      "expected_tool": "get_medications",
+      "ground_truth": "Durante el ingreso 22595853 se registraron 14 prescripciones para el paciente 10000032, con 12 fármacos distintos. Entre ellos: Furosemide, Spironolactone, Ipratropium Bromide Neb, Raltegravir, Acetaminophen, Nicotine Patch, Potassium Chloride, Albuterol Inhaler.",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 22595853,
+          "limit": 200,
+          "subject_id": 10000032
+        },
+        "operation": "list_medications"
+      },
       "id": "DB-MED-001",
-      "question": "¿Qué medicamentos se administraron al paciente 10014729 en urgencias?",
-      "ground_truth": "Al paciente 10014729 se le administraron los siguientes medicamentos en urgencias (pyxis): CefePIME, Lorazepam, Vancomycin, Ondansetron, y HYDROmorphone (Dilaudid).",
-      "ground_truth_sql": "SELECT DISTINCT name FROM mimic_ed.pyxis WHERE subject_id = 10014729 ORDER BY name",
-      "contexts": [
-        "pyxis: subject_id=10014729, stay_id=37887480, name=CefePIME",
-        "pyxis: subject_id=10014729, stay_id=37887480, name=Lorazepam",
-        "pyxis: subject_id=10014729, stay_id=37887480, name=Vancomycin",
-        "pyxis: subject_id=10014729, stay_id=37887480, name=Ondansetron",
-        "pyxis: subject_id=10014729, stay_id=37887480, name=HYDROmorphone (Dilaudid)"
-      ],
-      "category": "medications"
+      "question": "¿Qué fármacos se prescribieron al paciente 10000032 durante el ingreso 22595853?",
+      "scope": {
+        "hadm_id": 22595853,
+        "stay_id": null,
+        "subject_id": 10000032
+      }
     },
     {
+      "category": "medications",
+      "clinical_validation": {
+        "notes": "Confirmar que 'prescrito' (prescriptions) no se presente como 'administrado' (emar).",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"0.9% Sodium Chloride (Mini Bag Plus)\", \"starttime\": \"2157-11-23T12:00:00\", \"stoptime\": \"2157-11-25T22:00:00\", \"dose_val_rx\": \"100\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"CeftriaXONE\", \"starttime\": \"2157-11-23T12:00:00\", \"stoptime\": \"2157-11-25T22:00:00\", \"dose_val_rx\": \"2\", \"dose_unit_rx\": \"gm\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"MetRONIDAZOLE (FLagyl)\", \"starttime\": \"2157-11-23T10:00:00\", \"stoptime\": \"2157-11-25T22:00:00\", \"dose_val_rx\": \"500\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Heparin Flush (10 units/ml)\", \"starttime\": \"2157-11-22T12:00:00\", \"stoptime\": \"2157-11-25T22:00:00\", \"dose_val_rx\": \"2\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Vancomycin\", \"starttime\": \"2157-11-22T04:00:00\", \"stoptime\": \"2157-11-23T10:00:00\", \"dose_val_rx\": \"1250\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"5% Dextrose\", \"starttime\": \"2157-11-22T04:00:00\", \"stoptime\": \"2157-11-23T10:00:00\", \"dose_val_rx\": \"250\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Sodium Chloride 0.9%  Flush\", \"starttime\": \"2157-11-22T00:00:00\", \"stoptime\": \"2157-11-25T22:00:00\", \"dose_val_rx\": \"3\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Acetaminophen\", \"starttime\": \"2157-11-22T00:00:00\", \"stoptime\": \"2157-11-25T22:00:00\", \"dose_val_rx\": \"325-650\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Acetaminophen IV\", \"starttime\": \"2157-11-21T20:00:00\", \"stoptime\": \"2157-11-21T23:00:00\", \"dose_val_rx\": \"1000\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Sodium Chloride 0.9%  Flush\", \"starttime\": \"2157-11-21T15:00:00\", \"stoptime\": \"2157-11-21T23:00:00\", \"dose_val_rx\": \"20\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Lidocaine 1%\", \"starttime\": \"2157-11-21T15:00:00\", \"stoptime\": \"2157-11-21T23:00:00\", \"dose_val_rx\": \"5\", \"dose_unit_rx\": \"mL\", \"route\": \"SC\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Heparin Flush (10 units/ml)\", \"starttime\": \"2157-11-21T15:00:00\", \"stoptime\": \"2157-11-21T23:00:00\", \"dose_val_rx\": \"2\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Ondansetron\", \"starttime\": \"2157-11-21T08:00:00\", \"stoptime\": \"2157-11-25T22:00:00\", \"dose_val_rx\": \"4\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Heparin\", \"starttime\": \"2157-11-21T08:00:00\", \"stoptime\": \"2157-11-25T22:00:00\", \"dose_val_rx\": \"5000\", \"dose_unit_rx\": \"UNIT\", \"route\": \"SC\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"0.9% Sodium Chloride\", \"starttime\": \"2157-11-20T19:00:00\", \"stoptime\": \"2157-11-23T10:00:00\", \"dose_val_rx\": \"250\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Iso-Osmotic Dextrose\", \"starttime\": \"2157-11-20T19:00:00\", \"stoptime\": \"2157-11-22T02:00:00\", \"dose_val_rx\": \"200\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Meropenem\", \"starttime\": \"2157-11-20T19:00:00\", \"stoptime\": \"2157-11-23T10:00:00\", \"dose_val_rx\": \"2000\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Vancomycin\", \"starttime\": \"2157-11-20T19:00:00\", \"stoptime\": \"2157-11-22T02:00:00\", \"dose_val_rx\": \"1000\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"0.9% Sodium Chloride\", \"starttime\": \"2157-11-20T14:00:00\", \"stoptime\": \"2157-11-25T22:00:00\", \"dose_val_rx\": \"1000\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"0.9% Sodium Chloride (Mini Bag Plus)\", \"starttime\": \"2157-11-20T13:00:00\", \"stoptime\": \"2157-11-20T19:00:00\", \"dose_val_rx\": \"100\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"0.9% Sodium Chloride\", \"starttime\": \"2157-11-20T13:00:00\", \"stoptime\": \"2157-11-21T12:00:00\", \"dose_val_rx\": \"100\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Morphine Sulfate\", \"starttime\": \"2157-11-20T13:00:00\", \"stoptime\": \"2157-11-25T22:00:00\", \"dose_val_rx\": \"2-4\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"Meropenem\", \"starttime\": \"2157-11-20T13:00:00\", \"stoptime\": \"2157-11-20T19:00:00\", \"dose_val_rx\": \"1000\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"LeVETiracetam\", \"starttime\": \"2157-11-20T13:00:00\", \"stoptime\": \"2157-11-21T12:00:00\", \"dose_val_rx\": \"1000\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"HydrALAzine\", \"starttime\": \"2157-11-20T13:00:00\", \"stoptime\": \"2157-11-21T12:00:00\", \"dose_val_rx\": \"10\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"0.9% Sodium Chloride\", \"starttime\": \"2157-11-19T20:00:00\", \"stoptime\": \"2157-11-20T19:00:00\", \"dose_val_rx\": \"1000\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"LeVETiracetam\", \"starttime\": \"2157-11-19T14:00:00\", \"stoptime\": \"2157-11-25T22:00:00\", \"dose_val_rx\": \"1000\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"LeVETiracetam\", \"starttime\": \"2157-11-19T13:00:00\", \"stoptime\": \"2157-11-20T12:00:00\", \"dose_val_rx\": \"1000\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"0.9% Sodium Chloride\", \"starttime\": \"2157-11-19T13:00:00\", \"stoptime\": \"2157-11-20T12:00:00\", \"dose_val_rx\": \"100\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001217, \"hadm_id\": 24597018, \"drug\": \"0.9% Sodium Chloride\", \"starttime\": \"2157-11-19T02:00:00\", \"stoptime\": \"2157-11-19T19:00:00\", \"dose_val_rx\": \"1000\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}]"
+      ],
+      "expected_tool": "get_medications",
+      "ground_truth": "Durante el ingreso 24597018 se registraron 40 prescripciones para el paciente 10001217, con 23 fármacos distintos. Entre ellos: 0.9% Sodium Chloride (Mini Bag Plus), CeftriaXONE, MetRONIDAZOLE (FLagyl), Heparin Flush (10 units/ml), Vancomycin, 5% Dextrose, Sodium Chloride 0.9%  Flush, Acetaminophen.",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 24597018,
+          "limit": 200,
+          "subject_id": 10001217
+        },
+        "operation": "list_medications"
+      },
       "id": "DB-MED-002",
-      "question": "¿Cuáles son los medicamentos habituales del paciente 10014729 según la reconciliación de medicamentos?",
-      "ground_truth": "Los medicamentos habituales del paciente 10014729 según medrecon son: norethindrone-e.estradiol-iron [Junel FE 1.5/30 (28)] (anticonceptivo oral), docusate sodium [Colace] (laxante), hydromorphone [Dilaudid] (analgésico opioide), e ibuprofen (AINE).",
-      "ground_truth_sql": "SELECT DISTINCT name, etcdescription FROM mimic_ed.medrecon WHERE subject_id = 10014729 ORDER BY name",
-      "contexts": [
-        "medrecon: subject_id=10014729, name=norethindrone-e.estradiol-iron [Junel FE 1.5/30 (28)], etcdescription=Contraceptive Oral - Monophasic",
-        "medrecon: subject_id=10014729, name=docusate sodium [Colace], etcdescription=Laxative - Surfactant",
-        "medrecon: subject_id=10014729, name=hydromorphone [Dilaudid], etcdescription=Analgesic Opioid Agonists",
-        "medrecon: subject_id=10014729, name=ibuprofen, etcdescription=NSAID Analgesics (COX Non-Specific) - Propionic Acid Derivatives"
-      ],
-      "category": "medications"
+      "question": "¿Qué fármacos se prescribieron al paciente 10001217 durante el ingreso 24597018?",
+      "scope": {
+        "hadm_id": 24597018,
+        "stay_id": null,
+        "subject_id": 10001217
+      }
     },
     {
+      "category": "medications",
+      "clinical_validation": {
+        "notes": "Confirmar que 'prescrito' (prescriptions) no se presente como 'administrado' (emar).",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Potassium Chloride\", \"starttime\": \"2110-04-14T08:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"40\", \"dose_unit_rx\": \"mEq\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Sodium Chloride 0.9%  Flush\", \"starttime\": \"2110-04-14T03:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"3\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Lorazepam\", \"starttime\": \"2110-04-14T03:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"0.5\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Docusate Sodium\", \"starttime\": \"2110-04-14T03:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"100\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Ondansetron\", \"starttime\": \"2110-04-14T03:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"4\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Zolpidem Tartrate\", \"starttime\": \"2110-04-13T23:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"5\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"NexIUM\", \"starttime\": \"2110-04-13T21:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"40\", \"dose_unit_rx\": \"mg\", \"route\": \"ORAL\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Lorazepam\", \"starttime\": \"2110-04-13T20:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"1\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Lorazepam\", \"starttime\": \"2110-04-13T18:00:00\", \"stoptime\": \"2110-04-14T17:00:00\", \"dose_val_rx\": \"1\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Bisacodyl\", \"starttime\": \"2110-04-13T18:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"10\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"adde\", \"starttime\": \"2110-04-13T10:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"15\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Ibuprofen\", \"starttime\": \"2110-04-13T07:00:00\", \"stoptime\": \"2110-04-13T09:00:00\", \"dose_val_rx\": \"400-600\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Polyethylene Glycol\", \"starttime\": \"2110-04-13T07:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"17\", \"dose_unit_rx\": \"g\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"HydrOXYzine\", \"starttime\": \"2110-04-13T00:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"25\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Lorazepam\", \"starttime\": \"2110-04-13T00:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"1\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Propranolol LA\", \"starttime\": \"2110-04-13T00:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"80\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Albuterol 0.083% Neb Soln\", \"starttime\": \"2110-04-13T00:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"1\", \"dose_unit_rx\": \"NEB\", \"route\": \"IH\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Ketorolac\", \"starttime\": \"2110-04-13T00:00:00\", \"stoptime\": \"2110-04-13T07:00:00\", \"dose_val_rx\": \"15-30\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Trimethoprim\", \"starttime\": \"2110-04-13T00:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"100\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Simethicone\", \"starttime\": \"2110-04-13T00:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"40-80\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"adde\", \"starttime\": \"2110-04-13T00:00:00\", \"stoptime\": \"2110-04-13T10:00:00\", \"dose_val_rx\": \"15\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Ketorolac\", \"starttime\": \"2110-04-13T00:00:00\", \"stoptime\": \"2110-04-13T07:00:00\", \"dose_val_rx\": \"15-30\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Sodium Chloride 0.9%  Flush\", \"starttime\": \"2110-04-12T23:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"3\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Ketorolac\", \"starttime\": \"2110-04-12T20:00:00\", \"stoptime\": \"2110-04-12T23:00:00\", \"dose_val_rx\": \"15\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Potassium Chloride\", \"starttime\": \"2110-04-12T16:00:00\", \"stoptime\": \"2110-04-12T23:00:00\", \"dose_val_rx\": \"60\", \"dose_unit_rx\": \"mEq\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Potassium Chloride\", \"starttime\": \"2110-04-12T16:00:00\", \"stoptime\": \"2110-04-12T23:00:00\", \"dose_val_rx\": \"60\", \"dose_unit_rx\": \"mEq\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"HydrOXYzine\", \"starttime\": \"2110-04-12T15:00:00\", \"stoptime\": \"2110-04-13T14:00:00\", \"dose_val_rx\": \"50\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Lorazepam\", \"starttime\": \"2110-04-12T15:00:00\", \"stoptime\": \"2110-04-12T23:00:00\", \"dose_val_rx\": \"0.5\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"Hydrocerin\", \"starttime\": \"2110-04-12T15:00:00\", \"stoptime\": \"2110-04-14T19:00:00\", \"dose_val_rx\": \"1\", \"dose_unit_rx\": \"Appl\", \"route\": \"TP\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10001725, \"hadm_id\": 25563031, \"drug\": \"HydrOXYzine\", \"starttime\": \"2110-04-12T11:00:00\", \"stoptime\": \"2110-04-12T23:00:00\", \"dose_val_rx\": \"25\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}]"
+      ],
+      "expected_tool": "get_medications",
+      "ground_truth": "Durante el ingreso 25563031 se registraron 70 prescripciones para el paciente 10001725, con 35 fármacos distintos. Entre ellos: Potassium Chloride, Sodium Chloride 0.9%  Flush, Lorazepam, Docusate Sodium, Ondansetron, Zolpidem Tartrate, NexIUM, Bisacodyl.",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 25563031,
+          "limit": 200,
+          "subject_id": 10001725
+        },
+        "operation": "list_medications"
+      },
       "id": "DB-MED-003",
-      "question": "¿Qué medicamentos se administraron al paciente 10018328 en urgencias?",
-      "ground_truth": "Al paciente 10018328 se le administró Potassium Chloride 10mEq TAB en su estancia 32103106 (2154-08-03), con 4 administraciones registradas.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, charttime, name FROM mimic_ed.pyxis WHERE subject_id = 10018328 ORDER BY charttime",
-      "contexts": [
-        "pyxis: subject_id=10018328, stay_id=32103106, charttime=2154-08-03 20:00:00, name=Potassium Chloride 10mEq TAB",
-        "pyxis: subject_id=10018328, stay_id=32103106, charttime=2154-08-03 21:05:00, name=Potassium Chloride 10mEq TAB"
-      ],
-      "category": "medications"
+      "question": "¿Qué fármacos se prescribieron al paciente 10001725 durante el ingreso 25563031?",
+      "scope": {
+        "hadm_id": 25563031,
+        "stay_id": null,
+        "subject_id": 10001725
+      }
     },
     {
+      "category": "medications",
+      "clinical_validation": {
+        "notes": "Confirmar que 'prescrito' (prescriptions) no se presente como 'administrado' (emar).",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Vancomycin Oral Liquid\", \"starttime\": \"2156-05-03T12:00:00\", \"stoptime\": \"2156-05-03T21:00:00\", \"dose_val_rx\": \"125\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Potassium Chloride (Powder)\", \"starttime\": \"2156-05-03T09:00:00\", \"stoptime\": \"2156-05-03T21:00:00\", \"dose_val_rx\": \"40\", \"dose_unit_rx\": \"mEq\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Sodium Chloride 0.9%  Flush\", \"starttime\": \"2156-05-03T00:00:00\", \"stoptime\": \"2156-05-03T21:00:00\", \"dose_val_rx\": \"3\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"0.9% Sodium Chloride\", \"starttime\": \"2156-05-01T21:00:00\", \"stoptime\": \"2156-05-02T20:00:00\", \"dose_val_rx\": \"500\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Albumin 5% (12.5g / 250mL)\", \"starttime\": \"2156-05-01T17:00:00\", \"stoptime\": \"2156-05-02T16:00:00\", \"dose_val_rx\": \"25\", \"dose_unit_rx\": \"g\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"0.9% Sodium Chloride\", \"starttime\": \"2156-05-01T17:00:00\", \"stoptime\": \"2156-05-02T16:00:00\", \"dose_val_rx\": \"500\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"0.9% Sodium Chloride (Mini Bag Plus)\", \"starttime\": \"2156-05-01T14:00:00\", \"stoptime\": \"2156-05-03T10:00:00\", \"dose_val_rx\": \"100\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"CefePIME\", \"starttime\": \"2156-05-01T14:00:00\", \"stoptime\": \"2156-05-03T10:00:00\", \"dose_val_rx\": \"1\", \"dose_unit_rx\": \"g\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"CefePIME\", \"starttime\": \"2156-05-01T12:00:00\", \"stoptime\": \"2156-05-01T11:00:00\", \"dose_val_rx\": \"2\", \"dose_unit_rx\": \"g\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"0.9% Sodium Chloride (Mini Bag Plus)\", \"starttime\": \"2156-05-01T12:00:00\", \"stoptime\": \"2156-05-01T11:00:00\", \"dose_val_rx\": \"100\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"0.9% Sodium Chloride\", \"starttime\": \"2156-05-01T12:00:00\", \"stoptime\": \"2156-05-02T11:00:00\", \"dose_val_rx\": \"1000\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Artificial Tears\", \"starttime\": \"2156-05-01T10:00:00\", \"stoptime\": \"2156-05-03T21:00:00\", \"dose_val_rx\": \"1-2\", \"dose_unit_rx\": \"DROP\", \"route\": \"BOTH EYES\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Levothyroxine Sodium\", \"starttime\": \"2156-05-01T10:00:00\", \"stoptime\": \"2156-05-03T21:00:00\", \"dose_val_rx\": \"50\", \"dose_unit_rx\": \"mcg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Famotidine\", \"starttime\": \"2156-05-01T10:00:00\", \"stoptime\": \"2156-05-03T21:00:00\", \"dose_val_rx\": \"20\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Vancomycin\", \"starttime\": \"2156-05-01T08:00:00\", \"stoptime\": \"2156-05-03T10:00:00\", \"dose_val_rx\": \"750\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Heparin\", \"starttime\": \"2156-05-01T08:00:00\", \"stoptime\": \"2156-05-03T21:00:00\", \"dose_val_rx\": \"5000\", \"dose_unit_rx\": \"UNIT\", \"route\": \"SC\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Docusate Sodium (Liquid)\", \"starttime\": \"2156-05-01T08:00:00\", \"stoptime\": \"2156-05-03T21:00:00\", \"dose_val_rx\": \"100\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"5% Dextrose\", \"starttime\": \"2156-05-01T08:00:00\", \"stoptime\": \"2156-05-03T10:00:00\", \"dose_val_rx\": \"250\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"MetRONIDAZOLE (FLagyl)\", \"starttime\": \"2156-05-01T02:00:00\", \"stoptime\": \"2156-05-01T12:00:00\", \"dose_val_rx\": \"500\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"NS\", \"starttime\": \"2156-05-01T02:00:00\", \"stoptime\": \"2156-05-01T12:00:00\", \"dose_val_rx\": \"100\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Ipratropium Bromide Neb\", \"starttime\": \"2156-05-01T00:00:00\", \"stoptime\": \"2156-05-03T21:00:00\", \"dose_val_rx\": \"1-2\", \"dose_unit_rx\": \"NEB\", \"route\": \"IH\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Senna\", \"starttime\": \"2156-05-01T00:00:00\", \"stoptime\": \"2156-05-03T21:00:00\", \"dose_val_rx\": \"1\", \"dose_unit_rx\": \"TAB\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"OLANZapine\", \"starttime\": \"2156-05-01T00:00:00\", \"stoptime\": \"2156-05-03T08:00:00\", \"dose_val_rx\": \"2.5\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Vancomycin Oral Liquid\", \"starttime\": \"2156-05-01T00:00:00\", \"stoptime\": \"2156-05-03T11:00:00\", \"dose_val_rx\": \"500\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002428, \"hadm_id\": 20321825, \"drug\": \"Albuterol 0.083% Neb Soln\", \"starttime\": \"2156-05-01T00:00:00\", \"stoptime\": \"2156-05-03T21:00:00\", \"dose_val_rx\": \"1\", \"dose_unit_rx\": \"NEB\", \"route\": \"IH\", \"event_txt\": null}]"
+      ],
+      "expected_tool": "get_medications",
+      "ground_truth": "Durante el ingreso 20321825 se registraron 25 prescripciones para el paciente 10002428, con 20 fármacos distintos. Entre ellos: Vancomycin Oral Liquid, Potassium Chloride (Powder), Sodium Chloride 0.9%  Flush, 0.9% Sodium Chloride, Albumin 5% (12.5g / 250mL), 0.9% Sodium Chloride (Mini Bag Plus), CefePIME, Artificial Tears.",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 20321825,
+          "limit": 200,
+          "subject_id": 10002428
+        },
+        "operation": "list_medications"
+      },
       "id": "DB-MED-004",
-      "question": "¿Cuáles son los medicamentos habituales del paciente 10026255?",
-      "ground_truth": "Los medicamentos habituales del paciente 10026255 incluyen: aspirin (analgésico salicilato), lamotrigine (anticonvulsivante), carbamazepine (anticonvulsivante), atorvastatin (antihiperlipemiante), y amlodipine (bloqueador de canales de calcio).",
-      "ground_truth_sql": "SELECT DISTINCT name, etcdescription FROM mimic_ed.medrecon WHERE subject_id = 10026255 ORDER BY name",
-      "contexts": [
-        "medrecon: subject_id=10026255, name=aspirin, etcdescription=Salicylate Analgesics",
-        "medrecon: subject_id=10026255, name=lamotrigine, etcdescription=Anticonvulsant - Phenyltriazine Derivatives",
-        "medrecon: subject_id=10026255, name=carbamazepine, etcdescription=Anticonvulsant - Iminostilbene Derivatives",
-        "medrecon: subject_id=10026255, name=atorvastatin, etcdescription=Antihyperlipidemic - HMG CoA Reductase Inhibitors (statins)",
-        "medrecon: subject_id=10026255, name=amlodipine, etcdescription=Calcium Channel Blockers - Dihydropyridines"
-      ],
-      "category": "medications"
+      "question": "¿Qué fármacos se prescribieron al paciente 10002428 durante el ingreso 20321825?",
+      "scope": {
+        "hadm_id": 20321825,
+        "stay_id": null,
+        "subject_id": 10002428
+      }
     },
     {
+      "category": "medications",
+      "clinical_validation": {
+        "notes": "Confirmar que 'prescrito' (prescriptions) no se presente como 'administrado' (emar).",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[{\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Furosemide\", \"starttime\": \"2141-05-30T08:00:00\", \"stoptime\": \"2141-05-29T22:00:00\", \"dose_val_rx\": \"20\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Warfarin\", \"starttime\": \"2141-05-29T16:00:00\", \"stoptime\": \"2141-05-29T22:00:00\", \"dose_val_rx\": \"4\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Metoprolol Succinate XL\", \"starttime\": \"2141-05-29T08:00:00\", \"stoptime\": \"2141-05-28T20:00:00\", \"dose_val_rx\": \"50\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Metoprolol Succinate XL\", \"starttime\": \"2141-05-29T08:00:00\", \"stoptime\": \"2141-05-29T22:00:00\", \"dose_val_rx\": \"50\", \"dose_unit_rx\": \"mg\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Digoxin\", \"starttime\": \"2141-05-29T08:00:00\", \"stoptime\": \"2141-05-29T22:00:00\", \"dose_val_rx\": \"0.125\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Metoprolol Tartrate\", \"starttime\": \"2141-05-28T18:00:00\", \"stoptime\": \"2141-05-29T09:00:00\", \"dose_val_rx\": \"12.5\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"MetRONIDAZOLE (FLagyl)\", \"starttime\": \"2141-05-28T14:00:00\", \"stoptime\": \"2141-05-28T15:00:00\", \"dose_val_rx\": \"500\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Captopril\", \"starttime\": \"2141-05-28T14:00:00\", \"stoptime\": \"2141-05-29T22:00:00\", \"dose_val_rx\": \"3.125\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Digoxin\", \"starttime\": \"2141-05-28T12:00:00\", \"stoptime\": \"2141-05-28T17:00:00\", \"dose_val_rx\": \"0.125\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Clopidogrel\", \"starttime\": \"2141-05-28T08:00:00\", \"stoptime\": \"2141-05-29T22:00:00\", \"dose_val_rx\": \"75\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Sodium Chloride 0.9%  Flush\", \"starttime\": \"2141-05-27T23:00:00\", \"stoptime\": \"2141-05-28T02:00:00\", \"dose_val_rx\": \"3\", \"dose_unit_rx\": \"mL\", \"route\": \"IV\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"QUEtiapine Fumarate\", \"starttime\": \"2141-05-27T22:00:00\", \"stoptime\": \"2141-05-29T22:00:00\", \"dose_val_rx\": \"50\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Metoprolol Tartrate\", \"starttime\": \"2141-05-27T18:00:00\", \"stoptime\": \"2141-05-27T23:00:00\", \"dose_val_rx\": \"6.25\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Metoprolol Tartrate\", \"starttime\": \"2141-05-27T18:00:00\", \"stoptime\": \"2141-05-28T15:00:00\", \"dose_val_rx\": \"12.5\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Clopidogrel\", \"starttime\": \"2141-05-27T06:00:00\", \"stoptime\": \"2141-05-27T23:00:00\", \"dose_val_rx\": \"300\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"QUEtiapine Fumarate\", \"starttime\": \"2141-05-27T02:00:00\", \"stoptime\": \"2141-05-27T23:00:00\", \"dose_val_rx\": \"25\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Heparin\", \"starttime\": \"2141-05-26T22:00:00\", \"stoptime\": \"2141-05-29T22:00:00\", \"dose_val_rx\": \"5000\", \"dose_unit_rx\": \"UNIT\", \"route\": \"SC\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Acetaminophen\", \"starttime\": \"2141-05-26T21:00:00\", \"stoptime\": \"2141-05-29T22:00:00\", \"dose_val_rx\": \"325\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Acetaminophen\", \"starttime\": \"2141-05-26T21:00:00\", \"stoptime\": \"2141-05-29T22:00:00\", \"dose_val_rx\": \"325\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Warfarin\", \"starttime\": \"2141-05-26T17:00:00\", \"stoptime\": \"2141-05-28T17:00:00\", \"dose_val_rx\": \"3\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Warfarin\", \"starttime\": \"2141-05-26T16:00:00\", \"stoptime\": \"2141-05-28T16:00:00\", \"dose_val_rx\": \"3\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Metoprolol Tartrate\", \"starttime\": \"2141-05-26T10:00:00\", \"stoptime\": \"2141-05-27T17:00:00\", \"dose_val_rx\": \"6.25\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Potassium Chloride Replacement (Critical Care and Oncology) \", \"starttime\": \"2141-05-26T02:00:00\", \"stoptime\": \"2141-05-27T23:00:00\", \"dose_val_rx\": \"10\", \"dose_unit_rx\": \"mEq\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Potassium Chloride Replacement (Critical Care and Oncology) \", \"starttime\": \"2141-05-26T02:00:00\", \"stoptime\": \"2141-05-27T23:00:00\", \"dose_val_rx\": \"20\", \"dose_unit_rx\": \"mEq\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Potassium Chloride Replacement (Critical Care and Oncology) \", \"starttime\": \"2141-05-26T02:00:00\", \"stoptime\": \"2141-05-27T23:00:00\", \"dose_val_rx\": \"20\", \"dose_unit_rx\": \"mEq\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Potassium Chloride Replacement (Critical Care and Oncology) \", \"starttime\": \"2141-05-26T02:00:00\", \"stoptime\": \"2141-05-27T23:00:00\", \"dose_val_rx\": \"20\", \"dose_unit_rx\": \"mEq\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Potassium Chloride Replacement (Critical Care and Oncology) \", \"starttime\": \"2141-05-26T02:00:00\", \"stoptime\": \"2141-05-27T23:00:00\", \"dose_val_rx\": \"10\", \"dose_unit_rx\": \"mEq\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Potassium Chloride Replacement (Critical Care and Oncology) \", \"starttime\": \"2141-05-26T02:00:00\", \"stoptime\": \"2141-05-27T23:00:00\", \"dose_val_rx\": \"10\", \"dose_unit_rx\": \"mEq\", \"route\": \"PO\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"QUEtiapine Fumarate\", \"starttime\": \"2141-05-25T23:00:00\", \"stoptime\": \"2141-05-26T22:00:00\", \"dose_val_rx\": \"25\", \"dose_unit_rx\": \"mg\", \"route\": \"PO/NG\", \"event_txt\": null}, {\"source\": \"prescription\", \"subject_id\": 10002495, \"hadm_id\": 24982426, \"drug\": \"Furosemide\", \"starttime\": \"2141-05-25T23:00:00\", \"stoptime\": \"2141-05-26T22:00:00\", \"dose_val_rx\": \"40\", \"dose_unit_rx\": \"mg\", \"route\": \"IV\", \"event_txt\": null}]"
+      ],
+      "expected_tool": "get_medications",
+      "ground_truth": "Durante el ingreso 24982426 se registraron 113 prescripciones para el paciente 10002495, con 52 fármacos distintos. Entre ellos: Furosemide, Warfarin, Metoprolol Succinate XL, Digoxin, Metoprolol Tartrate, MetRONIDAZOLE (FLagyl), Captopril, Clopidogrel.",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 24982426,
+          "limit": 200,
+          "subject_id": 10002495
+        },
+        "operation": "list_medications"
+      },
       "id": "DB-MED-005",
-      "question": "¿Cuál es el medicamento más frecuentemente administrado en urgencias en el dataset MIMIC-IV-ED?",
-      "ground_truth": "El medicamento más frecuentemente administrado en urgencias es Vancomycin con 48 administraciones, seguido de Ondansetron 4mg/2mL 2mL VIAL con 34 administraciones.",
-      "ground_truth_sql": "SELECT name, COUNT(*) as frecuencia FROM mimic_ed.pyxis GROUP BY name ORDER BY frecuencia DESC LIMIT 5",
-      "contexts": [
-        "pyxis: name=Vancomycin, frecuencia=48",
-        "pyxis: name=Ondansetron 4mg/2mL 2mL VIAL, frecuencia=34",
-        "pyxis: name=Morphine Sulfat 4mg/1mL 1mL VIAL, frecuencia=31"
-      ],
-      "category": "medications"
+      "question": "¿Qué fármacos se prescribieron al paciente 10002495 durante el ingreso 24982426?",
+      "scope": {
+        "hadm_id": 24982426,
+        "stay_id": null,
+        "subject_id": 10002495
+      }
     },
     {
+      "category": "medications",
+      "clinical_validation": {
+        "notes": "Confirmar que 'prescrito' (prescriptions) no se presente como 'administrado' (emar).",
+        "required": true,
+        "status": "pending"
+      },
+      "contexts": [
+        "[]"
+      ],
+      "expected_tool": "get_medications",
+      "ground_truth": "Durante el ingreso 20282368 se registraron 0 prescripciones para el paciente 10002930, con 0 fármacos distintos. Entre ellos: .",
+      "ground_truth_operation": {
+        "arguments": {
+          "hadm_id": 20282368,
+          "limit": 200,
+          "subject_id": 10002930
+        },
+        "operation": "list_medications"
+      },
       "id": "DB-MED-006",
-      "question": "¿Qué medicamentos habituales toma el paciente 10020740?",
-      "ground_truth": "Los medicamentos habituales del paciente 10020740 incluyen: metformin (antidiabético biguanida), docusate sodium [Colace] (laxante), omeprazole (inhibidor de bomba de protones), y lorazepam (ansiolítico benzodiazepina).",
-      "ground_truth_sql": "SELECT DISTINCT name, etcdescription FROM mimic_ed.medrecon WHERE subject_id = 10020740 ORDER BY name",
-      "contexts": [
-        "medrecon: subject_id=10020740, name=metformin, etcdescription=Insulin Response Enhancers - Biguanides",
-        "medrecon: subject_id=10020740, name=omeprazole, etcdescription=Gastric Acid Secretion Reducing Agents - Proton Pump Inhibitors (PPIs)",
-        "medrecon: subject_id=10020740, name=lorazepam, etcdescription=Antianxiety Agent - Benzodiazepines"
-      ],
-      "category": "medications"
+      "question": "¿Qué fármacos se prescribieron al paciente 10002930 durante el ingreso 20282368?",
+      "scope": {
+        "hadm_id": 20282368,
+        "stay_id": null,
+        "subject_id": 10002930
+      }
     },
     {
-      "id": "DB-MED-007",
-      "question": "¿Qué medicamentos se administraron al paciente 10014354 en su estancia 33222885?",
-      "ground_truth": "Al paciente 10014354 en la estancia 33222885 se le administraron: CefTRIAXone (2 administraciones), HYDROmorphone (Dilaudid) (4 administraciones), y Sodium Chloride 0.9% (Mini Bag Plus) (1 administración).",
-      "ground_truth_sql": "SELECT charttime, name FROM mimic_ed.pyxis WHERE stay_id = 33222885 ORDER BY charttime",
+      "category": "patient_summary",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "pyxis: stay_id=33222885, charttime=2150-04-30 19:43:00, name=CefTRIAXone",
-        "pyxis: stay_id=33222885, charttime=2150-04-30 17:40:00, name=HYDROmorphone (Dilaudid)",
-        "pyxis: stay_id=33222885, charttime=2150-04-30 19:43:00, name=Sodium Chloride 0.9%  (Mini Bag Plus)"
+        "{\"subject_id\":10000032,\"gender\":\"F\",\"anchor_age\":52,\"anchor_year_group\":\"2014 - 2016\",\"deceased\":true,\"date_of_death\":\"2180-09-09\",\"race\":\"WHITE\"}"
       ],
-      "category": "medications"
+      "expected_tool": "get_patient_summary",
+      "ground_truth": "El paciente 10000032 es de sexo femenino, con una edad de referencia (anchor_age) de 52 años y grupo de año de referencia 2014 - 2016.",
+      "ground_truth_operation": {
+        "arguments": {
+          "subject_id": 10000032
+        },
+        "operation": "get_patient"
+      },
+      "id": "DB-PS-001",
+      "question": "¿Cuál es el sexo y la edad de referencia del paciente 10000032?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10000032
+      }
     },
     {
-      "id": "DB-MED-008",
-      "question": "¿Cuáles son los medicamentos habituales del paciente 10039708?",
-      "ground_truth": "Los medicamentos habituales del paciente 10039708 incluyen: lisinopril (IECA), torsemide (diurético de asa), hydrochlorothiazide (diurético tiazídico).",
-      "ground_truth_sql": "SELECT DISTINCT name, etcdescription FROM mimic_ed.medrecon WHERE subject_id = 10039708 ORDER BY name",
+      "category": "patient_summary",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "medrecon: subject_id=10039708, name=lisinopril, etcdescription=ACE Inhibitors",
-        "medrecon: subject_id=10039708, name=torsemide, etcdescription=Diuretic - Loop",
-        "medrecon: subject_id=10039708, name=hydrochlorothiazide, etcdescription=Diuretic - Thiazides and Related"
+        "{\"subject_id\":10001217,\"gender\":\"F\",\"anchor_age\":55,\"anchor_year_group\":\"2011 - 2013\",\"deceased\":false,\"date_of_death\":null,\"race\":\"WHITE\"}"
       ],
-      "category": "medications"
+      "expected_tool": "get_patient_summary",
+      "ground_truth": "El paciente 10001217 es de sexo femenino, con una edad de referencia (anchor_age) de 55 años y grupo de año de referencia 2011 - 2013.",
+      "ground_truth_operation": {
+        "arguments": {
+          "subject_id": 10001217
+        },
+        "operation": "get_patient"
+      },
+      "id": "DB-PS-002",
+      "question": "¿Cuál es el sexo y la edad de referencia del paciente 10001217?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10001217
+      }
     },
     {
-      "id": "DB-TR-001",
-      "question": "¿Cuáles fueron los signos vitales de triaje del paciente 10014729?",
-      "ground_truth": "Los signos vitales de triaje del paciente 10014729 (stay_id=37887480) fueron: temperatura 99.1°F, frecuencia cardíaca 90 lpm, frecuencia respiratoria 26 rpm, presión arterial 86/61 mmHg, nivel de dolor 10/10, acuidad 1 (más urgente), motivo de consulta: FEVER.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, temperature, heartrate, resprate, o2sat, sbp, dbp, pain, acuity, chiefcomplaint FROM mimic_ed.triage WHERE subject_id = 10014729",
+      "category": "patient_summary",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "triage: subject_id=10014729, stay_id=37887480, temperature=99.1, heartrate=90.0, resprate=26.0, sbp=86.0, dbp=61.0, pain=10, acuity=1.0, chiefcomplaint=FEVER"
+        "{\"subject_id\":10001725,\"gender\":\"F\",\"anchor_age\":46,\"anchor_year_group\":\"2011 - 2013\",\"deceased\":false,\"date_of_death\":null,\"race\":\"WHITE\"}"
       ],
-      "category": "triage"
+      "expected_tool": "get_patient_summary",
+      "ground_truth": "El paciente 10001725 es de sexo femenino, con una edad de referencia (anchor_age) de 46 años y grupo de año de referencia 2011 - 2013.",
+      "ground_truth_operation": {
+        "arguments": {
+          "subject_id": 10001725
+        },
+        "operation": "get_patient"
+      },
+      "id": "DB-PS-003",
+      "question": "¿Cuál es el sexo y la edad de referencia del paciente 10001725?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10001725
+      }
     },
     {
-      "id": "DB-TR-002",
-      "question": "¿Cuántos pacientes llegaron a urgencias con nivel de acuidad 1 (más urgente)?",
-      "ground_truth": "En el dataset MIMIC-IV-ED hay 18 estancias con nivel de acuidad 1 (más urgente), que corresponden a los casos más críticos como paros cardíacos, hipotensión severa, y traumas graves.",
-      "ground_truth_sql": "SELECT COUNT(*) as total_acuidad1 FROM mimic_ed.triage WHERE acuity = 1",
+      "category": "patient_summary",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "triage: total_acuidad1=18, acuity=1.0"
+        "{\"total_admissions\":7,\"total_icu_stays\":4,\"distinct_diagnoses\":84,\"distinct_medications\":97,\"first_admission\":\"2155-07-14T19:15:00\",\"last_admission\":\"2160-07-15T23:37:00\"}",
+        "[{\"hadm_id\": 26549334, \"subject_id\": 10002428, \"admittime\": \"2160-07-15T23:37:00\", \"dischtime\": \"2160-07-16T18:49:00\", \"admission_type\": \"EU OBSERVATION\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": null, \"insurance\": \"Medicare\", \"race\": \"WHITE\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 0.8}, {\"hadm_id\": 28295257, \"subject_id\": 10002428, \"admittime\": \"2160-04-14T12:30:00\", \"dischtime\": \"2160-04-18T16:00:00\", \"admission_type\": \"OBSERVATION ADMIT\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": \"SKILLED NURSING FACILITY\", \"insurance\": \"Medicare\", \"race\": \"WHITE\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 4.146}, {\"hadm_id\": 28676446, \"subject_id\": 10002428, \"admittime\": \"2157-07-16T04:09:00\", \"dischtime\": \"2157-07-18T16:49:00\", \"admission_type\": \"EU OBSERVATION\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": null, \"insurance\": \"Medicare\", \"race\": \"WHITE\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 2.528}, {\"hadm_id\": 23473524, \"subject_id\": 10002428, \"admittime\": \"2156-05-11T14:49:00\", \"dischtime\": \"2156-05-22T14:16:00\", \"admission_type\": \"EW EMER.\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": \"CHRONIC/LONG TERM ACUTE CARE\", \"insurance\": \"Medicare\", \"race\": \"WHITE\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 10.977}, {\"hadm_id\": 20321825, \"subject_id\": 10002428, \"admittime\": \"2156-04-30T20:35:00\", \"dischtime\": \"2156-05-03T16:36:00\", \"admission_type\": \"EW EMER.\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": \"CHRONIC/LONG TERM ACUTE CARE\", \"insurance\": \"Medicare\", \"race\": \"WHITE\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 2.834}, {\"hadm_id\": 28662225, \"subject_id\": 10002428, \"admittime\": \"2156-04-12T14:16:00\", \"dischtime\": \"2156-04-29T16:26:00\", \"admission_type\": \"EW EMER.\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": \"SKILLED NURSING FACILITY\", \"insurance\": \"Medicare\", \"race\": \"WHITE\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 17.09}, {\"hadm_id\": 25797028, \"subject_id\": 10002428, \"admittime\": \"2155-07-14T19:15:00\", \"dischtime\": \"2155-07-15T18:37:00\", \"admission_type\": \"EU OBSERVATION\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": null, \"insurance\": \"Medicare\", \"race\": \"WHITE\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 0.974}]"
       ],
-      "category": "triage"
+      "expected_tool": "get_patient_summary",
+      "ground_truth": "El paciente 10002428 tiene 7 ingreso(s) hospitalario(s) y 4 estancia(s) en UCI registradas; el último ingreso comenzó el 15/07/2160 23:37.",
+      "ground_truth_operation": {
+        "arguments": {
+          "subject_id": 10002428
+        },
+        "operation": "get_patient_summary"
+      },
+      "id": "DB-PS-004",
+      "question": "¿Cuántos ingresos hospitalarios y cuántas estancias en UCI tiene registrados el paciente 10002428?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10002428
+      }
     },
     {
-      "id": "DB-TR-003",
-      "question": "¿Cuál fue el motivo de consulta del paciente 10026255 en su primera visita a urgencias?",
-      "ground_truth": "El motivo de consulta del paciente 10026255 en su primera visita (stay_id=37844627) fue R RIB PAIN (dolor en costillas derechas), con acuidad 2 y temperatura de 99.4°F.",
-      "ground_truth_sql": "SELECT subject_id, stay_id, temperature, heartrate, sbp, dbp, o2sat, acuity, chiefcomplaint FROM mimic_ed.triage WHERE subject_id = 10026255 ORDER BY stay_id",
+      "category": "patient_summary",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "triage: subject_id=10026255, stay_id=37844627, temperature=99.4, heartrate=90.0, sbp=153.0, dbp=73.0, o2sat=86.0, acuity=2.0, chiefcomplaint=R RIB PAIN",
-        "triage: subject_id=10026255, stay_id=34236274, temperature=99.9, heartrate=95.0, sbp=150.0, dbp=101.0, o2sat=98.0, acuity=3.0, chiefcomplaint=R Leg pain, Weakness"
+        "{\"total_admissions\":1,\"total_icu_stays\":1,\"distinct_diagnoses\":26,\"distinct_medications\":52,\"first_admission\":\"2141-05-22T20:17:00\",\"last_admission\":\"2141-05-22T20:17:00\"}",
+        "[{\"hadm_id\": 24982426, \"subject_id\": 10002495, \"admittime\": \"2141-05-22T20:17:00\", \"dischtime\": \"2141-05-29T17:41:00\", \"admission_type\": \"URGENT\", \"admission_location\": \"TRANSFER FROM HOSPITAL\", \"discharge_location\": \"SKILLED NURSING FACILITY\", \"insurance\": \"Medicare\", \"race\": \"UNKNOWN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 6.892}]"
       ],
-      "category": "triage"
+      "expected_tool": "get_patient_summary",
+      "ground_truth": "El paciente 10002495 tiene 1 ingreso(s) hospitalario(s) y 1 estancia(s) en UCI registradas; el último ingreso comenzó el 22/05/2141 20:17.",
+      "ground_truth_operation": {
+        "arguments": {
+          "subject_id": 10002495
+        },
+        "operation": "get_patient_summary"
+      },
+      "id": "DB-PS-005",
+      "question": "¿Cuántos ingresos hospitalarios y cuántas estancias en UCI tiene registrados el paciente 10002495?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10002495
+      }
     },
     {
-      "id": "DB-TR-004",
-      "question": "¿Cuál es la distribución de niveles de acuidad en el dataset MIMIC-IV-ED?",
-      "ground_truth": "La distribución de acuidad en el dataset es: acuidad 1 (más urgente): 18 pacientes, acuidad 2: 97 pacientes, acuidad 3: 90 pacientes, acuidad 4 (menos urgente): 2 pacientes. Hay 15 registros sin acuidad registrada.",
-      "ground_truth_sql": "SELECT acuity, COUNT(*) as total FROM mimic_ed.triage GROUP BY acuity ORDER BY acuity",
+      "category": "patient_summary",
+      "clinical_validation": {
+        "notes": "",
+        "required": false,
+        "status": "n/a"
+      },
       "contexts": [
-        "triage: acuity=1.0, total=18",
-        "triage: acuity=2.0, total=97",
-        "triage: acuity=3.0, total=90",
-        "triage: acuity=4.0, total=2"
+        "{\"total_admissions\":12,\"total_icu_stays\":2,\"distinct_diagnoses\":59,\"distinct_medications\":45,\"first_admission\":\"2193-08-05T06:18:00\",\"last_admission\":\"2201-03-23T19:15:00\"}",
+        "[{\"hadm_id\": 20282368, \"subject_id\": 10002930, \"admittime\": \"2201-03-23T19:15:00\", \"dischtime\": \"2201-03-26T14:24:00\", \"admission_type\": \"EU OBSERVATION\", \"admission_location\": \"PHYSICIAN REFERRAL\", \"discharge_location\": null, \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 2.798}, {\"hadm_id\": 20846853, \"subject_id\": 10002930, \"admittime\": \"2201-02-12T16:58:00\", \"dischtime\": \"2201-02-13T11:11:00\", \"admission_type\": \"EU OBSERVATION\", \"admission_location\": \"PHYSICIAN REFERRAL\", \"discharge_location\": null, \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 0.759}, {\"hadm_id\": 28697806, \"subject_id\": 10002930, \"admittime\": \"2200-06-05T05:43:00\", \"dischtime\": \"2200-06-05T10:26:00\", \"admission_type\": \"EU OBSERVATION\", \"admission_location\": \"PHYSICIAN REFERRAL\", \"discharge_location\": null, \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 0.197}, {\"hadm_id\": 23720373, \"subject_id\": 10002930, \"admittime\": \"2199-02-17T21:45:00\", \"dischtime\": \"2199-02-19T13:38:00\", \"admission_type\": \"EU OBSERVATION\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": null, \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 1.662}, {\"hadm_id\": 22733922, \"subject_id\": 10002930, \"admittime\": \"2198-04-22T16:17:00\", \"dischtime\": \"2198-05-04T13:20:00\", \"admission_type\": \"URGENT\", \"admission_location\": \"INTERNAL TRANSFER TO OR FROM PSYCH\", \"discharge_location\": \"HOME\", \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 11.877}, {\"hadm_id\": 25922998, \"subject_id\": 10002930, \"admittime\": \"2198-04-17T19:38:00\", \"dischtime\": \"2198-04-22T16:02:00\", \"admission_type\": \"EW EMER.\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": \"PSYCH FACILITY\", \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 4.85}, {\"hadm_id\": 25282382, \"subject_id\": 10002930, \"admittime\": \"2197-04-17T02:01:00\", \"dischtime\": \"2197-04-17T09:48:00\", \"admission_type\": \"EU OBSERVATION\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": null, \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 0.324}, {\"hadm_id\": 28301173, \"subject_id\": 10002930, \"admittime\": \"2197-04-08T19:37:00\", \"dischtime\": \"2197-04-15T12:01:00\", \"admission_type\": \"URGENT\", \"admission_location\": \"INTERNAL TRANSFER TO OR FROM PSYCH\", \"discharge_location\": \"HOME\", \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 6.683}, {\"hadm_id\": 28477649, \"subject_id\": 10002930, \"admittime\": \"2197-04-07T06:56:00\", \"dischtime\": \"2197-04-08T19:37:00\", \"admission_type\": \"EU OBSERVATION\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": null, \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 1.528}, {\"hadm_id\": 25696644, \"subject_id\": 10002930, \"admittime\": \"2196-04-14T12:25:00\", \"dischtime\": \"2196-04-17T15:28:00\", \"admission_type\": \"EW EMER.\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": \"PSYCH FACILITY\", \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 3.127}, {\"hadm_id\": 23688993, \"subject_id\": 10002930, \"admittime\": \"2193-08-05T11:45:00\", \"dischtime\": \"2193-08-11T09:25:00\", \"admission_type\": \"DIRECT EMER.\", \"admission_location\": \"PHYSICIAN REFERRAL\", \"discharge_location\": \"HOME\", \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 5.903}, {\"hadm_id\": 22380825, \"subject_id\": 10002930, \"admittime\": \"2193-08-05T06:18:00\", \"dischtime\": \"2193-08-05T11:44:00\", \"admission_type\": \"EU OBSERVATION\", \"admission_location\": \"EMERGENCY ROOM\", \"discharge_location\": null, \"insurance\": \"Medicare\", \"race\": \"BLACK/AFRICAN AMERICAN\", \"hospital_expire_flag\": false, \"length_of_stay_days\": 0.226}]"
       ],
-      "category": "triage"
-    },
-    {
-      "id": "DB-CT-001",
-      "question": "¿Cuáles son los diagnósticos y los medicamentos administrados al paciente 10014729 en urgencias?",
-      "ground_truth": "El paciente 10014729 tuvo 4 diagnósticos: SEPTICEMIA NOS, SEVERE SEPSIS, ADV EFF MEDICINAL NOS, y SEPTIC SHOCK. Se le administraron 5 medicamentos: CefePIME, Lorazepam, Vancomycin, Ondansetron, y HYDROmorphone (Dilaudid). El paciente fue ingresado (ADMITTED).",
-      "ground_truth_sql": "SELECT e.subject_id, e.stay_id, e.disposition, d.icd_code, d.icd_title, p.name as medicamento FROM mimic_ed.edstays e LEFT JOIN mimic_ed.diagnosis d ON e.stay_id = d.stay_id LEFT JOIN mimic_ed.pyxis p ON e.stay_id = p.stay_id WHERE e.subject_id = 10014729",
-      "contexts": [
-        "edstays: subject_id=10014729, stay_id=37887480, disposition=ADMITTED",
-        "diagnosis: stay_id=37887480, icd_code=0389, icd_title=SEPTICEMIA NOS",
-        "diagnosis: stay_id=37887480, icd_code=99592, icd_title=SEVERE SEPSIS",
-        "pyxis: stay_id=37887480, name=Vancomycin",
-        "pyxis: stay_id=37887480, name=CefePIME"
-      ],
-      "category": "cross_table"
-    },
-    {
-      "id": "DB-CT-002",
-      "question": "¿Cuántos pacientes con diagnóstico de hipertensión fueron ingresados (ADMITTED) en urgencias?",
-      "ground_truth": "En el dataset MIMIC-IV-ED, hay múltiples pacientes con diagnóstico de hipertensión que fueron ingresados. Los diagnósticos de hipertensión incluyen HYPERTENSION NOS (ICD-9: 4019) y Essential (primary) hypertension (ICD-10: I10). Al menos 10 estancias combinan diagnóstico de hipertensión con disposición ADMITTED.",
-      "ground_truth_sql": "SELECT COUNT(DISTINCT e.stay_id) as total FROM mimic_ed.edstays e JOIN mimic_ed.diagnosis d ON e.stay_id = d.stay_id WHERE (d.icd_title ILIKE '%hypertension%' OR d.icd_title ILIKE '%HYPERTENSION%') AND e.disposition = 'ADMITTED'",
-      "contexts": [
-        "edstays+diagnosis: pacientes con hipertension y ADMITTED >= 10",
-        "diagnosis: icd_title=HYPERTENSION NOS, frecuencia=21",
-        "diagnosis: icd_title=Essential (primary) hypertension, frecuencia=13"
-      ],
-      "category": "cross_table"
-    },
-    {
-      "id": "DB-CT-003",
-      "question": "¿Cuáles son los signos vitales de triaje y el diagnóstico del paciente 10015272?",
-      "ground_truth": "El paciente 10015272 llegó a urgencias con signos vitales de triaje: temperatura 97.5°F, frecuencia cardíaca 118 lpm, presión arterial 100/56 mmHg, saturación de oxígeno 96%, acuidad 2, motivo de consulta PE (embolia pulmonar). El diagnóstico confirmado fue Other pulmonary embolism without acute cor pulmonale (ICD-10: I2699).",
-      "ground_truth_sql": "SELECT t.subject_id, t.stay_id, t.temperature, t.heartrate, t.sbp, t.dbp, t.o2sat, t.acuity, t.chiefcomplaint, d.icd_code, d.icd_title FROM mimic_ed.triage t JOIN mimic_ed.diagnosis d ON t.stay_id = d.stay_id WHERE t.subject_id = 10015272",
-      "contexts": [
-        "triage: subject_id=10015272, stay_id=33473053, temperature=97.5, heartrate=118.0, sbp=100.0, dbp=56.0, o2sat=96.0, acuity=2.0, chiefcomplaint=PE",
-        "diagnosis: subject_id=10015272, stay_id=33473053, icd_code=I2699, icd_title=Other pulmonary embolism without acute cor pulmonale"
-      ],
-      "category": "cross_table"
-    },
-    {
-      "id": "DB-CT-004",
-      "question": "¿Cuál es la disposición final y los diagnósticos del paciente 10026255 en su estancia 34236274?",
-      "ground_truth": "El paciente 10026255 en la estancia 34236274 fue ingresado (ADMITTED). Su diagnóstico principal fue ATRIAL FIBRILLATION (código ICD-9: 42731). Los signos vitales mostraron fibrilación auricular con frecuencia cardíaca de hasta 150 lpm y saturación de oxígeno de 92%.",
-      "ground_truth_sql": "SELECT e.subject_id, e.stay_id, e.disposition, d.icd_code, d.icd_title, v.heartrate, v.o2sat, v.rhythm FROM mimic_ed.edstays e JOIN mimic_ed.diagnosis d ON e.stay_id = d.stay_id LEFT JOIN mimic_ed.vitalsign v ON e.stay_id = v.stay_id WHERE e.stay_id = 34236274 ORDER BY v.charttime LIMIT 5",
-      "contexts": [
-        "edstays: subject_id=10026255, stay_id=34236274, disposition=ADMITTED",
-        "diagnosis: stay_id=34236274, icd_code=42731, icd_title=ATRIAL FIBRILLATION",
-        "vitalsign: stay_id=34236274, heartrate=150.0, o2sat=93.0, rhythm=Atrial Fibrillation"
-      ],
-      "category": "cross_table"
+      "expected_tool": "get_patient_summary",
+      "ground_truth": "El paciente 10002930 tiene 12 ingreso(s) hospitalario(s) y 2 estancia(s) en UCI registradas; el último ingreso comenzó el 23/03/2201 19:15.",
+      "ground_truth_operation": {
+        "arguments": {
+          "subject_id": 10002930
+        },
+        "operation": "get_patient_summary"
+      },
+      "id": "DB-PS-006",
+      "question": "¿Cuántos ingresos hospitalarios y cuántas estancias en UCI tiene registrados el paciente 10002930?",
+      "scope": {
+        "hadm_id": null,
+        "stay_id": null,
+        "subject_id": 10002930
+      }
     }
   ]
 }

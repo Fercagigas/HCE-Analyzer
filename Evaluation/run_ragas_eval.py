@@ -101,18 +101,12 @@ THRESHOLDS: Dict[str, float] = {
     "context_recall": 0.70,
 }
 
-REQUIRED_QUESTION_FIELDS = [
-    "id",
-    "question",
-    "ground_truth",
-    "contexts",
-]
-
-# Fields only present in the DB golden set (optional for RAG golden set)
-OPTIONAL_QUESTION_FIELDS = [
-    "ground_truth_sql",
-    "category",
-]
+from Evaluation.golden_set import (  # noqa: E402
+    OPTIONAL_QUESTION_FIELDS,
+    REQUIRED_QUESTION_FIELDS,
+    scope_kwargs,
+)
+from Evaluation.golden_set import validate_question as _validate_golden_question  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -195,27 +189,11 @@ def load_golden_set(path: str) -> Dict[str, Any]:
 def validate_question(question: Dict[str, Any]) -> List[str]:
     """Return a list of validation errors for a single question dict.
 
-    Only the fields in REQUIRED_QUESTION_FIELDS are mandatory.
-    Fields in OPTIONAL_QUESTION_FIELDS are allowed to be absent.
-
-    Args:
-        question: A normalized question dict from the golden set.
-
-    Returns:
-        List of error strings; empty list means the question is valid.
+    DB questions (ids ``DB-*``) must follow the v2 format (``ground_truth_operation``);
+    RAG questions only need the common fields. See ``Evaluation/golden_set.py``.
     """
-    errors: List[str] = []
-    for field in REQUIRED_QUESTION_FIELDS:
-        if field not in question:
-            errors.append(f"Missing field: '{field}'")
-        elif not question[field]:
-            errors.append(f"Empty field: '{field}'")
-
-    contexts = question.get("contexts")
-    if isinstance(contexts, list) and len(contexts) == 0:
-        errors.append("'contexts' must be a non-empty list")
-
-    return errors
+    kind = "db" if str(question.get("id", "")).startswith("DB-") else "rag"
+    return _validate_golden_question(question, kind=kind)
 
 
 def filter_questions(
@@ -310,6 +288,7 @@ def extract_contexts(response: Dict[str, Any]) -> List[str]:
 
             text = (
                 tr.get("result")
+                or tr.get("raw_output")
                 or tr.get("content")
                 or tr.get("output")
                 or tr.get("data")
@@ -369,6 +348,7 @@ def process_question(
                 q_text,
                 context=None,
                 session_id=f"eval-ragas-{q_id}",
+                **scope_kwargs(question),
             )
 
         response = retry_on_rate_limit(_call, max_retries=3, wait_seconds=60)

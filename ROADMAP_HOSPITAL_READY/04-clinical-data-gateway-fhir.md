@@ -1,5 +1,21 @@
 # 04 — Clinical Data Gateway, SMART on FHIR y FHIR R4
 
+## Estado a 2 de septiembre de 2026 (cierre de Fase 1)
+
+Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencias: ADRs en `docs/decisions/`, evidencia en `docs/baseline/FASE1_BASELINE.md`.
+
+| Tarea | Estado | Evidencia / nota |
+|---|---|---|
+| P0.1 Eliminar Text-to-SQL libre | ✅ código · ⏳ base de datos | Sin `custom_query` ni SQL en runtime ni prompt; agregados por RPC fijas `clinical_*_v1` (ADR 0050). La RPC `execute_readonly_query` se elimina al aplicar `db/migrations/0002` (acción del propietario). Se decidió no conservar SQL libre ni para investigación |
+| P0.2 Clinical Data Gateway | 🟡 | `ScopeGuard` + `MimicClinicalDataProvider`: scope paciente/episodio, allowlist de operaciones, límites, auditoría, provenance (`evidence_id`). Pendientes: minimización de campos y rate limiting específico (Fase 2) |
+| P0.3 Modelo canónico clínico | ✅ | DTOs en `chathce/domain/clinical.py` (`Patient`, `Admission`, `Condition`, `LabObservation`, `Medication`, `IcuStay`, `IcuObservation`, …) |
+| P0.4 Adaptador MIMIC | ✅ | `chathce/adapters/supabase/mimic_clinical_data_provider.py` implementa `ClinicalDataProvider`; fixtures grabadas y cliente PostgREST en memoria para tests |
+| P1.1 Adaptador FHIR R4 | ⏳ | Fase 5; el port ya está definido |
+| P1.2 SMART App Launch | ⏳ | Fase 5 |
+| P1.3 Capability discovery | ⏳ | Fase 5 |
+| P1.4 Vendor adapters | ⏳ | Fase 5 |
+| P1.5 Read-only first | ✅ | Todas las tools son `read_only`; no existe ruta de escritura clínica |
+
 ## Objetivo
 El LLM nunca debe disponer de acceso libre a la base clínica de producción.
 

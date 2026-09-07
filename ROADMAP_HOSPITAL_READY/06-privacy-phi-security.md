@@ -1,5 +1,21 @@
 # 06 — Privacy, PHI y seguridad de datos
 
+## Estado a 2 de septiembre de 2026 (cierre de Fase 1)
+
+Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencias: ADRs en `docs/decisions/`, evidencia en `docs/baseline/FASE1_BASELINE.md`.
+
+| Tarea | Estado | Evidencia / nota |
+|---|---|---|
+| P0.1 Data flow inventory | 🟡 | `docs/architecture/INVENTORY.md` §3 (qué sale hacia Anthropic y Supabase); formalizar por campo pendiente |
+| P0.2 Data minimisation gateway | ⏳ | Hoy el modelo recibe los DTOs completos del paciente activo (dataset desidentificado) |
+| P0.3 PHI/PII detection | ⏳ | Solo existe un escáner de PHI en el sink de auditoría de tests |
+| P0.4 Tokenización/pseudonimización | ⏳ | |
+| P0.5 LLM data policy | ⏳ | Un único proveedor; política por modelo/región pendiente |
+| P0.6 Encryption | 🟡 | TLS hacia Supabase y Anthropic; secretos fuera del repo; rotación documentada en la checklist; gestor de secretos pendiente |
+| P0.7 Logging seguro | ✅ | `AuditEvent` sin mensajes, resultados, emails ni tokens; logs de aplicación sin prompts (ADR 0090) |
+| P0.8 Browser security | 🟡 | XSRF/CORS activos en Streamlit (ADR 0060); CORS restrictivo y cabeceras de seguridad en la API; CSP y cookie HttpOnly pendientes (la cookie de Streamlit solo guarda el refresh token) |
+| P1.1 – P1.3 | ⏳ | Fase 2/7 |
+
 ## Tareas
 
 ### P0.1 — Data flow inventory

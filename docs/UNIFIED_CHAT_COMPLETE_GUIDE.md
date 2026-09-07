@@ -1,5 +1,7 @@
 # Guía Completa del Sistema de Chat Unificad
 
+> **Documento historico (pre-Fase 1).** Describe el agente LangChain y el tool de base de datos con SQL libre, ya retirados. La arquitectura vigente esta en `docs/UNIFIED_CHAT_ARCHITECTURE.md` y `docs/ESTADO_ACTUAL.md`; los ejemplos de consulta siguen siendo orientativos si se fija antes el paciente activo.
+
 ---
 
 ## 📑 Tabla de Contenidos
@@ -17,7 +19,7 @@
 
 ## Introducción
 
-El Sistema de Chat Unificado de ChatHCE proporciona una interfaz única e inteligente para acceder tanto a datos de pacientes de la base de datos MIMIC-IV-ED como a documentos clínicos indexados. El sistema selecciona automáticamente las herramientas apropiadas según tu consulta, eliminando la necesidad de cambiar entre diferentes modos o interfaces.
+El Sistema de Chat Unificado de ChatHCE proporciona una interfaz única e inteligente para acceder tanto a datos de pacientes de la base de datos MIMIC-IV clinical como a documentos clínicos indexados. El sistema selecciona automáticamente las herramientas apropiadas según tu consulta, eliminando la necesidad de cambiar entre diferentes modos o interfaces.
 
 ## Características Principales
 
@@ -135,12 +137,12 @@ El panel lateral muestra todos los documentos indexados con:
 
 ---
 **Herramientas usadas**: [Database Tool / RAG Tool / Ambas]
-**Fuente**: Base de datos MIMIC-IV-ED / Documentos clínicos
+**Fuente**: Base de datos MIMIC-IV clinical / Documentos clínicos
 ```
 
 ### Indicadores de Herramientas
 
-- 🔍 **Database Tool**: Consulta a base de datos MIMIC-IV-ED
+- 🔍 **Database Tool**: Consulta a base de datos MIMIC-IV clinical
 - 📚 **RAG Tool**: Búsqueda en documentos clínicos
 - 📊 **Visualization Tool**: Generación de gráficas
 - 🔗 **Multiple Tools**: Combinación de herramientas
@@ -608,7 +610,7 @@ Actualmente, puedes copiar y pegar las respuestas. La exportación a PDF está p
 
 ### ¿Qué tan actualizados están los datos?
 
-Los datos de MIMIC-IV-ED son un conjunto de demostración con fechas futuras para anonimización. Los documentos clínicos reflejan el contenido que has subido.
+Los datos de MIMIC-IV clinical son un conjunto de demostración con fechas futuras para anonimización. Los documentos clínicos reflejan el contenido que has subido.
 
 ### ¿El sistema puede diagnosticar pacientes?
 

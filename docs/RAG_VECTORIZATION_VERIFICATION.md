@@ -1,5 +1,7 @@
 # Sistema RAG de Vectorización - Verificación y Mejores Prácticas
 
+> **Nota (Fase 1, sep 2026).** Sigue vigente: LangChain se conserva únicamente para embeddings y splitters del RAG. El bucle agéntico ya no usa LangChain (ADR 0080) y el acceso al RAG desde el core pasa por `KnowledgeRepository` (`chathce/adapters/supabase/knowledge_repository.py`).
+
 **Fecha**: Marzo 2026
 **Estado**: ✅ Verificado y Actualizado
 

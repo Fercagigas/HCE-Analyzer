@@ -19,7 +19,7 @@ def _get_imports():
     from ui.components.components.document_manager import show_document_manager
     from ui.components.components.footer import show_footer
     from ui.unified_chat_interface import show_unified_chat
-    from config.config import APP_NAME, APP_TAGLINE, APP_DESCRIPTION, APP_ICON
+    from config.constants import APP_NAME, APP_TAGLINE, APP_DESCRIPTION, APP_ICON
     return {
         'SessionManager': SessionManager,
         'show_login_page': show_login_page,
@@ -41,7 +41,7 @@ _CUSTOM_CSS = """
         div[data-testid="InputInstructions"] > span:nth-child(1) {
             visibility: hidden;
         }
-        
+
         /* Estilos personalizados */
         .main-header {
             text-align: center;
@@ -51,7 +51,7 @@ _CUSTOM_CSS = """
             border-radius: 10px;
             margin-bottom: 2rem;
         }
-        
+
         .feature-card {
             background: white;
             padding: 1.5rem;
@@ -59,12 +59,12 @@ _CUSTOM_CSS = """
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin: 1rem 0;
         }
-        
+
         .welcome-container {
             text-align: center;
             padding: 3rem;
         }
-        
+
         .user-greeting {
             text-align: right;
             padding: 1rem;
@@ -82,7 +82,7 @@ def show_welcome_screen(imports):
     APP_DESCRIPTION = imports['APP_DESCRIPTION']
     APP_TAGLINE = imports['APP_TAGLINE']
     SessionManager = imports['SessionManager']
-    
+
     st.markdown(f"""
         <div class="main-header">
             <h1>{APP_ICON} {APP_NAME}</h1>
@@ -90,10 +90,10 @@ def show_welcome_screen(imports):
             <p style='font-size: 1.2em; opacity: 0.9;'>{APP_TAGLINE}</p>
         </div>
     """, unsafe_allow_html=True)
-    
+
     # Destacar Chat Unificado como opción principal
     st.markdown("""
-        <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+        <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     padding: 2rem; border-radius: 15px; margin: 2rem 0; text-align: center;'>
             <h2 style='color: white; margin: 0;'>🎯 Chat Unificado</h2>
             <p style='color: white; font-size: 1.1em; margin: 1rem 0;'>
@@ -104,7 +104,7 @@ def show_welcome_screen(imports):
             </p>
         </div>
     """, unsafe_allow_html=True)
-    
+
     # Botón principal para Chat Unificado
     col_left, col_center, col_right = st.columns([1, 2, 1])
     with col_center:
@@ -134,7 +134,7 @@ def _show_user_greeting():
 def main():
     """Función principal de la aplicación con logging detallado"""
     logger.info("🎯 Starting main application function")
-    
+
     # Configuración de la página - DEBE ser lo primero
     st.set_page_config(
         page_title="HCE Analyzer - Análisis Clínico Inteligente",
@@ -143,10 +143,10 @@ def main():
         initial_sidebar_state="expanded"
     )
     logger.info("🖥️ Streamlit page configuration set")
-    
+
     # Aplicar estilos CSS
     st.markdown(_CUSTOM_CSS, unsafe_allow_html=True)
-    
+
     try:
         # Lazy imports
         logger.info("📦 Loading imports...")
@@ -159,7 +159,7 @@ def main():
         show_footer = imports['show_footer']
         show_unified_chat = imports['show_unified_chat']
         logger.info("✅ Imports loaded successfully")
-        
+
         # Initialize session
         logger.info("🔧 Initializing session manager...")
         SessionManager.init_session()
@@ -173,7 +173,7 @@ def main():
             return
 
         logger.info("✅ User authenticated successfully")
-        
+
         # Verificar si se debe mostrar confirmación de logout
         if st.session_state.get('show_logout_confirmation', False):
             logger.info("🚪 Showing logout confirmation")
@@ -182,7 +182,7 @@ def main():
 
         # Mostrar saludo del usuario
         _show_user_greeting()
-        
+
         # Mostrar barra lateral
         logger.info("📋 Rendering sidebar...")
         show_sidebar()
@@ -190,11 +190,11 @@ def main():
         # Contenido principal basado en el modo actual
         current_mode = st.session_state.get('current_mode', 'welcome')
         logger.info(f"🎨 Rendering content for mode: {current_mode}")
-        
+
         if current_mode == 'welcome' or not st.session_state.get('current_session'):
             logger.info("🏠 Showing welcome screen")
             show_welcome_screen(imports)
-        
+
         elif current_mode == 'unified_chat':
             logger.info("🎯 Showing Unified Chat interface")
             st.title(f"🎯 {st.session_state.current_session['title']}")
@@ -211,20 +211,20 @@ def main():
             logger.info("📚 Showing document manager")
             st.title("📚 Gestión de Documentos Clínicos")
             show_document_manager()
-        
+
         # Footer
         show_footer()
-        
+
         logger.info("✅ Main application function completed successfully")
-        
+
     except Exception as e:
         logger.critical(f"💥 Critical error in main function: {str(e)}")
         logger.critical(f"Main function traceback: {traceback.format_exc()}")
-        
+
         # Show user-friendly error message
         st.error("❌ Error crítico en la aplicación")
         st.error(f"Detalle técnico: {str(e)}")
-        
+
         with st.expander("🔧 Información de depuración", expanded=False):
             st.code(traceback.format_exc())
             st.info("💡 Sugerencias:")
@@ -234,7 +234,7 @@ def main():
             - Contacte al soporte técnico si el problema persiste
             - Revise los logs del sistema para más detalles
             """)
-        
+
         # Re-raise the exception for proper error handling
         raise
 

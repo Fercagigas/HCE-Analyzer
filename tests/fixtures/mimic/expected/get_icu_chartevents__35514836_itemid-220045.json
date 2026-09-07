@@ -1,0 +1,141 @@
+{
+  "args": [
+    35514836
+  ],
+  "kwargs": {
+    "itemid": 220045
+  },
+  "method": "get_icu_chartevents",
+  "result": [
+    {
+      "caregiver_id": 83221,
+      "charttime": "2154-01-02T16:00:00",
+      "hadm_id": 26048429,
+      "itemid": 220045,
+      "stay_id": 35514836,
+      "storetime": "2154-01-02T16:17:00",
+      "subject_id": 10003046,
+      "value": "115",
+      "valuenum": 115,
+      "valueuom": "bpm",
+      "warning": 0
+    },
+    {
+      "caregiver_id": 83221,
+      "charttime": "2154-01-02T17:00:00",
+      "hadm_id": 26048429,
+      "itemid": 220045,
+      "stay_id": 35514836,
+      "storetime": "2154-01-02T17:01:00",
+      "subject_id": 10003046,
+      "value": "112",
+      "valuenum": 112,
+      "valueuom": "bpm",
+      "warning": 0
+    },
+    {
+      "caregiver_id": 74577,
+      "charttime": "2154-01-02T18:00:00",
+      "hadm_id": 26048429,
+      "itemid": 220045,
+      "stay_id": 35514836,
+      "storetime": "2154-01-02T18:11:00",
+      "subject_id": 10003046,
+      "value": "120",
+      "valuenum": 120,
+      "valueuom": "bpm",
+      "warning": 0
+    },
+    {
+      "caregiver_id": 74577,
+      "charttime": "2154-01-02T19:00:00",
+      "hadm_id": 26048429,
+      "itemid": 220045,
+      "stay_id": 35514836,
+      "storetime": "2154-01-02T19:14:00",
+      "subject_id": 10003046,
+      "value": "114",
+      "valuenum": 114,
+      "valueuom": "bpm",
+      "warning": 0
+    },
+    {
+      "caregiver_id": 40302,
+      "charttime": "2154-01-02T20:00:00",
+      "hadm_id": 26048429,
+      "itemid": 220045,
+      "stay_id": 35514836,
+      "storetime": "2154-01-02T20:11:00",
+      "subject_id": 10003046,
+      "value": "113",
+      "valuenum": 113,
+      "valueuom": "bpm",
+      "warning": 0
+    },
+    {
+      "caregiver_id": 40302,
+      "charttime": "2154-01-02T21:00:00",
+      "hadm_id": 26048429,
+      "itemid": 220045,
+      "stay_id": 35514836,
+      "storetime": "2154-01-02T21:02:00",
+      "subject_id": 10003046,
+      "value": "110",
+      "valuenum": 110,
+      "valueuom": "bpm",
+      "warning": 0
+    },
+    {
+      "caregiver_id": 40302,
+      "charttime": "2154-01-02T22:00:00",
+      "hadm_id": 26048429,
+      "itemid": 220045,
+      "stay_id": 35514836,
+      "storetime": "2154-01-02T22:07:00",
+      "subject_id": 10003046,
+      "value": "103",
+      "valuenum": 103,
+      "valueuom": "bpm",
+      "warning": 0
+    },
+    {
+      "caregiver_id": 40302,
+      "charttime": "2154-01-02T23:00:00",
+      "hadm_id": 26048429,
+      "itemid": 220045,
+      "stay_id": 35514836,
+      "storetime": "2154-01-02T23:06:00",
+      "subject_id": 10003046,
+      "value": "99",
+      "valuenum": 99,
+      "valueuom": "bpm",
+      "warning": 0
+    },
+    {
+      "caregiver_id": 40302,
+      "charttime": "2154-01-03T00:00:00",
+      "hadm_id": 26048429,
+      "itemid": 220045,
+      "stay_id": 35514836,
+      "storetime": "2154-01-03T00:05:00",
+      "subject_id": 10003046,
+      "value": "100",
+      "valuenum": 100,
+      "valueuom": "bpm",
+      "warning": 0
+    },
+    {
+      "caregiver_id": 40302,
+      "charttime": "2154-01-03T01:00:00",
+      "hadm_id": 26048429,
+      "itemid": 220045,
+      "stay_id": 35514836,
+      "storetime": "2154-01-03T01:20:00",
+      "subject_id": 10003046,
+      "value": "100",
+      "valuenum": 100,
+      "valueuom": "bpm",
+      "warning": 0
+    }
+  ]
+}

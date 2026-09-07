@@ -25,7 +25,7 @@ LOG_LEVELS = {
 
 class ColoredFormatter(logging.Formatter):
     """Colored formatter for console output"""
-    
+
     COLORS = {
         'DEBUG': '\033[36m',      # Cyan
         'INFO': '\033[32m',       # Green
@@ -34,14 +34,14 @@ class ColoredFormatter(logging.Formatter):
         'CRITICAL': '\033[35m',   # Magenta
         'RESET': '\033[0m'        # Reset
     }
-    
+
     def format(self, record):
         log_color = self.COLORS.get(record.levelname, self.COLORS['RESET'])
         reset_color = self.COLORS['RESET']
-        
+
         # Add color to levelname
         record.levelname = f"{log_color}{record.levelname}{reset_color}"
-        
+
         return super().format(record)
 
 def setup_logging(
@@ -54,7 +54,7 @@ def setup_logging(
 ) -> None:
     """
     Setup comprehensive logging configuration
-    
+
     Args:
         level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         enable_file_logging: Enable file logging
@@ -63,38 +63,38 @@ def setup_logging(
         log_file_max_size: Maximum size of log files in bytes
         log_file_backup_count: Number of backup log files to keep
     """
-    
+
     # Clear existing handlers
     root_logger = logging.getLogger()
     root_logger.handlers.clear()
-    
+
     # Set root logger level
     log_level = LOG_LEVELS.get(level.upper(), logging.INFO)
     root_logger.setLevel(log_level)
-    
+
     # Create formatters
     detailed_formatter = logging.Formatter(
         fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(funcName)s() - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
-    
+
     simple_formatter = logging.Formatter(
         fmt='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
         datefmt='%H:%M:%S'
     )
-    
+
     colored_formatter = ColoredFormatter(
         fmt='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
         datefmt='%H:%M:%S'
     )
-    
+
     # Console handler
     if enable_console_logging:
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(log_level)
         console_handler.setFormatter(colored_formatter)
         root_logger.addHandler(console_handler)
-    
+
     # File handlers
     if enable_file_logging:
         # Main application log
@@ -108,7 +108,7 @@ def setup_logging(
         app_handler.setLevel(log_level)
         app_handler.setFormatter(detailed_formatter)
         root_logger.addHandler(app_handler)
-        
+
         # Error log (only errors and critical)
         error_log_file = LOGS_DIR / "errors.log"
         error_handler = logging.handlers.RotatingFileHandler(
@@ -120,7 +120,7 @@ def setup_logging(
         error_handler.setLevel(logging.ERROR)
         error_handler.setFormatter(detailed_formatter)
         root_logger.addHandler(error_handler)
-        
+
         # Performance log
         perf_log_file = LOGS_DIR / "performance.log"
         perf_handler = logging.handlers.RotatingFileHandler(
@@ -131,15 +131,15 @@ def setup_logging(
         )
         perf_handler.setLevel(logging.INFO)
         perf_handler.setFormatter(simple_formatter)
-        
+
         # Add filter for performance logs
         class PerformanceFilter(logging.Filter):
             def filter(self, record):
                 return 'performance' in record.name.lower() or 'monitor' in record.name.lower()
-        
+
         perf_handler.addFilter(PerformanceFilter())
         root_logger.addHandler(perf_handler)
-    
+
     # Setup structured logging with structlog
     if enable_structured_logging:
         structlog.configure(
@@ -159,30 +159,30 @@ def setup_logging(
             wrapper_class=structlog.stdlib.BoundLogger,
             cache_logger_on_first_use=True,
         )
-    
+
     # Configure specific loggers
     configure_specific_loggers(log_level)
-    
+
     # Log the configuration
     logger = logging.getLogger(__name__)
     logger.info(f"🔧 Logging configured - Level: {level}, File: {enable_file_logging}, Console: {enable_console_logging}")
 
 def configure_specific_loggers(log_level: int) -> None:
     """Configure specific loggers with appropriate levels"""
-    
+
     # Unified chat components - detailed logging
     unified_chat_loggers = [
         'services.unified_chat',
         'services.unified_chat.unified_agent',
         'services.unified_chat.tools',
-        'services.medical_agent',
-        'services.rag_service',
+        'chathce',
+        'services.rag',
     ]
-    
+
     for logger_name in unified_chat_loggers:
         logger = logging.getLogger(logger_name)
         logger.setLevel(log_level)
-    
+
     # Performance monitoring - info level
     performance_loggers = [
         'services.performance_monitor',
@@ -190,11 +190,11 @@ def configure_specific_loggers(log_level: int) -> None:
         'services.performance_metrics_collector',
         'services.performance_analytics'
     ]
-    
+
     for logger_name in performance_loggers:
         logger = logging.getLogger(logger_name)
         logger.setLevel(logging.INFO)
-    
+
     # External libraries - warning level to reduce noise
     external_loggers = [
         'httpx',
@@ -204,18 +204,18 @@ def configure_specific_loggers(log_level: int) -> None:
         'langchain',
         'sentence_transformers'
     ]
-    
+
     for logger_name in external_loggers:
         logger = logging.getLogger(logger_name)
         logger.setLevel(logging.WARNING)
-    
+
     # Streamlit - warning level
     streamlit_loggers = [
         'streamlit',
         'streamlit.runtime',
         'streamlit.web'
     ]
-    
+
     for logger_name in streamlit_loggers:
         logger = logging.getLogger(logger_name)
         logger.setLevel(logging.WARNING)
@@ -231,11 +231,11 @@ def get_structured_logger(name: str) -> structlog.BoundLogger:
 def log_system_info() -> None:
     """Log system information for debugging"""
     logger = get_logger(__name__)
-    
+
     import platform
     import sys
     import os
-    
+
     logger.info("🖥️ System Information:")
     logger.info(f"   Platform: {platform.platform()}")
     logger.info(f"   Python: {sys.version}")
@@ -245,9 +245,11 @@ def log_system_info() -> None:
 def log_configuration_info() -> None:
     """Log configuration information"""
     logger = get_logger(__name__)
-    
+
     try:
-        from config.settings import settings
+        from config.settings import get_settings
+
+        settings = get_settings()
         logger.info("⚙️ Configuration loaded successfully")
         logger.info(f"   Debug mode: {getattr(settings, 'debug', False)}")
         logger.info(f"   Environment: {getattr(settings, 'environment', 'unknown')}")
@@ -258,19 +260,19 @@ def create_debug_session(session_name: str = None) -> Dict[str, Any]:
     """Create a debug session with detailed logging"""
     if not session_name:
         session_name = f"debug_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    
+
     logger = get_logger(__name__)
-    
+
     debug_info = {
         'session_name': session_name,
         'start_time': datetime.now().isoformat(),
         'log_level': logging.getLevelName(logger.level),
         'handlers': [type(h).__name__ for h in logger.handlers]
     }
-    
+
     logger.info(f"🐛 Debug session started: {session_name}")
     logger.debug(f"Debug session info: {debug_info}")
-    
+
     return debug_info
 
 # Auto-setup logging when module is imported
@@ -280,18 +282,18 @@ def auto_setup_logging():
         # Try to get log level from environment
         import os
         log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
-        
+
         setup_logging(
             level=log_level,
             enable_file_logging=True,
             enable_console_logging=True,
             enable_structured_logging=True
         )
-        
+
         # Log system and configuration info
         log_system_info()
         log_configuration_info()
-        
+
     except Exception as e:
         # Fallback to basic logging
         logging.basicConfig(

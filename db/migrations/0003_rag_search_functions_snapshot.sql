@@ -1,0 +1,13 @@
+-- 0003_rag_search_functions_snapshot.sql
+-- Snapshot versionado de las funciones de busqueda del RAG (pendiente heredado de ADR 0070).
+--
+-- Estas funciones existen hoy en Supabase pero su definicion no esta en el repositorio.
+-- TODO (propietario del proyecto): exportar desde el SQL Editor con
+--   select pg_get_functiondef(oid) from pg_proc where proname in ('hybrid_search', 'vector_search');
+-- y pegar aqui el resultado para que el esquema quede reproducible.
+--
+-- Contrato observado por el codigo (services/rag/supabase_vector_store.py):
+--   public.hybrid_search(query_embedding vector, query_text text, match_count int, rrf_k int)
+--     -> content, rrf_score, metadata, parent_id, filename, chunk_id
+--   public.vector_search(query_embedding vector, match_count int)
+--     -> content, similarity, metadata, parent_id, filename, chunk_id

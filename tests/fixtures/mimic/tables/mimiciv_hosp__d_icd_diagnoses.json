@@ -1,0 +1,217 @@
+[
+  {
+    "icd_code": "04102",
+    "icd_version": 9,
+    "long_title": "Streptococcus infection in conditions classified elsewhere and of unspecified site, streptococcus, group B"
+  },
+  {
+    "icd_code": "04109",
+    "icd_version": 9,
+    "long_title": "Streptococcus infection in conditions classified elsewhere and of unspecified site, other streptococcus"
+  },
+  {
+    "icd_code": "04184",
+    "icd_version": 9,
+    "long_title": "Other specified bacterial infections in conditions classified elsewhere and of unspecified site, other anaerobes"
+  },
+  {
+    "icd_code": "1505",
+    "icd_version": 9,
+    "long_title": "Malignant neoplasm of lower third of esophagus"
+  },
+  {
+    "icd_code": "2762",
+    "icd_version": 9,
+    "long_title": "Acidosis"
+  },
+  {
+    "icd_code": "3051",
+    "icd_version": 9,
+    "long_title": "Tobacco use disorder"
+  },
+  {
+    "icd_code": "3240",
+    "icd_version": 9,
+    "long_title": "Intracranial abscess"
+  },
+  {
+    "icd_code": "340",
+    "icd_version": 9,
+    "long_title": "Multiple sclerosis"
+  },
+  {
+    "icd_code": "3484",
+    "icd_version": 9,
+    "long_title": "Compression of brain"
+  },
+  {
+    "icd_code": "3485",
+    "icd_version": 9,
+    "long_title": "Cerebral edema"
+  },
+  {
+    "icd_code": "4019",
+    "icd_version": 9,
+    "long_title": "Unspecified essential hypertension"
+  },
+  {
+    "icd_code": "5180",
+    "icd_version": 9,
+    "long_title": "Pulmonary collapse"
+  },
+  {
+    "icd_code": "53081",
+    "icd_version": 9,
+    "long_title": "Esophageal reflux"
+  },
+  {
+    "icd_code": "53085",
+    "icd_version": 9,
+    "long_title": "Barrett's esophagus"
+  },
+  {
+    "icd_code": "A047",
+    "icd_version": 10,
+    "long_title": "Enterocolitis due to Clostridium difficile"
+  },
+  {
+    "icd_code": "B9681",
+    "icd_version": 10,
+    "long_title": "Helicobacter pylori [H. pylori] as the cause of diseases classified elsewhere"
+  },
+  {
+    "icd_code": "E118",
+    "icd_version": 10,
+    "long_title": "Type 2 diabetes mellitus with unspecified complications"
+  },
+  {
+    "icd_code": "E785",
+    "icd_version": 10,
+    "long_title": "Hyperlipidemia, unspecified"
+  },
+  {
+    "icd_code": "I10",
+    "icd_version": 10,
+    "long_title": "Essential (primary) hypertension"
+  },
+  {
+    "icd_code": "I214",
+    "icd_version": 10,
+    "long_title": "Non-ST elevation (NSTEMI) myocardial infarction"
+  },
+  {
+    "icd_code": "I2510",
+    "icd_version": 10,
+    "long_title": "Atherosclerotic heart disease of native coronary artery without angina pectoris"
+  },
+  {
+    "icd_code": "I252",
+    "icd_version": 10,
+    "long_title": "Old myocardial infarction"
+  },
+  {
+    "icd_code": "I480",
+    "icd_version": 10,
+    "long_title": "Paroxysmal atrial fibrillation"
+  },
+  {
+    "icd_code": "I509",
+    "icd_version": 10,
+    "long_title": "Heart failure, unspecified"
+  },
+  {
+    "icd_code": "K219",
+    "icd_version": 10,
+    "long_title": "Gastro-esophageal reflux disease without esophagitis"
+  },
+  {
+    "icd_code": "K2960",
+    "icd_version": 10,
+    "long_title": "Other gastritis without bleeding"
+  },
+  {
+    "icd_code": "N179",
+    "icd_version": 10,
+    "long_title": "Acute kidney failure, unspecified"
+  },
+  {
+    "icd_code": "R310",
+    "icd_version": 10,
+    "long_title": "Gross hematuria"
+  },
+  {
+    "icd_code": "R410",
+    "icd_version": 10,
+    "long_title": "Disorientation, unspecified"
+  },
+  {
+    "icd_code": "R570",
+    "icd_version": 10,
+    "long_title": "Cardiogenic shock"
+  },
+  {
+    "icd_code": "R578",
+    "icd_version": 10,
+    "long_title": "Other shock"
+  },
+  {
+    "icd_code": "S3730XA",
+    "icd_version": 10,
+    "long_title": "Unspecified injury of urethra, initial encounter"
+  },
+  {
+    "icd_code": "T45515A",
+    "icd_version": 10,
+    "long_title": "Adverse effect of anticoagulants, initial encounter"
+  },
+  {
+    "icd_code": "V161",
+    "icd_version": 10,
+    "long_title": "Pedal cycle passenger injured in collision with other nonmotor vehicle in nontraffic accident"
+  },
+  {
+    "icd_code": "V161",
+    "icd_version": 9,
+    "long_title": "Family history of malignant neoplasm of trachea, bronchus, and lung"
+  },
+  {
+    "icd_code": "V168",
+    "icd_version": 9,
+    "long_title": "Family history of other specified malignant neoplasm"
+  },
+  {
+    "icd_code": "X58XXXA",
+    "icd_version": 10,
+    "long_title": "Exposure to other specified factors, initial encounter"
+  },
+  {
+    "icd_code": "Y92239",
+    "icd_version": 10,
+    "long_title": "Unspecified place in hospital as the place of occurrence of the external cause"
+  },
+  {
+    "icd_code": "Z23",
+    "icd_version": 10,
+    "long_title": "Encounter for immunization"
+  },
+  {
+    "icd_code": "Z7901",
+    "icd_version": 10,
+    "long_title": "Long term (current) use of anticoagulants"
+  },
+  {
+    "icd_code": "Z7902",
+    "icd_version": 10,
+    "long_title": "Long term (current) use of antithrombotics/antiplatelets"
+  },
+  {
+    "icd_code": "Z86718",
+    "icd_version": 10,
+    "long_title": "Personal history of other venous thrombosis and embolism"
+  },
+  {
+    "icd_code": "Z87891",
+    "icd_version": 10,
+    "long_title": "Personal history of nicotine dependence"
+  }
+]

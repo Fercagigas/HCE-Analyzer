@@ -1,0 +1,4 @@
+✅ Visualización generada: Evolución de valuenum
+📊 Tipo: timeline
+⏱️ Tiempo: 120 ms
+[VISUALIZATION_IDS:viz_a1b2c3,viz_d4e5f6]

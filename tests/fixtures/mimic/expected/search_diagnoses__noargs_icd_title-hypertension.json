@@ -1,0 +1,19 @@
+{
+  "args": [],
+  "kwargs": {
+    "icd_title": "hypertension"
+  },
+  "method": "search_diagnoses",
+  "result": [
+    {
+      "icd_code": "4019",
+      "icd_version": 9,
+      "long_title": "Unspecified essential hypertension"
+    },
+    {
+      "icd_code": "I10",
+      "icd_version": 10,
+      "long_title": "Essential (primary) hypertension"
+    }
+  ]
+}

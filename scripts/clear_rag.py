@@ -11,7 +11,7 @@ import os
 # Agregar directorio raíz al path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config.settings import settings
+from config.settings import get_settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,8 +31,8 @@ def clear_rag_chunks() -> int:
         from supabase import create_client
 
         client = create_client(
-            settings.database.supabase_url,
-            settings.database.supabase_key,
+            get_settings().database.supabase_url,
+            get_settings().database.supabase_key,
         )
 
         logger.info("🗑️ Eliminando todos los chunks de rag_chunks...")

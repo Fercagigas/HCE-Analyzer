@@ -1,0 +1,199 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.14, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\ferna\anaconda3\envs\HCE\python.exe
+hypothesis profile 'default'
+rootdir: C:\Users\ferna\Documents\VIU\HCE-Analyzer\HCE-Analyzer
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.12.1, Faker-40.1.2, hypothesis-6.151.9, langsmith-0.6.7, asyncio-1.3.0, cov-7.1.0, timeout-2.4.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 63 items
+
+tests/evaluation/test_dry_run.py::test_property_19_dry_run_makes_no_api_calls PASSED [  1%]
+tests/evaluation/test_dry_run.py::test_property_19_non_dry_run_calls_process_message PASSED [  3%]
+tests/evaluation/test_dry_run.py::test_property_19_dry_run_never_calls_process_message PASSED [  4%]
+tests/evaluation/test_dry_run.py::test_property_19_dry_run_vs_live_call_count PASSED [  6%]
+tests/evaluation/test_error_resilience.py::test_property_14_error_resilience PASSED [  7%]
+tests/evaluation/test_golden_set.py::test_property_1_valid_question_passes_validation PASSED [  9%]
+tests/evaluation/test_golden_set.py::test_property_1b_missing_field_causes_error PASSED [ 11%]
+tests/evaluation/test_golden_set.py::test_property_1c_empty_field_causes_error PASSED [ 12%]
+tests/evaluation/test_golden_set.py::test_property_2_sql_references_only_allowed_tables PASSED [ 14%]
+tests/evaluation/test_golden_set.py::test_property_2b_sql_with_allowed_tables_passes_as_valid_question PASSED [ 15%]
+tests/evaluation/test_retry.py::test_property_15_retry_on_rate_limit PASSED [ 17%]
+tests/evaluation/test_retry.py::test_property_15_retry_exhausted_raises PASSED [ 19%]
+tests/evaluation/test_retry.py::test_property_15_sleep_called_between_retries PASSED [ 20%]
+tests/evaluation/test_retry.py::test_property_16_exponential_backoff PASSED [ 22%]
+tests/evaluation/test_retry.py::test_property_16_backoff_exhausted_raises PASSED [ 23%]
+tests/evaluation/test_retry.py::test_property_16_non_connection_error_not_retried PASSED [ 25%]
+tests/evaluation/test_scoring.py::test_property_13_weighted_scoring_computation PASSED [ 26%]
+tests/evaluation/test_scoring.py::test_property_13_pass_fail_threshold PASSED [ 28%]
+tests/evaluation/test_txt_output.py::test_property_17_txt_contains_required_metadata PASSED [ 30%]
+tests/evaluation/test_txt_output.py::test_property_17_txt_contains_golden_set_md5 PASSED [ 31%]
+tests/evaluation/test_txt_output.py::test_property_18_result_filename_pattern PASSED [ 33%]
+tests/evaluation/test_txt_output.py::test_property_18_filename_starts_with_module PASSED [ 34%]
+tests/evaluation/test_txt_output.py::test_property_18_filename_ends_with_txt PASSED [ 36%]
+tests/evaluation/test_txt_output.py::test_property_18_filename_timestamp_is_valid_datetime PASSED [ 38%]
+tests/test_database.py::TestDatabaseService::test_database_connection PASSED [ 39%]
+tests/test_database.py::TestDatabaseService::test_query_execution PASSED [ 41%]
+tests/test_database.py::TestDatabaseService::test_query_validation PASSED [ 42%]
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy PASSED [ 44%]
+tests/test_rag_components.py::TestParentChildChunker::test_get_parent_for_child PASSED [ 46%]
+tests/test_rag_components.py::TestSupabaseVectorStore::test_hybrid_search_calls_rpc PASSED [ 47%]
+tests/test_rag_components.py::TestSupabaseVectorStore::test_vector_search_calls_rpc PASSED [ 49%]
+tests/test_rag_components.py::TestSupabaseVectorStore::test_get_collection_stats PASSED [ 50%]
+tests/test_rag_components.py::TestSupabaseVectorStore::test_delete_by_filename PASSED [ 52%]
+tests/test_rag_components.py::TestReranker::test_rerank_returns_original_when_unavailable PASSED [ 53%]
+tests/test_rag_components.py::TestReranker::test_rerank_respects_top_k PASSED [ 55%]
+tests/test_system.py::TestImports::test_config_imports PASSED            [ 57%]
+tests/test_system.py::TestImports::test_rag_service_imports PASSED       [ 58%]
+tests/test_system.py::TestImports::test_visualization_imports PASSED     [ 60%]
+tests/test_system.py::TestVisualizationAgent::test_initialization PASSED [ 61%]
+tests/test_system.py::TestVisualizationAgent::test_get_performance_stats PASSED [ 63%]
+tests/test_system.py::TestVisualizationHandler::test_initialization PASSED [ 65%]
+tests/test_system.py::TestVisualizationHandler::test_process_empty_response PASSED [ 66%]
+tests/test_system.py::TestDatabaseTool::test_tool_imports PASSED         [ 68%]
+tests/test_system.py::TestRAGTool::test_tool_imports PASSED              [ 69%]
+tests/test_visualization_security.py::test_timeseries_aliases_use_parameterized_plotter[timeline] PASSED [ 71%]
+tests/test_visualization_security.py::test_timeseries_aliases_use_parameterized_plotter[line] PASSED [ 73%]
+tests/test_visualization_security.py::test_timeseries_aliases_use_parameterized_plotter[trend] PASSED [ 74%]
+tests/test_visualization_security.py::test_timeseries_aliases_use_parameterized_plotter[timeseries] PASSED [ 76%]
+tests/test_visualization_security.py::test_comparison_supports_multiple_validated_metrics PASSED [ 77%]
+tests/test_visualization_security.py::test_bar_supports_preaggregated_category_values PASSED [ 79%]
+tests/test_visualization_security.py::test_bar_supports_deterministic_frequency_counts PASSED [ 80%]
+tests/test_visualization_security.py::test_bar_supports_numeric_values_against_the_row_index PASSED [ 82%]
+tests/test_visualization_security.py::test_distribution_aliases_use_histogram[histogram] PASSED [ 84%]
+tests/test_visualization_security.py::test_distribution_aliases_use_histogram[distribution] PASSED [ 85%]
+tests/test_visualization_security.py::test_categorical_distribution_uses_frequency_bars PASSED [ 87%]
+tests/test_visualization_security.py::test_non_allowlisted_types_fail_closed[scatter] PASSED [ 88%]
+tests/test_visualization_security.py::test_non_allowlisted_types_fail_closed[3d_scatter] PASSED [ 90%]
+tests/test_visualization_security.py::test_non_allowlisted_types_fail_closed[sankey] PASSED [ 92%]
+tests/test_visualization_security.py::test_non_allowlisted_types_fail_closed[custom] PASSED [ 93%]
+tests/test_visualization_security.py::test_model_supplied_python_is_never_executed PASSED [ 95%]
+tests/test_visualization_security.py::test_requested_columns_and_parameter_sizes_are_validated PASSED [ 96%]
+tests/test_visualization_security.py::test_runtime_has_no_dynamic_execution_calls PASSED [ 98%]
+tests/test_visualization_security.py::test_visualization_agent_has_no_llm_code_generation_path PASSED [100%]
+
+============================== warnings summary ===============================
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\expressions\parser.py:72: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\expressions\parser.py:85: PyparsingDeprecationWarning: 'escChar' argument is deprecated, use 'esc_char'
+    quoted_identifier = QuotedString('"', escChar="\\", unquoteResults=True)
+
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\expressions\parser.py:85: PyparsingDeprecationWarning: 'unquoteResults' argument is deprecated, use 'unquote_results'
+    quoted_identifier = QuotedString('"', escChar="\\", unquoteResults=True)
+
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:365: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:494: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:498: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:502: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:506: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:538: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:542: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:546: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+tests/test_rag_components.py::TestParentChildChunker::test_chunk_document_creates_hierarchy
+  C:\Users\ferna\anaconda3\envs\HCE\Lib\site-packages\pyiceberg\table\metadata.py:550: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    @model_validator(mode="after")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: C:\Users\ferna\Documents\VIU\HCE-Analyzer\HCE-Analyzer\docs\baseline\raw\fase1-wp0\pytest-junit.xml -
+=============================== tests coverage ================================
+______________ coverage: platform win32, python 3.11.14-final-0 _______________
+
+Name                                                               Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------------------------------
+config\__init__.py                                                     6      3    50%   10-12
+config\config.py                                                      28      2    93%   237-238
+config\constants.py                                                   27      0   100%
+config\logging_config.py                                             115    115     0%   5-305
+config\settings.py                                                   221     13    94%   23, 34-37, 534-542, 545-548
+services\__init__.py                                                   3      0   100%
+services\auth\__init__.py                                              0      0   100%
+services\auth\auth_service.py                                        264    264     0%   6-603
+services\auth\session_manager.py                                     247    247     0%   1-402
+services\cache_manager.py                                            289    218    25%   34-37, 41-45, 50, 55, 72-73, 78, 83, 141, 154-191, 206-250, 263-303, 315-369, 378-419, 431-455, 469-486, 496-510, 524-545, 566-591, 602, 612
+services\connection_pool_manager.py                                  317    209    34%   51-52, 86-108, 112-126, 130-159, 164-245, 249-252, 256-279, 312-314, 332, 339-344, 362, 379, 391-402, 414-451, 463-470, 483-490, 502-508, 517-531, 540-569, 573-584, 588-591
+services\medical_agent\__init__.py                                    23      9    61%   27-29, 45-51, 65-71
+services\medical_agent\agent_performance_monitor.py                  173    130    25%   41-43, 47, 73-90, 103-110, 131-161, 176-187, 196-208, 212-219, 229-243, 255-284, 296-297, 301-303, 313-315, 341-384, 398-417
+services\medical_agent\code_executor.py                              150     18    88%   47, 49, 57, 60, 76, 84, 95-96, 103, 107, 111, 122, 132, 150, 191, 273, 290, 334
+services\medical_agent\data_preprocessor.py                          180    134    26%   42, 66, 124-125, 149-234, 258-331, 353-449, 458-460, 477-493
+services\medical_agent\error_handler.py                               82     52    37%   30-33, 48-57, 61, 189-239, 252-267, 288-314, 334, 354, 398-424
+services\medical_agent\llm_manager.py                                160    136    15%   53-79, 97-140, 153-185, 197-213, 226-263, 285-356, 367, 376-379, 397-447
+services\medical_agent\prompt_manager.py                             183    156    15%   14-16, 42-64, 79-112, 123-143, 154-182, 193-266, 277-303, 320-511, 521-538, 547-637, 646-730, 738-768, 776-804, 818-843, 859-875, 892, 912-979, 991-1004, 1011-1018, 1027, 1044-1053
+services\medical_agent\services\__init__.py                            2      0   100%
+services\medical_agent\services\database_service.py                  593    512    14%   53-81, 91-101, 155-175, 180-192, 196-202, 206-212, 216-219, 223-229, 233-247, 251-267, 271-313, 317-328, 332-334, 341-385, 396-494, 500-535, 542-566, 572-596, 602-626, 632-662, 666-685, 689-704, 708-718, 722-732, 737-746, 749-756, 759-766, 769-776, 779-798, 808-841
+services\medical_agent\tools\__init__.py                               3      0   100%
+services\medical_agent\tools\claude_adapter.py                        68     52    24%   35-39, 54-68, 84-89, 105-112, 124-131, 143-154, 170, 187-204, 216-218
+services\medical_agent\tools\database_tool_claude.py                  69     49    29%   41-65, 89-130, 142-161, 173, 184
+services\medical_agent\tools\visualization_collaboration_tool.py     287    251    13%   84-171, 176-179, 188-210, 242-461, 486-548, 571-618, 622-633, 652-653, 678-701, 718-733, 750-791, 808-873, 877, 883
+services\medical_agent\visualization_agent.py                        211    171    19%   110-129, 157-219, 253-386, 403-415, 443-488, 504-510, 524-536, 557-570, 592-604, 611-621, 640-681, 700-706
+services\medical_agent\visualization_handler.py                      120     90    25%   49-73, 85-107, 119-125, 129-137, 151-161, 177-208, 224-233, 237, 241-242, 267-272, 286-295, 309-320
+services\medical_agent\visualization_selector.py                     128     99    23%   30, 66-101, 119-132, 150-229, 248-273, 285-325
+services\medical_agent\visualization_store.py                        119     71    40%   58, 94-120, 137-151, 163-164, 176-182, 194-196, 208-211, 223-231, 243-250, 259-263, 267-293, 297-298
+services\medical_agent\visualization_templates.py                    125    125     0%   13-714
+services\rag\__init__.py                                               5      0   100%
+services\rag\improved_rag_service.py                                 239    205    14%   42-44, 64-82, 91-162, 181-253, 270-304, 330-393, 402-414, 423-432, 446-455, 459-468, 474-481, 485-498, 502-512, 516-524, 528, 532, 536-564, 568-580, 584-589
+services\rag\parent_child_chunker.py                                 200    123    38%   65-66, 152, 169-174, 212, 231-249, 273-274, 284, 305-343, 357-470
+services\rag\query_augmenter.py                                       54     42    22%   59-63, 89-112, 124-153, 168-191
+services\rag\reranker.py                                              59     21    64%   50-71, 107-108, 111-112, 130, 161-166, 175
+services\rag\supabase_vector_store.py                                162    101    38%   27-35, 70-72, 93-160, 172-188, 200-214, 227, 238-240, 252-271, 290-291, 310, 326-332, 348, 375-377, 389, 449-451, 455-464
+services\rag_service.py                                               29     29     0%   13-72
+services\rate_limiter.py                                             117     70    40%   49-51, 78, 122-189, 201-208, 221-230, 249-253, 260-266, 273-290
+services\supabase_services.py                                        187    187     0%   7-409
+services\unified_chat\__init__.py                                     23      6    74%   13-14, 21-22, 28-29
+services\unified_chat\config.py                                       29     29     0%   8-178
+services\unified_chat\document_manager.py                            170    150    12%   27-44, 59-180, 196-275, 293-350, 366-401, 416-437, 450, 459, 467-492, 500-506
+services\unified_chat\tools\__init__.py                                3      0   100%
+services\unified_chat\tools\database_tool.py                         241    200    17%   89-190, 225-273, 290-300, 309-316, 325-332, 342-351, 383-408, 428-445, 471-489, 513-517, 530-661, 673-684, 696-723, 727-746, 750-764, 775
+services\unified_chat\tools\rag_tool.py                              109     91    17%   57-103, 125-208, 224-246, 253-259, 277-333, 343
+services\unified_chat\unified_agent.py                               452    409    10%   44-78, 87-121, 146-259, 268-304, 332-456, 473-481, 505, 518-520, 541-628, 649-703, 715-796, 815-850, 863-907, 920-944, 960-1033, 1049-1128, 1151-1188, 1197, 1201-1202, 1212
+src\__init__.py                                                        0      0   100%
+src\core\__init__.py                                                   0      0   100%
+src\core\app.py                                                      104    104     0%   2-242
+src\processors\__init__.py                                             0      0   100%
+src\processors\document_processor.py                                 366    323    12%   22-25, 30-39, 54-60, 64-122, 126-150, 154-180, 184-209, 213-230, 234-251, 255-294, 298-323, 327-353, 357-389, 393-419, 423-456, 460-479, 483-492, 498-545, 551-557, 561-563, 572-592, 596-632, 636-694
+ui\__init__.py                                                         0      0   100%
+ui\components\__init__.py                                              0      0   100%
+ui\components\components\__init__.py                                   0      0   100%
+ui\components\components\auth_pages.py                                89     89     0%   5-220
+ui\components\components\document_manager.py                         340    340     0%   5-684
+ui\components\components\footer.py                                    45     45     0%   5-74
+ui\components\components\sidebar.py                                  127    127     0%   5-212
+ui\unified_chat_interface.py                                         709    709     0%   8-1536
+utils\__init__.py                                                      2      2     0%   3-5
+utils\formatters\__init__.py                                           0      0   100%
+utils\helpers\__init__.py                                              2      2     0%   3-5
+utils\helpers\utils.py                                               132    132     0%   5-238
+utils\validators\__init__.py                                           2      2     0%   3-5
+utils\validators\mimic_validator.py                                  164    164     0%   7-336
+------------------------------------------------------------------------------------------------
+TOTAL                                                               8354   6828    18%
+Coverage XML written to file docs/baseline/raw/fase1-wp0/coverage.xml
+====================== 63 passed, 12 warnings in 25.07s =======================
+

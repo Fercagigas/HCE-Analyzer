@@ -1,0 +1,145 @@
+{
+  "args": [
+    10001217
+  ],
+  "kwargs": {},
+  "method": "get_patient_diagnoses",
+  "result": [
+    {
+      "hadm_id": 24597018,
+      "icd_code": "3240",
+      "icd_version": 9,
+      "long_title": "Intracranial abscess",
+      "seq_num": 1,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 24597018,
+      "icd_code": "3484",
+      "icd_version": 9,
+      "long_title": "Compression of brain",
+      "seq_num": 2,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 24597018,
+      "icd_code": "3485",
+      "icd_version": 9,
+      "long_title": "Cerebral edema",
+      "seq_num": 3,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 24597018,
+      "icd_code": "5180",
+      "icd_version": 9,
+      "long_title": "Pulmonary collapse",
+      "seq_num": 4,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 24597018,
+      "icd_code": "340",
+      "icd_version": 9,
+      "long_title": "Multiple sclerosis",
+      "seq_num": 5,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 24597018,
+      "icd_code": "04109",
+      "icd_version": 9,
+      "long_title": "Streptococcus infection in conditions classified elsewhere and of unspecified site, other streptococcus",
+      "seq_num": 6,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 24597018,
+      "icd_code": "3051",
+      "icd_version": 9,
+      "long_title": "Tobacco use disorder",
+      "seq_num": 7,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 24597018,
+      "icd_code": "4019",
+      "icd_version": 9,
+      "long_title": "Unspecified essential hypertension",
+      "seq_num": 8,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 24597018,
+      "icd_code": "V168",
+      "icd_version": 9,
+      "long_title": "Family history of other specified malignant neoplasm",
+      "seq_num": 9,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 24597018,
+      "icd_code": "V161",
+      "icd_version": 9,
+      "long_title": "Family history of malignant neoplasm of trachea, bronchus, and lung",
+      "seq_num": 10,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 27703517,
+      "icd_code": "3240",
+      "icd_version": 9,
+      "long_title": "Intracranial abscess",
+      "seq_num": 1,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 27703517,
+      "icd_code": "3485",
+      "icd_version": 9,
+      "long_title": "Cerebral edema",
+      "seq_num": 2,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 27703517,
+      "icd_code": "340",
+      "icd_version": 9,
+      "long_title": "Multiple sclerosis",
+      "seq_num": 3,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 27703517,
+      "icd_code": "04102",
+      "icd_version": 9,
+      "long_title": "Streptococcus infection in conditions classified elsewhere and of unspecified site, streptococcus, group B",
+      "seq_num": 4,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 27703517,
+      "icd_code": "04184",
+      "icd_version": 9,
+      "long_title": "Other specified bacterial infections in conditions classified elsewhere and of unspecified site, other anaerobes",
+      "seq_num": 5,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 27703517,
+      "icd_code": "4019",
+      "icd_version": 9,
+      "long_title": "Unspecified essential hypertension",
+      "seq_num": 6,
+      "subject_id": 10001217
+    },
+    {
+      "hadm_id": 27703517,
+      "icd_code": "3051",
+      "icd_version": 9,
+      "long_title": "Tobacco use disorder",
+      "seq_num": 7,
+      "subject_id": 10001217
+    }
+  ]
+}

@@ -1,5 +1,4 @@
+"""Modulo de configuracion. Acceso canonico: ``from config import get_settings``."""
+from .settings import ConfigurationError, Settings, get_settings, reset_settings_cache
 
-"""Configuration module"""
-from .settings import settings
-
-__all__ = ["settings"]
+__all__ = ["Settings", "ConfigurationError", "get_settings", "reset_settings_cache"]

@@ -1,5 +1,7 @@
 # Actualización del Esquema de Base de Datos - ChatHCE
 
+> **Nota (Fase 1, sep 2026).** El esquema `public.*` descrito sigue vigente. La persistencia ya no la hace la UI (`_save_to_database`) sino `ConversationRepository`/`AnalysisRepository` en `chathce/adapters/supabase/` con `RequestContext`. Las funciones SQL versionadas viven en `db/migrations/` (ver `db/README.md`).
+
 ## Fecha: Febrero 2026
 
 ## Estado: ✅ COMPLETADO

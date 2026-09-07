@@ -2,22 +2,19 @@
 streamlit
 fastapi
 uvicorn[standard]
+sse-starlette
 
 # AI and ML
-openai
 # Claude API (for Medical Agent)
-anthropic>=0.39.0
+anthropic>=0.77,<1
 langchain>=0.3.0
 langchain-community>=0.3.0
-# Claude LangChain Integration
+# LangChain solo para RAG (embeddings/splitters) y el juez RAGAS de Evaluation/
 langchain-anthropic>=0.3.0
 langchain-huggingface>=0.1.0
 sentence-transformers>=3.0.0
 # Token counting for prompt optimization
 tiktoken>=0.7.0
-# Agent frameworks
-crewai>=0.80.0
-crewai-tools>=0.12.0
 
 # Document Processing
 docling
@@ -58,12 +55,12 @@ email-validator
 # Utilities
 python-dateutil
 pytz
-pathlib
 json5
 
 # Development and Testing
 pytest
 pytest-asyncio
+pytest-cov
 black
 flake8
 
@@ -85,6 +82,3 @@ jinja2
 
 # Rate Limiting
 slowapi
-
-# CORS and Security
-python-multipart
