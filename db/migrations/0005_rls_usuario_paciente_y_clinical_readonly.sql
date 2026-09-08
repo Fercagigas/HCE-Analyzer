@@ -1,6 +1,7 @@
--- 0004_rls_usuario_paciente_y_clinical_readonly.sql
+-- 0005_rls_usuario_paciente_y_clinical_readonly.sql
 -- Fase 2: RLS para datos de producto y rol dedicado de lectura clinica.
--- Aplicar como owner en el SQL Editor; ver docs/security/SUPABASE_RUNBOOK_FASE2.md.
+-- Aplicar como owner despues de 0004_harden_security_definer_functions.sql;
+-- no modifica ni concede EXECUTE sobre sus funciones SECURITY DEFINER.
 
 begin;
 

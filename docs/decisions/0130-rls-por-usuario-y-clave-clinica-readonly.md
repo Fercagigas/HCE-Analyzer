@@ -18,7 +18,7 @@ Fase 1 comprobaba el scope de paciente en `ScopeGuard`, pero la persistencia de 
 
 ## Decision
 
-La migracion 0004 fuerza RLS y reemplaza policies permisivas en datos de producto. Los adapters de conversaciones, analisis y preferencias resuelven un cliente por `RequestContext` con su Bearer JWT; no existe fallback a `service_key`. La migracion crea `user_patient_access` para concesiones explícitas. El provider MIMIC usa `SUPABASE_CLINICAL_KEY` y ejecuta `clinical_key_is_readonly_v1`; si no verifica solo lectura, falla cerrado.
+La migracion 0005, posterior a `0004_harden_security_definer_functions.sql`, fuerza RLS y reemplaza policies permisivas en datos de producto. No modifica ni concede `EXECUTE` sobre las funciones SECURITY DEFINER endurecidas en 0004. Los adapters de conversaciones, analisis y preferencias resuelven un cliente por `RequestContext` con su Bearer JWT; no existe fallback a `service_key`. La migracion crea `user_patient_access` para concesiones explícitas. El provider MIMIC usa `SUPABASE_CLINICAL_KEY` y ejecuta `clinical_key_is_readonly_v1`; si no verifica solo lectura, falla cerrado.
 
 ## Consecuencias
 

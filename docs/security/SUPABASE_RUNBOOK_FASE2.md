@@ -20,7 +20,8 @@ order by 1, 2;
 1. Copia y ejecuta completo `db/migrations/0001_clinical_aggregates_v1.sql`.
 2. Copia y ejecuta completo `db/migrations/0002_revoke_execute_readonly_query.sql`.
 3. Copia y ejecuta completo `db/migrations/0003_drop_exec_sql.sql`.
-4. Copia y ejecuta completo `db/migrations/0004_rls_usuario_paciente_y_clinical_readonly.sql`.
+4. Copia y ejecuta completo `db/migrations/0004_harden_security_definer_functions.sql`.
+5. Copia y ejecuta completo `db/migrations/0005_rls_usuario_paciente_y_clinical_readonly.sql`.
 
 Si una migracion falla, detente; no ejecutes los pasos posteriores parcialmente y registra el error sin secretos.
 

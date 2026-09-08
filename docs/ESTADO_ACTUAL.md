@@ -103,8 +103,8 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 
 ## 7. Acciones pendientes del propietario (no automatizables desde el repo)
 
-1. ~~Aplicar `db/migrations/0001`, `0002` y `0003` en Supabase~~ **Hecho (2026-09-02).** Aplicadas y verificadas: 4 agregados `clinical_*_v1` presentes y las RPC de SQL libre `execute_readonly_query` y `exec_sql` eliminadas. Para un entorno nuevo, aplicar en orden `0001`, `0002`, `0003` y `0004` siguiendo `docs/security/SUPABASE_RUNBOOK_FASE2.md`.
-2. Aplicar `0004_rls_usuario_paciente_y_clinical_readonly.sql`; crear/rotar la clave del rol `clinical_readonly` y configurar `SUPABASE_CLINICAL_KEY` y `SUPABASE_ANON_KEY` fuera del repo; verificar la RPC fail-closed.
+1. ~~Aplicar `db/migrations/0001`, `0002`, `0003` y `0004` en Supabase~~ **Hecho (2026-09-02).** Aplicadas y verificadas: 4 agregados `clinical_*_v1` presentes, las RPC de SQL libre `execute_readonly_query` y `exec_sql` eliminadas, y las funciones SECURITY DEFINER endurecidas. Para un entorno nuevo, aplicar en orden `0001`, `0002`, `0003`, `0004` y `0005` siguiendo `docs/security/SUPABASE_RUNBOOK_FASE2.md`.
+2. Aplicar `0005_rls_usuario_paciente_y_clinical_readonly.sql`; crear/rotar la clave del rol `clinical_readonly` y configurar `SUPABASE_CLINICAL_KEY` y `SUPABASE_ANON_KEY` fuera del repo; verificar la RPC fail-closed.
 3. Validar clínicamente las 20 preguntas del golden set con `clinical_validation.status="pending"` (`Evaluation/golden_set_ragas.json`).
 4. **Avisos de seguridad de Supabase que requieren el dashboard** (no automatizables por SQL/MCP): activar *Leaked Password Protection* (Auth → Password security), habilitar más *MFA options* (Auth → MFA) y aplicar el *upgrade de Postgres* pendiente de parches (Platform → Upgrade, implica downtime). Detalle en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.
 5. Opcional: definir fuera del repo `HCE_TEST_USER_EMAIL` / `HCE_TEST_USER_PASSWORD` para los tests live de identidad y API; versionar en una migración las definiciones de `hybrid_search`/`vector_search`.

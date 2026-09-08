@@ -10,7 +10,8 @@ reproducible y auditable. Se aplican manualmente en el **SQL Editor** de Supabas
 | `0002_revoke_execute_readonly_query.sql` | Elimina la RPC de SQL libre `execute_readonly_query` | Despues de desplegar el runtime sin `custom_query` (WP4) |
 | `0003_drop_exec_sql.sql` | Elimina la segunda RPC de SQL libre `exec_sql` | Despues de `0002` |
 | `0003_rag_search_functions_snapshot.sql` | Snapshot heredado no ejecutable de `hybrid_search` / `vector_search` | No aplicar; pendiente de definiciones reales |
-| `0004_rls_usuario_paciente_y_clinical_readonly.sql` | RLS por ownership, concesiones usuario-paciente y rol clinico readonly | Despues de `0003` y antes de exponer datos de producto |
+| `0004_harden_security_definer_functions.sql` | Endurece funciones SECURITY DEFINER y retira su EXECUTE de la API REST | Despues de `0003` |
+| `0005_rls_usuario_paciente_y_clinical_readonly.sql` | RLS por ownership, concesiones usuario-paciente y rol clinico readonly | Despues de `0004` y antes de exponer datos de producto |
 
 ## Procedimiento
 
