@@ -6,7 +6,7 @@ Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencia
 
 | Tarea | Estado | Evidencia / nota |
 |---|---|---|
-| P0.1 Eliminar Text-to-SQL libre | ✅ código · ⏳ base de datos | Sin `custom_query` ni SQL en runtime ni prompt; agregados por RPC fijas `clinical_*_v1` (ADR 0050). La RPC `execute_readonly_query` se elimina al aplicar `db/migrations/0002` (acción del propietario). Se decidió no conservar SQL libre ni para investigación |
+| P0.1 Eliminar Text-to-SQL libre | ✅ código y base de datos | Sin `custom_query` ni SQL en runtime ni prompt; agregados por RPC fijas `clinical_*_v1` (ADR 0050). La RPC `execute_readonly_query` **y** una segunda superficie `exec_sql(text)` fueron eliminadas de Supabase el 2026-09-02 (`db/migrations/0002` y `0003`); funciones `SECURITY DEFINER` restantes endurecidas (`0004`). Verificado con el security advisor. Se decidió no conservar SQL libre ni para investigación |
 | P0.2 Clinical Data Gateway | 🟡 | `ScopeGuard` + `MimicClinicalDataProvider`: scope paciente/episodio, allowlist de operaciones, límites, auditoría, provenance (`evidence_id`). Pendientes: minimización de campos y rate limiting específico (Fase 2) |
 | P0.3 Modelo canónico clínico | ✅ | DTOs en `chathce/domain/clinical.py` (`Patient`, `Admission`, `Condition`, `LabObservation`, `Medication`, `IcuStay`, `IcuObservation`, …) |
 | P0.4 Adaptador MIMIC | ✅ | `chathce/adapters/supabase/mimic_clinical_data_provider.py` implementa `ClinicalDataProvider`; fixtures grabadas y cliente PostgREST en memoria para tests |

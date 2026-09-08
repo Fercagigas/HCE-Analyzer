@@ -12,6 +12,7 @@ Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencia
 | P0.4 Tokenización/pseudonimización | ⏳ | |
 | P0.5 LLM data policy | ⏳ | Un único proveedor; política por modelo/región pendiente |
 | P0.6 Encryption | 🟡 | TLS hacia Supabase y Anthropic; secretos fuera del repo; rotación documentada en la checklist; gestor de secretos pendiente |
+| P0.6b Superficie de BD endurecida | ✅ | SQL libre eliminado de Supabase (`execute_readonly_query`, `exec_sql`); funciones `SECURITY DEFINER` de triggers con `EXECUTE` revocado a `anon`/`authenticated` y `search_path` fijo (`db/migrations/0002`–`0004`, 2026-09-02). Security advisor sin avisos de funciones. Ver `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md` |
 | P0.7 Logging seguro | ✅ | `AuditEvent` sin mensajes, resultados, emails ni tokens; logs de aplicación sin prompts (ADR 0090) |
 | P0.8 Browser security | 🟡 | XSRF/CORS activos en Streamlit (ADR 0060); CORS restrictivo y cabeceras de seguridad en la API; CSP y cookie HttpOnly pendientes (la cookie de Streamlit solo guarda el refresh token) |
 | P1.1 – P1.3 | ⏳ | Fase 2/7 |
