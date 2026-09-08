@@ -9,6 +9,7 @@ reproducible y auditable. Se aplican manualmente en el **SQL Editor** de Supabas
 | `0001_clinical_aggregates_v1.sql` | 4 RPC de agregados fijos (`clinical_*_v1`), `SECURITY INVOKER`, `statement_timeout 10s`, limite <= 200 | Antes de usar `get_dataset_statistics` / visualizaciones de frecuencias (WP3) |
 | `0002_revoke_execute_readonly_query.sql` | Elimina la RPC de SQL libre `execute_readonly_query` | Despues de desplegar el runtime sin `custom_query` (WP4) |
 | `0003_drop_exec_sql.sql` | Elimina la segunda RPC de SQL libre `exec_sql` | Despues de `0002` |
+| `0003_rag_search_functions_snapshot.sql` | Snapshot heredado no ejecutable de `hybrid_search` / `vector_search` | No aplicar; pendiente de definiciones reales |
 | `0004_rls_usuario_paciente_y_clinical_readonly.sql` | RLS por ownership, concesiones usuario-paciente y rol clinico readonly | Despues de `0003` y antes de exponer datos de producto |
 
 ## Procedimiento
