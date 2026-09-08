@@ -126,7 +126,7 @@ Solo tras evidencia del piloto:
 | 3 | Crear FastAPI y `/health` + `/api/v1/chat` | ✅ más `/ready`, SSE, resumen de paciente |
 | 4 | Crear interfaces `LLMProvider` y `ClinicalDataProvider` | ✅ `chathce/ports/` |
 | 5 | Encapsular MIMIC como `MimicClinicalDataProvider` | ✅ |
-| 6 | Sustituir SQL genérico por clinical tools allowlisted | ✅ (RPC de SQL libre pendiente de eliminar en Supabase) |
+| 6 | Sustituir SQL genérico por clinical tools allowlisted | ✅ (RPC de SQL libre eliminada en Supabase el 2026-09-02: `execute_readonly_query` y `exec_sql`) |
 | 7 | Introducir `RequestContext(tenant,user,patient,encounter,session)` obligatorio | ✅ |
 | 8 | Crear `Evidence` y `Claim` schemas | ✅ |
 | 9 | Ampliar security suite con indirect injection + cross-patient tests | ✅ cross-patient live y offline; indirect injection offline (live pendiente) |

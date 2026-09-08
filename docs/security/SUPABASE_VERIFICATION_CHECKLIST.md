@@ -457,6 +457,19 @@ Registro de aplicacion de migraciones (rellenar por el propietario, sin valores 
 | `0001_clinical_aggregates_v1.sql` | 2026-09-02 | Supabase (proyecto uoqvzaeuvylmvtkhaovm) | 4 funciones `clinical_*_v1` presentes; `clinical_top_diagnoses_v1(3)` OK |
 | `0002_revoke_execute_readonly_query.sql` | 2026-09-02 | Supabase (proyecto uoqvzaeuvylmvtkhaovm) | `execute_readonly_query` ausente (0 filas en pg_proc) |
 | `0003_drop_exec_sql.sql` | 2026-09-02 | Supabase (proyecto uoqvzaeuvylmvtkhaovm) | `exec_sql` ausente (0 filas en pg_proc) |
+| `0004_harden_security_definer_functions.sql` | 2026-09-02 | Supabase (proyecto uoqvzaeuvylmvtkhaovm) | advisor ya no reporta las 5 funciones SECURITY DEFINER; `enforce_max_sessions` con `search_path` fijo; triggers operativos |
+
+### Estado del Supabase security advisor (2026-09-02)
+
+Resueltos vía MCP (migraciones 0002/0003/0004):
+- ✅ `execute_readonly_query` y `exec_sql` eliminadas (SQL libre).
+- ✅ 12 avisos `security_definer_function_executable` (anon/authenticated) sobre funciones trigger + `version()`: EXECUTE revocado.
+- ✅ `function_search_path_mutable` en `enforce_max_sessions`: `search_path` fijado.
+
+Avisos restantes (WARN) — **acción del propietario en el dashboard de Supabase, no automatizables por SQL/MCP**:
+- ⏳ **Leaked Password Protection** desactivada → Auth → Password security (activar comprobación HaveIBeenPwned).
+- ⏳ **Insufficient MFA Options** → Auth → MFA (habilitar más métodos).
+- ⏳ **Postgres con parches de seguridad pendientes** (`supabase-postgres-17.4.1.074`) → Platform → Upgrade (implica downtime; planificar).
 
 ## Referencias
 

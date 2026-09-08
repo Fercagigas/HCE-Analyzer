@@ -54,7 +54,7 @@ Lo que ya existe tras Fase 1 (paquete `chathce/`): Clinical Data Gateway (`Clini
 | [01-product-scope.md](01-product-scope.md) | Posicionamiento, intended use y límites | P0 | ✅ Fase 0 |
 | [02-frontend-clinical-ai-workspace.md](02-frontend-clinical-ai-workspace.md) | Sustitución de Streamlit y UX AI-first | P0 | ⏳ Fase 4 (Streamlit ya es solo adapter) |
 | [03-backend-api-refactor.md](03-backend-api-refactor.md) | Separación frontend/backend y API | P0 | ✅ P0 hecho salvo endpoints de features; P1 parcial |
-| [04-clinical-data-gateway-fhir.md](04-clinical-data-gateway-fhir.md) | FHIR, SMART y eliminación de SQL libre | P0 | ✅ P0 (SQL libre eliminado, adapter MIMIC); ⏳ FHIR/SMART |
+| [04-clinical-data-gateway-fhir.md](04-clinical-data-gateway-fhir.md) | FHIR, SMART y eliminación de SQL libre | P0 | ✅ P0 (SQL libre eliminado en código y BD, adapter MIMIC); ⏳ FHIR/SMART |
 | [05-identity-authorization-multitenancy.md](05-identity-authorization-multitenancy.md) | SSO, RBAC/ABAC, aislamiento | P0 | 🟡 contexto y scope hechos; SSO/RBAC/RLS pendientes |
 | [06-privacy-phi-security.md](06-privacy-phi-security.md) | PHI, minimización, cifrado y DLP | P0 | 🟡 logging seguro hecho; minimización y detección PHI pendientes |
 | [07-agent-safety-tooling.md](07-agent-safety-tooling.md) | Seguridad agentic, tools y sandbox | P0 | ✅ P0 completo; ⏳ kill switch |
