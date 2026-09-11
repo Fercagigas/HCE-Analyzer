@@ -70,7 +70,7 @@ Documentos: `docs/UNIFIED_CHAT_ARCHITECTURE.md`, `docs/architecture/INVENTORY.md
 | 8 | `ChatService`, composition root, 12 tools, fachada legacy; retiro de LangChain del bucle y de `ClaudeLLMManager` | 0080 / 0110 |
 | 9 | FastAPI: `/health`, `/ready`, `POST /api/v1/chat`, `POST /api/v1/chat/stream` (SSE), `GET /api/v1/patients/{id}/summary`, `GET /api/v1/visualizations/{id}` | 0100 |
 | 10 | Streamlit como adapter: cookie revalidada, selector de paciente activo/episodio, modo investigación, render de `figure_json` | 0100 / 0110 |
-| 11 | Suite de seguridad adversarial: inyección directa/indirecta y ofuscada, cross-patient/cross-tenant, concurrencia, exfiltración y allowlist; gate CI offline | 0090 / 0150 |
+| 11 | Suite de seguridad adversarial: inyección directa/indirecta y ofuscada, cross-patient/cross-tenant, concurrencia, exfiltración y allowlist; gate CI offline en `.github/workflows/security-suite.yml` | 0090 / 0150 |
 | 12 | Borrado de módulos muertos (`services/medical_agent/`, `auth_service`, `connection_pool_manager`, `rag_service`, `config/config.py`); deps `anthropic>=0.77,<1`, sin crewai/openai/langchain-classic | 0110 |
 | 13 | ADRs 0050–0120, documentación, baseline `FASE1_BASELINE.md` | — |
 

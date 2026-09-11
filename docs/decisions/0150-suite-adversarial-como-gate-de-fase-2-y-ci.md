@@ -19,7 +19,7 @@ Fase 1 cerró con 52 controles offline y 18 payloads live, pero no cubría varia
 
 - `tests/security/` ejecuta sin `.env` vectores adversariales de usuario y de datos de tools: codificación base64, homoglifos, leetspeak, tokens partidos, idiomas mezclados, cross-tenant, pestañas paralelas, exfiltración por argumentos y operaciones fuera de allowlist.
 - Cada aserción de acceso no autorizado explica la violación concreta; si el runtime descubre una vulnerabilidad real, se deja como `xfail` con motivo y se registra en el baseline, sin corregir el runtime en este paquete.
-- `.github/workflows/security-suite.yml` ejecuta `pytest tests` con `HCE_DISABLE_DOTENV=1` en PR y push a `main`, publica un resumen y artefactos, y falla ante la menor violación crítica.
+- `.github/workflows/security-suite.yml` ejecuta `pytest tests/security` como gate bloqueante y `pytest tests` como comprobación informativa con `HCE_DISABLE_DOTENV=1` en PR y push a `main`; publica resumen y artefactos, y falla ante la menor violación crítica.
 - `Evaluation/run_security_tests.py` conserva la ejecución live manual, registra severidad `critical`/`high`/`medium` y devuelve error para cualquier fallo crítico. `SEC-IND-001` solo se habilita con `--include-indirect-fixture` tras sembrar un documento de prueba aislado.
 
 ## Consecuencias

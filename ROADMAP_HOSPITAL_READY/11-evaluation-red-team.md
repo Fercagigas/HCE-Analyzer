@@ -8,7 +8,7 @@ Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencia
 |---|---|---|
 | Seguridad: direct/indirect injection, encoded/obfuscated, cross-patient/cross-tenant, exfiltración y tool misuse | ✅ | `tests/security/` 78 tests offline; `Evaluation/security_payloads.py` 27 payloads live clasificados critical/high/medium (ADR 0150) |
 | Seguridad: indirect injection live | 🟡 | `SEC-IND-001` manual con `--include-indirect-fixture` y documento de prueba aislado; no se ejecuta automáticamente contra producción |
-| Regression gates | ✅ | `.github/workflows/security-suite.yml` ejecuta `pytest tests` sin `.env` en PR/push a `main`; cero tolerancia a violaciones critical |
+| Regression gates | ✅ | `.github/workflows/security-suite.yml` ejecuta `pytest tests/security` como gate bloqueante y `pytest tests` informativo sin `.env` en PR/push a `main`; cero tolerancia a violaciones critical |
 | Bulk queries no autorizadas | 🟡 | Límite ≤200 filas y agregados solo con `purpose=research`; test de volumen pendiente |
 | Evaluación clínica | 🟡 | Golden set v2 (40 preguntas MIMIC-IV con `ground_truth_operation`, `scope`, `expected_tool`); 20 pendientes de validación clínica; casos de datos ausentes/contradictorios/unidades pendientes |
 | Métricas | 🟡 | RAGAS (faithfulness, relevancy, precision, recall), corrección de tool, latencia P50 por categoría. Claim support, citation correctness, abstention correctness pendientes. Violaciones de autorización y fugas entre pacientes medidas en suite: 0 |

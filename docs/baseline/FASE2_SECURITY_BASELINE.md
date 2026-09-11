@@ -25,7 +25,7 @@ Los nuevos controles cubren base64, homoglifos Unicode, leetspeak, tokens partid
 
 ## Gate CI
 
-`.github/workflows/security-suite.yml` ejecuta `pytest tests` en cada pull request y push a `main`, con `HCE_DISABLE_DOTENV=1`. La menor violacion critica es una asercion offline y, por tanto, hace fallar el job. El resumen y JUnit quedan publicados como summary y artefacto de GitHub Actions.
+`.github/workflows/security-suite.yml` ejecuta `pytest tests/security` como gate bloqueante y `pytest tests` como comprobacion informativa en cada pull request y push a `main`, con `HCE_DISABLE_DOTENV=1`. La menor violacion critica es una asercion offline y, por tanto, hace fallar el job de seguridad. El resumen y JUnit quedan publicados como summary y artefacto de GitHub Actions.
 
 ## Runner live manual
 
