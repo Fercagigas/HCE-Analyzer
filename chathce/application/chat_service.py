@@ -36,6 +36,7 @@ from chathce.domain.correlation import bind_context
 from chathce.domain.errors import RateLimited
 from chathce.domain.evidence import Claim, ClaimType, Evidence
 from chathce.domain.knowledge import Source
+from chathce.domain.phi import PhiDetectionMode, PhiMinimizer
 from chathce.domain.tools import AuditCategory, ToolResult
 from chathce.gateway.model_gateway import GatewayDone, ModelGateway
 from chathce.gateway.tool_registry import ToolRegistry
@@ -60,6 +61,7 @@ class _ToolResultsEvent:
 class ChatServiceConfig:
     rate_limit_enabled: bool = True
     max_message_length: int = 5000
+    phi_detection_mode: PhiDetectionMode = PhiDetectionMode.redact
 
 
 class ChatService:
@@ -157,19 +159,33 @@ class ChatService:
             history_in = request.history
             if history_in is None and session_id and persist:
                 history_in = await self._conversations.load_history(ctx, session_id=session_id)
-            history = to_llm_history(history_in or [], max_messages=request.options.max_context_messages)
+            minimizer = PhiMinimizer(session_id=session_id or ctx.session_id, mode=self._config.phi_detection_mode)
+            user_text = minimizer.inspect_text(request.message)
+            if user_text.blocked and self._config.phi_detection_mode == PhiDetectionMode.block:
+                error = ErrorInfo(code="PHI_BLOCKED", message="El mensaje contiene datos identificativos; eliminelos antes de enviarlo.")
+                response = self._failure(ctx, request, error, started, session_id=session_id)
+                await self._audit_failed(ctx, error, started)
+                yield ErrorEvent(error=error, trace_id=ctx.trace_id, request_id=ctx.request_id)
+                yield CompleteEvent(response=response)
+                return
+            safe_history = [m.model_copy(update={"content": minimizer.inspect_text(m.content).text}) for m in (history_in or [])]
+            history = to_llm_history(safe_history, max_messages=request.options.max_context_messages)
 
             # --- prompt y herramientas ---------------------------------------
             enabled = self._registry.names()
             if not request.options.enable_visualizations:
                 enabled = [n for n in enabled if n != VISUALIZATION_TOOL]
-            system, prompt_version = build_system_prompt(self._registry.contracts(enabled=enabled), ctx, request.options)
+            prompt_ctx = ctx.model_copy(update={
+                "patient_id": minimizer.pseudonymize(ctx.patient_id, "patient_id"),
+                "encounter_id": minimizer.pseudonymize(ctx.encounter_id, "encounter_id"),
+            })
+            system, prompt_version = build_system_prompt(self._registry.contracts(enabled=enabled), prompt_ctx, request.options)
 
             # --- gateway ------------------------------------------------------
             done: Optional[GatewayDone] = None
             gateway_error: Optional[ErrorInfo] = None
             async for event in self._gateway.run(ctx, system=system, prompt_version=prompt_version, history=history,
-                                                 user_message=request.message, enabled_tools=enabled):
+                                                 user_message=user_text.text, enabled_tools=enabled):
                 if isinstance(event, GatewayDone):
                     done = event
                 elif isinstance(event, ErrorEvent):
@@ -186,10 +202,13 @@ class ChatService:
                 return
 
             response = await self._build_response(ctx, request, done, started, session_id=session_id, prompt_version=prompt_version)
+            safe_response = minimizer.inspect_text(response.content)
+            if safe_response.text != response.content:
+                response = response.model_copy(update={"content": safe_response.text})
 
             yield _ToolResultsEvent(results=list(done.tool_results))
             if persist and session_id:
-                await self._conversations.persist_turn(ctx, session_id=session_id, user_message=request.message, response=response)
+                await self._conversations.persist_turn(ctx, session_id=session_id, user_message=user_text.text, response=response)
             await emit_safely(self._audit, make_audit_event(
                 ctx, action=AuditAction.chat_completed, outcome="success", component="chat_service",
                 model_requested=done.model_requested, model_used=done.model_used, prompt_version=prompt_version,

@@ -140,7 +140,8 @@ def build_container(settings: Any, *, llm_provider: Any = None, clinical_provide
     visualizations = InMemoryVisualizationRepository()
 
     # ---- gateway y servicios ---------------------------------------------
-    registry = ToolRegistry(policy=ToolPolicy(), audit=audit, max_visible_chars=settings.llm.max_tool_visible_chars)
+    registry = ToolRegistry(policy=ToolPolicy(), audit=audit, max_visible_chars=settings.llm.max_tool_visible_chars,
+                            phi_detection_mode=settings.security.phi_detection_mode)
     for tool in build_clinical_tools(guarded):
         registry.register(tool)
     registry.register(build_knowledge_tool(knowledge))
@@ -163,7 +164,8 @@ def build_container(settings: Any, *, llm_provider: Any = None, clinical_provide
     conversation_service = ConversationService(conversations if (persist is not False) else None, analyses)
     ai_gate = AIGenerationGate(enabled=settings.llm.ai_enabled, state_file=settings.llm.ai_kill_switch_file)
     chat_service = ChatService(gateway, registry, conversation_service, visualizations, rate_limiter=rate_limiter, audit=audit,
-                               config=ChatServiceConfig(max_message_length=security.max_message_length), ai_gate=ai_gate)
+                               config=ChatServiceConfig(max_message_length=security.max_message_length,
+                                                        phi_detection_mode=security.phi_detection_mode), ai_gate=ai_gate)
 
     return Container(
         settings=settings, audit=audit, llm_provider=llm_provider, clinical_provider=guarded, identity=identity,

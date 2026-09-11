@@ -67,7 +67,7 @@ async def test_successful_result_is_rendered_and_audited(registry, ctx, audit):
     assert result.elapsed_ms >= 0
     event = audit.events[-1]
     assert event.action.value == "tool_call" and event.tool_name == "get_labs" and event.row_count == 3
-    assert event.data_categories == ["labs"] and event.patient_id == "10001217"
+    assert event.data_categories == ["labs"] and event.patient_id.startswith("PATIENT_")
     assert audit.phi_findings() == []
 
 

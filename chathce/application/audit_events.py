@@ -8,6 +8,7 @@ from typing import Any, Optional
 
 from chathce.domain.audit import AuditAction, AuditComponent, AuditEvent, AuditOutcome
 from chathce.domain.context import RequestContext
+from chathce.domain.phi import PhiMinimizer
 
 
 def make_audit_event(
@@ -18,6 +19,7 @@ def make_audit_event(
     component: AuditComponent,
     **fields: Any,
 ) -> AuditEvent:
+    minimizer = PhiMinimizer(session_id=ctx.session_id or ctx.trace_id)
     return AuditEvent(
         event_id=uuid.uuid4().hex,
         timestamp=datetime.now(timezone.utc),
@@ -25,10 +27,10 @@ def make_audit_event(
         outcome=outcome,
         component=component,
         tenant_id=ctx.tenant_id,
-        user_id=ctx.user_id,
-        patient_id=ctx.patient_id,
-        encounter_id=ctx.encounter_id,
-        session_id=ctx.session_id,
+        user_id=minimizer.pseudonymize(ctx.user_id, "user_id"),
+        patient_id=minimizer.pseudonymize(ctx.patient_id, "patient_id"),
+        encounter_id=minimizer.pseudonymize(ctx.encounter_id, "encounter_id"),
+        session_id=minimizer.pseudonymize(ctx.session_id, "session_id"),
         trace_id=ctx.trace_id,
         request_id=ctx.request_id,
         channel=ctx.channel,

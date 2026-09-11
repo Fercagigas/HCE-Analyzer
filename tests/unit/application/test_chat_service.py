@@ -164,3 +164,27 @@ async def test_research_purpose_enables_dataset_statistics():
     ctx = RequestContext(user_id="r", channel=Channel.api, purpose=Purpose.research, roles=frozenset({"researcher"}))
     response = await container.chat_service.handle_chat(ChatRequest(message="top farmacos", purpose=Purpose.research), ctx)
     assert response.tool_calls[0].success and response.facts[0].type == ClaimType.CALCULATION
+
+
+async def test_synthetic_phi_is_absent_from_gateway_prompt_and_audit_log():
+    """El mock del gateway recibe solo el contenido minimizado, tambien tras una tool."""
+    synthetic_phi = "Paciente: Ana Lopez, DNI 12345678Z, ana.lopez@example.test, +34 612 345 678"
+    knowledge = InMemoryKnowledgeRepository([
+        KnowledgeHit(chunk_id="synthetic-phi", filename="nota.txt", page=1, specialty="", doc_type="nota",
+                     content=synthetic_phi, score=1.0),
+    ])
+    container = build_test_container([
+        ScriptedTurn(tool_calls=[("search_clinical_documents", {"query": "nota", "top_k": 1})]),
+        ScriptedTurn(text="Resultado disponible."),
+    ], knowledge=knowledge)
+
+    await container.chat_service.handle_chat(
+        ChatRequest(message=synthetic_phi), _ctx(user_id="ana.lopez@example.test", patient_id="441122"),
+    )
+
+    prompt_text = "\n".join(call.messages[-1].text() for call in container.llm_provider.calls)
+    audit_text = "\n".join(event.model_dump_json() for event in container.audit.events)
+    for raw in ("Ana Lopez", "12345678Z", "ana.lopez@example.test", "612 345 678", "441122"):
+        assert raw not in prompt_text
+        assert raw not in audit_text
+    assert "[PHI_EMAIL]" in prompt_text
