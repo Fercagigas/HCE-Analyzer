@@ -42,6 +42,7 @@ class AuditAction(str, Enum):
     auth_verify_failed = "auth_verify_failed"
     session_restored = "session_restored"
     visualization_created = "visualization_created"
+    authorization_changed = "authorization_changed"
 
 
 AuditOutcome = Literal["success", "failure", "refused"]

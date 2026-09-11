@@ -11,6 +11,7 @@ from chathce.composition.container import Container
 from chathce.domain.context import Channel, Purpose, RequestContext, build_context
 from chathce.domain.errors import AuthenticationFailed, DomainError
 from chathce.domain.identity import Principal
+from chathce.domain.authorization import EndpointAction, require_action
 
 _bearer = HTTPBearer(auto_error=False)
 
@@ -57,5 +58,12 @@ def make_context(
         user_id=principal.user_id, channel=Channel.api, roles=principal.roles, purpose=purpose,
         patient_id=patient_id, encounter_id=encounter_id, session_id=session_id,
         tenant_id=principal.tenant_id, trace_id=getattr(request.state, "trace_id", None),
+        service_id=request.headers.get("X-Service-Id", "default"),
         access_token=getattr(request.state, "access_token", None),
     ).model_copy(update={"request_id": getattr(request.state, "request_id", None) or RequestContext.model_fields["request_id"].default_factory()})
+
+
+def require_endpoint(principal: Principal, action: EndpointAction) -> Principal:
+    """Aplica la matriz por endpoint sobre los roles resueltos del JWT validado."""
+    require_action(principal.roles, action.value)
+    return principal

@@ -1,6 +1,6 @@
 # 05 — Identity, autorización clínica y multitenancy
 
-## Estado a 2 de septiembre de 2026 (cierre de Fase 1)
+## Estado a 11 de septiembre de 2026 (Fase 2, oleada 2)
 
 Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencias: ADRs en `docs/decisions/`, evidencia en `docs/baseline/FASE1_BASELINE.md`.
 
@@ -8,8 +8,8 @@ Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencia
 |---|---|---|
 | P0.1 SSO hospitalario | 🟡 | Identidad delegada a Supabase Auth (JWT verificado remotamente, ADR 0100); OIDC/SAML hospitalario pendiente (Fase 2) |
 | P0.2 MFA | ⏳ | Delegar al IdP |
-| P0.3 RBAC | 🟡 | Rol `researcher` habilita `purpose=research`; roles clinician/reviewer/admin/auditor/knowledge-manager pendientes |
-| P0.4 ABAC contextual | 🟡 | `RequestContext` lleva paciente, episodio y propósito; relación asistencial y servicio pendientes |
+| P0.3 RBAC | ✅ | Matriz explícita para clinician, reviewer, admin, auditor, knowledge_manager y researcher por tool, endpoint y propósito (ADR 0170) |
+| P0.4 ABAC contextual | ✅ | `ScopeGuard` exige tenant, servicio, paciente/episodio y relación asistencial vigente de `user_patient_access`; fail-closed (0006, ADR 0170) |
 | P0.5 Autorización antes del LLM | ✅ | `ScopeGuard`/`ToolPolicy` rechazan antes de consultar; el modelo solo recibe datos del paciente activo |
 | P0.6 Context isolation | 🟡 | `RequestContext` obligatorio y RLS por ownership/JWT en producto (ADR 0130); falta integrar la relacion asistencial/paciente en todos los flujos clinicos |
 | P0.7 Tests de cross-patient leakage | 🟡 | Offline: `tests/security/test_cross_patient_isolation.py` y repositorios RLS con cliente ligado a JWT; pendiente aplicar/validar RLS live, tabs paralelas, jobs y cross-tenant |
@@ -17,7 +17,7 @@ Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencia
 | P1.2 Break-glass | ⏳ | |
 | P1.3 Session lifecycle | 🟡 | Revalidación en cada carga, refresh rotatorio, logout; invalidación al cambiar contexto SMART pendiente |
 
-Riesgo abierto: la migracion RLS y la clave clinica readonly requieren aplicacion manual del propietario; la relacion asistencial/paciente aun no esta integrada en todos los flujos.
+Riesgo abierto: aplicar 0005/0006 y configurar claims `app_metadata` en Supabase requiere acción manual del propietario. Break-glass sigue pendiente por decisión explícita de fail-closed.
 
 ## Tareas
 

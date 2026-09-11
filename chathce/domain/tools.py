@@ -95,7 +95,7 @@ class ToolContract(BaseModel):
 
 
 ToolErrorCode = Literal[
-    "unknown_tool", "invalid_input", "scope_refused", "purpose_refused",
+    "unknown_tool", "invalid_input", "scope_refused", "purpose_refused", "authorization_refused",
     "timeout", "provider_unavailable", "not_found", "internal",
 ]
 

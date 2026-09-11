@@ -314,6 +314,10 @@ La oleada 1 integra los ADRs 0130, 0140, 0150 y 0160. Su evidencia offline es `d
 
 Las migraciones activas siguen una secuencia ejecutable `0001`, `0002`, `0003_drop_exec_sql`, `0004`, `0005`. El fichero `0003_rag_search_functions_snapshot.sql` es un snapshot heredado no ejecutable y no debe aplicarse. El procedimiento completo, incluidas las verificaciones live, está en `docs/security/SUPABASE_RUNBOOK_FASE2.md`.
 
+## Estado tras RBAC/ABAC contextual (11 de septiembre de 2026)
+
+La oleada 2 incorpora una matriz RBAC cerrada por endpoint y tool, claims `tenant_id`/`roles` verificados desde `app_metadata`, y relación asistencial con tenant, servicio y vigencia comprobada antes de leer datos clínicos (ADR 0170, migración 0006). Esto reduce AI-06 y AI-07 en la aplicación para solicitudes con relación activa; aplicar y verificar live 0005/0006 sigue siendo necesario y no existe break-glass.
+
 ## Mantenimiento del modelo
 
 Revisar este threat model al introducir `RequestContext`, FastAPI, un Model/Clinical Data Gateway, una nueva fuente clínica, multitenancy, un proveedor/modelo distinto, cambios de tools/prompts, ingesta RAG, ejecución de código, SMART/FHIR o una transición de intended purpose. Cada cambio debe actualizar amenazas, controles, evidencia de pruebas, propietario y riesgo residual sin borrar la fotografía de Fase 0.

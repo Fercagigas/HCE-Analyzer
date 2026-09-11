@@ -12,7 +12,7 @@ pytestmark = pytest.mark.unit
 
 
 def _ctx():
-    return build_context(user_id="clin-1", channel=Channel.api, patient_id="10001217")
+    return build_context(user_id="clin-1", channel=Channel.api, patient_id="10001217", roles={"clinician"})
 
 
 async def test_kill_switch_returns_degraded_response_without_llm_or_tools():

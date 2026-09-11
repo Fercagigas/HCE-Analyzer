@@ -27,7 +27,7 @@ async def test_chat_rejects_unknown_fields_and_empty_message(client):
 
 async def test_research_purpose_requires_researcher_role(client):
     denied = await client.post("/api/v1/chat", json={"message": "top farmacos", "purpose": "research"}, headers=auth("tok-clinician"))
-    assert denied.status_code == 403 and denied.json()["error"]["code"] == "PURPOSE_NOT_ALLOWED"
+    assert denied.status_code == 403 and denied.json()["error"]["code"] == "AUTHORIZATION_DENIED"
     allowed = await client.post("/api/v1/chat", json={"message": "top farmacos", "purpose": "research"}, headers=auth("tok-researcher"))
     assert allowed.status_code == 200
 
@@ -96,4 +96,4 @@ async def test_visualization_is_retrievable_only_by_owner(client):
     mine = await client.get(f"/api/v1/visualizations/{viz_id}", headers=auth())
     assert mine.status_code == 200 and mine.json()["format"] == "plotly_json" and "data" in mine.json()["figure"]
     other = await client.get(f"/api/v1/visualizations/{viz_id}", headers=auth("tok-researcher"))
-    assert other.status_code == 404
+    assert other.status_code == 403

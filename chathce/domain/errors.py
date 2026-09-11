@@ -44,6 +44,16 @@ class PurposeNotAllowed(DomainError):
     code = "PURPOSE_NOT_ALLOWED"
 
 
+class AuthorizationDenied(DomainError):
+    """La matriz RBAC o los atributos ABAC no autorizan la operacion."""
+
+    code = "AUTHORIZATION_DENIED"
+
+    def __init__(self, message: str, *, reason: str = "authorization_denied"):
+        super().__init__(message)
+        self.reason = reason
+
+
 class ToolValidationError(DomainError):
     """Argumentos o resultado de una tool no cumplen su contrato."""
 

@@ -5,7 +5,8 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Request
 from sse_starlette import EventSourceResponse
 
-from chathce.api.dependencies import get_container, get_principal, make_context
+from chathce.api.dependencies import get_container, get_principal, make_context, require_endpoint
+from chathce.domain.authorization import EndpointAction
 from chathce.api.sse import chat_event_stream
 from chathce.composition.container import Container
 from chathce.domain.chat import ChatRequest, ChatResponse
@@ -22,6 +23,7 @@ def _context(request: Request, principal: Principal, body: ChatRequest):
 @router.post("/chat", response_model=ChatResponse, response_model_exclude_none=True)
 async def chat(request: Request, body: ChatRequest, principal: Principal = Depends(get_principal),
                container: Container = Depends(get_container)) -> ChatResponse:
+    require_endpoint(principal, EndpointAction.chat)
     ctx = _context(request, principal, body)
     return await container.chat_service.handle_chat(body, ctx)
 
@@ -29,6 +31,7 @@ async def chat(request: Request, body: ChatRequest, principal: Principal = Depen
 @router.post("/chat/stream")
 async def chat_stream(request: Request, body: ChatRequest, principal: Principal = Depends(get_principal),
                       container: Container = Depends(get_container)) -> EventSourceResponse:
+    require_endpoint(principal, EndpointAction.chat_stream)
     ctx = _context(request, principal, body)
     ping = getattr(request.app.state, "sse_ping_s", 15)
     return EventSourceResponse(

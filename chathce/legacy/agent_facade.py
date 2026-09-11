@@ -12,7 +12,7 @@ from typing import Any, Dict, Iterable, List, Optional
 from chathce.composition.container import Container
 from chathce.domain.chat import ChatOptions, ChatRequest
 from chathce.domain.context import Channel, Purpose, RequestContext, build_context
-from chathce.domain.errors import PurposeNotAllowed
+from chathce.domain.errors import DomainError
 from chathce.legacy.response_mapper import from_legacy_history, to_legacy_dict
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,9 @@ class LegacyAgentFacade:
     # ------------------------------------------------------------------
     def build_context(self, *, session_id: Optional[str], patient_id: Optional[str], encounter_id: Optional[str],
                       purpose: Optional[str], user_id: Optional[str], roles: Optional[Iterable[str]]) -> RequestContext:
-        roles_set = set(roles or ())
+        # El canal legacy se conserva para evaluaciones offline sin IdP; no es una
+        # ruta de la API y declara expresamente el principal de pruebas minimo.
+        roles_set = set(roles or ("clinician",))
         requested = Purpose(purpose) if purpose else Purpose.clinical_care
         if requested == Purpose.research:
             roles_set.add("researcher")  # el runtime legacy no tiene identidad; el canal evaluation/streamlit lo autoriza
@@ -51,7 +53,7 @@ class LegacyAgentFacade:
         try:
             ctx = self.build_context(session_id=session_id, patient_id=patient_id, encounter_id=encounter_id,
                                      purpose=purpose, user_id=user_id, roles=roles)
-        except PurposeNotAllowed as exc:
+        except DomainError as exc:
             return {"success": False, "content": f"⚠️ {exc.message}", "tools_used": [], "tool_results": [], "visualizations": [],
                     "sources": [], "metadata": {"error_type": exc.code}, "model_used": "none", "tokens_used": 0,
                     "error": exc.message, "error_type": exc.code, "suggestions": []}
