@@ -6,7 +6,7 @@ Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencia
 
 | Tarea | Estado | Evidencia / nota |
 |---|---|---|
-| P0.1 SSO hospitalario | 🟡 | Identidad delegada a Supabase Auth (JWT verificado remotamente, ADR 0100); OIDC/SAML hospitalario pendiente (Fase 2) |
+| P0.1 SSO hospitalario | ✅ | `OidcIdentityProvider` con discovery, JWKS cacheado, varios issuers, PKCE/nonce y claims configurables; Supabase Auth sigue disponible (ADR 0190) |
 | P0.2 MFA | ⏳ | Delegar al IdP |
 | P0.3 RBAC | ✅ | Matriz explícita para clinician, reviewer, admin, auditor, knowledge_manager y researcher por tool, endpoint y propósito (ADR 0170) |
 | P0.4 ABAC contextual | ✅ | `ScopeGuard` exige tenant, servicio, paciente/episodio y relación asistencial vigente de `user_patient_access`; fail-closed (0006, ADR 0170) |

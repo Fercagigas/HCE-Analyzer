@@ -15,6 +15,10 @@ class Principal(BaseModel):
     user_id: str = Field(min_length=1)
     tenant_id: str = "default"
     roles: FrozenSet[str] = frozenset()
+    # Atributo organizativo del IdP (p. ej. servicio/unidad hospitalaria).
+    # No decide por si solo la autorizacion, pero se propaga al RequestContext
+    # para que las reglas ABAC puedan usarlo.
+    service: Optional[str] = None
     expires_at: Optional[datetime] = None
     display_name: Optional[str] = None
 

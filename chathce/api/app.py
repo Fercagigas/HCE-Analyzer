@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from chathce import __version__
 from chathce.api.errors import install_exception_handlers
 from chathce.api.middleware import CorrelationMiddleware, SecurityHeadersMiddleware
-from chathce.api.routers import authorization, chat, health, patients, visualizations
+from chathce.api.routers import auth, authorization, chat, health, patients, visualizations
 from chathce.composition.container import Container, build_container
 
 logger = logging.getLogger(__name__)
@@ -70,6 +70,7 @@ def create_app(container: Optional[Container] = None, settings: Any = None) -> F
 
     install_exception_handlers(app, production=production)
     app.include_router(health.router)
+    app.include_router(auth.router)
     app.include_router(chat.router)
     app.include_router(patients.router)
     app.include_router(visualizations.router)

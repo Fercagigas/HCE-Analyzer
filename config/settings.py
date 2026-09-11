@@ -9,7 +9,7 @@ Reglas (Fase 1, ADR 0010 / ADR 0120):
 """
 from functools import lru_cache
 from pydantic_settings import BaseSettings
-from pydantic import AliasChoices, Field
+from pydantic import AliasChoices, BaseModel, Field
 from typing import Optional, List
 import os
 from pathlib import Path
@@ -275,6 +275,45 @@ class APISettings(BaseSettings):
     }
 
 
+class OidcClaimMapping(BaseModel):
+    """Nombres (con puntos para objetos anidados) de claims de un IdP OIDC."""
+
+    sub: str = "sub"
+    tenant: str = "tenant_id"
+    roles: str = "roles"
+    service: str = "service"
+    display_name: str = "name"
+
+
+class OidcIssuerSettings(BaseModel):
+    """Configuracion no secreta de un issuer OIDC confiable."""
+
+    issuer: str
+    client_id: str
+    discovery_url: Optional[str] = None
+    audiences: List[str] = Field(default_factory=list)
+    claims: OidcClaimMapping = Field(default_factory=OidcClaimMapping)
+
+
+class IdentitySettings(BaseSettings):
+    """Seleccion de identidad: Supabase por compatibilidad u OIDC federado."""
+
+    provider: str = Field("supabase", validation_alias="IDENTITY_PROVIDER")  # supabase | oidc | memory
+    oidc_issuers: List[OidcIssuerSettings] = Field(default_factory=list, validation_alias="OIDC_ISSUERS")
+    oidc_redirect_uri: Optional[str] = Field(None, validation_alias="OIDC_REDIRECT_URI")
+    oidc_scopes: List[str] = Field(default_factory=lambda: ["openid", "profile", "email"], validation_alias="OIDC_SCOPES")
+    oidc_client_secret: Optional[str] = Field(None, validation_alias="OIDC_CLIENT_SECRET")
+    oidc_discovery_cache_s: float = Field(3600.0, validation_alias="OIDC_DISCOVERY_CACHE_S")
+    oidc_jwks_cache_s: float = Field(300.0, validation_alias="OIDC_JWKS_CACHE_S")
+    oidc_state_ttl_s: float = Field(600.0, validation_alias="OIDC_STATE_TTL_S")
+
+    model_config = {
+        "env_file": _ENV_FILE,
+        "case_sensitive": False,
+        "extra": "allow",
+    }
+
+
 class AuditSettings(BaseSettings):
     """Auditoria estructurada sin PHI (roadmap 12)."""
     sink: str = Field("jsonl", env="AUDIT_SINK")  # jsonl | stdout | null
@@ -292,7 +331,7 @@ class Settings(BaseSettings):
     """
     Main settings class
 
-    Secciones: database, ai, app, security, notifications, rag, performance, clinical, llm, audit, api.
+    Secciones: database, ai, app, security, notifications, rag, performance, clinical, llm, audit, api, identity.
     """
     database: DatabaseSettings = Field(default_factory=DatabaseSettings)
     ai: AISettings = Field(default_factory=AISettings)
@@ -305,6 +344,7 @@ class Settings(BaseSettings):
     llm: LLMGatewaySettings = Field(default_factory=LLMGatewaySettings)
     audit: AuditSettings = Field(default_factory=AuditSettings)
     api: APISettings = Field(default_factory=APISettings)
+    identity: IdentitySettings = Field(default_factory=IdentitySettings)
 
     model_config = {
         "env_file": _ENV_FILE,
@@ -333,10 +373,17 @@ class Settings(BaseSettings):
             raise ConfigurationError(["ANTHROPIC_API_KEY"], "acceso a Anthropic")
         return key
 
+    def require_oidc(self) -> "IdentitySettings":
+        if not self.identity.oidc_issuers:
+            raise ConfigurationError(["OIDC_ISSUERS"], "identidad OIDC")
+        if not self.identity.oidc_redirect_uri:
+            raise ConfigurationError(["OIDC_REDIRECT_URI"], "login OIDC")
+        return self.identity
+
 
 _SETTINGS_CLASSES = (
     DatabaseSettings, AISettings, AppSettings, SecuritySettings, NotificationSettings,
-    RAGSettings, PerformanceSettings, ClinicalDataSettings, LLMGatewaySettings, AuditSettings, APISettings, Settings,
+    RAGSettings, PerformanceSettings, ClinicalDataSettings, LLMGatewaySettings, AuditSettings, APISettings, IdentitySettings, Settings,
 )
 
 
@@ -374,4 +421,7 @@ __all__ = [
     "LLMGatewaySettings",
     "AuditSettings",
     "APISettings",
+    "IdentitySettings",
+    "OidcIssuerSettings",
+    "OidcClaimMapping",
 ]

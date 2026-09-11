@@ -1,0 +1,15 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: start-dev --import-realm
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./deploy/keycloak:/opt/keycloak/data/import:ro
+    labels:
+      ao.session: "${AO_SESSION_ID:-manual}"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080; echo -e \"GET /health/ready HTTP/1.1\\r\\nhost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"200\" <&3'"]
+      interval: 5s
+      timeout: 3s
+      retries: 30

@@ -1,0 +1,57 @@
+{
+  "realm": "chathce-test",
+  "enabled": true,
+  "displayName": "ChatHCE local OIDC test",
+  "roles": {
+    "realm": [
+      { "name": "clinician", "description": "Acceso clinico de prueba" },
+      { "name": "researcher", "description": "Acceso de investigacion de prueba" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "chathce-api",
+      "name": "ChatHCE local API",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:8000/api/v1/auth/callback"],
+      "webOrigins": ["http://localhost:8000", "http://localhost:8501"],
+      "attributes": { "pkce.code.challenge.method": "S256" },
+      "protocolMappers": [
+        {
+          "name": "tenant_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": { "user.attribute": "tenant_id", "claim.name": "tenant_id", "jsonType.label": "String", "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true" }
+        },
+        {
+          "name": "service",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": { "user.attribute": "service", "claim.name": "service", "jsonType.label": "String", "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true" }
+        },
+        {
+          "name": "chathce-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": { "included.client.audience": "chathce-api", "id.token.claim": "true", "access.token.claim": "true" }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "doctor-demo",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Dra.",
+      "lastName": "Demo",
+      "email": "doctor-demo@example.invalid",
+      "attributes": { "tenant_id": ["hospital-demo"], "service": ["cardiology"] },
+      "realmRoles": ["clinician", "researcher"]
+    }
+  ]
+}
