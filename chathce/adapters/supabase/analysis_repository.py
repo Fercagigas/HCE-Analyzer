@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from chathce.adapters.supabase._common import run_blocking
+from chathce.adapters.supabase.rls_client import client_for
 from chathce.domain.context import RequestContext
 from chathce.domain.conversation import AnalysisRecord
 
@@ -17,10 +18,10 @@ class SupabaseAnalysisRepository:
     async def save(self, ctx: RequestContext, record: AnalysisRecord) -> bool:
         def do():
             payload = {
-                "user_id": record.user_id, "analysis_type": record.analysis_type,
+                "user_id": ctx.user_id, "analysis_type": record.analysis_type,
                 "content": record.content, "results": record.results,
             }
-            result = self._client.table("analyses").insert(payload).execute()
+            result = client_for(self._client, ctx).table("analyses").insert(payload).execute()
             return bool(result.data)
 
         try:
@@ -30,7 +31,7 @@ class SupabaseAnalysisRepository:
 
     async def stats(self, ctx: RequestContext) -> Dict[str, Any]:
         def do():
-            result = self._client.table("analyses").select("analysis_type").eq("user_id", ctx.user_id).execute()
+            result = client_for(self._client, ctx).table("analyses").select("analysis_type").eq("user_id", ctx.user_id).execute()
             rows = result.data or []
             by_type: Dict[str, int] = {}
             for row in rows:

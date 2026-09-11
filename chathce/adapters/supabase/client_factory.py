@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
+from chathce.domain.context import RequestContext
+
 
 class SupabaseClients:
     def __init__(
@@ -17,6 +19,7 @@ class SupabaseClients:
         *,
         url: str,
         service_key: str,
+        anon_key: Optional[str] = None,
         clinical_key: Optional[str] = None,
         postgrest_timeout_s: float = 30.0,
     ):
@@ -24,6 +27,7 @@ class SupabaseClients:
             raise ValueError("SUPABASE_URL y SUPABASE_KEY son obligatorias para construir clientes")
         self._url = url
         self._service_key = service_key
+        self._anon_key = anon_key
         self._clinical_key = clinical_key or service_key
         self._timeout = postgrest_timeout_s
         self._clinical: Any = None
@@ -45,9 +49,25 @@ class SupabaseClients:
         return self._clinical
 
     def product_client(self) -> Any:
+        """Cliente administrativo heredado: solo Auth, nunca repositorios con RLS."""
         if self._product is None:
             self._product = self._create(self._service_key, schema="public")
         return self._product
+
+    def product_client_for(self, ctx: RequestContext) -> Any:
+        """Cliente efimero con API key publica y JWT del usuario.
+
+        No hay fallback a ``service_key``: sin clave publica o token, se rechaza
+        la operacion para evitar que un despliegue degradado eluda RLS.
+        """
+        if not self._anon_key:
+            raise ValueError("SUPABASE_ANON_KEY o SUPABASE_PUBLISHABLE_KEY es obligatoria para RLS")
+        if not ctx.access_token:
+            raise ValueError("RequestContext sin JWT; no se puede acceder a datos protegidos por RLS")
+        client = self._create(self._anon_key, schema="public")
+        # supabase-py delega este header al cliente PostgREST.
+        client.postgrest.auth(ctx.access_token)
+        return client
 
     def auth_client(self) -> Any:
         return self.product_client()

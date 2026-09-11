@@ -41,6 +41,9 @@ class DatabaseSettings(BaseSettings):
     """Database configuration"""
     supabase_url: Optional[str] = Field(None, env="SUPABASE_URL")
     supabase_key: Optional[str] = Field(None, env="SUPABASE_KEY")
+    # Clave publishable/anon para crear clientes que llevan el JWT del usuario.
+    # Nunca usar una service_role como API key de esos clientes.
+    supabase_anon_key: Optional[str] = Field(None, validation_alias=AliasChoices("SUPABASE_ANON_KEY", "SUPABASE_PUBLISHABLE_KEY"))
 
     model_config = {
         "env_file": _ENV_FILE,
@@ -211,8 +214,9 @@ class ClinicalDataSettings(BaseSettings):
     max_limit: int = Field(200, env="CLINICAL_MAX_LIMIT")
     aggregate_limit: int = Field(50, env="CLINICAL_AGGREGATE_LIMIT")
     timeout_s: float = Field(30.0, env="CLINICAL_TIMEOUT_S")
-    # Clave de un rol de solo lectura sobre mimiciv_hosp/mimiciv_icu (db/README.md). Si falta,
-    # se usa SUPABASE_KEY (transitorio, documentado en ADR 0100).
+    # Clave de un rol de solo lectura sobre mimiciv_hosp/mimiciv_icu. Si falta,
+    # se prueba SUPABASE_KEY por compatibilidad, pero el provider falla cerrado
+    # si clinical_key_is_readonly_v1 detecta permisos de escritura.
     supabase_clinical_key: Optional[str] = Field(None, validation_alias="SUPABASE_CLINICAL_KEY")
 
     model_config = {

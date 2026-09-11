@@ -97,6 +97,17 @@ order by schemaname, relname;
 
 ## 3. RLS, grants y policies — 4 minutos
 
+### Fase 2 — cierre RLS y clave clinica
+
+- [ ] Se aplicaron, en orden, `0001`, `0002`, `0003`, `0004` y `0005`; la evidencia protegida incluye fecha, entorno y ejecutor.
+- [ ] Los repositorios de producto usan `SUPABASE_ANON_KEY`/`SUPABASE_PUBLISHABLE_KEY` y el JWT del usuario; `SUPABASE_KEY` no es `service_role` en el runtime.
+- [ ] RLS esta forzado en `chat_sessions`, `chat_messages`, `analyses`, `user_preferences`, `clinical_documents`, `rag_chunks` y `user_patient_access`; no queda una policy heredada permisiva.
+- [ ] Se probaron dos usuarios: el segundo no puede leer, renombrar ni borrar la conversacion del primero.
+- [ ] `clinical_readonly` tiene solo `USAGE` y `SELECT` sobre ambos schemas MIMIC; `clinical_key_is_readonly_v1()` devuelve `true` con su credencial.
+- [ ] Cada concesion de `public.user_patient_access` tiene aprobacion y caducidad revisada fuera de Git.
+
+Procedimiento y SQL de verificacion: `docs/security/SUPABASE_RUNBOOK_FASE2.md`.
+
 ### 3.1 Cobertura por tabla y vista
 
 - **Qué comprobar:** RLS activado y policies/grants explícitos en cada tabla de un schema expuesto. Incluye como mínimo:

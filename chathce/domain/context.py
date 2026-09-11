@@ -66,6 +66,9 @@ class RequestContext(BaseModel):
     roles: FrozenSet[str] = frozenset()
     channel: Channel
     locale: str = "es"
+    # No se persiste ni se registra: permite que los adapters de datos reenvien
+    # el Bearer JWT que ya fue validado para que Supabase aplique RLS.
+    access_token: Optional[str] = Field(default=None, repr=False, exclude=True)
     created_at: datetime = Field(default_factory=utc_now)
 
     # ------------------------------------------------------------------
@@ -125,6 +128,7 @@ def build_context(
     session_id: Optional[str] = None,
     tenant_id: str = "default",
     trace_id: Optional[str] = None,
+    access_token: Optional[str] = None,
 ) -> RequestContext:
     """Construye un RequestContext aplicando la regla de autorizacion de proposito.
 
@@ -144,4 +148,5 @@ def build_context(
         purpose=purpose_enum,
         roles=roles_fs,
         channel=channel,
+        access_token=access_token,
     )

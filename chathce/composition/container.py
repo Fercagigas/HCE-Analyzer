@@ -97,13 +97,16 @@ def build_container(settings: Any, *, llm_provider: Any = None, clinical_provide
             from chathce.adapters.supabase.client_factory import SupabaseClients
 
             db = settings.require_database()
-            supabase_clients = SupabaseClients(url=db.supabase_url, service_key=db.supabase_key,
+            supabase_clients = SupabaseClients(url=db.supabase_url, service_key=db.supabase_key, anon_key=db.supabase_anon_key,
                                                clinical_key=clinical.supabase_clinical_key, postgrest_timeout_s=clinical.timeout_s)
             client = supabase_clients.clinical_client()
             profile["clinical"] = "supabase_mimic" + (" (clave dedicada)" if supabase_clients.uses_dedicated_clinical_key else "")
         clinical_provider = MimicClinicalDataProvider(
             client, source_name=clinical.source_name, default_limit=clinical.default_limit, max_limit=clinical.max_limit,
             aggregate_limit=clinical.aggregate_limit, timeout_s=clinical.timeout_s,
+            # Tambien se comprueba el fallback SUPABASE_KEY: si fuera elevada,
+            # la RPC detecta escritura y bloquea el provider.
+            verify_readonly_key=bool(supabase_clients),
         )
     guarded = clinical_provider if isinstance(clinical_provider, ScopeGuard) else ScopeGuard(clinical_provider, audit=audit)
 
@@ -119,13 +122,12 @@ def build_container(settings: Any, *, llm_provider: Any = None, clinical_provide
 
         if supabase_clients is None:
             db = settings.require_database()
-            supabase_clients = SupabaseClients(url=db.supabase_url, service_key=db.supabase_key,
+            supabase_clients = SupabaseClients(url=db.supabase_url, service_key=db.supabase_key, anon_key=db.supabase_anon_key,
                                                clinical_key=clinical.supabase_clinical_key, postgrest_timeout_s=clinical.timeout_s)
-        product = supabase_clients.product_client()
-        identity = SupabaseIdentityProvider(product)
-        conversations = SupabaseConversationRepository(product)
-        analyses = SupabaseAnalysisRepository(product)
-        preferences = SupabaseUserPreferencesRepository(product)
+        identity = SupabaseIdentityProvider(supabase_clients.auth_client())
+        conversations = SupabaseConversationRepository(supabase_clients.product_client_for)
+        analyses = SupabaseAnalysisRepository(supabase_clients.product_client_for)
+        preferences = SupabaseUserPreferencesRepository(supabase_clients.product_client_for)
         knowledge = knowledge or SupabaseKnowledgeRepository()
         profile["persistence"] = "supabase"
     else:

@@ -40,6 +40,7 @@ async def get_principal(
     except Exception as exc:  # noqa: BLE001
         raise AuthenticationFailed("Token invalido") from exc
     request.state.user_id = principal.user_id
+    request.state.access_token = credentials.credentials
     return principal
 
 
@@ -56,4 +57,5 @@ def make_context(
         user_id=principal.user_id, channel=Channel.api, roles=principal.roles, purpose=purpose,
         patient_id=patient_id, encounter_id=encounter_id, session_id=session_id,
         tenant_id=principal.tenant_id, trace_id=getattr(request.state, "trace_id", None),
+        access_token=getattr(request.state, "access_token", None),
     ).model_copy(update={"request_id": getattr(request.state, "request_id", None) or RequestContext.model_fields["request_id"].default_factory()})
