@@ -1,7 +1,7 @@
 # Estado actual del proyecto ChatHCE
 
-**Última actualización:** 2 de septiembre de 2026
-**Rama principal:** `main` (Fase 1 fusionada desde `fase1/foundation` el 2 de septiembre de 2026)
+**Última actualización:** 11 de septiembre de 2026
+**Rama principal:** `main` (Fase 1 completada; oleada 1 de Fase 2 integrada mediante PRs #23, #24, #25 y #27)
 
 Este documento resume en qué punto se encuentra el proyecto: qué está hecho, qué acaba de cambiar y qué queda pendiente. Sirve como punto de entrada rápido para retomar el trabajo.
 
@@ -9,7 +9,7 @@ Este documento resume en qué punto se encuentra el proyecto: qué está hecho, 
 
 ## 1. Resumen en una frase
 
-ChatHCE es una capa de inteligencia clínica (chat con Claude, RAG de guías y visualizaciones) sobre MIMIC-IV Clinical Demo 2.2 que, tras completar la **Fase 1 (Foundation / P0)** del roadmap, dispone de un core `chathce/` independiente de Streamlit y de los SDKs, un Model Gateway propio sobre el SDK `anthropic`, acceso clínico allowlisted con scope estricto de paciente, una API FastAPI autenticada con JWT de Supabase y una suite de tests verde sin credenciales.
+ChatHCE es una capa de inteligencia clínica (chat con Claude, RAG de guías y visualizaciones) sobre MIMIC-IV Clinical Demo 2.2 que ha cerrado la **oleada 1 de Fase 2 (Security foundation)**: RLS y clave clínica verificable, contención de IA, minimización de PHI y gate adversarial en CI; RBAC/ABAC, gobierno RAG y SSO OIDC continúan en curso.
 
 ---
 
@@ -20,8 +20,10 @@ ChatHCE es una capa de inteligencia clínica (chat con Claude, RAG de guías y v
 | **Fase 0 — Freeze y baseline** | ✅ Completada | Baseline, inventario, mapa de acoplamiento, intended purpose, threat model. ADRs 0001/0010/0020/0030. |
 | **Migración de datos MIMIC-IV** | ✅ Completada | MIMIC-IV-ED → MIMIC-IV Clinical Demo 2.2. Ver `docs/MIGRACION_MIMIC_IV.md`. |
 | **Mitigaciones de seguridad iniciales** | ✅ Integradas | ADR 0040 (visualizaciones sin exec), ADR 0060 (XSRF/CORS), ADR 0070 (checklist Supabase). |
-| **Fase 1 — Foundation / P0** | ✅ Completada (en `main`) | Core `chathce/`, `RequestContext`, ports y adapters, Model Gateway, Clinical Data Provider allowlisted, FastAPI, Streamlit como adapter, tests por capas. ADRs 0050/0080/0090/0100/0110/0120. Quedan acciones manuales del propietario (§7). |
-| Fases 2–9 | ⏳ Pendientes | RLS por usuario, Evidence Engine, frontend React, FHIR/SMART, features AI-first, piloto. |
+| **Fase 1 — Foundation / P0** | ✅ Completada (en `main`) | Core `chathce/`, `RequestContext`, ports y adapters, Model Gateway, Clinical Data Provider allowlisted, FastAPI, Streamlit como adapter y tests por capas. |
+| **Fase 2 — Security foundation, oleada 1** | ✅ Integrada; ⏳ cierre operativo | ADRs 0130/0140/0150/0160: RLS y clave `clinical_readonly`, kill switch/circuit breaker, minimización PHI, suite adversarial y CI. Falta aplicar/verificar `0005` y ejecutar live (§7). |
+| **Fase 2 — oleada 2** | 🔄 En curso | RBAC/ABAC, gobierno del RAG y SSO OIDC; no se consideran entregados en este estado. |
+| Fases 3–9 | ⏳ Pendientes | Evidence Engine, frontend React, FHIR/SMART, features AI-first y piloto. |
 
 Detalle del roadmap: `ROADMAP_HOSPITAL_READY/` y `.kiro/steering/roadmap.md`.
 
@@ -45,10 +47,11 @@ Canales
     -> AuditSink -> logs/audit/audit.jsonl (sin PHI)
 ```
 
-- **LLM:** cadena `claude-haiku-4-5-20251001` → `claude-sonnet-4-5` → `claude-opus-4-0` por petición, 1 reintento por modelo, deadline total 120 s, máximo 6 iteraciones.
-- **Datos clínicos:** operaciones allowlisted por paciente activo; agregados solo con `purpose=research` (rol `researcher`) vía RPC fijas. No existe SQL libre.
+- **LLM:** cadena `claude-haiku-4-5-20251001` → `claude-sonnet-4-5` → `claude-opus-4-0` por petición, con kill switch anterior a prompt/tools y circuit breaker por `provider+model` (ADR 0140).
+- **Datos clínicos:** operaciones allowlisted por paciente activo; agregados solo con `purpose=research` (rol `researcher`) vía RPC fijas. RLS y una clave `clinical_readonly` están versionadas, pero requieren aplicación y validación live del propietario (ADR 0130).
 - **RAG:** pgvector + embeddings/reranker locales; `QueryAugmenter` usa el mismo `LLMProvider`.
 - **Auth:** Supabase Auth. API con Bearer JWT; Streamlit con cookie que solo guarda el refresh token y revalida en cada carga.
+- **Privacidad:** minimización por DTO, pseudonimización por sesión y detector de texto PHI antes del modelo; el modo seguro por defecto es `redact` (ADR 0160).
 - **Respuesta:** `ChatResponse` con `facts`, `inferences`, `evidence`, `uncertainty`, `tool_calls`, `sources`, `visualizations`, `metadata` (`trace_id`, `request_id`, modelo usado, `prompt_version`).
 
 Documentos: `docs/UNIFIED_CHAT_ARCHITECTURE.md`, `docs/architecture/INVENTORY.md`, `docs/architecture/COUPLING_MAP.md`.
@@ -91,36 +94,39 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 
 ---
 
-## 6. Verificación de cierre de Fase 1
+## 6. Verificación de cierre de Fase 1 y oleada 1 de Fase 2
 
 - Suite: **271 tests pasan, 7 se saltan** (integración sin `HCE_RUN_INTEGRATION=1`), 0 fallos, sin credenciales. Cobertura **56 %** sobre `chathce`, `config`, `services`, `ui`, `src` (`docs/baseline/FASE1_BASELINE.md`).
 - Fronteras: `tests/unit/test_architecture_boundaries.py` verifica que `chathce/{domain,ports,application,gateway}` no importan `streamlit`, `supabase`, `postgrest`, `anthropic` ni `langchain*`.
 - Superficie visible al modelo sin SQL ni tablas: `tests/security/test_tool_schema_surface.py`, `tests/unit/gateway/test_prompt_has_no_schema.py`.
 - Sin `exec`/`eval`/`compile` en el runtime: `tests/security/test_visualization_security.py`.
 - Live (solo lectura): provider MIMIC contra Supabase, `AnthropicLLMProvider`, fachada end-to-end con paciente activo (labs devueltas; paciente ajeno rechazado), Streamlit arranca en modo headless. Evaluación live en `docs/baseline/raw/fase1/evaluation/`.
+- Oleada 1 de Fase 2: **310 tests pasan, 7 se saltan, 0 fallos y 57 % de cobertura** sin `.env`; `tests/security/` aporta **78/78** controles en verde y el gate registra **0 violaciones críticas**. Evidencia: `docs/baseline/FASE2_BASELINE.md` y `docs/baseline/raw/fase2/`.
+- La evaluación live de seguridad no se ejecutó en este worktree sin `.env`; el comando y condiciones de autorización están registrados en `docs/baseline/FASE2_BASELINE.md`.
 
 ---
 
 ## 7. Acciones pendientes del propietario (no automatizables desde el repo)
 
-1. ~~Aplicar `db/migrations/0001`, `0002`, `0003` y `0004` en Supabase~~ **Hecho (2026-09-02).** Aplicadas y verificadas: 4 agregados `clinical_*_v1` presentes, las RPC de SQL libre `execute_readonly_query` y `exec_sql` eliminadas, y las funciones SECURITY DEFINER endurecidas. Para un entorno nuevo, aplicar en orden `0001`, `0002`, `0003`, `0004` y `0005` siguiendo `docs/security/SUPABASE_RUNBOOK_FASE2.md`.
-2. Aplicar `0005_rls_usuario_paciente_y_clinical_readonly.sql`; crear/rotar la clave del rol `clinical_readonly` y configurar `SUPABASE_CLINICAL_KEY` y `SUPABASE_ANON_KEY` fuera del repo; verificar la RPC fail-closed.
+1. ~~Aplicar `db/migrations/0001`, `0002`, `0003` y `0004` en Supabase~~ **Hecho (2026-09-02).** Aplicadas y verificadas: 4 agregados `clinical_*_v1` presentes, las RPC de SQL libre `execute_readonly_query` y `exec_sql` eliminadas, y las funciones SECURITY DEFINER endurecidas. Para un entorno nuevo, aplicar la secuencia ejecutable `0001`, `0002`, `0003_drop_exec_sql`, `0004` y `0005` siguiendo `docs/security/SUPABASE_RUNBOOK_FASE2.md`; `0003_rag_search_functions_snapshot.sql` no se ejecuta.
+2. Aplicar `0005_rls_usuario_paciente_y_clinical_readonly.sql`; crear/rotar la clave del rol `clinical_readonly`, configurar `SUPABASE_CLINICAL_KEY` y `SUPABASE_ANON_KEY` fuera del repo, conceder accesos usuario-paciente y verificar RLS/fail-closed.
 3. Validar clínicamente las 20 preguntas del golden set con `clinical_validation.status="pending"` (`Evaluation/golden_set_ragas.json`).
 4. **Avisos de seguridad de Supabase que requieren el dashboard** (no automatizables por SQL/MCP): activar *Leaked Password Protection* (Auth → Password security), habilitar más *MFA options* (Auth → MFA) y aplicar el *upgrade de Postgres* pendiente de parches (Platform → Upgrade, implica downtime). Detalle en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.
-5. Opcional: definir fuera del repo `HCE_TEST_USER_EMAIL` / `HCE_TEST_USER_PASSWORD` para los tests live de identidad y API; versionar en una migración las definiciones de `hybrid_search`/`vector_search`.
-6. Estado del roadmap por documento: `ROADMAP_HOSPITAL_READY/README.md` (columna Estado) y bloque «Estado a 2 de septiembre de 2026» en cada documento.
+5. Ejecutar en entorno autorizado `python -m Evaluation.run_security_tests --output Evaluation/results`; para `SEC-IND-001`, sembrar primero un documento de prueba aislado y añadir `--include-indirect-fixture`.
+6. Opcional: definir fuera del repo `HCE_TEST_USER_EMAIL` / `HCE_TEST_USER_PASSWORD` para los tests live de identidad y API; versionar en una migración las definiciones de `hybrid_search`/`vector_search`.
 
 ---
 
 ## 8. Deuda y pendientes conocidos (Fase 2+)
 
-- **RLS por usuario/paciente**: migracion y adapters con JWT preparados (ADR 0130), pendientes de aplicar y validar live; la relacion asistencial completa sigue pendiente.
+- **RLS por usuario/paciente**: migración y adapters con JWT preparados (ADR 0130), pendientes de aplicar y validar live; la relación asistencial completa sigue pendiente.
 - **Evidence Engine**: una `Claim` por frase con `evidence_ids`; hoy una por tool y una `AI_INFERENCE` por respuesta (ADR 0090).
 - **Un solo worker uvicorn** por los modelos locales del RAG; servicio de embeddings separado (ADR 0110).
-- **Streaming en Streamlit** (solo la API emite SSE). **Kill switch** y circuit breaker por modelo completados (ADR 0140).
+- **Streaming en Streamlit** (solo la API emite SSE). El **kill switch** y circuit breaker por modelo están completados (ADR 0140); el breaker sigue siendo por proceso.
 - **PHI antes del modelo**: minimización por DTO, pseudonimización por sesión y detector configurable completados (ADR 0160); DLP externo y política de egreso por proveedor siguen pendientes.
 - `services/rag/*`, `src/processors/document_processor.py` y gran parte de `ui/` siguen siendo legacy (cobertura 0–38 %); `ui/components/components/document_manager.py` llama directamente a `get_rag_service()`.
 - Cookie de Streamlit legible desde JavaScript (limitación del componente); mitigada con refresh token rotatorio.
+- **RBAC/ABAC, gobierno RAG y SSO OIDC**: trabajos de oleada 2 en curso; no integrados en este cierre.
 - Ficheros no versionados intencionadamente: `TFM VIU Fernando Cagigas.pdf`, `figures/`.
 
 ### Riesgos Fase 0: estado

@@ -2,7 +2,7 @@
 
 ChatHCE es un prototipo académico (Trabajo de Fin de Máster, VIU) de **capa de inteligencia clínica**: un chat con Claude que consulta la historia clínica de un paciente, busca en guías y protocolos indexados (RAG) y genera visualizaciones, sobre el dataset **MIMIC-IV Clinical Database Demo 2.2** (módulos hospitalario y UCI). No sustituye a la HCE; la lee.
 
-Tras la **Fase 1 (Foundation)** del roadmap hospital-ready el sistema tiene:
+Tras la **Fase 1 (Foundation)** y la oleada 1 de **Fase 2 (Security foundation)**, el sistema tiene:
 
 - Un core `chathce/` con arquitectura de ports and adapters, independiente de Streamlit y de los SDKs (ADR 0110).
 - **Scope estricto de paciente**: toda consulta clínica se ejecuta sobre el paciente activo; sin paciente, las herramientas clínicas se rechazan. No existe SQL libre; el acceso a datos es por operaciones allowlisted y agregados server-side (ADR 0050, 0090).
@@ -10,6 +10,10 @@ Tras la **Fase 1 (Foundation)** del roadmap hospital-ready el sistema tiene:
 - Dos canales: **Streamlit** (UI) y **FastAPI** (`/api/v1/chat`, SSE), autenticados con Supabase Auth (ADR 0100).
 - Respuestas con hechos, inferencias y evidencia trazable (`facts`, `inferences`, `evidence`, `uncertainty`).
 - Suite de tests por capas verde sin credenciales y auditoría sin PHI (ADR 0120).
+- RLS de ownership y relación usuario-paciente versionados, con credencial clínica separada y verificable como `clinical_readonly` (ADR 0130; aplicación live pendiente del propietario).
+- Kill switch de IA y circuit breaker por `provider+model`, antes de prompt y tools (ADR 0140).
+- Minimización por DTO, pseudonimización por sesión y detección de PHI antes del modelo (ADR 0160).
+- Gate CI adversarial: 78 controles offline, cero violaciones críticas en el baseline de oleada 1 (ADR 0150).
 
 > Estado detallado: [docs/ESTADO_ACTUAL.md](docs/ESTADO_ACTUAL.md). Roadmap: `ROADMAP_HOSPITAL_READY/`. Índice de documentación: [docs/INDEX.md](docs/INDEX.md).
 
@@ -75,7 +79,7 @@ El resto de secciones (`LLM_*`, `CLINICAL_*`, `API_*`, `AUDIT_*`) están documen
 ### Base de datos
 
 1. Carga o verifica MIMIC-IV: `python scripts/load_mimiciv.py --verify-only`.
-2. Aplica en el SQL Editor de Supabase las migraciones de `db/migrations/` (`0001` RPC de agregados; `0002` elimina la RPC de SQL libre). Procedimiento en [db/README.md](db/README.md).
+2. Aplica en el SQL Editor de Supabase la secuencia ejecutable `0001`, `0002`, `0003_drop_exec_sql`, `0004` y `0005` de `db/migrations/`. `0003_rag_search_functions_snapshot.sql` es un snapshot no ejecutable. Procedimiento en [docs/security/SUPABASE_RUNBOOK_FASE2.md](docs/security/SUPABASE_RUNBOOK_FASE2.md).
 3. Indexa guías clínicas para el RAG: `python scripts/index_guias.py` (carpeta `Guías/`).
 
 Comprobación de configuración:
@@ -138,18 +142,20 @@ conda activate HCE ; python -m pytest tests/security -q                         
 conda activate HCE ; $env:HCE_RUN_INTEGRATION="1" ; python -m pytest -m integration  # live, solo lectura
 conda activate HCE ; python -m Evaluation.run_all_evaluations --dry-run              # pre-flight
 conda activate HCE ; python -m Evaluation.run_all_evaluations                        # RAGAS, seguridad, latencia, casos
+conda activate HCE ; python -m Evaluation.run_security_tests --output Evaluation/results # live de seguridad, requiere secretos autorizados
 ```
 
-Estructura y convenciones en [tests/README.md](tests/README.md). Baseline de Fase 1 en [docs/baseline/FASE1_BASELINE.md](docs/baseline/FASE1_BASELINE.md).
+Estructura y convenciones en [tests/README.md](tests/README.md). Baselines: [Fase 1](docs/baseline/FASE1_BASELINE.md) y [Fase 2, oleada 1](docs/baseline/FASE2_BASELINE.md).
 
 ---
 
 ## Seguridad y privacidad
 
 - Dataset de demostración público y desidentificado (MIMIC-IV Demo). No se procesa PHI real.
-- Aislamiento por paciente en la aplicación (`ScopeGuard`), superficie del modelo sin SQL ni nombres de tabla, sin ejecución de código generado, auditoría sin contenido clínico.
+- Aislamiento por paciente en la aplicación (`ScopeGuard`), RLS/ownership versionado, superficie del modelo sin SQL ni nombres de tabla, sin ejecución de código generado y auditoría sin contenido clínico.
+- Mínimo necesario antes del modelo: catálogo de DTO, pseudónimos por sesión y detector configurable de PHI. El kill switch y el circuit breaker permiten degradar sin llamar al LLM ni ejecutar tools de inferencia.
 - Threat model y checklist operativa de Supabase: [docs/security/THREAT_MODEL.md](docs/security/THREAT_MODEL.md), [docs/security/SUPABASE_VERIFICATION_CHECKLIST.md](docs/security/SUPABASE_VERIFICATION_CHECKLIST.md).
-- Pendientes conocidos: RLS por usuario/paciente, Evidence Engine, kill switch (ver `docs/ESTADO_ACTUAL.md`).
+- Pendientes conocidos: aplicar/verificar RLS y clave clínica en Supabase, Evidence Engine, DLP/política de egreso, RBAC/ABAC, gobierno RAG y SSO OIDC (los tres últimos están en curso; ver `docs/ESTADO_ACTUAL.md`).
 
 ---
 
