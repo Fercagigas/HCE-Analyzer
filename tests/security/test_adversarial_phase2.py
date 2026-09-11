@@ -76,14 +76,16 @@ async def test_cross_tenant_artifact_is_not_readable_even_for_same_user():
 
 async def test_parallel_tabs_same_session_keep_each_request_patient_scope():
     container = build_test_container([ScriptedTurn(text="respuesta A"), ScriptedTurn(text="respuesta B")])
+    context_a = _context(A)
+    context_b = _context(B)
     response_a, response_b = await asyncio.gather(
-        container.chat_service.handle_chat(ChatRequest(message="labs A"), _context(A)),
-        container.chat_service.handle_chat(ChatRequest(message="labs B"), _context(B)),
+        container.chat_service.handle_chat(ChatRequest(message="labs A"), context_a),
+        container.chat_service.handle_chat(ChatRequest(message="labs B"), context_b),
     )
     assert response_a.success and response_b.success, "VIOLACION CRITICA: una pestana paralela interfirio con la otra"
-    prompts = [call.system for call in container.llm_provider.calls]
-    assert any(str(A) in prompt for prompt in prompts), "VIOLACION CRITICA: la pestana A no conservo su paciente en RequestContext"
-    assert any(str(B) in prompt for prompt in prompts), "VIOLACION CRITICA: la pestana B no conservo su paciente en RequestContext"
+    assert context_a.patient_id == str(A) and context_b.patient_id == str(B), "VIOLACION CRITICA: una pestana paralela modifico el RequestContext de otra"
+    assert response_a.metadata.trace_id != response_b.metadata.trace_id, "VIOLACION CRITICA: dos pestanas paralelas compartieron trazabilidad de peticion"
+    assert response_a.metadata.session_id == response_b.metadata.session_id == "shared-tab-session", "VIOLACION: las pestanas paralelas perdieron la sesion compartida"
     assert len(container.llm_provider.calls) == 2, "VIOLACION: dos pestanas de la misma sesion compartieron una respuesta/cache"
 
 
