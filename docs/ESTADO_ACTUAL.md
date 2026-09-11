@@ -9,7 +9,7 @@ Este documento resume en qué punto se encuentra el proyecto: qué está hecho, 
 
 ## 1. Resumen en una frase
 
-ChatHCE es una capa de inteligencia clínica (chat con Claude, RAG de guías y visualizaciones) sobre MIMIC-IV Clinical Demo 2.2 que ha cerrado la **oleada 1 de Fase 2 (Security foundation)**: RLS y clave clínica verificable, contención de IA, minimización de PHI y gate adversarial en CI; RBAC/ABAC, gobierno RAG y SSO OIDC continúan en curso.
+ChatHCE es una capa de inteligencia clínica (chat con Claude, RAG de guías y visualizaciones) sobre MIMIC-IV Clinical Demo 2.2 que ha cerrado la **oleada 1 de Fase 2 (Security foundation)**: RLS y clave clínica verificable, contención de IA, minimización de PHI y gate adversarial en CI; RBAC/ABAC y gobierno RAG continúan en curso, y SSO OIDC queda preparado para integración hospitalaria.
 
 ---
 
@@ -22,7 +22,7 @@ ChatHCE es una capa de inteligencia clínica (chat con Claude, RAG de guías y v
 | **Mitigaciones de seguridad iniciales** | ✅ Integradas | ADR 0040 (visualizaciones sin exec), ADR 0060 (XSRF/CORS), ADR 0070 (checklist Supabase). |
 | **Fase 1 — Foundation / P0** | ✅ Completada (en `main`) | Core `chathce/`, `RequestContext`, ports y adapters, Model Gateway, Clinical Data Provider allowlisted, FastAPI, Streamlit como adapter y tests por capas. |
 | **Fase 2 — Security foundation, oleada 1** | ✅ Integrada; ⏳ cierre operativo | ADRs 0130/0140/0150/0160: RLS y clave `clinical_readonly`, kill switch/circuit breaker, minimización PHI, suite adversarial y CI. Falta aplicar/verificar `0005` y ejecutar live (§7). |
-| **Fase 2 — oleada 2** | 🔄 En curso | RBAC/ABAC contextual implementado (ADR 0170, pendiente aplicar 0006); gobierno documental del RAG listo para aplicar mediante 0007 (ADR 0180) y SSO OIDC continúa en curso. |
+| **Fase 2 — oleada 2** | 🔄 En curso | RBAC/ABAC contextual implementado (ADR 0170; pendiente aplicar 0006); gobierno documental del RAG listo para aplicar mediante 0007 (ADR 0180) y SSO OIDC preparado con Supabase como opción compatible (ADR 0190). |
 | Fases 3–9 | ⏳ Pendientes | Evidence Engine, frontend React, FHIR/SMART, features AI-first y piloto. |
 
 Detalle del roadmap: `ROADMAP_HOSPITAL_READY/` y `.kiro/steering/roadmap.md`.
@@ -49,9 +49,8 @@ Canales
 
 - **LLM:** cadena `claude-haiku-4-5-20251001` → `claude-sonnet-4-5` → `claude-opus-4-0` por petición, con kill switch anterior a prompt/tools y circuit breaker por `provider+model` (ADR 0140).
 - **Datos clínicos:** operaciones allowlisted por paciente activo; agregados solo con `purpose=research` (rol `researcher`) vía RPC fijas. RLS y una clave `clinical_readonly` están versionadas, pero requieren aplicación y validación live del propietario (ADR 0130).
-- **RAG:** pgvector + embeddings/reranker locales; solo chunks aprobados, vigentes y del tenant del contexto (ADR 0180). `QueryAugmenter` usa el mismo `LLMProvider`.
 - **RAG:** pgvector + embeddings/reranker locales; solo chunks aprobados, vigentes y del tenant del contexto tras aplicar 0007 (ADR 0180). `QueryAugmenter` usa el mismo `LLMProvider`.
-- **Auth:** Supabase Auth. API con Bearer JWT; Streamlit con cookie que solo guarda el refresh token y revalida en cada carga.
+- **Auth:** Supabase Auth (compatibilidad) u OIDC federado con discovery/JWKS/PKCE; API con Bearer JWT y endpoints de login OIDC; Streamlit acepta sesiones OIDC sin contraseñas propias. Ver ADR 0190 y `docs/security/SSO_OIDC_SETUP.md`.
 - **Privacidad:** minimización por DTO, pseudonimización por sesión y detector de texto PHI antes del modelo; el modo seguro por defecto es `redact` (ADR 0160).
 - **Respuesta:** `ChatResponse` con `facts`, `inferences`, `evidence`, `uncertainty`, `tool_calls`, `sources`, `visualizations`, `metadata` (`trace_id`, `request_id`, modelo usado, `prompt_version`).
 
@@ -127,7 +126,7 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 - **PHI antes del modelo**: minimización por DTO, pseudonimización por sesión y detector configurable completados (ADR 0160); DLP externo y política de egreso por proveedor siguen pendientes.
 - `services/rag/*`, `src/processors/document_processor.py` y gran parte de `ui/` siguen siendo legacy (cobertura 0–38 %); `ui/components/components/document_manager.py` llama directamente a `get_rag_service()`.
 - Cookie de Streamlit legible desde JavaScript (limitación del componente); mitigada con refresh token rotatorio.
-- **RBAC/ABAC, gobierno RAG y SSO OIDC**: trabajos de oleada 2 en curso; no integrados en este cierre.
+- **RBAC/ABAC y gobierno RAG**: trabajos de oleada 2 en curso; SSO OIDC se entrega mediante ADR 0190.
 - Ficheros no versionados intencionadamente: `TFM VIU Fernando Cagigas.pdf`, `figures/`.
 
 ### Riesgos Fase 0: estado

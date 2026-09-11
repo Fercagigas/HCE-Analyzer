@@ -67,6 +67,7 @@ class RequestContext(BaseModel):
     request_id: str = Field(default_factory=new_id, min_length=8)
     purpose: Purpose = Purpose.clinical_care
     roles: FrozenSet[str] = frozenset()
+    service: Optional[str] = None
     channel: Channel
     locale: str = "es"
     # No se persiste ni se registra: permite que los adapters de datos reenvien
@@ -134,6 +135,7 @@ def build_context(
     service_id: str = "default",
     trace_id: Optional[str] = None,
     access_token: Optional[str] = None,
+    service: Optional[str] = None,
 ) -> RequestContext:
     """Construye un RequestContext aplicando el proposito permitido por rol."""
     from chathce.domain.authorization import require_purpose
@@ -150,6 +152,7 @@ def build_context(
         trace_id=trace_id or new_id(),
         purpose=purpose_enum,
         roles=roles_fs,
+        service=service,
         channel=channel,
         access_token=access_token,
     )

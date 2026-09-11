@@ -48,3 +48,15 @@ class IdentityProvider(Protocol):
     ) -> None:
         """Concede una relacion asistencial administrada y con vigencia."""
         ...
+
+@runtime_checkable
+class OidcCapableIdentityProvider(IdentityProvider, Protocol):
+    """Extension opcional para el flujo Authorization Code + PKCE.
+
+    El puerto base se conserva para no romper Supabase ni los fakes. Los canales
+    que soporten OIDC pueden comprobar este protocolo antes de presentar login.
+    """
+
+    async def begin_authorization(self, *, redirect_uri: str, issuer: Optional[str] = None): ...
+
+    async def exchange_authorization_code(self, *, code: str, state: str) -> AuthSession: ...

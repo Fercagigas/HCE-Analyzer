@@ -108,13 +108,12 @@ def build_container(settings: Any, *, llm_provider: Any = None, clinical_provide
             # la RPC detecta escritura y bloquea el provider.
             verify_readonly_key=bool(supabase_clients),
         )
-    # ---- persistencia, identidad, conocimiento ----------------------------
+    # ---- persistencia y conocimiento ---------------------------------------
     use_supabase_product = _has_supabase(settings) and clinical.provider != "memory"
     if use_supabase_product:
         from chathce.adapters.supabase.analysis_repository import SupabaseAnalysisRepository
         from chathce.adapters.supabase.client_factory import SupabaseClients
         from chathce.adapters.supabase.conversation_repository import SupabaseConversationRepository
-        from chathce.adapters.supabase.identity_provider import SupabaseIdentityProvider
         from chathce.adapters.supabase.knowledge_repository import SupabaseKnowledgeRepository
         from chathce.adapters.supabase.user_preferences_repository import SupabaseUserPreferencesRepository
 
@@ -122,19 +121,50 @@ def build_container(settings: Any, *, llm_provider: Any = None, clinical_provide
             db = settings.require_database()
             supabase_clients = SupabaseClients(url=db.supabase_url, service_key=db.supabase_key, anon_key=db.supabase_anon_key,
                                                clinical_key=clinical.supabase_clinical_key, postgrest_timeout_s=clinical.timeout_s)
-        identity = SupabaseIdentityProvider(supabase_clients.auth_client())
         conversations = SupabaseConversationRepository(supabase_clients.product_client_for)
         analyses = SupabaseAnalysisRepository(supabase_clients.product_client_for)
         preferences = SupabaseUserPreferencesRepository(supabase_clients.product_client_for)
         knowledge = knowledge or SupabaseKnowledgeRepository()
         profile["persistence"] = "supabase"
     else:
-        identity = InMemoryIdentityProvider()
         conversations = InMemoryConversationRepository()
         analyses = InMemoryAnalysisRepository()
         preferences = InMemoryUserPreferencesRepository()
         knowledge = knowledge or InMemoryKnowledgeRepository()
         profile["persistence"] = "memory"
+
+    # ---- identidad ---------------------------------------------------------
+    # Supabase sigue siendo el valor por defecto para no alterar despliegues de
+    # Fase 1. OIDC no depende de que haya un backend Supabase configurado.
+    identity_settings = getattr(settings, "identity", None)
+    identity_provider = str(getattr(identity_settings, "provider", "supabase")).lower()
+    if identity_provider == "oidc":
+        from chathce.adapters.oidc import OidcIdentityProvider
+
+        # OIDC valida los claims de identidad en el IdP. La relacion asistencial
+        # es un recurso de autorizacion local y debe seguir disponible para que
+        # ScopeGuard pueda fallar cerrado antes de acceder a datos clinicos.
+        if use_supabase_product:
+            from chathce.adapters.supabase.identity_provider import SupabaseIdentityProvider
+
+            patient_access = SupabaseIdentityProvider(supabase_clients.auth_client())
+        else:
+            patient_access = InMemoryIdentityProvider()
+
+        if hasattr(settings, "require_oidc"):
+            identity_settings = settings.require_oidc()
+        identity = OidcIdentityProvider(identity_settings, patient_access=patient_access)
+        profile["identity"] = "oidc"
+    elif identity_provider == "memory" or not use_supabase_product:
+        identity = InMemoryIdentityProvider()
+        profile["identity"] = "memory"
+    elif identity_provider == "supabase":
+        from chathce.adapters.supabase.identity_provider import SupabaseIdentityProvider
+
+        identity = SupabaseIdentityProvider(supabase_clients.auth_client())
+        profile["identity"] = "supabase"
+    else:
+        raise ValueError(f"IDENTITY_PROVIDER no soportado: {identity_provider}")
     visualizations = InMemoryVisualizationRepository()
     guarded = clinical_provider if isinstance(clinical_provider, ScopeGuard) else ScopeGuard(
         clinical_provider, audit=audit, patient_access=identity,

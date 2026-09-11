@@ -1,4 +1,4 @@
-"""StreamlitAuthSession: identidad en Streamlit con cookie que solo transporta el refresh token (ADR 0100).
+"""StreamlitAuthSession: sesion Supabase u OIDC, sin contrasenas propias.
 
 - La cookie ``hce_session`` guarda ``{"rt": <refresh_token>}``; nunca el usuario ni el access token.
 - El access token y el Principal viven en ``st.session_state`` (memoria del servidor).
@@ -80,6 +80,7 @@ class StreamlitAuthSession:
 
     # ------------------------------------------------------------------
     def login(self, email: str, password: str, *, remember_me: bool = False) -> Principal:
+        """Compatibilidad con Supabase. En OIDC la UI debe usar start_oidc_login."""
         session = self._run(self._identity.login(email, password))
         self._store(session, remember=remember_me)
         return session.principal
@@ -89,6 +90,29 @@ class StreamlitAuthSession:
 
     def reset_password(self, email: str) -> None:
         self._run(self._identity.reset_password(email))
+
+    # ------------------------------------------------------------------
+    # OIDC: Streamlit no gestiona credenciales. El enlace se abre en el
+    # navegador y el callback o un BFF entrega un AuthSession ya validado.
+    def supports_oidc(self) -> bool:
+        return hasattr(self._identity, "begin_authorization") and hasattr(self._identity, "exchange_authorization_code")
+
+    def start_oidc_login(self, *, redirect_uri: str, issuer: Optional[str] = None) -> str:
+        if not self.supports_oidc():
+            raise AuthenticationFailed("El proveedor de identidad no soporta OIDC")
+        request = self._run(self._identity.begin_authorization(redirect_uri=redirect_uri, issuer=issuer))
+        return request.authorization_url
+
+    def complete_oidc_login(self, *, code: str, state: str, remember_me: bool = False) -> Principal:
+        if not self.supports_oidc():
+            raise AuthenticationFailed("El proveedor de identidad no soporta OIDC")
+        session = self._run(self._identity.exchange_authorization_code(code=code, state=state))
+        return self.accept_oidc_session(session, remember_me=remember_me)
+
+    def accept_oidc_session(self, session: AuthSession, *, remember_me: bool = False) -> Principal:
+        """Acepta una sesion emitida y validada por el callback OIDC de la API."""
+        self._store(session, remember=remember_me)
+        return session.principal
 
     def logout(self) -> None:
         token = self.access_token

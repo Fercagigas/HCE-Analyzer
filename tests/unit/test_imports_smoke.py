@@ -49,5 +49,5 @@ def test_memory_profile_container_builds_without_credentials(monkeypatch):
     from chathce.composition.container import build_container
 
     container = build_container(get_settings())
-    assert container.profile == {"llm": "fake", "clinical": "memory", "persistence": "memory"}
+    assert container.profile == {"llm": "fake", "clinical": "memory", "persistence": "memory", "identity": "memory"}
     assert set(container.registry.names()) >= {"get_patient_summary", "get_labs", "search_clinical_documents", "create_visualization"}
