@@ -1,6 +1,6 @@
 # Threat model inicial de ChatHCE
 
-Estado: baseline de Fase 0 con revisión de cierre de Fase 1 (sección «Estado tras Fase 1»); describe el sistema, no una autorización de despliegue
+Estado: baseline de Fase 0 con revisiones de cierre de Fase 1 y oleada 1 de Fase 2 (secciones de estado); describe el sistema, no una autorización de despliegue
 
 Fecha: 2026-09-01
 
@@ -290,7 +290,7 @@ El cuerpo del documento conserva la fotografía de Fase 0. Esta sección registr
 | 6 | C-02 | ✅ Mitigado | ADR 0060; CORS restrictivo y cabeceras en la API. CSP pendiente |
 | 7 | C-04, C-11 | 🟡 Parcial | Claves por función definidas (`SUPABASE_KEY`, `SUPABASE_CLINICAL_KEY`, `SUPABASE_SERVICE_ROLE_KEY`); la clave de solo lectura aún no está creada; RLS por usuario pendiente |
 | 8 | C-07 | ✅ Mitigado | `trace_id`/`request_id` extremo a extremo; `AuditEvent` por petición, llamada LLM, tool y rechazo |
-| 8 | C-09, AI-12 | 🟡 Parcial | Timeouts por tool/llamada/total, reintento acotado, rate limit por usuario. Circuit breaker y kill switch pendientes |
+| 8 | C-09, AI-12 | ✅ Local · ⏳ distribuido | Timeouts, rate limit, kill switch anterior a prompt/tools y circuit breaker por `provider+model` (ADR 0140). El estado del breaker sigue siendo por proceso |
 
 Cambios en la superficie: el confín TB-02 (UI como identidad) desaparece; TB-04 pasa a ser `ScopeGuard(ClinicalDataProvider) ↔ Supabase` sin SQL; TB-07 (executor) deja de existir; aparece TB-10 `cliente HTTP ↔ FastAPI` (Bearer JWT, CORS, correlación). El activo A-05 ya no contiene esquema ni reglas SQL; A-10 dispone de `Evidence`, `Claim` y `AuditEvent` uniformes.
 
@@ -299,6 +299,20 @@ Cobertura de pruebas actualizada: 52 tests de seguridad offline y 18 payloads li
 Incertidumbres cerradas: la RPC de SQL libre no tiene consumidores en código (sigue pendiente su eliminación en la base de datos). Siguen abiertas las relativas a privilegios de las claves desplegadas, RLS, topología, retención del proveedor LLM y corpus indexado.
 
 Mientras no se cierren los elementos ⏳ y 🟡 de prioridad 1 a 7, se mantiene la restricción a entorno de investigación controlado, un solo tenant, datos desidentificados y usuarios autorizados.
+
+## Mitigaciones aplicadas en la oleada 1 de Fase 2 (11 de septiembre de 2026)
+
+La oleada 1 integra los ADRs 0130, 0140, 0150 y 0160. Su evidencia offline es `docs/baseline/FASE2_BASELINE.md`: 310 tests pasan, 7 se saltan, la cobertura global es 57 %, `tests/security/` pasa 78/78 y el gate registra **cero violaciones críticas**. No se atribuyen a esta oleada RBAC/ABAC, gobierno RAG ni SSO OIDC: esos trabajos están en curso.
+
+| Riesgos | Mitigación aplicada | Riesgo residual / evidencia pendiente |
+|---|---|---|
+| C-03, AI-06 | `0005` versiona RLS de ownership, `user_patient_access`, cliente por JWT y la segunda barrera de datos (ADR 0130). | El propietario debe aplicar `0005`, conceder accesos y probar RLS con usuarios reales. |
+| C-04, C-11 | Rol `clinical_readonly` y RPC `clinical_key_is_readonly_v1`; el provider falla cerrado si no puede comprobar mínimo privilegio. | Emitir/rotar la clave, configurarla fuera del repositorio y comprobar fail-closed live. |
+| C-06, AI-05 | Catálogo por DTO, generalización de fechas, pseudónimos por sesión y detector PHI en mensaje, historial y resultados antes del LLM (ADR 0160). | DLP externo, política de egreso/proveedor, cifrado y retención siguen pendientes. |
+| AI-03, AI-07 | Gate adversarial offline y CI para inyección/ofuscación, cross-tenant, pestañas paralelas, exfiltración y allowlist (ADR 0150). | El runner live y `SEC-IND-001` requieren secretos, entorno autorizado y documento aislado; faltan pruebas RLS/multi-tenant de infraestructura. |
+| C-09, AI-12 | Kill switch antes de historial, prompt, gateway y tools; circuit breaker aislado por `provider+model` (ADR 0140). | El estado del breaker es por proceso; la distribución del estado es trabajo posterior. |
+
+Las migraciones activas siguen una secuencia ejecutable `0001`, `0002`, `0003_drop_exec_sql`, `0004`, `0005`. El fichero `0003_rag_search_functions_snapshot.sql` es un snapshot heredado no ejecutable y no debe aplicarse. El procedimiento completo, incluidas las verificaciones live, está en `docs/security/SUPABASE_RUNBOOK_FASE2.md`.
 
 ## Mantenimiento del modelo
 

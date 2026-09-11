@@ -2,7 +2,7 @@
 
 Este orden evita construir features vistosas encima de una arquitectura que después haya que rehacer.
 
-> **Estado a 2 de septiembre de 2026:** Fase 0 y Fase 1 completadas (`main`). Fase 2 es la siguiente; varios de sus elementos ya se adelantaron en Fase 1 y se marcan abajo. Detalle por documento en el bloque «Estado» de cada uno y en `docs/ESTADO_ACTUAL.md`.
+> **Estado a 11 de septiembre de 2026:** Fases 0 y 1 completadas (`main`); la oleada 1 de Fase 2 está integrada (ADRs 0130, 0140, 0150 y 0160) y su cierre operativo requiere verificaciones live del propietario. RBAC/ABAC, gobierno RAG y SSO OIDC están en curso en la oleada 2. Detalle en `docs/ESTADO_ACTUAL.md` y `docs/baseline/FASE2_BASELINE.md`.
 
 ## Fase 0 — Freeze y baseline ✅ (completada, sep 2026)
 - ejecutar suite actual y guardar baseline;
@@ -28,18 +28,18 @@ Este orden evita construir features vistosas encima de una arquitectura que desp
 
 **Pendientes del propietario para cerrar del todo:** aplicar `db/migrations/0001` y `0002` en Supabase, crear `SUPABASE_CLINICAL_KEY`, validar 20 preguntas del golden set, definir usuario de pruebas para tests live de identidad/API.
 
-## Fase 2 — Security foundation ⏳ (siguiente)
-- SSO-ready architecture — 🟡 identidad delegada a Supabase Auth; OIDC/SAML hospitalario pendiente;
-- RBAC + ABAC — 🟡 rol `researcher` y propósito; roles completos y relación asistencial pendientes;
-- PHI minimisation — ⏳;
+## Fase 2 — Security foundation 🔄 (oleada 1 integrada; oleada 2 en curso)
+- SSO-ready architecture — 🔄 identidad delegada a Supabase Auth; SSO OIDC hospitalario en curso, no integrado;
+- RBAC + ABAC — 🔄 rol `researcher` y propósito existentes; RBAC/ABAC completo y relación asistencial en curso, no integrados;
+- PHI minimisation — ✅ catálogo por DTO, pseudonimización por sesión y detector configurable antes del modelo (ADR 0160); DLP externo y política de egreso pendientes;
 - secure logging — ✅ auditoría sin PHI (adelantado en Fase 1);
-- prompt/indirect injection controls — 🟡 delimitación `untrusted_data` y suite básica; encoded/obfuscated y live indirecto pendientes;
-- eliminación de SQL/código arbitrario — ✅ en código (adelantado); ⏳ eliminar RPC en la base de datos;
-- tenant/patient leakage tests — 🟡 cross-patient en verde; cross-tenant, tabs paralelas y background jobs pendientes;
-- kill switch — ⏳;
-- **nuevo, derivado de Fase 1:** RLS por usuario/paciente en Supabase reenviando el JWT del usuario (ADR 0100); circuit breaker por modelo; clave de solo lectura para el provider clínico.
+- prompt/indirect injection controls — ✅ suite adversarial offline ampliada y gate CI; live indirecto pendiente de entorno autorizado (ADR 0150);
+- eliminación de SQL/código arbitrario — ✅ en código y migraciones versionadas; verificar aplicación de `0005` y estado real por entorno;
+- tenant/patient leakage tests — ✅ contratos offline para cross-tenant y pestañas paralelas; ⏳ RLS/multi-tenant live y background jobs;
+- kill switch — ✅ kill switch de runtime y circuit breaker por `provider+model` (ADR 0140);
+- RLS por usuario/paciente y clave clínica readonly — ✅ versionadas (ADR 0130); ⏳ aplicación de `0005`, emisión de clave y validación live del propietario.
 
-**Gate:** ninguna violación crítica en suite adversarial.
+**Gate:** ninguna violación crítica en suite adversarial. **Oleada 1:** ✅ 0 violaciones críticas (78/78 controles offline); no sustituye las verificaciones live pendientes.
 
 ## Fase 3 — Evidence-first AI
 - Evidence objects — ✅ schema disponible (`Evidence`, `Claim`, `ClaimType`);

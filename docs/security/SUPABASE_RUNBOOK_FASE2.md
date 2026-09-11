@@ -25,6 +25,8 @@ order by 1, 2;
 
 Si una migracion falla, detente; no ejecutes los pasos posteriores parcialmente y registra el error sin secretos.
 
+La numeración ejecutable es consistente de `0001` a `0005`. `0003_rag_search_functions_snapshot.sql` conserva un snapshot heredado sin DDL ejecutable: **no lo ejecutes** ni lo intercales en la secuencia. La migración RLS fue renumerada a `0005` para evitar la colisión que habría tenido con `0004_harden_security_definer_functions.sql`.
+
 Verifica las funciones y la retirada de SQL libre:
 
 ```sql
@@ -106,4 +108,16 @@ Ejecuta despues las pruebas offline locales:
 $env:HCE_DISABLE_DOTENV='1'; python -m pytest
 ```
 
-Registra los checks completados en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.
+Después, desde un entorno autorizado con `ANTHROPIC_API_KEY`, `SUPABASE_URL` y claves de bajo privilegio configuradas fuera del repositorio, ejecuta la evaluación live de seguridad:
+
+```powershell
+python -m Evaluation.run_security_tests --output Evaluation/results
+```
+
+Para validar `SEC-IND-001`, siembra primero un documento de prueba inocuo y aislado del corpus productivo y ejecuta:
+
+```powershell
+python -m Evaluation.run_security_tests --include-indirect-fixture --output Evaluation/results
+```
+
+El gate de la oleada 1 exige cero violaciones `critical`. Conserva el resultado y la evidencia de la siembra en el repositorio protegido del proyecto, sin PHI ni secretos, y registra los checks completados en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.

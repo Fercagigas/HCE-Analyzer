@@ -1,13 +1,14 @@
 # ChatHCE - Índice de Documentación
 
-**Última actualización**: 2 de septiembre de 2026 (cierre de Fase 1)
+**Última actualización**: 11 de septiembre de 2026 (cierre documental de la oleada 1 de Fase 2)
 
 ---
 
 ## 🧭 Estado del proyecto
 
-- **[ESTADO_ACTUAL.md](ESTADO_ACTUAL.md)** - En qué punto estamos: fase, arquitectura, verificación de cierre de Fase 1, acciones pendientes del propietario (empezar aquí)
+- **[ESTADO_ACTUAL.md](ESTADO_ACTUAL.md)** - En qué punto estamos: Fase 1 y oleada 1 de Fase 2, arquitectura, verificaciones y acciones pendientes del propietario (empezar aquí)
 - **[APRENDIZAJES_FASE1.md](APRENDIZAJES_FASE1.md)** - Clase magistral de la Fase 1: qué se tuvo en cuenta, qué se construyó y por qué, lecciones de evaluación y de proceso
+- **[APRENDIZAJES_FASE2.md](APRENDIZAJES_FASE2.md)** - Decisiones, razones, lecciones operativas y de coordinación de la oleada 1 de Security foundation
 - **[../ROADMAP_HOSPITAL_READY/README.md](../ROADMAP_HOSPITAL_READY/README.md)** - Roadmap hospital-ready con estado por documento; fases en `15-implementation-phases.md`
 
 ---
@@ -48,19 +49,25 @@
 - **[decisions/0100](decisions/0100-autenticacion-api-jwt-supabase-y-sesion-streamlit-revalidada.md)** - Autenticación de la API por JWT de Supabase y sesión Streamlit revalidada; claves por función
 - **[decisions/0110](decisions/0110-layout-chathce-composition-root-y-adapters-de-presentacion.md)** - Layout del paquete `chathce`, composition root y adapters de presentación
 - **[decisions/0120](decisions/0120-estrategia-de-tests-por-capas-y-baseline-fase-1.md)** - Estrategia de tests por capas y baseline de Fase 1
+- **[decisions/0130](decisions/0130-rls-por-usuario-y-clave-clinica-readonly.md)** - RLS por usuario y clave clínica de solo lectura
+- **[decisions/0140](decisions/0140-kill-switch-y-circuit-breaker-por-modelo.md)** - Kill switch de IA y circuit breaker por modelo
+- **[decisions/0150](decisions/0150-suite-adversarial-como-gate-de-fase-2-y-ci.md)** - Suite adversarial como gate de Fase 2 y CI
+- **[decisions/0160](decisions/0160-minimizacion-y-deteccion-de-phi-antes-del-modelo.md)** - Minimización y detección de PHI antes del modelo
 
 ---
 
 ## 🔒 Seguridad
 
-- **[security/THREAT_MODEL.md](security/THREAT_MODEL.md)** - Threat model (baseline Fase 0 + sección «Estado tras Fase 1» con el estado de cada riesgo)
+- **[security/THREAT_MODEL.md](security/THREAT_MODEL.md)** - Threat model (baseline Fase 0 + estado tras Fase 1 y oleada 1 de Fase 2)
 - **[security/SUPABASE_VERIFICATION_CHECKLIST.md](security/SUPABASE_VERIFICATION_CHECKLIST.md)** - Checklist de verificación operativa de Supabase, con la nota de Fase 1 (RPC a eliminar, RPC nuevas, claves por función)
+- **[security/SUPABASE_RUNBOOK_FASE2.md](security/SUPABASE_RUNBOOK_FASE2.md)** - Aplicación de `0001`–`0005`, clave `clinical_readonly`, RLS y verificaciones live de Fase 2
 
 ---
 
 ## 📊 Evaluación y baselines
 
 - **[baseline/FASE1_BASELINE.md](baseline/FASE1_BASELINE.md)** - Baseline de cierre de Fase 1: suite, cobertura, evaluación live por módulo, Definition of Done
+- **[baseline/FASE2_BASELINE.md](baseline/FASE2_BASELINE.md)** - Baseline de oleada 1: 310 tests verdes, 57 % de cobertura y gate adversarial con 0 críticas
 - **[baseline/FASE1_WP0_BASELINE.md](baseline/FASE1_WP0_BASELINE.md)** - Baseline intermedio tras el saneamiento de configuración (WP0)
 - **[baseline/FASE0_BASELINE.md](baseline/FASE0_BASELINE.md)** - Baseline de la Fase 0
 - **[baseline/raw/](baseline/raw/)** - Salidas crudas de tests y evaluación por fase
@@ -109,8 +116,8 @@
 | Usuarios | README raíz, UNIFIED_CHAT_COMPLETE_GUIDE |
 | Desarrolladores | UNIFIED_CHAT_ARCHITECTURE, architecture/, UNIFIED_CHAT_TOOL_CREATION, PROMPT_ENGINEERING_GUIDE, LLM_PROVIDER_MAPPING, VISUALIZATION_SYSTEM, tests/README, decisions/ |
 | Administradores | CONFIGURACION_SUPABASE_VERIFICADA, db/README, DATABASE_SCHEMA_UPDATE, RAG_VECTORIZATION_VERIFICATION, .env.example |
-| Seguridad / DPO | THREAT_MODEL, SUPABASE_VERIFICATION_CHECKLIST, RISK_CAPABILITY_MATRIX, decisions/0050, 0090, 0100 |
-| Auditoría / evaluación | baseline/FASE1_BASELINE, baseline/raw, decisions/0120, Evaluation/ |
+| Seguridad / DPO | THREAT_MODEL, SUPABASE_VERIFICATION_CHECKLIST, SUPABASE_RUNBOOK_FASE2, RISK_CAPABILITY_MATRIX, decisions/0050, 0090, 0100, 0130–0160 |
+| Auditoría / evaluación | baseline/FASE1_BASELINE, baseline/FASE2_BASELINE, baseline/raw, decisions/0120, 0150, Evaluation/ |
 
 ---
 

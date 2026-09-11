@@ -1,18 +1,18 @@
 # ChatHCE - Documentación
 
-Capa de inteligencia clínica con IA y RAG sobre MIMIC-IV Clinical Demo 2.2 (hospitalario + UCI). Fase 1 (Foundation) completada el 2 de septiembre de 2026.
+Capa de inteligencia clínica con IA y RAG sobre MIMIC-IV Clinical Demo 2.2 (hospitalario + UCI). Fase 1 (Foundation) completada y oleada 1 de Fase 2 (Security foundation) integrada el 11 de septiembre de 2026.
 
 ---
 
 ## 🚀 Inicio rápido
 
-- **Estado del proyecto** → [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md) (empezar aquí) | roadmap con estado → [../ROADMAP_HOSPITAL_READY/README.md](../ROADMAP_HOSPITAL_READY/README.md)
+- **Estado del proyecto** → [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md) (empezar aquí) | [APRENDIZAJES_FASE2.md](APRENDIZAJES_FASE2.md) | roadmap con estado → [../ROADMAP_HOSPITAL_READY/README.md](../ROADMAP_HOSPITAL_READY/README.md)
 - **Producto / dirección** → [product/INTENDED_PURPOSE.md](product/INTENDED_PURPOSE.md) | [product/COMPETITIVE_POSITIONING.md](product/COMPETITIVE_POSITIONING.md)
 - **Usuarios** → [../README.md](../README.md) (instalación, ejecución, uso) | [UNIFIED_CHAT_COMPLETE_GUIDE.md](UNIFIED_CHAT_COMPLETE_GUIDE.md)
 - **Desarrolladores** → [UNIFIED_CHAT_ARCHITECTURE.md](UNIFIED_CHAT_ARCHITECTURE.md) | [UNIFIED_CHAT_TOOL_CREATION.md](UNIFIED_CHAT_TOOL_CREATION.md) | [architecture/INVENTORY.md](architecture/INVENTORY.md) | [../tests/README.md](../tests/README.md)
 - **Administradores** → [CONFIGURACION_SUPABASE_VERIFICADA.md](CONFIGURACION_SUPABASE_VERIFICADA.md) | [../db/README.md](../db/README.md) | [RAG_VECTORIZATION_VERIFICATION.md](RAG_VECTORIZATION_VERIFICATION.md)
-- **Seguridad** → [security/THREAT_MODEL.md](security/THREAT_MODEL.md) | [security/SUPABASE_VERIFICATION_CHECKLIST.md](security/SUPABASE_VERIFICATION_CHECKLIST.md) | [decisions/](decisions/)
-- **Evaluación** → [baseline/FASE1_BASELINE.md](baseline/FASE1_BASELINE.md)
+- **Seguridad** → [security/THREAT_MODEL.md](security/THREAT_MODEL.md) | [security/SUPABASE_RUNBOOK_FASE2.md](security/SUPABASE_RUNBOOK_FASE2.md) | [decisions/](decisions/)
+- **Evaluación** → [baseline/FASE1_BASELINE.md](baseline/FASE1_BASELINE.md) | [baseline/FASE2_BASELINE.md](baseline/FASE2_BASELINE.md)
 
 ---
 
@@ -27,6 +27,7 @@ docs/
 ├── README.md                             # Este archivo
 ├── ESTADO_ACTUAL.md                      # Fase, arquitectura, verificación y pendientes
 ├── APRENDIZAJES_FASE1.md                 # Clase magistral: decisiones, razones y lecciones de Fase 1
+├── APRENDIZAJES_FASE2.md                 # Oleada 1: decisiones y lecciones de Security foundation
 │
 ├── UNIFIED_CHAT_ARCHITECTURE.md          # Arquitectura del chat (core chathce/, gateway, tools, canales)
 ├── UNIFIED_CHAT_TOOL_CREATION.md         # Crear herramientas (ToolContract + handler)
@@ -65,10 +66,12 @@ docs/
 │   ├── 0090-request-context-scope-estricto-contratos-y-evidence.md
 │   ├── 0100-autenticacion-api-jwt-supabase-y-sesion-streamlit-revalidada.md
 │   ├── 0110-layout-chathce-composition-root-y-adapters-de-presentacion.md
-│   └── 0120-estrategia-de-tests-por-capas-y-baseline-fase-1.md
+│   ├── 0120-estrategia-de-tests-por-capas-y-baseline-fase-1.md
+│   └── 0130–0160                          # RLS, contención IA, gate adversarial y PHI
 │
 ├── security/                             # Threat model (con estado tras Fase 1) y checklist Supabase
 │   ├── THREAT_MODEL.md
+│   ├── SUPABASE_RUNBOOK_FASE2.md
 │   └── SUPABASE_VERIFICATION_CHECKLIST.md
 │
 ├── architecture/                         # Inventario y acoplamiento tras Fase 1
@@ -79,6 +82,7 @@ docs/
     ├── FASE0_BASELINE.md
     ├── FASE1_WP0_BASELINE.md
     ├── FASE1_BASELINE.md
+    ├── FASE2_BASELINE.md
     └── raw/                              # Salidas crudas de tests y evaluación
 ```
 
