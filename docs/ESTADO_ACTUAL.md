@@ -22,7 +22,7 @@ ChatHCE es una capa de inteligencia clínica (chat con Claude, RAG de guías y v
 | **Mitigaciones de seguridad iniciales** | ✅ Integradas | ADR 0040 (visualizaciones sin exec), ADR 0060 (XSRF/CORS), ADR 0070 (checklist Supabase). |
 | **Fase 1 — Foundation / P0** | ✅ Completada (en `main`) | Core `chathce/`, `RequestContext`, ports y adapters, Model Gateway, Clinical Data Provider allowlisted, FastAPI, Streamlit como adapter y tests por capas. |
 | **Fase 2 — Security foundation, oleada 1** | ✅ Integrada; ⏳ cierre operativo | ADRs 0130/0140/0150/0160: RLS y clave `clinical_readonly`, kill switch/circuit breaker, minimización PHI, suite adversarial y CI. Falta aplicar/verificar `0005` y ejecutar live (§7). |
-| **Fase 2 — oleada 2** | 🔄 En curso | RBAC/ABAC, gobierno del RAG y SSO OIDC; no se consideran entregados en este estado. |
+| **Fase 2 — oleada 2** | 🔄 En curso | RBAC/ABAC contextual implementado (ADR 0170, pendiente aplicar 0006); gobierno del RAG y SSO OIDC continúan en curso. |
 | Fases 3–9 | ⏳ Pendientes | Evidence Engine, frontend React, FHIR/SMART, features AI-first y piloto. |
 
 Detalle del roadmap: `ROADMAP_HOSPITAL_READY/` y `.kiro/steering/roadmap.md`.
@@ -108,8 +108,8 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 
 ## 7. Acciones pendientes del propietario (no automatizables desde el repo)
 
-1. ~~Aplicar `db/migrations/0001`, `0002`, `0003` y `0004` en Supabase~~ **Hecho (2026-09-02).** Aplicadas y verificadas: 4 agregados `clinical_*_v1` presentes, las RPC de SQL libre `execute_readonly_query` y `exec_sql` eliminadas, y las funciones SECURITY DEFINER endurecidas. Para un entorno nuevo, aplicar la secuencia ejecutable `0001`, `0002`, `0003_drop_exec_sql`, `0004` y `0005` siguiendo `docs/security/SUPABASE_RUNBOOK_FASE2.md`; `0003_rag_search_functions_snapshot.sql` no se ejecuta.
-2. Aplicar `0005_rls_usuario_paciente_y_clinical_readonly.sql`; crear/rotar la clave del rol `clinical_readonly`, configurar `SUPABASE_CLINICAL_KEY` y `SUPABASE_ANON_KEY` fuera del repo, conceder accesos usuario-paciente y verificar RLS/fail-closed.
+1. ~~Aplicar `db/migrations/0001`, `0002`, `0003` y `0004` en Supabase~~ **Hecho (2026-09-02).** Aplicadas y verificadas: 4 agregados `clinical_*_v1` presentes, las RPC de SQL libre `execute_readonly_query` y `exec_sql` eliminadas, y las funciones SECURITY DEFINER endurecidas. Para un entorno nuevo, aplicar la secuencia ejecutable `0001`, `0002`, `0003_drop_exec_sql`, `0004`, `0005` y `0006`; `0003_rag_search_functions_snapshot.sql` no se ejecuta.
+2. Aplicar `0005_rls_usuario_paciente_y_clinical_readonly.sql` y `0006_rbac_abac_relacion_asistencial.sql`; crear/rotar la clave del rol `clinical_readonly`, configurar `SUPABASE_CLINICAL_KEY` y `SUPABASE_ANON_KEY` fuera del repo, conceder accesos usuario-paciente y verificar RLS/fail-closed. Asignar `tenant_id` y `roles` permitidos en `app_metadata`, y comprobar denegación sin relación asistencial vigente.
 3. Validar clínicamente las 20 preguntas del golden set con `clinical_validation.status="pending"` (`Evaluation/golden_set_ragas.json`).
 4. **Avisos de seguridad de Supabase que requieren el dashboard** (no automatizables por SQL/MCP): activar *Leaked Password Protection* (Auth → Password security), habilitar más *MFA options* (Auth → MFA) y aplicar el *upgrade de Postgres* pendiente de parches (Platform → Upgrade, implica downtime). Detalle en `docs/security/SUPABASE_VERIFICATION_CHECKLIST.md`.
 5. Ejecutar en entorno autorizado `python -m Evaluation.run_security_tests --output Evaluation/results`; para `SEC-IND-001`, sembrar primero un documento de prueba aislado y añadir `--include-indirect-fixture`.
@@ -119,7 +119,7 @@ Variables mínimas en `.env`: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY
 
 ## 8. Deuda y pendientes conocidos (Fase 2+)
 
-- **RLS por usuario/paciente**: migración y adapters con JWT preparados (ADR 0130), pendientes de aplicar y validar live; la relación asistencial completa sigue pendiente.
+- **RLS por usuario/paciente**: migraciones 0005/0006 y adapters preparados, pendientes de aplicar y validar live. RBAC/ABAC contextual y relación asistencial están implementados (ADR 0170); no hay break-glass.
 - **Evidence Engine**: una `Claim` por frase con `evidence_ids`; hoy una por tool y una `AI_INFERENCE` por respuesta (ADR 0090).
 - **Un solo worker uvicorn** por los modelos locales del RAG; servicio de embeddings separado (ADR 0110).
 - **Streaming en Streamlit** (solo la API emite SSE). El **kill switch** y circuit breaker por modelo están completados (ADR 0140); el breaker sigue siendo por proceso.

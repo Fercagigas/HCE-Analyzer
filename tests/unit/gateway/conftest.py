@@ -12,6 +12,7 @@ from chathce.domain.context import Channel, Purpose, RequestContext
 from chathce.domain.errors import ProviderUnavailable
 from chathce.domain.tools import AuditCategory, ToolContract, ToolResult
 from chathce.gateway.tool_registry import Tool, ToolRegistry
+from chathce.gateway.policy import ToolPolicy
 
 
 class LabsInput(BaseModel):
@@ -45,7 +46,8 @@ def _result(ctx: RequestContext, operation: str, data) -> ToolResult:
 
 @pytest.fixture
 def ctx() -> RequestContext:
-    return RequestContext(user_id="u1", channel=Channel.api, patient_id="10001217", session_id="s1")
+    return RequestContext(user_id="u1", channel=Channel.api, patient_id="10001217", session_id="s1",
+                          roles=frozenset({"clinician"}))
 
 
 @pytest.fixture
@@ -60,7 +62,7 @@ def audit() -> CollectingAuditSink:
 
 @pytest.fixture
 def registry(audit) -> ToolRegistry:
-    reg = ToolRegistry(audit=audit, max_visible_chars=500)
+    reg = ToolRegistry(policy=ToolPolicy(enforce_rbac=False), audit=audit, max_visible_chars=500)
 
     async def labs_handler(ctx: RequestContext, args: LabsInput) -> ToolResult:
         rows = [Row(subject_id=args.subject_id, value=float(i)) for i in range(args.limit + 5)]

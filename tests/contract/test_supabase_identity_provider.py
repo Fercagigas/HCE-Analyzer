@@ -14,7 +14,7 @@ pytestmark = pytest.mark.contract
 
 class FakeGoTrue:
     def __init__(self):
-        self.users = {"doc@example.invalid": ("secret6", SimpleNamespace(id="uid-1", email="doc@example.invalid", app_metadata={"roles": ["researcher"]}))}
+        self.users = {"doc@example.invalid": ("secret6", SimpleNamespace(id="uid-1", email="doc@example.invalid", app_metadata={"roles": ["researcher"], "tenant_id": "hospital-a"}))}
         self.tokens = {}
         self.signed_out = []
         self.admin = SimpleNamespace(sign_out=lambda jwt: self.signed_out.append(jwt))
@@ -67,7 +67,7 @@ async def test_login_returns_session_and_principal_without_email(identity):
     assert session.access_token == "acc-uid-1" and session.refresh_token == "ref-uid-1"
     principal = session.principal
     assert principal.user_id == "uid-1" and principal.display_name == "Dra. Demo"
-    assert principal.roles == frozenset({"researcher", "clinician"})
+    assert principal.roles == frozenset({"researcher"}) and principal.tenant_id == "hospital-a"
     assert "email" not in principal.model_dump()
     assert client.rows("users")[0].get("last_login")
 
@@ -90,6 +90,21 @@ async def test_verify_token_uses_remote_check_and_cache(identity):
         await provider.verify_access_token(session.access_token)
     with pytest.raises(AuthenticationFailed):
         await provider.verify_access_token("")
+
+
+async def test_claims_are_taken_only_from_verified_app_metadata(identity):
+    provider, client = identity
+    session = await provider.login("doc@example.invalid", "secret6")
+    user = client.auth.tokens[session.access_token]
+    user.user_metadata = {"roles": ["admin"], "tenant_id": "hospital-evil"}
+    client.rows("users")[0]["role"] = "admin"
+    principal = await provider.verify_access_token(session.access_token)
+    assert principal.roles == frozenset({"researcher"}) and principal.tenant_id == "hospital-a"
+
+    provider._cache.clear()
+    user.app_metadata = {"roles": ["admin"], "tenant_id": "hospital-a"}
+    principal = await provider.verify_access_token(session.access_token)
+    assert principal.roles == frozenset({"admin"}), "solo un claim firmado actualizado puede cambiar permisos"
 
 
 async def test_refresh_and_logout(identity):

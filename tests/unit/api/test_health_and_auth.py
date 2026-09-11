@@ -47,3 +47,14 @@ async def test_http_requests_are_audited_without_phi(client, api):
     events = [e for e in api.container.audit.events if e.action.value == "http_request"]
     assert events and events[-1].attributes["route_template"] == "/api/v1/chat" and events[-1].user_id.startswith("TOKEN_")
     assert "dato sensible" not in "".join(e.model_dump_json() for e in api.container.audit.events)
+
+
+async def test_admin_can_manage_roles_and_relationships_but_clinician_cannot(client, api):
+    denied = await client.put("/api/v1/admin/users/u2/roles", json={"roles": ["reviewer"]}, headers=auth())
+    assert denied.status_code == 403 and denied.json()["error"]["code"] == "AUTHORIZATION_DENIED"
+    assigned = await client.put("/api/v1/admin/users/u2/roles", json={"roles": ["reviewer"]}, headers=auth("tok-admin"))
+    granted = await client.put("/api/v1/admin/patient-access", json={"user_id": "u2", "subject_id": api.subject,
+                                                                        "service_id": "cardiology"}, headers=auth("tok-admin"))
+    assert assigned.status_code == 204 and granted.status_code == 204
+    events = [e for e in api.container.audit.events if e.action.value == "authorization_changed"]
+    assert len(events) == 2 and all("u2" not in e.model_dump_json() for e in events)

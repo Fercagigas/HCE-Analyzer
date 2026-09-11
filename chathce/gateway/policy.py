@@ -7,13 +7,27 @@ from typing import Any, Optional
 from pydantic import BaseModel
 
 from chathce.domain.clinical import Page
+from chathce.domain.authorization import is_allowed, require_purpose, tool_action
+from chathce.domain.errors import AuthorizationDenied
 from chathce.domain.context import RequestContext
 from chathce.domain.tools import ToolContract, ToolError, ToolResult
 
 
 class ToolPolicy:
+    def __init__(self, *, enforce_rbac: bool = True):
+        self._enforce_rbac = enforce_rbac
+
     def check(self, ctx: RequestContext, contract: ToolContract, args: BaseModel) -> Optional[ToolError]:
         """Rechazos previos a la ejecucion: scope de paciente y proposito."""
+        try:
+            require_purpose(ctx.roles, ctx.purpose)
+        except AuthorizationDenied:
+            return ToolError(code="authorization_refused", message="El rol autenticado no permite este proposito de uso.")
+        if self._enforce_rbac and not is_allowed(ctx.roles, tool_action(contract.name)):
+            return ToolError(
+                code="authorization_refused",
+                message="El rol autenticado no tiene permiso para usar esta herramienta.",
+            )
         if contract.requires_patient_scope:
             if ctx.patient_id is None:
                 return ToolError(

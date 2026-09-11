@@ -36,7 +36,7 @@ def test_research_mode_requires_role():
     container = build_test_container([ScriptedTurn(text="ok")])
     client = StreamlitChatClient(container)
     denied = client.send("stats", user_id="u1", roles=["clinician"], session_id=None, patient_id=None, encounter_id=None, research_mode=True)
-    assert denied["success"] is False and denied["error_type"] == "PURPOSE_NOT_ALLOWED"
+    assert denied["success"] is False and denied["error_type"] == "AUTHORIZATION_DENIED"
     allowed = client.send("stats", user_id="u2", roles=["researcher"], session_id=None, patient_id=None, encounter_id=None, research_mode=True)
     assert allowed["success"] is True
 
@@ -47,7 +47,7 @@ def test_figure_json_is_scoped_to_user():
         ScriptedTurn(text="grafica"),
     ])
     client = StreamlitChatClient(container)
-    result = client.send("grafica", user_id="u1", roles=[], session_id=None, patient_id=str(SUBJECT), encounter_id=None, research_mode=False)
+    result = client.send("grafica", user_id="u1", roles=["clinician"], session_id=None, patient_id=str(SUBJECT), encounter_id=None, research_mode=False)
     viz_id = result["visualizations"][0]["ids"][0]
     assert client.figure_json(user_id="u1", viz_id=viz_id).startswith("{")
     assert client.figure_json(user_id="otro", viz_id=viz_id) is None

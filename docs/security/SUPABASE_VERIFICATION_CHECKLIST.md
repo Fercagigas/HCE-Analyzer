@@ -469,6 +469,15 @@ Registro de aplicacion de migraciones (rellenar por el propietario, sin valores 
 | `0002_revoke_execute_readonly_query.sql` | 2026-09-02 | Supabase (proyecto uoqvzaeuvylmvtkhaovm) | `execute_readonly_query` ausente (0 filas en pg_proc) |
 | `0003_drop_exec_sql.sql` | 2026-09-02 | Supabase (proyecto uoqvzaeuvylmvtkhaovm) | `exec_sql` ausente (0 filas en pg_proc) |
 | `0004_harden_security_definer_functions.sql` | 2026-09-02 | Supabase (proyecto uoqvzaeuvylmvtkhaovm) | advisor ya no reporta las 5 funciones SECURITY DEFINER; `enforce_max_sessions` con `search_path` fijo; triggers operativos |
+| `0005_rls_usuario_paciente_y_clinical_readonly.sql` | pendiente |  | aplicar antes de la validación live |
+| `0006_rbac_abac_relacion_asistencial.sql` | pendiente |  | tenant, servicio y vigencia de relación asistencial; comprobar allow/deny |
+
+### RBAC y ABAC contextual (Fase 2, ADR 0170)
+
+- `[ ]` Cada JWT de prueba tiene `app_metadata.tenant_id` no vacío y `app_metadata.roles` con valores permitidos; no se aceptan roles de `user_metadata` ni de cuerpos HTTP.
+- `[ ]` Un `clinician` con relación vigente puede consultar solo su paciente y servicio; sin relación, expirada o de otro tenant recibe 403 sin PHI.
+- `[ ]` Un `admin` puede asignar roles y relaciones por `/api/v1/admin/*`; un `clinician` recibe 403 y ambos cambios válidos dejan `authorization_changed` sin PHI en auditoría.
+- `[ ]` Break-glass no está habilitado: verificar denegación cuando no hay relación.
 
 ### Estado del Supabase security advisor (2026-09-02)
 

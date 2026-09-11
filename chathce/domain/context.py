@@ -21,6 +21,7 @@ class Purpose(str, Enum):
     clinical_care = "clinical_care"
     research = "research"
     admin = "admin"
+    audit = "audit"
 
 
 class Channel(str, Enum):
@@ -47,6 +48,7 @@ class ScopeApplied(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     tenant_id: str
+    service_id: str = "default"
     patient_id: Optional[str] = None
     encounter_id: Optional[str] = None
     purpose: Purpose
@@ -56,6 +58,7 @@ class RequestContext(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     tenant_id: str = "default"
+    service_id: str = "default"
     user_id: str = Field(min_length=1)
     patient_id: Optional[str] = None
     encounter_id: Optional[str] = None
@@ -108,6 +111,7 @@ class RequestContext(BaseModel):
     def scope(self) -> ScopeApplied:
         return ScopeApplied(
             tenant_id=self.tenant_id,
+            service_id=self.service_id,
             patient_id=self.patient_id,
             encounter_id=self.encounter_id,
             purpose=self.purpose,
@@ -127,19 +131,18 @@ def build_context(
     encounter_id: Optional[str] = None,
     session_id: Optional[str] = None,
     tenant_id: str = "default",
+    service_id: str = "default",
     trace_id: Optional[str] = None,
     access_token: Optional[str] = None,
 ) -> RequestContext:
-    """Construye un RequestContext aplicando la regla de autorizacion de proposito.
-
-    ``purpose=research`` exige el rol ``researcher``; en caso contrario se rechaza.
-    """
+    """Construye un RequestContext aplicando el proposito permitido por rol."""
+    from chathce.domain.authorization import require_purpose
     roles_fs = frozenset(roles or ())
     purpose_enum = Purpose(purpose)
-    if purpose_enum == Purpose.research and RESEARCH_ROLE not in roles_fs:
-        raise PurposeNotAllowed("El usuario no tiene el rol 'researcher' necesario para el modo investigacion.")
+    require_purpose(roles_fs, purpose_enum)
     return RequestContext(
         tenant_id=tenant_id,
+        service_id=service_id,
         user_id=user_id,
         patient_id=str(patient_id) if patient_id is not None else None,
         encounter_id=str(encounter_id) if encounter_id is not None else None,

@@ -108,8 +108,6 @@ def build_container(settings: Any, *, llm_provider: Any = None, clinical_provide
             # la RPC detecta escritura y bloquea el provider.
             verify_readonly_key=bool(supabase_clients),
         )
-    guarded = clinical_provider if isinstance(clinical_provider, ScopeGuard) else ScopeGuard(clinical_provider, audit=audit)
-
     # ---- persistencia, identidad, conocimiento ----------------------------
     use_supabase_product = _has_supabase(settings) and clinical.provider != "memory"
     if use_supabase_product:
@@ -138,6 +136,9 @@ def build_container(settings: Any, *, llm_provider: Any = None, clinical_provide
         knowledge = knowledge or InMemoryKnowledgeRepository()
         profile["persistence"] = "memory"
     visualizations = InMemoryVisualizationRepository()
+    guarded = clinical_provider if isinstance(clinical_provider, ScopeGuard) else ScopeGuard(
+        clinical_provider, audit=audit, patient_access=identity,
+    )
 
     # ---- gateway y servicios ---------------------------------------------
     registry = ToolRegistry(policy=ToolPolicy(), audit=audit, max_visible_chars=settings.llm.max_tool_visible_chars,

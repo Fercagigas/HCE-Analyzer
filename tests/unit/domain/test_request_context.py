@@ -2,7 +2,7 @@ import pytest
 from pydantic import ValidationError
 
 from chathce.domain.context import Channel, Purpose, RequestContext, build_context
-from chathce.domain.errors import PurposeNotAllowed, ScopeViolation
+from chathce.domain.errors import AuthorizationDenied, PurposeNotAllowed, ScopeViolation
 
 pytestmark = pytest.mark.unit
 
@@ -62,7 +62,7 @@ def test_research_purpose_required_for_aggregates():
 
 
 def test_build_context_requires_researcher_role_for_research():
-    with pytest.raises(PurposeNotAllowed):
+    with pytest.raises(AuthorizationDenied):
         build_context(user_id="u", channel=Channel.api, purpose="research")
     ctx = build_context(user_id="u", channel=Channel.api, purpose="research", roles={"researcher"})
     assert ctx.purpose == Purpose.research
@@ -70,6 +70,6 @@ def test_build_context_requires_researcher_role_for_research():
 
 
 def test_build_context_coerces_ids_to_str():
-    ctx = build_context(user_id="u", channel=Channel.streamlit, patient_id=10001217, encounter_id=22)
+    ctx = build_context(user_id="u", channel=Channel.streamlit, patient_id=10001217, encounter_id=22, roles={"clinician"})
     assert ctx.patient_id == "10001217" and ctx.encounter_id == "22"
     assert ctx.with_patient(None).patient_id is None

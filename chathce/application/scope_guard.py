@@ -31,7 +31,8 @@ from chathce.domain.clinical import (
     TimeRange,
 )
 from chathce.domain.context import RequestContext
-from chathce.domain.errors import DomainError, PurposeNotAllowed, ScopeViolation
+from chathce.domain.authorization import require_purpose
+from chathce.domain.errors import AuthorizationDenied, DomainError, PurposeNotAllowed, ScopeViolation
 
 T = TypeVar("T")
 
@@ -70,17 +71,19 @@ def _truncated(result: Any) -> Optional[bool]:
 class ScopeGuard:
     """Envuelve un ClinicalDataProvider aplicando scope/proposito y emitiendo auditoria."""
 
-    def __init__(self, inner: Any, audit: Optional[Any] = None):
+    def __init__(self, inner: Any, audit: Optional[Any] = None, patient_access: Optional[Any] = None):
         self._inner = inner
         self._audit = audit
+        self._patient_access = patient_access
         self.source_name = getattr(inner, "source_name", "unknown")
 
     # ------------------------------------------------------------------
     async def _guarded(self, ctx: RequestContext, operation: str, call: Callable[[], Awaitable[T]]) -> T:
         started = time.perf_counter()
         try:
+            require_purpose(ctx.roles, ctx.purpose)
             result = await call()
-        except DomainError as exc:
+        except (AuthorizationDenied, DomainError) as exc:
             await emit_safely(self._audit, make_audit_event(
                 ctx, action=AuditAction.clinical_query, outcome="failure", component="clinical_data",
                 operation=operation, error_code=exc.code, error_class=exc.__class__.__name__,
@@ -106,13 +109,23 @@ class ScopeGuard:
 
     async def _require_patient(self, ctx: RequestContext, operation: str, subject_id: int) -> None:
         try:
+            require_purpose(ctx.roles, ctx.purpose)
             ctx.require_patient(subject_id)
-        except ScopeViolation as exc:
+            if self._patient_access is None:
+                raise ScopeViolation("No hay fuente de relacion asistencial configurada.", reason="care_relationship_missing")
+            allowed = await self._patient_access.has_active_patient_access(
+                user_id=ctx.user_id, tenant_id=ctx.tenant_id, subject_id=subject_id,
+                service_id=ctx.service_id, at=ctx.created_at,
+            )
+            if not allowed:
+                raise ScopeViolation("No existe una relacion asistencial vigente para este paciente y servicio.",
+                                     reason="care_relationship_missing")
+        except (AuthorizationDenied, ScopeViolation) as exc:
             await self._refuse(ctx, operation, exc)
 
     async def _require_admission(self, ctx: RequestContext, operation: str, hadm_id: int) -> None:
         try:
-            ctx.require_patient()
+            await self._require_patient(ctx, operation, int(ctx.require_patient()))
             owner_subject, owner_hadm = await self._inner.resolve_admission_owner(hadm_id)
             ctx.require_patient(owner_subject)
             ctx.require_encounter(owner_hadm)
@@ -121,7 +134,7 @@ class ScopeGuard:
 
     async def _require_icu_stay(self, ctx: RequestContext, operation: str, stay_id: int) -> None:
         try:
-            ctx.require_patient()
+            await self._require_patient(ctx, operation, int(ctx.require_patient()))
             owner_subject, owner_hadm = await self._inner.resolve_icu_stay_owner(stay_id)
             ctx.require_patient(owner_subject)
             ctx.require_encounter(owner_hadm)

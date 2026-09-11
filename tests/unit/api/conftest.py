@@ -25,8 +25,10 @@ def api(request):
     container = build_test_container(turns)
     clinician = Principal(user_id="clin-1", roles=frozenset({"clinician"}), display_name="Dra. Test")
     researcher = Principal(user_id="res-1", roles=frozenset({"researcher"}), display_name="Investigador")
+    admin = Principal(user_id="admin-1", roles=frozenset({"admin"}), display_name="Admin")
     container.identity.tokens["tok-clinician"] = clinician
     container.identity.tokens["tok-researcher"] = researcher
+    container.identity.tokens["tok-admin"] = admin
     app = create_app(container, settings=_settings())
     return SimpleNamespace(app=app, container=container, subject=SUBJECT)
 

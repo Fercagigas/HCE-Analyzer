@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, FrozenSet, List, Optional
 
 from chathce.domain.clinical import ProviderHealth
 from chathce.domain.context import RequestContext
@@ -22,12 +22,15 @@ def _now() -> datetime:
 class InMemoryIdentityProvider:
     """Usuarios y tokens en memoria. ``tokens`` mapea access_token -> Principal."""
 
-    def __init__(self, users: Optional[Dict[str, Principal]] = None, tokens: Optional[Dict[str, Principal]] = None):
+    def __init__(self, users: Optional[Dict[str, Principal]] = None, tokens: Optional[Dict[str, Principal]] = None,
+                 *, allow_all_patient_access_for_tests: bool = False):
         self.users: Dict[str, Principal] = dict(users or {})  # email -> principal
         self.passwords: Dict[str, str] = {}
         self.tokens: Dict[str, Principal] = dict(tokens or {})
         self.refresh_tokens: Dict[str, Principal] = {}
         self.revoked: set[str] = set()
+        self.patient_access: list[dict[str, Any]] = []
+        self._allow_all_patient_access_for_tests = allow_all_patient_access_for_tests
 
     def add_user(self, email: str, password: str, principal: Principal) -> None:
         self.users[email] = principal
@@ -72,6 +75,35 @@ class InMemoryIdentityProvider:
 
     async def reset_password(self, email: str) -> None:
         return None
+
+    async def has_active_patient_access(self, *, user_id: str, tenant_id: str, subject_id: int | str,
+                                        service_id: str, at: datetime) -> bool:
+        if self._allow_all_patient_access_for_tests:
+            return True
+        return any(
+            grant["user_id"] == user_id and grant["tenant_id"] == tenant_id
+            and str(grant["subject_id"]) == str(subject_id) and grant["service_id"] == service_id
+            and grant["valid_from"] <= at and (grant["valid_until"] is None or at < grant["valid_until"])
+            for grant in self.patient_access
+        )
+
+    async def assign_roles(self, *, user_id: str, tenant_id: str, roles: FrozenSet[str]) -> None:
+        for token, principal in list(self.tokens.items()):
+            if principal.user_id == user_id and principal.tenant_id == tenant_id:
+                self.tokens[token] = principal.model_copy(update={"roles": roles})
+        for email, principal in list(self.users.items()):
+            if principal.user_id == user_id and principal.tenant_id == tenant_id:
+                self.users[email] = principal.model_copy(update={"roles": roles})
+
+    async def grant_patient_access(self, *, user_id: str, tenant_id: str, subject_id: int | str, service_id: str,
+                                   valid_from: datetime, valid_until: Optional[datetime], granted_by: str) -> None:
+        self.patient_access = [g for g in self.patient_access if not (
+            g["user_id"] == user_id and g["tenant_id"] == tenant_id and str(g["subject_id"]) == str(subject_id)
+            and g["service_id"] == service_id
+        )]
+        self.patient_access.append({"user_id": user_id, "tenant_id": tenant_id, "subject_id": str(subject_id),
+                                    "service_id": service_id, "valid_from": valid_from, "valid_until": valid_until,
+                                    "granted_by": granted_by})
 
 
 class InMemoryConversationRepository:

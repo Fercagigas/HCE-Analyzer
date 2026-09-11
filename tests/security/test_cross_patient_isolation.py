@@ -5,8 +5,9 @@ al episodio; los rechazos quedan auditados como `tool_refused`.
 """
 
 import pytest
+from datetime import datetime, timedelta, timezone
 
-from chathce.adapters.memory import CollectingAuditSink
+from chathce.adapters.memory import CollectingAuditSink, InMemoryIdentityProvider
 from chathce.application.scope_guard import ScopeGuard
 from chathce.domain.context import Channel, Purpose, RequestContext
 from chathce.domain.errors import PurposeNotAllowed, ScopeViolation
@@ -23,14 +24,19 @@ def _hadm(subject_id: int) -> int:
 
 
 def _ctx(patient=None, **kw) -> RequestContext:
-    return RequestContext(user_id="clinician", channel=Channel.api, patient_id=None if patient is None else str(patient), **kw)
+    return RequestContext(user_id="clinician", channel=Channel.api, patient_id=None if patient is None else str(patient),
+                          roles=frozenset({"clinician"}), **kw)
 
 
 @pytest.fixture
 def guarded():
     client = make_memory_client()
     audit = CollectingAuditSink()
-    return ScopeGuard(make_provider(client), audit=audit), client, audit
+    identity = InMemoryIdentityProvider()
+    identity.patient_access.append({"user_id": "clinician", "tenant_id": "default", "subject_id": str(A),
+                                    "service_id": "default", "valid_from": datetime.now(timezone.utc) - timedelta(minutes=1),
+                                    "valid_until": None, "granted_by": "admin"})
+    return ScopeGuard(make_provider(client), audit=audit, patient_access=identity), client, audit
 
 
 async def test_without_active_patient_clinical_queries_are_refused(guarded):

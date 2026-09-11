@@ -15,6 +15,7 @@ from typing import Any, Dict, FrozenSet, Optional, Tuple
 
 from chathce.adapters.supabase._common import run_blocking, sanitize_error
 from chathce.domain.errors import AuthenticationFailed
+from chathce.domain.authorization import Role
 from chathce.domain.identity import AuthSession, Principal
 
 FRIENDLY_ERRORS = (
@@ -35,21 +36,26 @@ def _friendly(exc: BaseException, default: str) -> str:
     return default
 
 
-def _roles_from(user: Any, profile: Optional[Dict[str, Any]]) -> FrozenSet[str]:
-    roles: set = set()
+def _claims_from(user: Any) -> tuple[str, FrozenSet[str]]:
+    """Extrae solo claims firmados de ``app_metadata``; nunca profile/body/user_metadata."""
     app_meta = getattr(user, "app_metadata", None) or {}
-    raw = app_meta.get("roles") if isinstance(app_meta, dict) else None
+    if not isinstance(app_meta, dict):
+        raise AuthenticationFailed("Claims de aplicacion invalidos")
+    tenant = app_meta.get("tenant_id")
+    if not isinstance(tenant, str) or not tenant.strip() or len(tenant) > 100:
+        raise AuthenticationFailed("El token no contiene un tenant valido")
+    raw = app_meta.get("roles")
+    roles: set[str] = set()
     if isinstance(raw, (list, tuple, set)):
         roles.update(str(r) for r in raw)
     elif isinstance(raw, str):
         roles.add(raw)
-    if profile:
-        role = profile.get("role")
-        if isinstance(role, str) and role:
-            roles.add(role)
-        if profile.get("is_researcher") is True:
-            roles.add("researcher")
-    return frozenset(roles)
+    elif raw is not None:
+        raise AuthenticationFailed("Claims de roles invalidos")
+    try:
+        return tenant, frozenset(Role(role).value for role in roles)
+    except ValueError as exc:
+        raise AuthenticationFailed("El token contiene un rol no reconocido") from exc
 
 
 def _expires_at(session: Any) -> Optional[datetime]:
@@ -93,9 +99,17 @@ class SupabaseIdentityProvider:
         except Exception:  # noqa: BLE001
             return record
 
-    def _principal(self, user: Any, profile: Optional[Dict[str, Any]], expires_at: Optional[datetime]) -> Principal:
+    def _principal(self, user: Any, profile: Optional[Dict[str, Any]], expires_at: Optional[datetime], *, strict_claims: bool = False) -> Principal:
+        if strict_claims:
+            tenant, roles = _claims_from(user)
+        else:
+            app_meta = getattr(user, "app_metadata", None) or {}
+            tenant = app_meta.get("tenant_id") if isinstance(app_meta, dict) else None
+            roles = frozenset()
+            if tenant:
+                tenant, roles = _claims_from(user)
         return Principal(
-            user_id=str(user.id), tenant_id=self._tenant, roles=_roles_from(user, profile),
+            user_id=str(user.id), tenant_id=tenant or self._tenant, roles=roles,
             expires_at=expires_at, display_name=(profile or {}).get("name"),
         )
 
@@ -107,7 +121,7 @@ class SupabaseIdentityProvider:
         expires = _expires_at(session)
         return AuthSession(
             access_token=session.access_token, refresh_token=getattr(session, "refresh_token", None),
-            expires_at=expires, principal=self._principal(user, profile, expires),
+            expires_at=expires, principal=self._principal(user, profile, expires, strict_claims=True),
         )
 
     # ------------------------------------------------------------------
@@ -133,7 +147,7 @@ class SupabaseIdentityProvider:
             raise
         except Exception as exc:  # noqa: BLE001
             raise AuthenticationFailed(f"Token inválido o expirado ({sanitize_error(exc)})") from exc
-        principal = self._principal(user, profile, None)
+        principal = self._principal(user, profile, None, strict_claims=True)
         self._cache[key] = (now, principal)
         if len(self._cache) > 1000:
             self._cache = {k: v for k, v in self._cache.items() if now - v[0] < self._ttl}
@@ -224,3 +238,43 @@ class SupabaseIdentityProvider:
             await run_blocking(lambda: self._client.auth.reset_password_email(email), what="recuperacion", timeout_s=self._timeout)
         except Exception as exc:  # noqa: BLE001
             raise AuthenticationFailed("Error enviando el correo. Verifica que el email sea correcto.") from exc
+
+    async def has_active_patient_access(self, *, user_id: str, tenant_id: str, subject_id: int | str,
+                                        service_id: str, at: datetime) -> bool:
+        def lookup():
+            result = (self._client.table("user_patient_access").select("user_id").eq("user_id", user_id)
+                      .eq("tenant_id", tenant_id).eq("subject_id", int(subject_id)).eq("service_id", service_id)
+                      .lte("valid_from", at.isoformat()).or_(f"valid_until.is.null,valid_until.gt.{at.isoformat()}")
+                      .limit(1).execute())
+            return bool(result.data)
+        try:
+            return await run_blocking(lookup, what="relacion asistencial", timeout_s=self._timeout)
+        except Exception:
+            return False
+
+    async def assign_roles(self, *, user_id: str, tenant_id: str, roles: FrozenSet[str]) -> None:
+        try:
+            normalized = [Role(role).value for role in sorted(roles)]
+        except ValueError as exc:
+            raise AuthenticationFailed("Rol no reconocido") from exc
+
+        def update():
+            response = self._client.auth.admin.get_user_by_id(user_id)
+            user = getattr(response, "user", None)
+            metadata = dict(getattr(user, "app_metadata", None) or {})
+            if metadata.get("tenant_id") not in (None, tenant_id):
+                raise AuthenticationFailed("El usuario pertenece a otro tenant")
+            metadata["tenant_id"] = tenant_id
+            metadata["roles"] = normalized
+            self._client.auth.admin.update_user_by_id(user_id, {"app_metadata": metadata})
+        await run_blocking(update, what="asignacion de roles", timeout_s=self._timeout)
+        self._cache.clear()
+
+    async def grant_patient_access(self, *, user_id: str, tenant_id: str, subject_id: int | str, service_id: str,
+                                   valid_from: datetime, valid_until: Optional[datetime], granted_by: str) -> None:
+        record = {"user_id": user_id, "tenant_id": tenant_id, "subject_id": int(subject_id), "service_id": service_id,
+                  "valid_from": valid_from.isoformat(), "valid_until": valid_until.isoformat() if valid_until else None,
+                  "granted_by": granted_by}
+        def grant():
+            self._client.table("user_patient_access").upsert(record, on_conflict="user_id,tenant_id,subject_id,service_id").execute()
+        await run_blocking(grant, what="concesion asistencial", timeout_s=self._timeout)

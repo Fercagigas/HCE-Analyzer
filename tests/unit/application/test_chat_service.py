@@ -17,7 +17,7 @@ SUBJECT = load_manifest()["subject_ids"][0] if fixtures_available() else 0
 
 
 def _ctx(**kw) -> RequestContext:
-    base = dict(user_id="clinician-1", channel=Channel.api, patient_id=str(SUBJECT))
+    base = dict(user_id="clinician-1", channel=Channel.api, patient_id=str(SUBJECT), roles=frozenset({"clinician"}))
     base.update(kw)
     return RequestContext(**base)
 

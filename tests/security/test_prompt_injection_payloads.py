@@ -16,7 +16,7 @@ A, B = SUBJECTS[0], SUBJECTS[1]
 
 
 def _ctx() -> RequestContext:
-    return RequestContext(user_id="clinician", channel=Channel.api, patient_id=str(A))
+    return RequestContext(user_id="clinician", channel=Channel.api, patient_id=str(A), roles=frozenset({"clinician"}))
 
 
 def _payloads():

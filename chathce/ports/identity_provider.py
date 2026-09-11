@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Optional, Protocol, runtime_checkable
+from datetime import datetime
+from typing import FrozenSet, Optional, Protocol, runtime_checkable
 
 from chathce.domain.identity import AuthSession, Principal
 
@@ -30,3 +31,20 @@ class IdentityProvider(Protocol):
     ) -> Principal: ...
 
     async def reset_password(self, email: str) -> None: ...
+
+    async def has_active_patient_access(
+        self, *, user_id: str, tenant_id: str, subject_id: int | str, service_id: str, at: datetime
+    ) -> bool:
+        """Comprueba en la fuente de concesiones la relacion asistencial vigente."""
+        ...
+
+    async def assign_roles(self, *, user_id: str, tenant_id: str, roles: FrozenSet[str]) -> None:
+        """Actualiza exclusivamente los claims ``app_metadata`` del principal."""
+        ...
+
+    async def grant_patient_access(
+        self, *, user_id: str, tenant_id: str, subject_id: int | str, service_id: str,
+        valid_from: datetime, valid_until: Optional[datetime], granted_by: str,
+    ) -> None:
+        """Concede una relacion asistencial administrada y con vigencia."""
+        ...

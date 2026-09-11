@@ -42,7 +42,8 @@ def build_test_container(
 ) -> Container:
     audit = CollectingAuditSink()
     llm = FakeLLMProvider(list(turns or []))
-    guarded = ScopeGuard(make_provider(make_memory_client()), audit=audit)
+    identity = InMemoryIdentityProvider(allow_all_patient_access_for_tests=True)
+    guarded = ScopeGuard(make_provider(make_memory_client()), audit=audit, patient_access=identity)
     knowledge_repo = knowledge or InMemoryKnowledgeRepository()
     visualizations = InMemoryVisualizationRepository()
 
@@ -62,7 +63,7 @@ def build_test_container(
     chat_service = ChatService(gateway, registry, conversation_service, visualizations, rate_limiter=limiter, audit=audit,
                                config=ChatServiceConfig(rate_limit_enabled=rate_limit), ai_gate=ai_gate)
     return Container(
-        settings=None, audit=audit, llm_provider=llm, clinical_provider=guarded, identity=InMemoryIdentityProvider(),
+        settings=None, audit=audit, llm_provider=llm, clinical_provider=guarded, identity=identity,
         conversations=conversations, analyses=analyses, preferences=InMemoryUserPreferencesRepository(), knowledge=knowledge_repo,
         visualizations=visualizations, registry=registry, gateway=gateway, chat_service=chat_service,
         conversation_service=conversation_service, patient_summary_service=PatientSummaryService(guarded),

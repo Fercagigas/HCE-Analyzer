@@ -22,6 +22,7 @@ order by 1, 2;
 3. Copia y ejecuta completo `db/migrations/0003_drop_exec_sql.sql`.
 4. Copia y ejecuta completo `db/migrations/0004_harden_security_definer_functions.sql`.
 5. Copia y ejecuta completo `db/migrations/0005_rls_usuario_paciente_y_clinical_readonly.sql`.
+6. Copia y ejecuta completo `db/migrations/0006_rbac_abac_relacion_asistencial.sql`.
 
 Si una migracion falla, detente; no ejecutes los pasos posteriores parcialmente y registra el error sin secretos.
 
@@ -44,14 +45,16 @@ El resultado debe incluir las dos funciones `clinical_*` y no incluir `execute_r
 La nueva tabla empieza vacia: el owner debe conceder cada relacion usuario-paciente antes de que una cuenta pueda consultar ese paciente. Sustituye los placeholders por UUID e identificador autorizados:
 
 ```sql
-insert into public.user_patient_access (user_id, subject_id, granted_by)
-values ('<AUTH_USER_UUID>', <MIMIC_SUBJECT_ID>, '<OWNER_AUTH_USER_UUID>')
-on conflict (user_id, subject_id) do nothing;
+insert into public.user_patient_access (user_id, tenant_id, subject_id, service_id, valid_from, granted_by)
+values ('<AUTH_USER_UUID>', '<TENANT_ID>', <MIMIC_SUBJECT_ID>, '<SERVICE_ID>', now(), '<OWNER_AUTH_USER_UUID>')
+on conflict (user_id, tenant_id, subject_id, service_id) do update set valid_from = excluded.valid_from, valid_until = null;
 
-select user_id, subject_id, granted_at
+select user_id, tenant_id, subject_id, service_id, valid_from, valid_until
 from public.user_patient_access
-where user_id = '<AUTH_USER_UUID>' and subject_id = <MIMIC_SUBJECT_ID>;
+where user_id = '<AUTH_USER_UUID>' and tenant_id = '<TENANT_ID>' and subject_id = <MIMIC_SUBJECT_ID>;
 ```
+
+Antes de iniciar la API, asigna en `auth.users.raw_app_meta_data` (mediante el endpoint administrativo o proceso de identidad aprobado) `tenant_id` no vacío y una lista `roles` formada solo por `clinician`, `reviewer`, `admin`, `auditor`, `knowledge_manager` o `researcher`. No uses `public.users.role` ni `user_metadata` como fuente de permisos.
 
 Comprueba que no quedan policies heredadas permisivas y que RLS esta activo:
 

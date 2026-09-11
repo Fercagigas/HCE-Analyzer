@@ -23,7 +23,8 @@ A, B = SUBJECTS[0], SUBJECTS[1]
 
 
 def _context(patient: int, *, tenant: str = "hospital-a", session: str = "shared-tab-session") -> RequestContext:
-    return RequestContext(user_id="clinician", tenant_id=tenant, channel=Channel.api, patient_id=str(patient), session_id=session)
+    return RequestContext(user_id="clinician", tenant_id=tenant, channel=Channel.api, patient_id=str(patient), session_id=session,
+                          roles=frozenset({"clinician"}))
 
 
 @pytest.mark.parametrize("payload", [
