@@ -6,7 +6,7 @@ Capa de inteligencia clínica con IA y RAG sobre MIMIC-IV Clinical Demo 2.2 (hos
 
 ## 🚀 Inicio rápido
 
-- **Estado del proyecto** → [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md) (empezar aquí) | [APRENDIZAJES_FASE2.md](APRENDIZAJES_FASE2.md) | roadmap con estado → [../ROADMAP_HOSPITAL_READY/README.md](../ROADMAP_HOSPITAL_READY/README.md)
+- **Estado del proyecto** → [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md) (empezar aquí) | [../PENDIENTES_PROPIETARIO_FASE2.md](../PENDIENTES_PROPIETARIO_FASE2.md) (pendientes operativos de Fase 2) | [APRENDIZAJES_FASE2.md](APRENDIZAJES_FASE2.md) | roadmap con estado → [../ROADMAP_HOSPITAL_READY/README.md](../ROADMAP_HOSPITAL_READY/README.md)
 - **Producto / dirección** → [product/INTENDED_PURPOSE.md](product/INTENDED_PURPOSE.md) | [product/COMPETITIVE_POSITIONING.md](product/COMPETITIVE_POSITIONING.md)
 - **Usuarios** → [../README.md](../README.md) (instalación, ejecución, uso) | [UNIFIED_CHAT_COMPLETE_GUIDE.md](UNIFIED_CHAT_COMPLETE_GUIDE.md)
 - **Desarrolladores** → [UNIFIED_CHAT_ARCHITECTURE.md](UNIFIED_CHAT_ARCHITECTURE.md) | [UNIFIED_CHAT_TOOL_CREATION.md](UNIFIED_CHAT_TOOL_CREATION.md) | [architecture/INVENTORY.md](architecture/INVENTORY.md) | [../tests/README.md](../tests/README.md)
