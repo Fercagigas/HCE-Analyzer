@@ -12,6 +12,8 @@ reproducible y auditable. Se aplican manualmente en el **SQL Editor** de Supabas
 | `0003_rag_search_functions_snapshot.sql` | Snapshot heredado no ejecutable de `hybrid_search` / `vector_search` | No aplicar; pendiente de definiciones reales |
 | `0004_harden_security_definer_functions.sql` | Endurece funciones SECURITY DEFINER y retira su EXECUTE de la API REST | Despues de `0003` |
 | `0005_rls_usuario_paciente_y_clinical_readonly.sql` | RLS por ownership, concesiones usuario-paciente y rol clinico readonly | Despues de `0004` y antes de exponer datos de producto |
+| `0006_rbac_abac_relacion_asistencial.sql` | Relaciones asistenciales y base RBAC/ABAC | Despues de `0005` |
+| `0007_rag_governance.sql` | Gobierno RAG: tenant, version, vigencia, aprobacion, hash y RPC gobernadas | Despues de `0006` y antes de habilitar retrieval compartido |
 
 ## Procedimiento
 

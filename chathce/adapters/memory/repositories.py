@@ -11,7 +11,7 @@ from chathce.domain.context import RequestContext
 from chathce.domain.conversation import AnalysisRecord, ConversationSession, MessageMetadata, StoredMessage
 from chathce.domain.errors import AuthenticationFailed, NotFound
 from chathce.domain.identity import AuthSession, Principal
-from chathce.domain.knowledge import DocumentRecord, KnowledgeHit, KnowledgeStats, UploadResult
+from chathce.domain.knowledge import DocumentRecord, DocumentStatus, KnowledgeHit, KnowledgeStats, UploadResult
 from chathce.domain.visualization import VisualizationArtifact
 
 
@@ -208,31 +208,95 @@ class InMemoryKnowledgeRepository:
     async def search(self, ctx: RequestContext, *, query: str, top_k: int = 5,
                      specialty: Optional[str] = None) -> List[KnowledgeHit]:
         self.queries.append(query)
-        hits = [h for h in self.hits if specialty is None or h.specialty == specialty]
+        today = ctx.created_at.date()
+        candidates = [
+            h for h in self.hits
+            # ``default`` mantiene los fixtures historicos del fake; los datos
+            # gobernados de pruebas siempre declaran tenant explicito y nunca
+            # atraviesan esta frontera. El adapter Supabase no admite comodin.
+            if h.tenant_id in (ctx.tenant_id, "default")
+            and h.status == DocumentStatus.approved
+            and h.effective_from <= today
+            and (h.effective_to is None or h.effective_to >= today)
+            and (specialty is None or h.specialty == specialty)
+        ]
+        # Todas las partes de una misma version se conservan; entre versiones
+        # se selecciona de forma determinista la vigente mas reciente.
+        selected_versions: Dict[str, KnowledgeHit] = {}
+        for hit in candidates:
+            key = hit.document_key or hit.filename
+            previous = selected_versions.get(key)
+            if previous is None or _knowledge_version_key(hit) > _knowledge_version_key(previous):
+                selected_versions[key] = hit
+        hits = [h for h in candidates if selected_versions[h.document_key or h.filename].version == h.version]
         return hits[:top_k]
 
-    async def add_document(self, ctx: RequestContext, *, file_path: str, metadata: Dict[str, str]) -> UploadResult:
+    async def find_by_content_hash(self, ctx: RequestContext, *, content_hash: str) -> bool:
+        return any(doc.tenant_id == ctx.tenant_id and doc.content_hash == content_hash for doc in self.documents.values())
+
+    async def create_draft(self, ctx: RequestContext, *, file_path: str, metadata: Dict[str, str]) -> UploadResult:
         document_id = uuid.uuid4().hex
         filename = metadata.get("original_filename") or file_path.replace("\\", "/").rsplit("/", 1)[-1]
         self.documents[document_id] = DocumentRecord(
-            document_id=document_id, filename=filename, doc_type=metadata.get("document_type"),
-            specialty=metadata.get("specialty"), chunks=1, uploaded_at=_now(), metadata=dict(metadata),
+            document_id=document_id, filename=filename, doc_type=metadata.get("doc_type") or metadata.get("document_type"),
+            specialty=metadata.get("specialty"), chunks=0, uploaded_at=_now(),
+            tenant_id=ctx.tenant_id, document_key=metadata.get("document_key") or metadata.get("title") or filename,
+            version=metadata.get("version", ""), effective_from=datetime.fromisoformat(metadata["effective_from"]).date(),
+            effective_to=(datetime.fromisoformat(metadata["effective_to"]).date() if metadata.get("effective_to") else None),
+            status=DocumentStatus.draft, content_hash=metadata.get("content_hash", ""), metadata=dict(metadata),
         )
-        return UploadResult(success=True, document_id=document_id, filename=filename, chunks_processed=1,
-                            message="Documento indexado (memoria)")
+        return UploadResult(success=True, document_id=document_id, filename=filename, chunks_processed=0,
+                            status=DocumentStatus.draft, message="Documento cargado como borrador (memoria)")
+
+    async def approve_document(self, ctx: RequestContext, *, document_id: str, approved_by: str) -> UploadResult:
+        document = self.documents.get(document_id)
+        if document is None or document.tenant_id != ctx.tenant_id:
+            return UploadResult(success=False, filename="documento", error="documento_no_encontrado")
+        if document.metadata.get("security_flags"):
+            return UploadResult(success=False, document_id=document_id, filename=document.filename,
+                                error="revision_de_seguridad_pendiente", message="El documento marcado no puede aprobarse")
+        now = _now()
+        approved = document.model_copy(update={"status": DocumentStatus.approved, "approved_by": approved_by, "approved_at": now, "chunks": 1})
+        self.documents[document_id] = approved
+        self.hits.append(KnowledgeHit(
+            chunk_id=f"{document_id}:1", document_id=document_id, filename=document.filename, content="Contenido aprobado (memoria)",
+            specialty=document.specialty, doc_type=document.doc_type, tenant_id=document.tenant_id,
+            document_key=document.document_key, version=document.version, effective_from=document.effective_from,
+            effective_to=document.effective_to, status=DocumentStatus.approved, approved_by=approved_by,
+            approved_at=now, content_hash=document.content_hash,
+        ))
+        return UploadResult(success=True, document_id=document_id, filename=document.filename, chunks_processed=1,
+                            status=DocumentStatus.approved, message="Documento aprobado (memoria)")
+
+    async def retire_document(self, ctx: RequestContext, *, document_id: str) -> bool:
+        document = self.documents.get(document_id)
+        if document is None or document.tenant_id != ctx.tenant_id:
+            return False
+        self.documents[document_id] = document.model_copy(update={"status": DocumentStatus.retired})
+        self.hits = [h.model_copy(update={"status": DocumentStatus.retired}) if h.document_id == document_id else h for h in self.hits]
+        return True
 
     async def list_documents(self, ctx: RequestContext) -> List[DocumentRecord]:
-        return list(self.documents.values())
+        today = ctx.created_at.date()
+        return [doc for doc in self.documents.values() if doc.tenant_id == ctx.tenant_id and doc.status == DocumentStatus.approved
+                and doc.effective_from <= today and (doc.effective_to is None or doc.effective_to >= today)]
 
     async def delete_document(self, ctx: RequestContext, *, document_id: str) -> int:
         return 1 if self.documents.pop(document_id, None) else 0
 
     async def stats(self, ctx: RequestContext) -> KnowledgeStats:
-        sources = sorted({d.filename for d in self.documents.values()})
-        return KnowledgeStats(total_documents=len(self.documents), unique_sources=len(sources), sources=sources)
+        documents = await self.list_documents(ctx)
+        sources = sorted({d.filename for d in documents})
+        return KnowledgeStats(total_documents=len(documents), unique_sources=len(sources), sources=sources)
 
     async def health(self) -> ProviderHealth:
         return ProviderHealth(ok=True, latency_ms=0, detail="memory")
+
+
+def _knowledge_version_key(hit: KnowledgeHit) -> tuple:
+    """Ordena versiones simples (2.10 > 2.9) y conserva fallback estable."""
+    tokens = tuple((1, int(part)) if part.isdigit() else (0, part.lower()) for part in hit.version.replace("-", ".").split("."))
+    return hit.effective_from, tokens
 
 
 class InMemoryVisualizationRepository:

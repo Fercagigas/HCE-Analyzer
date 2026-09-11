@@ -5,6 +5,7 @@ Handles document upload, processing, indexing, and management for the RAG system
 """
 import os
 import logging
+import warnings
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 from datetime import datetime
@@ -56,6 +57,12 @@ class DocumentManager:
             
         Requirements: 4.2, 4.3, 4.4
         """
+        metadata = metadata or {}
+        # La API legacy indexaba al instante. Solo queda como primitiva interna
+        # de la aprobacion gobernada para impedir bypasses desde la UI antigua.
+        if metadata.get('_governance_approved') is not True or metadata.get('status') != 'approved':
+            warnings.warn("DocumentManager.upload_document esta deprecado; use KnowledgeService.upload/approve", DeprecationWarning, stacklevel=2)
+            return {'success': False, 'error': 'ingesta_legacy_bloqueada_requiere_aprobacion', 'file': file_path}
         try:
             logger.info(f"Starting document upload: {file_path}")
             
@@ -99,7 +106,7 @@ class DocumentManager:
                 'file_size_mb': round(file_size_mb, 2),
                 'file_extension': file_extension,
                 'uploaded_at': datetime.now().isoformat(),
-                'document_type': 'clinical_guide'
+                'document_type': metadata.get('doc_type') or metadata.get('document_type') or 'clinical_guide'
             }
             
             # Add custom metadata if provided (but don't override filename)
@@ -467,6 +474,10 @@ class DocumentManager:
         try:
             from services.supabase_services import ClinicalDocumentService
             doc_service = ClinicalDocumentService()
+            existing_id = doc_metadata.get('document_id')
+            if existing_id:
+                doc_service.mark_as_processed(existing_id)
+                return
 
             success, record = doc_service.save_document(
                 filename=doc_metadata.get('original_filename', doc_metadata.get('filename', '')),
@@ -490,6 +501,83 @@ class DocumentManager:
         except Exception as e:
             # No bloquear el flujo principal si falla el registro en Supabase
             logger.warning(f"Error registrando documento en Supabase: {e}")
+
+    # API gobernada: el pipeline de aplicacion valida hash y contenido antes
+    # de invocar estos metodos; esta capa persiste el borrador e indexa solo al
+    # confirmar una aprobacion humana.
+    def create_governed_draft(self, file_path: str, metadata: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            from services.supabase_services import ClinicalDocumentService
+            path = Path(file_path)
+            governance = {
+                'tenant_id': metadata['tenant_id'],
+                'document_key': metadata.get('document_key') or metadata['title'],
+                'version': metadata['version'], 'effective_from': metadata['effective_from'],
+                'effective_to': metadata.get('effective_to'), 'status': 'draft',
+                'content_hash': metadata['content_hash'],
+            }
+            success, record = ClinicalDocumentService().save_document(
+                filename=metadata.get('original_filename') or path.name, title=metadata['title'],
+                document_type=metadata.get('doc_type'), specialty=metadata.get('specialty'), file_path=str(path),
+                metadata=dict(metadata), governance=governance,
+            )
+            if not success or not record:
+                return {'success': False, 'error': 'no_se_pudo_crear_borrador', 'file': file_path}
+            return {'success': True, 'message': 'Documento cargado como borrador', 'file': file_path,
+                    'metadata': {'document_id': record['id']}, 'chunks_processed': 0}
+        except Exception as exc:
+            logger.warning("No se pudo crear borrador gobernado: %s", exc)
+            return {'success': False, 'error': 'no_se_pudo_crear_borrador', 'file': file_path}
+
+    def find_governed_document_by_hash(self, tenant_id: str, content_hash: str) -> bool:
+        from services.supabase_services import ClinicalDocumentService
+        return bool(ClinicalDocumentService().find_by_content_hash(tenant_id, content_hash))
+
+    def approve_governed_document(self, document_id: str, tenant_id: str, approved_by: str) -> Dict[str, Any]:
+        from services.supabase_services import ClinicalDocumentService
+        service = ClinicalDocumentService()
+        document = service.get_governed_document(document_id, tenant_id)
+        if not document:
+            return {'success': False, 'error': 'documento_no_encontrado'}
+        if document.get('status') != 'draft':
+            return {'success': False, 'error': 'transicion_de_estado_invalida'}
+        metadata = dict(document.get('metadata') or {})
+        if metadata.get('security_flags'):
+            return {'success': False, 'error': 'revision_de_seguridad_pendiente'}
+        metadata.update({
+            'original_filename': document.get('filename'), 'title': document.get('title') or document.get('filename'),
+            'doc_type': document.get('document_type'), 'specialty': document.get('specialty'),
+            'document_id': document_id, 'tenant_id': tenant_id, 'document_key': document.get('document_key'),
+            'version': document.get('version'), 'effective_from': str(document.get('effective_from')),
+            'effective_to': str(document.get('effective_to')) if document.get('effective_to') else None,
+            'content_hash': document.get('content_hash'), 'status': 'approved', 'approved_by': approved_by,
+            'approved_at': datetime.utcnow().isoformat(), '_governance_approved': True,
+        })
+        indexed = self.upload_document(document.get('file_path'), metadata)
+        if not indexed.get('success'):
+            return indexed
+        if not service.update_governance(document_id, tenant_id, {
+            'status': 'approved', 'approved_by': approved_by, 'approved_at': metadata['approved_at'], 'processed': True,
+        }):
+            return {'success': False, 'error': 'no_se_pudo_confirmar_aprobacion'}
+        return {'success': True, 'message': 'Documento aprobado e indexado', 'filename': document.get('filename'),
+                'chunks_processed': indexed.get('chunks_processed', 0)}
+
+    def retire_governed_document(self, document_id: str, tenant_id: str) -> Dict[str, Any]:
+        from services.supabase_services import ClinicalDocumentService
+        if not ClinicalDocumentService().update_governance(document_id, tenant_id, {'status': 'retired'}):
+            return {'success': False, 'error': 'documento_no_encontrado'}
+        try:
+            self.rag_service.store.client.table('rag_chunks').update({'status': 'retired'}).eq('document_id', document_id).eq('tenant_id', tenant_id).execute()
+        except Exception as exc:
+            logger.warning("No se pudieron retirar chunks del documento: %s", exc)
+            return {'success': False, 'error': 'no_se_pudieron_retirar_chunks'}
+        return {'success': True}
+
+    def list_governed_documents(self, tenant_id: str) -> Dict[str, Any]:
+        from services.supabase_services import ClinicalDocumentService
+        return {'success': True, 'documents': ClinicalDocumentService().list_governed_documents(tenant_id)}
+
     def _delete_from_clinical_documents(self, document_id: str) -> None:
         """
         Elimina el registro del documento de la tabla clinical_documents en Supabase.
