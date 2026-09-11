@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 from typing import List, Optional
 
@@ -39,6 +39,10 @@ class Evidence(BaseModel):
     units: Optional[str] = None
     excerpt: Optional[str] = None
     page: Optional[int] = None
+    document_version: Optional[str] = None
+    document_status: Optional[str] = None
+    effective_from: Optional[date] = None
+    effective_to: Optional[date] = None
     provenance: Provenance
 
 

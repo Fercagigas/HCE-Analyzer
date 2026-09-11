@@ -40,12 +40,17 @@ def build_knowledge_tool(repository: Any) -> Tool:
             documents.append({
                 "rank": rank, "filename": hit.filename, "page": hit.page, "specialty": hit.specialty,
                 "doc_type": hit.doc_type, "score": hit.score, "content": excerpt, "evidence_id": evidence_id,
+                "version": hit.version, "status": hit.status.value,
             })
             sources.append(Source(filename=hit.filename, page=hit.page, specialty=hit.specialty, doc_type=hit.doc_type,
-                                  tool="search_clinical_documents", retrieved_content=excerpt, evidence_id=evidence_id, score=hit.score))
+                                  tool="search_clinical_documents", retrieved_content=excerpt, evidence_id=evidence_id, score=hit.score,
+                                  version=hit.version, status=hit.status, effective_from=hit.effective_from,
+                                  effective_to=hit.effective_to))
             evidence.append(Evidence(
                 evidence_id=evidence_id, type=EvidenceType.guideline_document, source_system="rag_chunks", resource_type="chunk",
                 resource_id=hit.chunk_id, excerpt=excerpt[:300], page=hit.page,
+                document_version=hit.version, document_status=hit.status.value,
+                effective_from=hit.effective_from, effective_to=hit.effective_to,
                 provenance=Provenance(tool_name="search_clinical_documents", tool_use_id="", trace_id=ctx.trace_id,
                                       retrieved_at=now, provider="knowledge_repository"),
             ))

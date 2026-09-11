@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
+
+
+class DocumentStatus(str, Enum):
+    """Estado de gobierno de un documento del corpus clinico."""
+
+    draft = "draft"
+    approved = "approved"
+    retired = "retired"
 
 
 class Source(BaseModel):
@@ -20,6 +29,10 @@ class Source(BaseModel):
     retrieved_content: str = ""
     evidence_id: str
     score: Optional[float] = None
+    version: str = "legacy-test"
+    status: DocumentStatus = DocumentStatus.approved
+    effective_from: date = date(1970, 1, 1)
+    effective_to: Optional[date] = None
 
 
 class KnowledgeHit(BaseModel):
@@ -32,6 +45,15 @@ class KnowledgeHit(BaseModel):
     doc_type: Optional[str] = None
     content: str
     score: Optional[float] = None
+    tenant_id: str = "default"
+    document_key: Optional[str] = None
+    version: str = "legacy-test"
+    effective_from: date = date(1970, 1, 1)
+    effective_to: Optional[date] = None
+    status: DocumentStatus = DocumentStatus.approved
+    approved_by: Optional[str] = None
+    approved_at: Optional[datetime] = None
+    content_hash: str = ""
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
@@ -44,6 +66,15 @@ class DocumentRecord(BaseModel):
     specialty: Optional[str] = None
     chunks: Optional[int] = None
     uploaded_at: Optional[datetime] = None
+    tenant_id: str = "default"
+    document_key: Optional[str] = None
+    version: str = "legacy-test"
+    effective_from: date = date(1970, 1, 1)
+    effective_to: Optional[date] = None
+    status: DocumentStatus = DocumentStatus.approved
+    approved_by: Optional[str] = None
+    approved_at: Optional[datetime] = None
+    content_hash: str = ""
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
@@ -55,6 +86,9 @@ class UploadResult(BaseModel):
     chunks_processed: int = 0
     message: str = ""
     error: Optional[str] = None
+    status: DocumentStatus = DocumentStatus.draft
+    content_hash: Optional[str] = None
+    security_flags: List[str] = Field(default_factory=list)
 
 
 class KnowledgeStats(BaseModel):

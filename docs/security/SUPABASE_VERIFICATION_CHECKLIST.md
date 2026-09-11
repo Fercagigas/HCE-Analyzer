@@ -99,7 +99,7 @@ order by schemaname, relname;
 
 ### Fase 2 — cierre RLS y clave clinica
 
-- [ ] Se aplicaron, en orden, `0001`, `0002`, `0003`, `0004` y `0005`; la evidencia protegida incluye fecha, entorno y ejecutor.
+- [ ] Se aplicaron, en orden, `0001`, `0002`, `0003`, `0004`, `0005`, `0006` y `0007`; la evidencia protegida incluye fecha, entorno y ejecutor.
 - [ ] Los repositorios de producto usan `SUPABASE_ANON_KEY`/`SUPABASE_PUBLISHABLE_KEY` y el JWT del usuario; `SUPABASE_KEY` no es `service_role` en el runtime.
 - [ ] RLS esta forzado en `chat_sessions`, `chat_messages`, `analyses`, `user_preferences`, `clinical_documents`, `rag_chunks` y `user_patient_access`; no queda una policy heredada permisiva.
 - [ ] Se probaron dos usuarios: el segundo no puede leer, renombrar ni borrar la conversacion del primero.
@@ -330,9 +330,15 @@ Test-NetConnection TU_POOLER_AQUI -Port 6543
 select
   document_id,
   filename,
+  tenant_id,
+  status,
+  version,
+  effective_from,
+  effective_to,
+  approved_by,
+  approved_at,
+  content_hash,
   count(*) as chunks,
-  count(distinct metadata ->> 'version') as version_values,
-  array_remove(array_agg(distinct metadata ->> 'version'), null) as versions,
   count(distinct metadata ->> 'owner') as owner_values,
   array_remove(array_agg(distinct metadata ->> 'owner'), null) as owners,
   count(distinct metadata ->> 'license') as license_values,
@@ -342,12 +348,13 @@ select
   count(distinct metadata ->> 'review_date') as review_date_values,
   array_remove(array_agg(distinct metadata ->> 'review_date'), null) as review_dates
 from public.rag_chunks
-group by document_id, filename
-order by filename, document_id;
+group by document_id, filename, tenant_id, status, version, effective_from,
+         effective_to, approved_by, approved_at, content_hash
+order by tenant_id, filename, document_id;
 ```
 
   Si un contador vale `0`, falta metadata; si vale más de `1`, hay metadata contradictoria entre chunks. No abras el texto de los chunks. Contrasta los arrays únicamente dentro de la evidencia protegida con el registro documental aprobado.
-- **Resultado correcto:** cada contador de metadata vale exactamente `1`, existe correspondencia uno a uno con el registro y owner, licencia, versión, fecha de revisión/vigencia y aprobación están actuales; corpus segregado por tenant cuando aplique; retirada definida.
+- **Resultado correcto:** cada contador de metadata vale exactamente `1`, `tenant_id`, versión, vigencia, estado, aprobador y hash están presentes y son coherentes con el registro documental; solo `approved` y vigente participa en retrieval; corpus segregado por tenant; retirada definida.
 - **Resultado problemático:** contador `0` o mayor que `1`; documento desconocido, vencido, sin licencia/owner/aprobación, duplicado o de otro tenant; metadata insuficiente o contradictoria; no existe registro externo autorizado.
 - **Gravedad si sale mal:** **Crítica** si el corpus es compartido, clínico o cross-tenant; **Alta** para demo controlada.
 - **Marca:** `[ ] OK  [ ] PROBLEMA  [ ] NO VERIFICADO` — guarda inventario protegido; no lo adjuntes al repo si los nombres son sensibles.
@@ -471,6 +478,7 @@ Registro de aplicacion de migraciones (rellenar por el propietario, sin valores 
 | `0004_harden_security_definer_functions.sql` | 2026-09-02 | Supabase (proyecto uoqvzaeuvylmvtkhaovm) | advisor ya no reporta las 5 funciones SECURITY DEFINER; `enforce_max_sessions` con `search_path` fijo; triggers operativos |
 | `0005_rls_usuario_paciente_y_clinical_readonly.sql` | pendiente |  | aplicar antes de la validación live |
 | `0006_rbac_abac_relacion_asistencial.sql` | pendiente |  | tenant, servicio y vigencia de relación asistencial; comprobar allow/deny |
+| `0007_rag_governance.sql` | pendiente |  | RLS RAG, RPC con tenant/fecha y revisión de borradores heredados |
 
 ### RBAC y ABAC contextual (Fase 2, ADR 0170)
 

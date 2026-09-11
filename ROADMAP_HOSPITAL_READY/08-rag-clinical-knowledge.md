@@ -1,17 +1,17 @@
 # 08 — RAG como Clinical Knowledge System
 
-## Estado a 2 de septiembre de 2026 (cierre de Fase 1)
+## Estado a 11 de septiembre de 2026 (Fase 2 - oleada 2)
 
 Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencias: ADRs en `docs/decisions/`, evidencia en `docs/baseline/FASE1_BASELINE.md`.
 
 | Tarea | Estado | Evidencia / nota |
 |---|---|---|
-| P0.1 Metadata obligatoria | 🟡 | `filename`, `page`, `specialty`, `doc_type`, `chunk_id`. Faltan versión, vigencia, estado, aprobación, tenant |
-| P0.2 Solo contenido aprobado | ⏳ | |
-| P0.3 Version resolution | ⏳ | |
-| P0.4 Secure ingestion pipeline | ⏳ | Ingesta legacy (`services/unified_chat/document_manager.py`) sin scan ni aprobación |
-| P0.5 Tenant isolation | ⏳ | `rag_chunks` global |
-| P0.6 Retrieval provenance | ✅ | `Source` y `Evidence(type=guideline_document)` con documento, página, score y `evidence_id` |
+| P0.1 Metadata obligatoria | ✅ | 0007: tenant, clave documental, versión, vigencia, estado, aprobador, fecha y hash en documento/chunk |
+| P0.2 Solo contenido aprobado | ✅ | RPC, RLS y repositorio filtran `approved` y vigente; legado migra a `draft` |
+| P0.3 Version resolution | ✅ | Selección determinista de la versión vigente más reciente por `document_key` |
+| P0.4 Secure ingestion pipeline | ✅ | Borrador, validación, SHA-256/deduplicación, scan básico de inyección y aprobación humana; API legacy bloqueada |
+| P0.5 Tenant isolation | ✅ | `tenant_id` en RLS, RPC y filtro defensivo del repositorio |
+| P0.6 Retrieval provenance | ✅ | `Source`/`Evidence` incluyen documento, página, score, versión, estado y vigencia |
 | P1.1 Hybrid retrieval | ✅ | Legacy vigente (`hybrid_search` + reranker) envuelto por `KnowledgeRepository` |
 | P1.2 – P1.4 | ⏳ | |
 

@@ -39,6 +39,7 @@ class ClinicalDocumentService:
         specialty: Optional[str] = None,
         file_path: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
+        governance: Optional[Dict[str, Any]] = None,
     ) -> Tuple[bool, Optional[Dict[str, Any]]]:
         """
         Registra un documento clínico en Supabase.
@@ -68,6 +69,18 @@ class ClinicalDocumentService:
                 "metadata": metadata or {},
                 "processed": False,
             }
+            if governance:
+                record.update({
+                    "tenant_id": governance["tenant_id"],
+                    "document_key": governance["document_key"],
+                    "version": governance["version"],
+                    "effective_from": governance["effective_from"],
+                    "effective_to": governance.get("effective_to"),
+                    "status": governance.get("status", "draft"),
+                    "approved_by": governance.get("approved_by"),
+                    "approved_at": governance.get("approved_at"),
+                    "content_hash": governance["content_hash"],
+                })
 
             result = self.client.table("clinical_documents").insert(record).execute()
 
@@ -92,6 +105,46 @@ class ClinicalDocumentService:
         except Exception as e:
             logger.error(f"Error actualizando documento: {e}")
             return False
+
+    def find_by_content_hash(self, tenant_id: str, content_hash: str) -> Optional[Dict[str, Any]]:
+        if not self.client:
+            return None
+        try:
+            result = self.client.table("clinical_documents").select("id").eq("tenant_id", tenant_id).eq("content_hash", content_hash).limit(1).execute()
+            return result.data[0] if result.data else None
+        except Exception as e:
+            logger.error(f"Error comprobando hash documental: {e}")
+            return None
+
+    def get_governed_document(self, document_id: str, tenant_id: str) -> Optional[Dict[str, Any]]:
+        if not self.client:
+            return None
+        try:
+            result = self.client.table("clinical_documents").select("*").eq("id", document_id).eq("tenant_id", tenant_id).limit(1).execute()
+            return result.data[0] if result.data else None
+        except Exception as e:
+            logger.error(f"Error obteniendo documento gobernado: {e}")
+            return None
+
+    def update_governance(self, document_id: str, tenant_id: str, values: Dict[str, Any]) -> bool:
+        if not self.client:
+            return False
+        try:
+            self.client.table("clinical_documents").update(values).eq("id", document_id).eq("tenant_id", tenant_id).execute()
+            return True
+        except Exception as e:
+            logger.error(f"Error actualizando gobierno documental: {e}")
+            return False
+
+    def list_governed_documents(self, tenant_id: str) -> List[Dict[str, Any]]:
+        if not self.client:
+            return []
+        try:
+            result = self.client.table("clinical_documents").select("*").eq("tenant_id", tenant_id).execute()
+            return result.data or []
+        except Exception as e:
+            logger.error(f"Error listando documentos gobernados: {e}")
+            return []
 
     def list_documents(
         self,

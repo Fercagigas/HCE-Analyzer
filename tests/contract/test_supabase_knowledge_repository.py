@@ -15,16 +15,16 @@ class FakeRag:
         self.calls = []
         self.results = [
             {"content": "La sepsis se define como...", "score": 0.91, "source": "guia_sepsis.pdf",
-             "metadata": {"filename": "guia_sepsis.pdf", "page": "12", "specialty": "Urgencias", "document_type": "guia_clinica", "document_id": "d1", "chunk_id": "c1"}},
-            {"content": "Hipertension arterial...", "score": 0.4, "source": "protocolo_hta.pdf", "metadata": {"filename": "protocolo_hta.pdf", "page": 4}},
+             "metadata": {"filename": "guia_sepsis.pdf", "page": "12", "specialty": "Urgencias", "document_type": "guia_clinica", "document_id": "d1", "chunk_id": "c1", "tenant_id": "default", "document_key": "sepsis", "version": "2", "effective_from": "2020-01-01", "status": "approved", "content_hash": "a" * 64}},
+            {"content": "Hipertension arterial...", "score": 0.4, "source": "protocolo_hta.pdf", "metadata": {"filename": "protocolo_hta.pdf", "page": 4, "tenant_id": "default", "document_key": "hta", "version": "1", "effective_from": "2020-01-01", "status": "approved", "content_hash": "b" * 64}},
         ]
 
-    def search(self, query, top_k=5, rerank=True):
-        self.calls.append(("search", query, top_k, rerank))
+    def search(self, query, top_k=5, rerank=True, **kwargs):
+        self.calls.append(("search", query, top_k, rerank, kwargs))
         return self.results[:top_k]
 
-    def search_with_filter(self, query, filter_dict, top_k=5):
-        self.calls.append(("filter", query, filter_dict, top_k))
+    def search_with_filter(self, query, filter_dict, top_k=5, **kwargs):
+        self.calls.append(("filter", query, filter_dict, top_k, kwargs))
         return [r for r in self.results if r["metadata"].get("specialty") == filter_dict.get("specialty")][:top_k]
 
     def get_collection_stats(self):
@@ -35,12 +35,23 @@ class FakeDocumentManager:
     def __init__(self):
         self.deleted = []
 
-    def upload_document(self, file_path, metadata):
+    def find_governed_document_by_hash(self, tenant_id, content_hash):
+        return False
+
+    def create_governed_draft(self, file_path, metadata):
         return {"success": True, "message": "ok", "file": file_path, "chunks_processed": 7, "metadata": {"document_id": "d9", **metadata}}
 
-    def list_documents(self):
+    def approve_governed_document(self, document_id, tenant_id, approved_by):
+        return {"success": True, "document_id": document_id, "filename": "guia_sepsis.pdf", "chunks_processed": 7}
+
+    def retire_governed_document(self, document_id, tenant_id):
+        return {"success": True}
+
+    def list_governed_documents(self, tenant_id):
         return {"success": True, "documents": [{"filename": "guia_sepsis.pdf", "source": "guia_sepsis.pdf", "indexed": True, "id": "d1",
-                                                "document_type": "guia_clinica", "specialty": "Urgencias", "upload_date": "2026-01-01T10:00:00"}],
+                                                "document_type": "guia_clinica", "specialty": "Urgencias", "upload_date": "2026-01-01T10:00:00",
+                                                "tenant_id": tenant_id, "document_key": "sepsis", "version": "2", "effective_from": "2020-01-01",
+                                                "status": "approved", "approved_by": "manager", "approved_at": "2026-01-01T10:00:00", "content_hash": "a" * 64}],
                 "summary": {"total_documents": 42}}
 
     def delete_document(self, document_id):
@@ -62,7 +73,7 @@ async def test_search_maps_hits_and_respects_top_k(repo):
     repository, rag, _ = repo
     assert isinstance(repository, KnowledgeRepository)
     hits = await repository.search(_ctx(), query="sepsis", top_k=1)
-    assert len(hits) == 1 and rag.calls[-1] == ("search", "sepsis", 1, True)
+    assert len(hits) == 1 and rag.calls[-1][:4] == ("search", "sepsis", 3, True)
     hit = hits[0]
     assert hit.filename == "guia_sepsis.pdf" and hit.page == 12 and hit.specialty == "Urgencias" and hit.doc_type == "guia_clinica"
     assert hit.chunk_id == "c1" and hit.document_id == "d1" and hit.score == 0.91 and hit.metadata["rank"] == 1
@@ -78,7 +89,7 @@ async def test_search_with_specialty_uses_filter(repo):
 
 async def test_documents_lifecycle(repo):
     repository, _, dm = repo
-    upload = await repository.add_document(_ctx(), file_path="C:/tmp/guia.pdf", metadata={"original_filename": "guia.pdf", "specialty": "Urgencias"})
+    upload = await repository.create_draft(_ctx(), file_path="C:/tmp/guia.pdf", metadata={"original_filename": "guia.pdf", "specialty": "Urgencias"})
     assert upload.success and upload.document_id == "d9" and upload.filename == "guia.pdf" and upload.chunks_processed == 7
     docs = await repository.list_documents(_ctx())
     assert docs[0].document_id == "d1" and docs[0].uploaded_at is not None

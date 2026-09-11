@@ -98,6 +98,17 @@ class SupabaseVectorStore:
             specialty = doc_metadata.get("specialty")
             document_type = doc_metadata.get("document_type")
             document_id = doc_metadata.get("document_id", "unknown")
+            governance = {
+                "tenant_id": doc_metadata.get("tenant_id"),
+                "document_key": doc_metadata.get("document_key"),
+                "version": doc_metadata.get("version"),
+                "effective_from": doc_metadata.get("effective_from"),
+                "effective_to": doc_metadata.get("effective_to"),
+                "status": doc_metadata.get("status"),
+                "approved_by": doc_metadata.get("approved_by"),
+                "approved_at": doc_metadata.get("approved_at"),
+                "content_hash": doc_metadata.get("content_hash"),
+            }
 
             # 1. Generate embeddings for child chunks
             child_texts = [_sanitize_text(c["content"]) for c in child_chunks]
@@ -112,11 +123,12 @@ class SupabaseVectorStore:
                     "parent_id": None,
                     "content": _sanitize_text(parent["content"]),
                     "embedding": None,
-                    "metadata": parent.get("metadata", {}),
+                    "metadata": {**parent.get("metadata", {}), **governance},
                     "is_parent": True,
                     "filename": filename,
                     "specialty": specialty,
                     "document_type": document_type,
+                    **governance,
                 })
 
             if parent_records:
@@ -131,11 +143,12 @@ class SupabaseVectorStore:
                     "parent_id": child["metadata"]["parent_id"] if isinstance(child, dict) else None,
                     "content": _sanitize_text(child["content"]),
                     "embedding": emb,
-                    "metadata": child.get("metadata", {}),
+                    "metadata": {**child.get("metadata", {}), **governance},
                     "is_parent": False,
                     "filename": filename,
                     "specialty": specialty,
                     "document_type": document_type,
+                    **governance,
                 })
 
             # Insert in batches of 50 to avoid payload limits
@@ -159,7 +172,7 @@ class SupabaseVectorStore:
             logger.error(f"Error storing chunks: {e}")
             return {"success": False, "error": str(e)}
 
-    def get_parent_chunk(self, parent_id: str) -> Optional[Dict[str, Any]]:
+    def get_parent_chunk(self, parent_id: str, *, tenant_id: Optional[str] = None, as_of: Optional[str] = None) -> Optional[Dict[str, Any]]:
         """
         Retrieve a parent chunk by its chunk_id.
 
@@ -172,14 +185,18 @@ class SupabaseVectorStore:
         if not self.client:
             return None
         try:
-            result = (
+            query = (
                 self.client.table(self.TABLE_NAME)
                 .select("chunk_id, content, metadata, filename")
                 .eq("chunk_id", parent_id)
                 .eq("is_parent", True)
-                .limit(1)
-                .execute()
             )
+            if tenant_id:
+                query = query.eq("tenant_id", tenant_id)
+            query = query.eq("status", "approved")
+            if as_of:
+                query = query.lte("effective_from", as_of).or_(f"effective_to.is.null,effective_to.gte.{as_of}")
+            result = query.limit(1).execute()
             if result.data:
                 return result.data[0]
             return None
@@ -273,7 +290,7 @@ class SupabaseVectorStore:
     # ─── Search Operations ─────────────────────────────────────────────
 
     def hybrid_search(
-        self, query: str, top_k: int = 10
+        self, query: str, top_k: int = 10, *, tenant_id: Optional[str] = None, as_of: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """
         Perform hybrid search combining vector similarity and full-text search
@@ -295,19 +312,16 @@ class SupabaseVectorStore:
             query_embedding = self.embeddings.embed_query(query)
 
             # Call hybrid_search RPC function
-            result = self.client.rpc(
-                "hybrid_search",
-                {
-                    "query_embedding": query_embedding,
-                    "query_text": query,
-                    "match_count": top_k,
-                    "rrf_k": 60,
-                },
-            ).execute()
+            params = {"query_embedding": query_embedding, "query_text": query, "match_count": top_k, "rrf_k": 60}
+            if tenant_id is not None:
+                params["query_tenant_id"] = tenant_id
+            if as_of is not None:
+                params["query_as_of"] = as_of
+            result = self.client.rpc("hybrid_search", params).execute()
 
             if not result.data:
                 # Fallback to vector-only search if hybrid returns nothing
-                return self.vector_search(query, top_k)
+                return self.vector_search(query, top_k, tenant_id=tenant_id, as_of=as_of)
 
             results = []
             for row in result.data:
@@ -327,12 +341,12 @@ class SupabaseVectorStore:
             logger.error(f"Error in hybrid search: {e}")
             # Fallback to vector-only
             try:
-                return self.vector_search(query, top_k)
+                return self.vector_search(query, top_k, tenant_id=tenant_id, as_of=as_of)
             except Exception:
                 return []
 
     def vector_search(
-        self, query: str, top_k: int = 10
+        self, query: str, top_k: int = 10, *, tenant_id: Optional[str] = None, as_of: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """
         Perform vector-only similarity search.
@@ -350,13 +364,12 @@ class SupabaseVectorStore:
         try:
             query_embedding = self.embeddings.embed_query(query)
 
-            result = self.client.rpc(
-                "vector_search",
-                {
-                    "query_embedding": query_embedding,
-                    "match_count": top_k,
-                },
-            ).execute()
+            params = {"query_embedding": query_embedding, "match_count": top_k}
+            if tenant_id is not None:
+                params["query_tenant_id"] = tenant_id
+            if as_of is not None:
+                params["query_as_of"] = as_of
+            result = self.client.rpc("vector_search", params).execute()
 
             results = []
             for row in (result.data or []):

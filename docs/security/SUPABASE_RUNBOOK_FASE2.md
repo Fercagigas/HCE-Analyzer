@@ -23,6 +23,7 @@ order by 1, 2;
 4. Copia y ejecuta completo `db/migrations/0004_harden_security_definer_functions.sql`.
 5. Copia y ejecuta completo `db/migrations/0005_rls_usuario_paciente_y_clinical_readonly.sql`.
 6. Copia y ejecuta completo `db/migrations/0006_rbac_abac_relacion_asistencial.sql`.
+7. Copia y ejecuta completo `db/migrations/0007_rag_governance.sql`.
 
 Si una migracion falla, detente; no ejecutes los pasos posteriores parcialmente y registra el error sin secretos.
 
@@ -69,6 +70,8 @@ order by c.relname, p.policyname;
 ```
 
 Todos los objetos existentes deben tener `relrowsecurity = true`; las policies de sesiones, analisis y preferencias deben referirse a `auth.uid()`. Prueba positiva y negativa desde dos cuentas de prueba distintas mediante la API: A crea una sesion y B recibe lista vacia/404 al pedirla. No uses una clave de servicio para esa prueba.
+
+Para RAG, el claim de tenant debe estar en `tenant_id` o `app_metadata.tenant_id` del JWT. Comprueba que la migración dejó los documentos heredados en `draft` y que no hay resultados de otro tenant, retirados ni fuera de vigencia. Revisa y aprueba manualmente cada documento heredado antes de volverlo consultable; no promociones hashes legacy vacíos.
 
 ## 4. Crear la clave clinica de solo lectura
 

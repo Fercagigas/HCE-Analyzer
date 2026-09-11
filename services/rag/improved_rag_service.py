@@ -273,7 +273,7 @@ class ImprovedRAGService:
             return {"success": False, "error": "Empty text provided"}
 
         try:
-            document_id = str(uuid.uuid4())
+            document_id = str((metadata or {}).get("document_id") or uuid.uuid4())
             doc_metadata = {
                 "document_id": document_id,
                 "filename": metadata.get("filename", "direct_text") if metadata else "direct_text",
@@ -312,6 +312,9 @@ class ImprovedRAGService:
         query: str,
         top_k: int = 5,
         rerank: bool = True,
+        *,
+        tenant_id: str = "default",
+        as_of=None,
     ) -> List[Dict[str, Any]]:
         """
         Search for relevant documents using hybrid search and reranking.
@@ -335,7 +338,7 @@ class ImprovedRAGService:
         try:
             # Step 1: Hybrid search on child chunks
             fetch_k = top_k * 4 if rerank else top_k
-            hybrid_results = self.store.hybrid_search(query, top_k=fetch_k)
+            hybrid_results = self.store.hybrid_search(query, top_k=fetch_k, tenant_id=tenant_id, as_of=as_of.isoformat() if as_of else None)
 
             if not hybrid_results:
                 return []
@@ -357,7 +360,7 @@ class ImprovedRAGService:
 
                 if parent_id and parent_id not in seen_parents:
                     seen_parents.add(parent_id)
-                    parent = self.store.get_parent_chunk(parent_id)
+                    parent = self.store.get_parent_chunk(parent_id, tenant_id=tenant_id, as_of=as_of.isoformat() if as_of else None)
 
                     if parent:
                         final_results.append({
@@ -399,9 +402,12 @@ class ImprovedRAGService:
         query: str,
         filter_dict: Dict[str, Any],
         top_k: int = 5,
+        *,
+        tenant_id: str = "default",
+        as_of=None,
     ) -> List[Dict[str, Any]]:
         """Search with metadata filters (post-filter on search results)."""
-        results = self.search(query, top_k=top_k * 2)
+        results = self.search(query, top_k=top_k * 2, tenant_id=tenant_id, as_of=as_of)
 
         filtered = []
         for r in results:
