@@ -7,6 +7,7 @@
 ## 🧭 Estado del proyecto
 
 - **[ESTADO_ACTUAL.md](ESTADO_ACTUAL.md)** - En qué punto estamos: Fase 1 y oleada 1 de Fase 2, arquitectura, verificaciones y acciones pendientes del propietario (empezar aquí)
+- **[../PENDIENTES_PROPIETARIO_FASE2.md](../PENDIENTES_PROPIETARIO_FASE2.md)** - Guía operativa de los pendientes del propietario al cierre de Fase 2
 - **[APRENDIZAJES_FASE1.md](APRENDIZAJES_FASE1.md)** - Clase magistral de la Fase 1: qué se tuvo en cuenta, qué se construyó y por qué, lecciones de evaluación y de proceso
 - **[APRENDIZAJES_FASE2.md](APRENDIZAJES_FASE2.md)** - Decisiones, razones, lecciones operativas y de coordinación de la oleada 1 de Security foundation
 - **[../ROADMAP_HOSPITAL_READY/README.md](../ROADMAP_HOSPITAL_READY/README.md)** - Roadmap hospital-ready con estado por documento; fases en `15-implementation-phases.md`
