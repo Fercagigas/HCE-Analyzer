@@ -79,8 +79,8 @@ async def test_parallel_tabs_same_session_keep_each_request_patient_scope():
     context_a = _context(A)
     context_b = _context(B)
     response_a, response_b = await asyncio.gather(
-        container.chat_service.handle_chat(ChatRequest(message="labs A"), context_a),
-        container.chat_service.handle_chat(ChatRequest(message="labs B"), context_b),
+        container.chat_service.handle_chat(ChatRequest(message="labs A", session_id="shared-tab-session"), context_a),
+        container.chat_service.handle_chat(ChatRequest(message="labs B", session_id="shared-tab-session"), context_b),
     )
     assert response_a.success and response_b.success, "VIOLACION CRITICA: una pestana paralela interfirio con la otra"
     assert context_a.patient_id == str(A) and context_b.patient_id == str(B), "VIOLACION CRITICA: una pestana paralela modifico el RequestContext de otra"
