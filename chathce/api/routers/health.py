@@ -41,14 +41,17 @@ async def ready(request: Request, container: Container = Depends(get_container))
     if cache and now - cache["at"] < ttl:
         payload = cache["payload"]
     else:
+        ai_status = container.ai_gate.status()
         model = container.gateway._config.model_chain[0]
-        checks = await asyncio.gather(
-            _check("clinical_data", container.clinical_provider.health()),
-            _check("llm", container.llm_provider.health(model)),
-            _check("knowledge", container.knowledge.health(), timeout=60.0),
-        )
-        checks = list(checks) + [{"name": "identity", "ok": container.identity is not None, "latency_ms": 0, "detail": type(container.identity).__name__}]
-        critical_ok = all(c["ok"] for c in checks if c["name"] in ("clinical_data", "llm", "identity"))
+        checks_to_run = [_check("clinical_data", container.clinical_provider.health()), _check("knowledge", container.knowledge.health(), timeout=60.0)]
+        if ai_status.enabled:
+            checks_to_run.append(_check("llm", container.llm_provider.health(model)))
+        checks = await asyncio.gather(*checks_to_run)
+        checks = list(checks) + [{"name": "ai_generation", "ok": True, "latency_ms": 0,
+                                  "detail": "enabled" if ai_status.enabled else "disabled"}]
+        checks = checks + [{"name": "identity", "ok": container.identity is not None, "latency_ms": 0, "detail": type(container.identity).__name__}]
+        critical_names = ("clinical_data", "identity") + (("llm",) if ai_status.enabled else ())
+        critical_ok = all(c["ok"] for c in checks if c["name"] in critical_names)
         payload = {
             "status": "ready" if critical_ok else "degraded",
             "version": __version__,

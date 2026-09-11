@@ -16,6 +16,7 @@ from chathce.adapters.memory import (
     ScriptedTurn,
 )
 from chathce.application.chat_service import ChatService, ChatServiceConfig
+from chathce.application.ai_kill_switch import AIGenerationGate
 from chathce.application.conversation_service import ConversationService
 from chathce.application.knowledge_service import KnowledgeService
 from chathce.application.patient_summary_service import PatientSummaryService
@@ -57,12 +58,14 @@ def build_test_container(
     analyses = InMemoryAnalysisRepository()
     conversation_service = ConversationService(conversations, analyses)
     limiter = RateLimiter(RateLimitConfig(per_minute=3, burst=2, burst_window_s=1000.0, lockout_s=60.0))
+    ai_gate = AIGenerationGate()
     chat_service = ChatService(gateway, registry, conversation_service, visualizations, rate_limiter=limiter, audit=audit,
-                               config=ChatServiceConfig(rate_limit_enabled=rate_limit))
+                               config=ChatServiceConfig(rate_limit_enabled=rate_limit), ai_gate=ai_gate)
     return Container(
         settings=None, audit=audit, llm_provider=llm, clinical_provider=guarded, identity=InMemoryIdentityProvider(),
         conversations=conversations, analyses=analyses, preferences=InMemoryUserPreferencesRepository(), knowledge=knowledge_repo,
         visualizations=visualizations, registry=registry, gateway=gateway, chat_service=chat_service,
         conversation_service=conversation_service, patient_summary_service=PatientSummaryService(guarded),
         knowledge_service=KnowledgeService(knowledge_repo, audit), rate_limiter=limiter, profile={"llm": "fake", "clinical": "memory"},
+        ai_gate=ai_gate,
     )

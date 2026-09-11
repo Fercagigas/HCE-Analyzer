@@ -16,8 +16,8 @@ Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencia
 | P0.8 Sandbox | — | No hay código generado que ejecutar |
 | P0.9 Model Gateway | ✅ | `LLMProvider` + `ModelGateway` (ADR 0080) |
 | P0.10 Human approval | — | Sistema read-only; sin acciones que aprobar |
-| P1.1 Kill switch | ⏳ | Fase 2 (perfil `LLM_PROVIDER=fake` existe solo para tests) |
-| P1.2 Safe degraded modes | 🟡 | Fallback entre modelos y errores controlados; retrieval sin LLM pendiente |
+| P1.1 Kill switch | ✅ | `HCE_AI_ENABLED` y fichero runtime opcional consultado por petición; JSON, SSE y Streamlit devuelven respuesta controlada sin LLM ni tools (ADR 0140) |
+| P1.2 Safe degraded modes | 🟡 | Kill switch, fallback y circuit breaker por proveedor+modelo; retrieval sin LLM pendiente |
 
 ## Tareas
 

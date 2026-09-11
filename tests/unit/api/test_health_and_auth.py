@@ -23,7 +23,7 @@ async def test_ready_reports_components(client, api):
     response = await client.get("/ready")
     assert response.status_code == 200
     body = response.json()
-    assert body["status"] == "ready" and {c["name"] for c in body["components"]} == {"clinical_data", "llm", "knowledge", "identity"}
+    assert body["status"] == "ready" and {c["name"] for c in body["components"]} == {"clinical_data", "llm", "knowledge", "identity", "ai_generation"}
     api.container.llm_provider.healthy = False
     api.app.state.ready_cache = None
     degraded = await client.get("/ready")

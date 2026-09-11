@@ -3,6 +3,7 @@ import json
 import pytest
 
 from chathce.adapters.memory import ScriptedTurn
+from chathce.application.ai_kill_switch import AIGenerationGate
 from tests.unit.api.conftest import SUBJECT, auth
 
 pytestmark = pytest.mark.unit
@@ -61,6 +62,19 @@ async def test_chat_stream_emits_high_level_events(client):
     assert complete["success"] and complete["tool_calls"][0]["tool_name"] == "get_labs"
     for _, payload in events:
         assert not {"thinking", "reasoning", "chain_of_thought"} & set(payload)
+
+
+async def test_chat_json_and_sse_degrade_when_ai_is_disabled(client, api):
+    api.container.ai_gate = AIGenerationGate(enabled=False)
+    api.container.chat_service._ai_gate = api.container.ai_gate
+    response = await client.post("/api/v1/chat", json={"message": "hola"}, headers=auth())
+    assert response.status_code == 200 and response.json()["error"]["code"] == "AI_DISABLED"
+    async with client.stream("POST", "/api/v1/chat/stream", json={"message": "hola"}, headers=auth()) as stream:
+        raw = ""
+        async for chunk in stream.aiter_text():
+            raw += chunk
+    assert "event: error" in raw and "AI_DISABLED" in raw and "event: complete" in raw
+    assert api.container.llm_provider.calls == []
 
 
 async def test_patient_summary_endpoint_is_scoped_and_deterministic(client):

@@ -8,8 +8,8 @@ Leyenda: ✅ hecho · 🟡 parcial · ⏳ pendiente · — no aplica. Referencia
 |---|---|---|
 | Audit trail P0 | 🟡 | `AuditEvent` (`chathce/domain/audit.py`) registra timestamp, tenant/user/patient/encounter/session, trace/request, acción, tool, operación, categorías de datos, filas, modelo, `prompt_version`, tokens, latencia y código de error, sin PHI; sink JSONL con rotación diaria. Pendientes: documentos/versiones usados, policy decisions explícitas, referencia a evidence snapshot |
 | AI observability | ⏳ | Sin dashboards; datos disponibles en `logs/audit/audit.jsonl` |
-| Timeouts y circuit breakers | 🟡 | Timeouts por tool, llamada y total; circuit breaker pendiente |
-| Kill switch | ⏳ | Fase 2 |
+| Timeouts y circuit breakers | ✅ | Timeouts por tool, llamada y total; circuit breaker en memoria por proveedor+modelo (`closed/open/half-open`) con eventos de transición (ADR 0140) |
+| Kill switch | ✅ | `HCE_AI_ENABLED` y fichero runtime opcional; estado visible en `/ready`, cambios y rechazos auditados sin PHI (ADR 0140) |
 | Graceful degradation | 🟡 | Errores de LLM/datos devuelven `success=False` con sugerencias, tools fallidas quedan en `uncertainty`; retrieval sin LLM pendiente |
 | Provider fallback | ✅ | Cadena Haiku → Sonnet → Opus dentro del mismo proveedor (ADR 0080) |
 | Backup/restore, incident response | ⏳ | Fase 7; checklist de Supabase cubre contención y rotación |

@@ -2,7 +2,7 @@ import pytest
 
 from chathce.adapters.memory import FakeLLMProvider, ScriptedTurn
 from chathce.domain.chat import ErrorEvent, StatusEvent, TextDeltaEvent, ToolCallEvent, ToolResultSummaryEvent
-from chathce.gateway.model_gateway import SYNTHESIS_INSTRUCTION, GatewayConfig, GatewayDone, ModelGateway
+from chathce.gateway.model_gateway import SYNTHESIS_INSTRUCTION, GatewayConfig, GatewayDone, ModelCircuitBreaker, ModelGateway
 from chathce.ports.llm_provider import LLMAuthError, LLMMessage, LLMRateLimited, LLMUnavailable, ToolResultPart
 
 pytestmark = pytest.mark.unit
@@ -145,3 +145,26 @@ async def test_events_never_contain_reasoning_fields(registry, ctx):
             continue
         dumped = event.model_dump()
         assert "thinking" not in dumped and "reasoning" not in dumped
+
+
+def test_circuit_breaker_transitions_closed_open_half_open_closed():
+    now = [0.0]
+    breaker = ModelCircuitBreaker(provider_name="fake", failure_threshold=2, recovery_s=10, clock=lambda: now[0])
+    assert breaker.allow("m") == (True, None)
+    assert breaker.failure("m") is None
+    assert breaker.failure("m") == ("closed", "open")
+    assert breaker.allow("m") == (False, None)
+    now[0] = 10.0
+    assert breaker.allow("m") == (True, ("open", "half_open"))
+    assert breaker.success("m") == ("half_open", "closed")
+    assert breaker.state_for("m") == "closed"
+
+
+async def test_open_circuit_skips_primary_and_uses_fallback(registry, ctx, audit):
+    provider = FakeLLMProvider([LLMUnavailable("caido"), ScriptedTurn(text="secundario"), ScriptedTurn(text="sigue secundario")])
+    gateway = _gateway(provider, registry, audit, max_retries_per_model=0, circuit_breaker_failure_threshold=1,
+                       circuit_breaker_recovery_s=999)
+    assert _done(await _run(gateway, ctx)).model_used == "fake-secondary"
+    assert _done(await _run(gateway, ctx)).model_used == "fake-secondary"
+    assert [call.model for call in provider.calls] == ["fake-primary", "fake-secondary", "fake-secondary"]
+    assert "llm_circuit_breaker" in audit.actions()

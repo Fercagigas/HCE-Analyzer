@@ -237,6 +237,11 @@ class LLMGatewaySettings(BaseSettings):
     max_iterations: int = Field(6, env="LLM_MAX_ITERATIONS")
     max_tool_visible_chars: int = Field(12000, env="LLM_MAX_TOOL_VISIBLE_CHARS")
     query_augmentation_enabled: bool = Field(True, env="LLM_QUERY_AUGMENTATION_ENABLED")
+    # Base segura y fichero opcional consultado por peticion para operar sin redeploy.
+    ai_enabled: bool = Field(True, validation_alias="HCE_AI_ENABLED")
+    ai_kill_switch_file: Optional[str] = Field(None, validation_alias="HCE_AI_KILL_SWITCH_FILE")
+    circuit_breaker_failure_threshold: int = Field(3, ge=1, env="LLM_CIRCUIT_BREAKER_FAILURE_THRESHOLD")
+    circuit_breaker_recovery_s: float = Field(30.0, gt=0, env="LLM_CIRCUIT_BREAKER_RECOVERY_S")
 
     model_config = {
         "env_file": _ENV_FILE,
